@@ -150,5 +150,33 @@
     "relatedModels": ["TAM"],
     "relatedConstructs": ["Behavioral Intention"],
     "notes": "Outcome of behavioral intention in adoption models."
+  },
+  {
+    "id": "prior-expectations",
+    "name": "Prior Expectations",
+    "abbreviation": "Prior",
+    "definition": "What users believed the technology would do for them before they started using it. A cognitive pre-use state that becomes the benchmark against which actual experience is judged.",
+    "sourcePaper": "Bhattacherjee (2001) - ECM-IS; Oliver (1980) - ECT",
+    "doi": "10.2307/3250921",
+    "theoreticalDomain": "Expectation-Confirmation Theory",
+    "measurementItems": ["Before using this product, I expected it to improve my farming decisions."],
+    "measurementScale": "7-point Likert (adapted to context)",
+    "relatedModels": ["ECM-IS", "ECT"],
+    "relatedConstructs": ["Confirmation"],
+    "notes": "In agritech, a farmer might expect a weather app to help them decide when to plant."
+  },
+  {
+    "id": "continued-use",
+    "name": "Continued Use",
+    "abbreviation": "Use",
+    "definition": "The actual sustained usage of the technology over time. Often proxied by Continuance Intention in studies; can be measured via usage logs or follow-up surveys.",
+    "sourcePaper": "Bhattacherjee (2001) - ECM-IS",
+    "doi": "10.2307/3250921",
+    "theoreticalDomain": "Expectation-Confirmation Model",
+    "measurementItems": ["Longitudinal usage data", "Follow-up behavioural measures"],
+    "measurementScale": "Behavioural / self-reported",
+    "relatedModels": ["ECM-IS"],
+    "relatedConstructs": ["Continuance Intention"],
+    "notes": "In Sub-Saharan Africa, gap between intention and behaviour may be influenced by infrastructural barriers (connectivity, cost, literacy)."
   }
 ]

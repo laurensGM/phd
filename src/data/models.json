@@ -89,5 +89,42 @@
     "keyCitations": [
       { "authors": "Bhattacherjee (2001)", "title": "Understanding Information Systems Continuance: An Expectation-Confirmation Model", "doi": "10.2307/3250921" }
     ]
+  },
+  {
+    "id": "ecm-is",
+    "name": "Expectation-Confirmation Model of IS Continuance (Extended)",
+    "abbreviation": "ECM-IS",
+    "year": 2001,
+    "authors": ["Bhattacherjee"],
+    "description": "Full flow: Prior Expectations shape Confirmation; Confirmation influences Perceived Usefulness and Satisfaction; both drive Continuance Intention and ultimately Continued Use. Perceived Usefulness also has a direct path to Continuance Intention.",
+    "constructs": [
+      "Prior Expectations",
+      "Perceived Usefulness",
+      "Confirmation",
+      "Satisfaction",
+      "Continuance Intention",
+      "Continued Use"
+    ],
+    "constructAbbreviations": {
+      "Prior Expectations": "Prior",
+      "Perceived Usefulness": "PU",
+      "Confirmation": "Confirm",
+      "Satisfaction": "Sat",
+      "Continuance Intention": "CI",
+      "Continued Use": "Use"
+    },
+    "relationships": [
+      { "from": "Prior", "to": "Confirm" },
+      { "from": "Confirm", "to": "PU" },
+      { "from": "Confirm", "to": "Sat" },
+      { "from": "PU", "to": "Sat" },
+      { "from": "PU", "to": "CI" },
+      { "from": "Sat", "to": "CI" },
+      { "from": "CI", "to": "Use" }
+    ],
+    "keyCitations": [
+      { "authors": "Bhattacherjee (2001)", "title": "Understanding Information Systems Continuance: An Expectation-Confirmation Model", "doi": "10.2307/3250921" }
+    ],
+    "diagramType": "ecm-is"
   }
 ]

@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ModelGraph from '../../components/ModelGraph';
+import EcmIsDiagram from '../../components/EcmIsDiagram';
 import models from '../../data/models.json';
 import constructs from '../../data/constructs.json';
 
@@ -13,7 +14,7 @@ constructs.forEach((c: { name: string; id: string }) => {
 
 <BaseLayout title="Models" description="Theoretical models - TAM, ECT, ECM with interactive diagrams">
   <h1>Models</h1>
-  <p class="page-desc">Theoretical models with overviews, interactive diagrams, constructs, and key citations. Click any construct node to view its details.</p>
+  <p class="page-desc">Theoretical models with overviews, interactive diagrams, constructs, and key citations. For ECM-IS: click a construct to see details on this page. For others: click a node to go to the construct page.</p>
 
   <div class="models-list">
     {models.map((model: any) => (
@@ -23,7 +24,11 @@ constructs.forEach((c: { name: string; id: string }) => {
         <p class="model-desc">{model.description}</p>
 
         <h3>Interactive Diagram</h3>
-        <ModelGraph client:load model={model} constructToSlug={constructToSlug} />
+        {model.diagramType === 'ecm-is' ? (
+          <EcmIsDiagram client:load />
+        ) : (
+          <ModelGraph client:load model={model} constructToSlug={constructToSlug} />
+        )}
 
         <h3>Core Constructs</h3>
         <ul class="construct-list">
@@ -115,4 +120,175 @@ constructs.forEach((c: { name: string; id: string }) => {
     border: 1px solid var(--color-border);
     border-radius: 8px;
   }
+
+  /* ECM-IS diagram */
+  .ecm-is-diagram {
+    margin: 1.5rem 0;
+  }
+
+  .ecm-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 1100px;
+  }
+
+  .ecm-box {
+    background: white;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border: 2px solid transparent;
+    transition: all 0.2s;
+    cursor: pointer;
+    min-width: 130px;
+    max-width: 150px;
+    flex-shrink: 0;
+  }
+
+  .ecm-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.13);
+  }
+
+  .ecm-box-prior { border-color: var(--color-gold); }
+  .ecm-box-prior .ecm-box-label { color: var(--color-gold); }
+  .ecm-box-confirm { border-color: var(--color-maroon); }
+  .ecm-box-confirm .ecm-box-label { color: var(--color-maroon); }
+  .ecm-box-satisfy { border-color: var(--color-gold-light); }
+  .ecm-box-satisfy .ecm-box-label { color: var(--color-maroon-dark); }
+  .ecm-box-intention { border-color: var(--color-maroon); }
+  .ecm-box-intention .ecm-box-label { color: var(--color-maroon); }
+  .ecm-box-behavior { border-color: var(--color-maroon-dark); }
+  .ecm-box-behavior .ecm-box-label { color: var(--color-maroon-dark); }
+
+  .ecm-box-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.35rem;
+  }
+
+  .ecm-box-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-ink);
+    margin-bottom: 0.35rem;
+    line-height: 1.3;
+  }
+
+  .ecm-box-desc {
+    font-size: 0.72rem;
+    color: var(--color-ink-muted);
+    line-height: 1.4;
+  }
+
+  .ecm-arrow-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .ecm-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .ecm-arrow-line {
+    width: 36px;
+    height: 2px;
+    background: var(--color-border);
+    position: relative;
+  }
+
+  .ecm-arrow-line::after {
+    content: '';
+    position: absolute;
+    right: -6px;
+    top: -4px;
+    border: 5px solid transparent;
+    border-left-color: var(--color-border);
+  }
+
+  .ecm-arrow-label {
+    font-size: 0.65rem;
+    color: var(--color-ink-muted);
+    text-align: center;
+  }
+
+  .ecm-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    flex-shrink: 0;
+  }
+
+  .ecm-note {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    color: var(--color-maroon);
+    text-align: center;
+  }
+
+  .ecm-info-panel {
+    margin-top: 1.5rem;
+    background: white;
+    border-radius: 12px;
+    padding: 1.25rem 1.75rem;
+    max-width: 700px;
+    width: 100%;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+    min-height: 80px;
+    border: 1px solid var(--color-border);
+  }
+
+  .ecm-info-panel h3 {
+    font-size: 1rem;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+
+  .ecm-info-panel p {
+    font-size: 0.88rem;
+    color: var(--color-ink-muted);
+    line-height: 1.6;
+  }
+
+  .ecm-info-default {
+    color: var(--color-ink-muted) !important;
+    font-style: italic;
+  }
+
+  .ecm-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1.25rem;
+    justify-content: center;
+    font-size: 0.75rem;
+    color: var(--color-ink-muted);
+  }
+
+  .ecm-legend-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    margin-right: 0.35rem;
+    vertical-align: middle;
+  }
+
+  .ecm-legend-dot.prior { background: var(--color-gold); }
+  .ecm-legend-dot.confirm { background: var(--color-maroon); }
+  .ecm-legend-dot.satisfy { background: var(--color-gold-light); }
+  .ecm-legend-dot.intention { background: var(--color-maroon); }
+  .ecm-legend-dot.behavior { background: var(--color-maroon-dark); }
 </style>
