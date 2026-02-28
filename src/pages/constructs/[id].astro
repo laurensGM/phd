@@ -1,6 +1,6 @@
 ---
-import BaseLayout from '../../../layouts/BaseLayout.astro';
-import constructs from '../../../data/constructs.json';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import constructs from '../../data/constructs.json';
 
 export function getStaticPaths() {
   return constructs.map((c: { id: string }) => ({ params: { id: c.id } }));
