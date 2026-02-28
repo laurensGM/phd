@@ -177,20 +177,36 @@
     "abbreviation": "TAM2",
     "year": 2000,
     "authors": ["Venkatesh", "Davis"],
-    "description": "Extends TAM by introducing social influencing processes and cognitive instrumental processes. Individuals form perceived usefulness by comparing what a system can do with job requirements. In high power-distance cultures, mandatory use can weaken the relationship between PU, PEOU and usage.",
-    "notes": "Social: Subjective norms (others' expectations); Image (status from using the technology). Cognitive: Job relevance; Output quality; Result demonstrability. Limitations: does not fully account for system cost, features, social norms, gender, culture, alternative systems; focuses on individual users not groups.",
-    "constructs": ["Subjective Norms", "Image", "Job Relevance", "Output Quality", "Result Demonstrability", "Perceived Usefulness", "Perceived Ease of Use", "Behavioral Intention"],
-    "constructAbbreviations": { "Subjective Norms": "SN", "Image": "Img", "Job Relevance": "JR", "Output Quality": "OQ", "Result Demonstrability": "RD", "Perceived Usefulness": "PU", "Perceived Ease of Use": "PEOU", "Behavioral Intention": "BI" },
+    "description": "Extends TAM by introducing social influencing processes and cognitive instrumental processes. Perceived Usefulness (PU) is influenced by social factors (subjective norm, image), cognitive instrumental factors (job relevance, output quality, result demonstrability), experience, and perceived ease of use (PEOU). PEOU is influenced by experience. Behavioral intention to use (BI) is influenced by subjective norm, voluntariness, PU, and PEOU; BI in turn leads to actual system use.",
+    "notes": "Social influencing (light red in diagram): Subjective norm (influences PU and BI); Image (influences PU); Voluntariness (influences BI). Cognitive instrumental (light purple): Job relevance, Output quality, Result demonstrability (all influence PU); Perceived Usefulness; Perceived Ease of Use (influenced by Experience; influences PU and BI). Experience influences both PU and PEOU. Final path: BI → Actual system use.",
+    "constructs": ["Subjective Norm", "Image", "Voluntariness", "Job Relevance", "Output Quality", "Result Demonstrability", "Experience", "Perceived Usefulness", "Perceived Ease of Use", "Behavioral Intention", "Actual System Use"],
+    "constructAbbreviations": {
+      "Subjective Norm": "SN",
+      "Image": "Img",
+      "Voluntariness": "Vol",
+      "Job Relevance": "JR",
+      "Output Quality": "OQ",
+      "Result Demonstrability": "RD",
+      "Experience": "Exp",
+      "Perceived Usefulness": "PU",
+      "Perceived Ease of Use": "PEOU",
+      "Behavioral Intention": "BI",
+      "Actual System Use": "Use"
+    },
     "relationships": [
       { "from": "SN", "to": "PU" },
-      { "from": "SN", "to": "Img" },
       { "from": "Img", "to": "PU" },
       { "from": "JR", "to": "PU" },
       { "from": "OQ", "to": "PU" },
       { "from": "RD", "to": "PU" },
+      { "from": "Exp", "to": "PU" },
       { "from": "PEOU", "to": "PU" },
+      { "from": "Exp", "to": "PEOU" },
+      { "from": "SN", "to": "BI" },
+      { "from": "Vol", "to": "BI" },
       { "from": "PU", "to": "BI" },
-      { "from": "PEOU", "to": "BI" }
+      { "from": "PEOU", "to": "BI" },
+      { "from": "BI", "to": "Use" }
     ],
     "keyCitations": [
       { "authors": "Venkatesh & Davis (2000)", "title": "A Theoretical Extension of the Technology Acceptance Model: Four Longitudinal Field Studies" }

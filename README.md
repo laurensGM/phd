@@ -48,6 +48,15 @@ Output in `dist/`.
    - `base`: `/` for user/org site, or `/repo-name/` for project site
 4. Push to `main` to trigger the deploy workflow.
 
+### Deployment not updating?
+
+If you pushed but the site still shows the old layout:
+
+1. **Pages source** — In the repo go to **Settings → Pages**. Under "Build and deployment", **Source** must be **GitHub Actions**. If it is "Deploy from a branch", the site will not use the built artifact; switch it to **GitHub Actions** and save.
+2. **Actions** — Open the **Actions** tab and check the latest "Deploy to GitHub Pages" run. It must complete successfully (green). If it failed, fix the error (e.g. missing `package-lock.json`, missing secrets).
+3. **Cache** — Do a hard refresh (Ctrl+Shift+R or Cmd+Shift+R) or open the site in an incognito/private window.
+4. **Redeploy** — After changing the Pages source to GitHub Actions, trigger a new deploy: push an empty commit (`git commit --allow-empty -m "Trigger deploy" && git push`) or re-run the workflow from the Actions tab.
+
 ## Data Files
 
 Edit JSON in `src/data/`:
