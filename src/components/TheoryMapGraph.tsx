@@ -77,7 +77,7 @@ export default function TheoryMapGraph({ models, constructToSlug }: TheoryMapGra
         id: nodeId,
         data: {
           label: construct,
-          href: slug ? `/constructs/${slug}/` : '#',
+          href: slug ? `${import.meta.env.BASE_URL}constructs/${slug}/` : '#',
         },
         position: { x: 120, y: y + i * 60 },
         type: 'constructLink',

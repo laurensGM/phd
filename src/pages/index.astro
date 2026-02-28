@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+const base = import.meta.env.BASE_URL;
 ---
 
 <BaseLayout title="Home" description="PhD Knowledge System - Your research topic and quick links">
@@ -20,37 +21,37 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <section class="quick-links">
       <h2>Quick Links</h2>
       <div class="link-grid">
-        <a href="/models/" class="link-card">
+        <a href={`${base}models/`} class="link-card">
           <span class="link-icon">📚</span>
           <span class="link-title">Models</span>
           <span class="link-desc">TAM, ECT, ECM — theories and relationships</span>
         </a>
-        <a href="/constructs/" class="link-card">
+        <a href={`${base}constructs/`} class="link-card">
           <span class="link-icon">🧠</span>
           <span class="link-title">Constructs</span>
           <span class="link-desc">Definitions, measurement scales, sources</span>
         </a>
-        <a href="/diary/" class="link-card">
+        <a href={`${base}diary/`} class="link-card">
           <span class="link-icon">📓</span>
           <span class="link-title">Diary</span>
           <span class="link-desc">Daily reflections, tags, linked constructs</span>
         </a>
-        <a href="/literature/" class="link-card">
+        <a href={`${base}literature/`} class="link-card">
           <span class="link-icon">📖</span>
           <span class="link-title">Literature</span>
           <span class="link-desc">Papers, citations, findings, summaries</span>
         </a>
-        <a href="/research-questions/" class="link-card">
+        <a href={`${base}research-questions/`} class="link-card">
           <span class="link-icon">🧩</span>
           <span class="link-title">Research Questions</span>
           <span class="link-desc">RQ evolution and supervisory feedback</span>
         </a>
-        <a href="/methods/" class="link-card">
+        <a href={`${base}methods/`} class="link-card">
           <span class="link-icon">🧪</span>
           <span class="link-title">Methods</span>
           <span class="link-desc">Operationalization, hypotheses, instruments</span>
         </a>
-        <a href="/theory-map/" class="link-card">
+        <a href={`${base}theory-map/`} class="link-card">
           <span class="link-icon">🗺️</span>
           <span class="link-title">Theory Map</span>
           <span class="link-desc">Visual map of model connections and gaps</span>
@@ -109,6 +110,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     transform: translateY(-2px);
     text-decoration: none;
     color: inherit;
+    border-color: var(--color-gold);
   }
 
   .link-icon {

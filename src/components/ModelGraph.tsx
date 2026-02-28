@@ -56,7 +56,7 @@ export default function ModelGraph({ model, constructToSlug }: ModelGraphProps) 
         id,
         data: {
           label: abbrevMap[name] || name,
-          href: slug ? `/constructs/${slug}/` : '#',
+          href: slug ? `${import.meta.env.BASE_URL}constructs/${slug}/` : '#',
         },
         position: { x: col * 180 + 20, y: row * 100 + 20 },
         type: 'construct',

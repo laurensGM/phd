@@ -4,6 +4,7 @@ import ModelGraph from '../../components/ModelGraph';
 import models from '../../data/models.json';
 import constructs from '../../data/constructs.json';
 
+const base = import.meta.env.BASE_URL;
 const constructToSlug: Record<string, string> = {};
 constructs.forEach((c: { name: string; id: string }) => {
   constructToSlug[c.name] = c.id;
@@ -28,7 +29,7 @@ constructs.forEach((c: { name: string; id: string }) => {
         <ul class="construct-list">
           {model.constructs.map((c: string) => (
             <li>
-              <a href={`/constructs/${constructToSlug[c] || '#'}/`}>{model.constructAbbreviations?.[c] || c} — {c}</a>
+              <a href={`${base}constructs/${constructToSlug[c] || '#'}/`}>{model.constructAbbreviations?.[c] || c} — {c}</a>
             </li>
           ))}
         </ul>

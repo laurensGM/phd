@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import constructs from '../../data/constructs.json';
+const base = import.meta.env.BASE_URL;
 ---
 
 <BaseLayout title="Constructs" description="Theoretical constructs - definitions, measurement scales, sources">
@@ -10,7 +11,7 @@ import constructs from '../../data/constructs.json';
   <div class="constructs-grid">
     {constructs.map((construct: any) => (
       <article class="construct-card">
-        <h2><a href={`/constructs/${construct.id}/`}>{construct.name}</a></h2>
+        <h2><a href={`${base}constructs/${construct.id}/`}>{construct.name}</a></h2>
         {construct.abbreviation && <span class="abbrev">{construct.abbreviation}</span>}
         <p class="definition">{construct.definition}</p>
         <p class="source">Source: {construct.sourcePaper}</p>

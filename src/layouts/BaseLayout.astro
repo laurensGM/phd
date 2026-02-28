@@ -5,6 +5,7 @@ interface Props {
 }
 
 const { title, description = "PhD Knowledge System - Organizing research, models, constructs, and literature" } = Astro.props;
+const base = import.meta.env.BASE_URL;
 ---
 
 <!DOCTYPE html>
@@ -12,7 +13,7 @@ const { title, description = "PhD Knowledge System - Organizing research, models
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
     <meta name="description" content={description} />
     <title>{title} | PhD Knowledge System</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -22,16 +23,16 @@ const { title, description = "PhD Knowledge System - Organizing research, models
   <body>
     <header class="site-header">
       <nav class="nav-container">
-        <a href="/" class="logo">PhD Knowledge System</a>
+        <a href={base} class="logo">PhD Knowledge System</a>
         <ul class="nav-links">
-          <li><a href="/">Home</a></li>
-          <li><a href="/models/">Models</a></li>
-          <li><a href="/constructs/">Constructs</a></li>
-          <li><a href="/diary/">Diary</a></li>
-          <li><a href="/literature/">Literature</a></li>
-          <li><a href="/research-questions/">Research Questions</a></li>
-          <li><a href="/methods/">Methods</a></li>
-          <li><a href="/theory-map/">Theory Map</a></li>
+          <li><a href={base}>Home</a></li>
+          <li><a href={`${base}models/`}>Models</a></li>
+          <li><a href={`${base}constructs/`}>Constructs</a></li>
+          <li><a href={`${base}diary/`}>Diary</a></li>
+          <li><a href={`${base}literature/`}>Literature</a></li>
+          <li><a href={`${base}research-questions/`}>Research Questions</a></li>
+          <li><a href={`${base}methods/`}>Methods</a></li>
+          <li><a href={`${base}theory-map/`}>Theory Map</a></li>
         </ul>
       </nav>
     </header>
@@ -46,17 +47,22 @@ const { title, description = "PhD Knowledge System - Organizing research, models
 
 <style is:global>
   :root {
-    --color-bg: #f8f6f1;
-    --color-bg-alt: #efe9df;
-    --color-ink: #1a1814;
-    --color-ink-muted: #5c564d;
-    --color-accent: #8b3a3a;
-    --color-accent-hover: #6b2a2a;
-    --color-border: #d4cfc4;
+    /* Stellenbosch Business School–inspired palette */
+    --color-bg: #F9F4EE;
+    --color-bg-alt: #F0E9E0;
+    --color-ink: #2D1F24;
+    --color-ink-muted: #5C4A4F;
+    --color-maroon: #722F37;
+    --color-maroon-dark: #5A2632;
+    --color-gold: #B8860B;
+    --color-gold-light: #D4A84B;
+    --color-accent: #722F37;
+    --color-accent-hover: #5A2632;
+    --color-border: #E0D6CC;
     --font-serif: 'Crimson Pro', Georgia, serif;
     --font-sans: 'DM Sans', system-ui, sans-serif;
-    --shadow-sm: 0 1px 3px rgba(26, 24, 20, 0.06);
-    --shadow-md: 0 4px 12px rgba(26, 24, 20, 0.08);
+    --shadow-sm: 0 1px 3px rgba(45, 31, 36, 0.06);
+    --shadow-md: 0 4px 12px rgba(45, 31, 36, 0.08);
   }
 
   * {
@@ -80,12 +86,13 @@ const { title, description = "PhD Knowledge System - Organizing research, models
   }
 
   .site-header {
-    background: var(--color-ink);
-    color: var(--color-bg);
+    background: var(--color-maroon);
+    color: white;
     padding: 0.75rem 1.5rem;
     position: sticky;
     top: 0;
     z-index: 100;
+    border-bottom: 3px solid var(--color-gold);
   }
 
   .nav-container {
@@ -100,12 +107,12 @@ const { title, description = "PhD Knowledge System - Organizing research, models
     font-family: var(--font-serif);
     font-size: 1.25rem;
     font-weight: 600;
-    color: var(--color-bg);
+    color: white;
     text-decoration: none;
   }
 
   .logo:hover {
-    color: var(--color-bg-alt);
+    color: var(--color-gold-light);
   }
 
   .nav-links {
@@ -117,13 +124,13 @@ const { title, description = "PhD Knowledge System - Organizing research, models
   }
 
   .nav-links a {
-    color: rgba(248, 246, 241, 0.9);
+    color: rgba(255, 255, 255, 0.92);
     text-decoration: none;
     font-size: 0.9rem;
   }
 
   .nav-links a:hover {
-    color: white;
+    color: var(--color-gold-light);
   }
 
   .main-content {
@@ -140,6 +147,7 @@ const { title, description = "PhD Knowledge System - Organizing research, models
     text-align: center;
     font-size: 0.85rem;
     color: var(--color-ink-muted);
+    border-top: 1px solid var(--color-border);
   }
 
   h1, h2, h3 {
@@ -151,13 +159,24 @@ const { title, description = "PhD Knowledge System - Organizing research, models
   h3 { font-size: 1.2rem; margin-top: 1.5rem; margin-bottom: 0.5rem; }
 
   a {
-    color: var(--color-accent);
+    color: var(--color-maroon);
     text-decoration: none;
   }
 
   a:hover {
-    color: var(--color-accent-hover);
+    color: var(--color-maroon-dark);
     text-decoration: underline;
+  }
+
+  /* Primary buttons: maroon with gold accent */
+  button.diary-add-btn,
+  button.diary-submit,
+  .link-card {
+    border: 1px solid transparent;
+  }
+  button.diary-add-btn,
+  button.diary-submit {
+    box-shadow: 0 0 0 1px var(--color-gold);
   }
 
   @media (max-width: 768px) {
