@@ -1,0 +1,131 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ModelDetailView from '../../components/ModelDetailView';
+import models from '../../data/models.json';
+import constructs from '../../data/constructs.json';
+
+export function getStaticPaths() {
+  return models.map((m: { id: string }) => ({ params: { id: m.id } }));
+}
+
+const { id } = Astro.params;
+const base = import.meta.env.BASE_URL;
+const model = models.find((m: { id: string }) => m.id === id);
+const constructToSlug: Record<string, string> = {};
+constructs.forEach((c: { name: string; id: string }) => {
+  constructToSlug[c.name] = c.id;
+});
+
+if (!model) {
+  return Astro.redirect(`${base}models/`);
+}
+---
+
+<BaseLayout title={model.name} description={model.description}>
+  <article class="model-detail-page">
+    <a href={`${base}models/`} class="back-link">← All Models</a>
+    <header class="model-detail-header">
+      <h1>{model.name} ({model.abbreviation})</h1>
+      <p class="model-meta">Developed by: {model.authors.join(', ')} ({model.year})</p>
+    </header>
+
+    <ModelDetailView client:load model={model} constructToSlug={constructToSlug} base={base} />
+  </article>
+</BaseLayout>
+
+<style>
+  .back-link {
+    display: inline-block;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .model-detail-header {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .model-detail-header h1 {
+    margin: 0 0 0.35rem 0;
+  }
+
+  .model-meta {
+    font-size: 0.9rem;
+    color: var(--color-ink-muted);
+    margin: 0;
+  }
+
+  .model-detail-view .model-desc {
+    margin-bottom: 1rem;
+    line-height: 1.65;
+    color: var(--color-ink);
+  }
+
+  .model-detail-view .model-notes {
+    margin: 1rem 0 1.5rem 0;
+    padding: 1rem 1.25rem;
+    background: var(--color-bg);
+    border-radius: 8px;
+    border-left: 4px solid var(--color-gold);
+  }
+
+  .model-detail-view .model-notes h3 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+
+  .model-detail-view .model-notes-content {
+    font-size: 0.9rem;
+    line-height: 1.65;
+    white-space: pre-line;
+  }
+
+  .model-detail-view h3 {
+    font-size: 1rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .model-detail-view .construct-list,
+  .model-detail-view .relationship-list,
+  .model-detail-view .citations-list {
+    line-height: 1.8;
+    margin: 0;
+    padding-left: 1.25rem;
+  }
+
+  .model-detail-view .construct-list li,
+  .model-detail-view .relationship-list li,
+  .model-detail-view .citations-list li {
+    margin-bottom: 0.35rem;
+  }
+
+  .model-graph-wrapper {
+    margin: 1rem 0;
+  }
+
+  .model-graph-wrapper :global(.construct-node-link) {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: var(--color-maroon);
+    color: white !important;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .model-graph-wrapper :global(.construct-node-link:hover) {
+    background: var(--color-maroon-dark);
+    text-decoration: none;
+    color: white !important;
+  }
+
+  .model-graph-wrapper :global(.react-flow__construct-node) {
+    padding: 4px;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+  }
+</style>
