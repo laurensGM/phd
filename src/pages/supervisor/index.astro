@@ -1,0 +1,168 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import supervisor from '../../data/supervisor.json';
+
+const base = import.meta.env.BASE_URL;
+const profileUrl = supervisor.profileUrl;
+const orcidUrl = `https://orcid.org/${supervisor.orcidId}`;
+const publicationsUrl = supervisor.publicationsUrl;
+const linkedInUrl = supervisor.linkedInUrl || '';
+const researchGateUrl = supervisor.researchGateUrl || '';
+---
+
+<BaseLayout title="Supervisor" description="PhD supervisor - Prof Marlize Terblanche-Smit, Stellenbosch Business School">
+  <article class="supervisor-page">
+    <header class="supervisor-header">
+      <h1>PhD Supervisor</h1>
+      <p class="supervisor-name">{supervisor.name}</p>
+      <p class="supervisor-title">{supervisor.title}</p>
+    </header>
+
+    <section class="supervisor-section">
+      <h2>Profile &amp; biography</h2>
+      <p>
+        Professor Marlize Terblanche-Smit is a Professor of Marketing at <a href="https://www.stellenboschbusiness.ac.za/" target="_blank" rel="noopener">Stellenbosch Business School</a> (USB), Bellville, South Africa. She has been in this role since 2019, having previously served as Associate Professor at Stellenbosch University (2013–2018). She served as head of the MBA programme at USB from January 2014, bringing expertise in marketing and strategy to the programme.
+      </p>
+      <p>
+        Her institutional profile is tagged with <strong>Responsible Leadership</strong>. Stellenbosch Business School holds AACSB, EQUIS and AMBA accreditation and was the first school from an African university to hold all three international accreditations.
+      </p>
+      <p>
+        <a href={profileUrl} target="_blank" rel="noopener" class="supervisor-link">View full profile on Stellenbosch Business School →</a>
+      </p>
+    </section>
+
+    <section class="supervisor-section">
+      <h2>Research interests &amp; expertise</h2>
+      <ul class="expertise-list">
+        <li>Marketing strategy and branding</li>
+        <li>Marketing communication and digital marketing</li>
+        <li>Non-profit and social marketing</li>
+        <li>Consumer behaviour</li>
+      </ul>
+    </section>
+
+    <section class="supervisor-section">
+      <h2>Education</h2>
+      <ul class="education-list">
+        <li><strong>PhD</strong> — Stellenbosch University (2006–2008)</li>
+        <li><strong>MEcon</strong> (Master of Economics in Business Management) — Stellenbosch University (1997–1998)</li>
+        <li><strong>BEcon (Hons)</strong> — Bachelor of Economics Honours, Business Management and Marketing — Stellenbosch University (1991)</li>
+        <li><strong>BEcon</strong> — Bachelor of Economics, Business Management and Marketing — Stellenbosch University (1988–1990)</li>
+      </ul>
+    </section>
+
+    <section class="supervisor-section">
+      <h2>Links</h2>
+      <ul class="links-list">
+        <li>
+          <a href={profileUrl} target="_blank" rel="noopener">Stellenbosch Business School profile</a>
+        </li>
+        <li>
+          <a href={orcidUrl} target="_blank" rel="noopener">ORCID ({supervisor.orcidId})</a>
+        </li>
+        <li>
+          <a href={publicationsUrl} target="_blank" rel="noopener">Stellenbosch University publications</a>
+        </li>
+        {linkedInUrl && (
+          <li>
+            <a href={linkedInUrl} target="_blank" rel="noopener">LinkedIn</a>
+          </li>
+        )}
+        {researchGateUrl && (
+          <li>
+            <a href={researchGateUrl} target="_blank" rel="noopener">ResearchGate</a>
+          </li>
+        )}
+      </ul>
+    </section>
+
+    <section class="supervisor-section">
+      <h2>Key publications &amp; articles</h2>
+      <p class="section-note">
+        A full list of publications is available on the <a href={publicationsUrl} target="_blank" rel="noopener">university research profile</a>. Add below the articles most relevant to your PhD (e.g. digital marketing, consumer behaviour, agritech).
+      </p>
+      <ul class="publications-list">
+        {supervisor.keyPublications.map((pub: { title: string; citation: string; url?: string }) => (
+          <li>
+            <em>{pub.title}</em>
+            {pub.citation && ` — ${pub.citation}`}
+            {pub.url && (
+              <> <a href={pub.url} target="_blank" rel="noopener">Link</a></>
+            )}
+          </li>
+        ))}
+      </ul>
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .supervisor-page {
+    max-width: 720px;
+  }
+
+  .supervisor-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .supervisor-name {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0.5rem 0 0.25rem 0;
+    color: var(--color-ink);
+  }
+
+  .supervisor-title {
+    font-size: 1rem;
+    color: var(--color-ink-muted);
+    margin: 0;
+  }
+
+  .supervisor-section {
+    margin-bottom: 2rem;
+  }
+
+  .supervisor-section h2 {
+    font-size: 1.15rem;
+    margin-bottom: 0.75rem;
+    color: var(--color-ink);
+  }
+
+  .supervisor-section p {
+    margin: 0 0 0.75rem 0;
+    line-height: 1.65;
+  }
+
+  .supervisor-link {
+    font-weight: 600;
+  }
+
+  .expertise-list,
+  .education-list,
+  .links-list,
+  .publications-list {
+    margin: 0;
+    padding-left: 1.25rem;
+    line-height: 1.8;
+  }
+
+  .expertise-list li,
+  .education-list li,
+  .links-list li,
+  .publications-list li {
+    margin-bottom: 0.35rem;
+  }
+
+  .section-note {
+    font-size: 0.9rem;
+    color: var(--color-ink-muted);
+    margin-bottom: 1rem !important;
+  }
+
+  .publications-list li {
+    margin-bottom: 0.75rem;
+  }
+</style>
