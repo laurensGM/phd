@@ -16,7 +16,7 @@ A static website for organizing PhD research: theoretical models, constructs, di
 | **Home** | Research topic, positioning, quick links |
 | **Models** | TAM, ECT, ECM with interactive React Flow diagrams; clickable construct nodes |
 | **Constructs** | Definitions, measurement scales, sources, related models |
-| **Diary** | Entry form, date, tags, search, filter; entries stored in localStorage |
+| **Diary** | Entry form, date, tags, search, filter; persistent storage via Supabase + auth |
 | **Literature** | Citation, DOI, constructs, method, findings, summary, replication notes |
 | **Research Questions** | RQ versions, why changed, supervisory feedback |
 | **Methods** | Operationalization, hypotheses, survey instrument, model versions |
@@ -56,11 +56,26 @@ Edit JSON in `src/data/`:
 - `constructs.json` — construct definitions and measurement
 - `literature.json` — papers and summaries
 - `research-questions.json` — RQ evolution
-- `diary-entries.json` — sample diary (new entries via UI go to localStorage)
+- `diary-entries.json` — (legacy; diary now uses Supabase)
 - `methods.json` — hypotheses, operationalization, instrument
 
-## Diary
+## Diary (Supabase)
 
-- **Static entries**: in `src/data/diary-entries.json`
-- **New entries**: added via the form are stored in `localStorage`
-- For a shared database: add Supabase (or similar) and API routes (would require a server or serverless).
+The diary uses **Supabase** for persistent storage. No login—just add entries. (Single-user setup: the table is open; keep your site URL private if you want.)
+
+### Setup
+
+1. Create a [Supabase](https://supabase.com) project (free tier works).
+
+2. Run the migration in **SQL Editor**:
+   - Open `supabase/migrations/001_create_diary_entries.sql`
+   - Copy the contents and run in Supabase Dashboard → SQL Editor
+
+3. Add env vars locally. Create `.env`:
+   ```
+   PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+   PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+   ```
+   Get these from **Supabase Dashboard → Settings → API**.
+
+4. For **GitHub Actions** (deploy): add repo **Secrets** `PUBLIC_SUPABASE_URL` and `PUBLIC_SUPABASE_ANON_KEY`, then redeploy.
