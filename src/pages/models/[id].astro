@@ -103,29 +103,70 @@ if (!model) {
 
   .model-graph-wrapper {
     margin: 1rem 0;
-  }
-
-  .model-graph-wrapper :global(.construct-node-link) {
-    display: inline-block;
-    padding: 0.5rem 1rem;
-    background: var(--color-maroon);
-    color: white !important;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.9rem;
-  }
-
-  .model-graph-wrapper :global(.construct-node-link:hover) {
-    background: var(--color-maroon-dark);
-    text-decoration: none;
-    color: white !important;
-  }
-
-  .model-graph-wrapper :global(.react-flow__construct-node) {
-    padding: 4px;
-    background: white;
     border: 1px solid var(--color-border);
+    border-radius: 12px;
+    background: var(--color-bg-alt);
+    overflow: hidden;
+  }
+
+  /* Diagram: clear boxes for constructs, arrows between them */
+  .model-diagram-root :global(.model-diagram-box) {
+    background: #fff;
+    border: 2px solid var(--color-maroon);
     border-radius: 8px;
+    padding: 0;
+    min-width: 180px;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .model-diagram-root :global(.model-diagram-box-link) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    color: var(--color-ink);
+    width: 100%;
+    height: 100%;
+    min-height: 56px;
+    box-sizing: border-box;
+  }
+
+  .model-diagram-root :global(.model-diagram-box-link:hover) {
+    background: var(--color-bg);
+    color: var(--color-maroon);
+    text-decoration: none;
+  }
+
+  .model-diagram-root :global(.model-diagram-box-abbrev) {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--color-maroon);
+    display: block;
+  }
+
+  .model-diagram-root :global(.model-diagram-box-name) {
+    font-size: 0.75rem;
+    color: var(--color-ink-muted);
+    text-align: center;
+    line-height: 1.2;
+    margin-top: 0.15rem;
+    display: block;
+  }
+
+  .model-diagram-root :global(.model-diagram-handle) {
+    width: 8px;
+    height: 8px;
+    background: var(--color-maroon);
+    border: 2px solid #fff;
+  }
+
+  .model-diagram-root :global(.react-flow__edge-path) {
+    stroke-width: 2;
   }
 </style>
