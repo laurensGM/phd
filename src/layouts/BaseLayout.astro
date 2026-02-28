@@ -1,0 +1,169 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "PhD Knowledge System - Organizing research, models, constructs, and literature" } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="description" content={description} />
+    <title>{title} | PhD Knowledge System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=DM+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav-container">
+        <a href="/" class="logo">PhD Knowledge System</a>
+        <ul class="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/models/">Models</a></li>
+          <li><a href="/constructs/">Constructs</a></li>
+          <li><a href="/diary/">Diary</a></li>
+          <li><a href="/literature/">Literature</a></li>
+          <li><a href="/research-questions/">Research Questions</a></li>
+          <li><a href="/methods/">Methods</a></li>
+          <li><a href="/theory-map/">Theory Map</a></li>
+        </ul>
+      </nav>
+    </header>
+    <main class="main-content">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <p>PhD Knowledge System — Organizing research one note at a time</p>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --color-bg: #f8f6f1;
+    --color-bg-alt: #efe9df;
+    --color-ink: #1a1814;
+    --color-ink-muted: #5c564d;
+    --color-accent: #8b3a3a;
+    --color-accent-hover: #6b2a2a;
+    --color-border: #d4cfc4;
+    --font-serif: 'Crimson Pro', Georgia, serif;
+    --font-sans: 'DM Sans', system-ui, sans-serif;
+    --shadow-sm: 0 1px 3px rgba(26, 24, 20, 0.06);
+    --shadow-md: 0 4px 12px rgba(26, 24, 20, 0.08);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--color-ink);
+    background: var(--color-bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .site-header {
+    background: var(--color-ink);
+    color: var(--color-bg);
+    padding: 0.75rem 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .logo {
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-bg);
+    text-decoration: none;
+  }
+
+  .logo:hover {
+    color: var(--color-bg-alt);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-links a {
+    color: rgba(248, 246, 241, 0.9);
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+
+  .nav-links a:hover {
+    color: white;
+  }
+
+  .main-content {
+    flex: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    width: 100%;
+  }
+
+  .site-footer {
+    background: var(--color-bg-alt);
+    padding: 1rem 1.5rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--color-ink-muted);
+  }
+
+  h1, h2, h3 {
+    font-family: var(--font-serif);
+  }
+
+  h1 { font-size: 2.25rem; margin-bottom: 0.5rem; }
+  h2 { font-size: 1.5rem; margin-top: 2rem; margin-bottom: 0.75rem; }
+  h3 { font-size: 1.2rem; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+
+  a {
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--color-accent-hover);
+    text-decoration: underline;
+  }
+
+  @media (max-width: 768px) {
+    .nav-links {
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+  }
+</style>

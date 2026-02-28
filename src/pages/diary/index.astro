@@ -1,0 +1,134 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import DiaryPage from '../../components/DiaryPage';
+import diaryEntries from '../../data/diary-entries.json';
+---
+
+<BaseLayout title="Diary" description="Research diary - daily reflections, tags, linked constructs">
+  <h1>Diary</h1>
+  <p class="page-desc">Daily research reflections with tags and linked constructs. New entries are stored in your browser.</p>
+
+  <DiaryPage client:load initialEntries={diaryEntries} />
+</BaseLayout>
+
+<style>
+  .page-desc { color: var(--color-ink-muted); margin-bottom: 1.5rem; }
+
+  .diary-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .diary-search {
+    flex: 1;
+    min-width: 180px;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+  }
+
+  .diary-select, .diary-date {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+  }
+
+  .diary-add-btn {
+    margin-bottom: 1.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--color-accent);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .diary-add-btn:hover { background: var(--color-accent-hover); }
+
+  .diary-form {
+    max-width: 560px;
+    padding: 1.5rem;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    margin-bottom: 2rem;
+  }
+
+  .diary-form label {
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  .diary-form input, .diary-form textarea {
+    width: 100%;
+    margin-top: 0.25rem;
+    padding: 0.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+  }
+
+  .form-date-hint { font-size: 0.85rem; color: var(--color-ink-muted); margin-bottom: 1rem; }
+
+  .tag-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+
+  .tag-chip {
+    padding: 0.35rem 0.75rem;
+    border: 1px solid var(--color-border);
+    background: white;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.875rem;
+  }
+
+  .tag-chip.selected {
+    background: var(--color-accent);
+    color: white;
+    border-color: var(--color-accent);
+  }
+
+  .diary-submit {
+    margin-top: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--color-ink);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .diary-entries { display: flex; flex-direction: column; gap: 1rem; }
+
+  .diary-entry {
+    padding: 1.25rem;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+  }
+
+  .entry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .entry-header time { font-size: 0.9rem; color: var(--color-ink-muted); }
+
+  .entry-tags { display: flex; gap: 0.5rem; }
+
+  .tag-badge {
+    padding: 0.2rem 0.5rem;
+    background: var(--color-bg-alt);
+    font-size: 0.75rem;
+    border-radius: 4px;
+  }
+
+  .diary-entry h4 { margin: 0.5rem 0; font-size: 1.1rem; }
+
+  .entry-reflection { margin: 0.5rem 0; color: var(--color-ink-muted); }
+
+  .entry-constructs { font-size: 0.9rem; margin-top: 0.5rem; }
+</style>

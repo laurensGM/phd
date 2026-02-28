@@ -1,0 +1,128 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Home" description="PhD Knowledge System - Your research topic and quick links">
+  <div class="homepage">
+    <h1>PhD Knowledge System</h1>
+    <p class="tagline">Organizing theory, constructs, and literature for doctoral research</p>
+
+    <section class="positioning">
+      <h2>Research Focus</h2>
+      <p class="research-topic">
+        <em>Technology acceptance and continuance in information systems — Understanding how users form intentions to adopt and continue using technology based on perceived usefulness, ease of use, and post-adoption expectations.</em>
+      </p>
+      <p class="positioning-statement">
+        This knowledge system tracks theoretical models (TAM, ECM, ECT), their constructs and relationships, literature findings, and the evolution of research questions through the doctoral journey.
+      </p>
+    </section>
+
+    <section class="quick-links">
+      <h2>Quick Links</h2>
+      <div class="link-grid">
+        <a href="/models/" class="link-card">
+          <span class="link-icon">📚</span>
+          <span class="link-title">Models</span>
+          <span class="link-desc">TAM, ECT, ECM — theories and relationships</span>
+        </a>
+        <a href="/constructs/" class="link-card">
+          <span class="link-icon">🧠</span>
+          <span class="link-title">Constructs</span>
+          <span class="link-desc">Definitions, measurement scales, sources</span>
+        </a>
+        <a href="/diary/" class="link-card">
+          <span class="link-icon">📓</span>
+          <span class="link-title">Diary</span>
+          <span class="link-desc">Daily reflections, tags, linked constructs</span>
+        </a>
+        <a href="/literature/" class="link-card">
+          <span class="link-icon">📖</span>
+          <span class="link-title">Literature</span>
+          <span class="link-desc">Papers, citations, findings, summaries</span>
+        </a>
+        <a href="/research-questions/" class="link-card">
+          <span class="link-icon">🧩</span>
+          <span class="link-title">Research Questions</span>
+          <span class="link-desc">RQ evolution and supervisory feedback</span>
+        </a>
+        <a href="/methods/" class="link-card">
+          <span class="link-icon">🧪</span>
+          <span class="link-title">Methods</span>
+          <span class="link-desc">Operationalization, hypotheses, instruments</span>
+        </a>
+        <a href="/theory-map/" class="link-card">
+          <span class="link-icon">🗺️</span>
+          <span class="link-title">Theory Map</span>
+          <span class="link-desc">Visual map of model connections and gaps</span>
+        </a>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .homepage {
+    max-width: 720px;
+  }
+
+  .tagline {
+    font-size: 1.1rem;
+    color: var(--color-ink-muted);
+    margin-bottom: 2rem;
+  }
+
+  .positioning {
+    margin-bottom: 2.5rem;
+  }
+
+  .research-topic {
+    font-family: var(--font-serif);
+    font-size: 1.15rem;
+    font-style: italic;
+    margin-bottom: 1rem;
+  }
+
+  .positioning-statement {
+    color: var(--color-ink-muted);
+  }
+
+  .link-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+
+  .link-card {
+    display: flex;
+    flex-direction: column;
+    padding: 1.25rem;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    text-decoration: none;
+    color: inherit;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+
+  .link-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .link-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .link-title {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .link-desc {
+    font-size: 0.875rem;
+    color: var(--color-ink-muted);
+  }
+</style>

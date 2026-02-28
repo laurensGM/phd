@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import constructs from '../../data/constructs.json';
+---
+
+<BaseLayout title="Constructs" description="Theoretical constructs - definitions, measurement scales, sources">
+  <h1>Constructs</h1>
+  <p class="page-desc">Definitions, source papers, measurement items, and related models for each construct.</p>
+
+  <div class="constructs-grid">
+    {constructs.map((construct: any) => (
+      <article class="construct-card">
+        <h2><a href={`/constructs/${construct.id}/`}>{construct.name}</a></h2>
+        {construct.abbreviation && <span class="abbrev">{construct.abbreviation}</span>}
+        <p class="definition">{construct.definition}</p>
+        <p class="source">Source: {construct.sourcePaper}</p>
+        <div class="meta">
+          <span>Domain: {construct.theoreticalDomain}</span>
+          {construct.relatedModels?.length > 0 && (
+            <span>Used in: {construct.relatedModels.join(', ')}</span>
+          )}
+        </div>
+      </article>
+    ))}
+  </div>
+</BaseLayout>
+
+<style>
+  .page-desc { color: var(--color-ink-muted); margin-bottom: 2rem; }
+
+  .constructs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .construct-card {
+    padding: 1.5rem;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+  }
+
+  .construct-card h2 { margin-top: 0; font-size: 1.25rem; }
+  .abbrev {
+    display: inline-block;
+    margin-left: 0.5rem;
+    padding: 0.15rem 0.5rem;
+    background: var(--color-bg-alt);
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-radius: 4px;
+  }
+  .definition { font-style: italic; margin: 0.75rem 0; }
+  .source { font-size: 0.875rem; color: var(--color-ink-muted); }
+  .meta { font-size: 0.85rem; margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.25rem; }
+</style>

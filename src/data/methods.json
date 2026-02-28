@@ -1,0 +1,28 @@
+{
+  "constructsOperationalization": [
+    {
+      "construct": "Perceived Usefulness",
+      "source": "Davis (1989)",
+      "adaptation": "Adapted for [your context]. Replaced 'job' with 'research tasks'."
+    }
+  ],
+  "hypotheses": [
+    {
+      "id": "H1",
+      "statement": "Perceived usefulness positively affects continuance intention.",
+      "model": "ECM",
+      "status": "draft"
+    }
+  ],
+  "surveyInstrument": {
+    "status": "Draft",
+    "notes": "7-point Likert, validated scales from literature. Include attention checks."
+  },
+  "modelVersions": [
+    {
+      "version": "v1",
+      "description": "Base ECM with confirmation, PU, satisfaction, continuance intention.",
+      "date": "2025-02"
+    }
+  ]
+}

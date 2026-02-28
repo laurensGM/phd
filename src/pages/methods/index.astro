@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import methods from '../../data/methods.json';
+---
+
+<BaseLayout title="Methods" description="Constructs operationalization, hypotheses, survey instrument, model versions">
+  <h1>Methods</h1>
+  <p class="page-desc">Construct operationalization, hypotheses, survey instrument drafts, and model versions.</p>
+
+  <section class="methods-section">
+    <h2>Constructs Operationalization</h2>
+    <div class="op-list">
+      {methods.constructsOperationalization.map((op: any) => (
+        <div class="op-card">
+          <h3>{op.construct}</h3>
+          <p><strong>Source:</strong> {op.source}</p>
+          <p><strong>Adaptation:</strong> {op.adaptation}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="methods-section">
+    <h2>Hypotheses</h2>
+    <ul class="hypothesis-list">
+      {methods.hypotheses.map((h: any) => (
+        <li class="hypothesis-item">
+          <strong>{h.id}</strong>: {h.statement}
+          <span class="hyp-meta">({h.model}, {h.status})</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="methods-section">
+    <h2>Survey Instrument</h2>
+    <div class="instrument-card">
+      <p><strong>Status:</strong> {methods.surveyInstrument.status}</p>
+      <p>{methods.surveyInstrument.notes}</p>
+    </div>
+  </section>
+
+  <section class="methods-section">
+    <h2>Model Versions</h2>
+    <ul class="model-versions">
+      {methods.modelVersions.map((mv: any) => (
+        <li>
+          <strong>{mv.version}</strong> ({mv.date}): {mv.description}
+        </li>
+      ))}
+    </ul>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-desc { color: var(--color-ink-muted); margin-bottom: 2rem; }
+
+  .methods-section { margin-bottom: 2.5rem; }
+
+  .op-list { display: flex; flex-direction: column; gap: 1rem; }
+  .op-card {
+    padding: 1rem;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+  }
+
+  .hypothesis-list { list-style: none; padding: 0; }
+  .hypothesis-item { margin-bottom: 1rem; padding: 1rem; background: white; border: 1px solid var(--color-border); border-radius: 8px; }
+  .hyp-meta { font-size: 0.9rem; color: var(--color-ink-muted); }
+
+  .instrument-card {
+    padding: 1rem;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+  }
+
+  .model-versions { line-height: 1.8; }
+</style>

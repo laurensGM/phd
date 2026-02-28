@@ -1,0 +1,117 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ModelGraph from '../../components/ModelGraph';
+import models from '../../data/models.json';
+import constructs from '../../data/constructs.json';
+
+const constructToSlug: Record<string, string> = {};
+constructs.forEach((c: { name: string; id: string }) => {
+  constructToSlug[c.name] = c.id;
+});
+---
+
+<BaseLayout title="Models" description="Theoretical models - TAM, ECT, ECM with interactive diagrams">
+  <h1>Models</h1>
+  <p class="page-desc">Theoretical models with overviews, interactive diagrams, constructs, and key citations. Click any construct node to view its details.</p>
+
+  <div class="models-list">
+    {models.map((model: any) => (
+      <section class="model-card" id={model.id}>
+        <h2>{model.name} ({model.abbreviation})</h2>
+        <p class="model-meta">Developed by: {model.authors.join(', ')} ({model.year})</p>
+        <p class="model-desc">{model.description}</p>
+
+        <h3>Interactive Diagram</h3>
+        <ModelGraph client:load model={model} constructToSlug={constructToSlug} />
+
+        <h3>Core Constructs</h3>
+        <ul class="construct-list">
+          {model.constructs.map((c: string) => (
+            <li>
+              <a href={`/constructs/${constructToSlug[c] || '#'}/`}>{model.constructAbbreviations?.[c] || c} — {c}</a>
+            </li>
+          ))}
+        </ul>
+
+        <h3>Relationships</h3>
+        <ul class="relationship-list">
+          {model.relationships.map((r: any) => (
+            <li><code>{r.from}</code> → <code>{r.to}</code></li>
+          ))}
+        </ul>
+
+        <h3>Key Citations</h3>
+        <ul class="citations-list">
+          {model.keyCitations.map((cite: any) => (
+            <li>
+              <strong>{cite.authors}</strong> — {cite.title}
+              {cite.doi && <a href={`https://doi.org/${cite.doi}`} target="_blank" rel="noopener"> DOI</a>}
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+</BaseLayout>
+
+<style>
+  .page-desc {
+    color: var(--color-ink-muted);
+    margin-bottom: 2rem;
+  }
+
+  .models-list {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .model-card {
+    padding: 2rem;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+  }
+
+  .model-meta {
+    font-size: 0.9rem;
+    color: var(--color-ink-muted);
+    margin-bottom: 0.75rem;
+  }
+
+  .model-desc {
+    margin-bottom: 1.5rem;
+  }
+
+  .construct-list, .relationship-list, .citations-list {
+    line-height: 1.8;
+  }
+
+  .construct-list a, .relationship-list code {
+    font-family: var(--font-sans);
+  }
+
+  .model-graph-wrapper :global(.construct-node-link) {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: var(--color-accent);
+    color: white !important;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .model-graph-wrapper :global(.construct-node-link:hover) {
+    background: var(--color-accent-hover);
+    text-decoration: none;
+    color: white !important;
+  }
+
+  .model-graph-wrapper :global(.react-flow__construct-node) {
+    padding: 4px;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+  }
+</style>

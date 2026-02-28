@@ -1,0 +1,18 @@
+[
+  {
+    "id": "rq1-v1",
+    "version": "v1",
+    "question": "What factors influence users' initial adoption of the system?",
+    "status": "superseded",
+    "whyChanged": "Too broad; needed to separate adoption from continuance",
+    "supervisoryFeedback": "Consider distinguishing pre-adoption (TAM) from post-adoption (ECM) factors."
+  },
+  {
+    "id": "rq1-v2",
+    "version": "v2",
+    "question": "How do confirmation and perceived usefulness jointly influence continuance intention in voluntary IS contexts?",
+    "status": "current",
+    "whyChanged": "Focused on post-adoption based on ECM framework",
+    "supervisoryFeedback": "Good focus. Add consideration of boundary conditions."
+  }
+]

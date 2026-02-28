@@ -1,0 +1,116 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import constructs from '../../../data/constructs.json';
+
+export function getStaticPaths() {
+  return constructs.map((c: { id: string }) => ({ params: { id: c.id } }));
+}
+
+const { id } = Astro.params;
+const construct = constructs.find((c: { id: string }) => c.id === id);
+if (!construct) {
+  return Astro.redirect('/constructs/');
+}
+---
+
+<BaseLayout title={construct.name} description={construct.definition}>
+  <article class="construct-detail">
+    <header>
+      <a href="/constructs/" class="back-link">← All Constructs</a>
+      <h1>{construct.name}</h1>
+      {construct.abbreviation && <span class="abbrev">{construct.abbreviation}</span>}
+    </header>
+
+    <section>
+      <h2>Definition</h2>
+      <p class="definition">{construct.definition}</p>
+    </section>
+
+    <section>
+      <h2>Source</h2>
+      <p>{construct.sourcePaper}</p>
+      {construct.doi && (
+        <p><a href={`https://doi.org/${construct.doi}`} target="_blank" rel="noopener">DOI: {construct.doi}</a></p>
+      )}
+    </section>
+
+    <section>
+      <h2>Measurement Scale</h2>
+      <p>{construct.measurementScale}</p>
+      {construct.measurementItems && construct.measurementItems.length > 0 && (
+        <>
+          <h3>Items</h3>
+          <ol class="measurement-items">
+            {construct.measurementItems.map((item: string) => (
+              <li>{item}</li>
+            ))}
+          </ol>
+        </>
+      )}
+    </section>
+
+    <section>
+      <h2>Theoretical Domain</h2>
+      <p>{construct.theoreticalDomain}</p>
+    </section>
+
+    <section>
+      <h2>Related Models</h2>
+      <ul class="related-list">
+        {construct.relatedModels?.map((m: string) => (
+          <li><a href={`/models/#${m.toLowerCase()}`}>{m}</a></li>
+        ))}
+      </ul>
+    </section>
+
+    <section>
+      <h2>Related Constructs</h2>
+      <ul class="related-list">
+        {construct.relatedConstructs?.map((c: string) => {
+          const slug = constructs.find((x: any) => x.name === c)?.id;
+          return <li><a href={slug ? `/constructs/${slug}/` : '#'}>{c}</a></li>;
+        })}
+      </ul>
+    </section>
+
+    {construct.notes && (
+      <section class="notes">
+        <h2>Notes</h2>
+        <p>{construct.notes}</p>
+      </section>
+    )}
+  </article>
+</BaseLayout>
+
+<style>
+  .back-link {
+    display: inline-block;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .abbrev {
+    display: inline-block;
+    margin-left: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    background: var(--color-bg-alt);
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 4px;
+  }
+
+  .definition { font-size: 1.1rem; font-style: italic; }
+
+  .measurement-items { margin: 0.5rem 0; }
+  .measurement-items li { margin-bottom: 0.5rem; }
+
+  .related-list { list-style: none; padding: 0; }
+  .related-list li { margin-bottom: 0.5rem; }
+
+  .notes {
+    margin-top: 2rem;
+    padding: 1rem;
+    background: var(--color-bg-alt);
+    border-radius: 8px;
+  }
+</style>

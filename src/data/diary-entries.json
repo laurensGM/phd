@@ -1,0 +1,26 @@
+[
+  {
+    "id": "1",
+    "date": "2025-02-20",
+    "summary": "Literature review on ECM - key paper Bhattacherjee 2001",
+    "detailedReflection": "Spent the morning understanding the Expectation-Confirmation Model. The key insight is that post-adoption beliefs (especially PU) are shaped by confirmation, not just pre-adoption expectations. This differentiates ECM from TAM.",
+    "tags": ["theory", "literature", "reading"],
+    "linkedConstructs": ["Confirmation", "Perceived Usefulness", "Continuance Intention"]
+  },
+  {
+    "id": "2",
+    "date": "2025-02-22",
+    "summary": "Meeting with supervisor - RQ refinement",
+    "detailedReflection": "Discussed narrowing the research scope. Supervisor suggested focusing on continuance rather than adoption. Need to update RQ and literature matrix.",
+    "tags": ["meeting", "supervision"],
+    "linkedConstructs": []
+  },
+  {
+    "id": "3",
+    "date": "2025-02-25",
+    "summary": "Draft survey instrument - PU and Sat items",
+    "detailedReflection": "Adapted Davis (1989) PU scale and Oliver-derived satisfaction items. Considering whether to use 5-point or 7-point Likert. Literature suggests 7-point for more variance.",
+    "tags": ["methods", "writing", "coding"],
+    "linkedConstructs": ["Perceived Usefulness", "Satisfaction"]
+  }
+]

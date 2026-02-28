@@ -1,0 +1,24 @@
+[
+  {
+    "id": "davis-1989",
+    "citation": "Davis, F. D. (1989). Perceived usefulness, perceived ease of use, and user acceptance of information technology. MIS Quarterly, 13(3), 319-340.",
+    "doi": "10.2307/249008",
+    "keyConstructs": ["Perceived Usefulness", "Perceived Ease of Use", "Behavioral Intention"],
+    "method": "Lab experiment with 107 users, two applications",
+    "findings": "Both PU and PEOU significantly predict behavioral intention. PU has stronger effect.",
+    "pdfLink": "",
+    "summary": "Foundational TAM paper establishing PU and PEOU as key predictors of technology adoption.",
+    "replicationNotes": "Scale items widely replicated. Consider moderators (experience, voluntariness)."
+  },
+  {
+    "id": "bhattacherjee-2001",
+    "citation": "Bhattacherjee, A. (2001). Understanding information systems continuance: An expectation-confirmation model. MIS Quarterly, 25(3), 351-370.",
+    "doi": "10.2307/3250921",
+    "keyConstructs": ["Confirmation", "Perceived Usefulness", "Satisfaction", "Continuance Intention"],
+    "method": "Longitudinal survey, online banking users",
+    "findings": "Confirmation affects both PU and satisfaction. Both predict continuance intention.",
+    "pdfLink": "",
+    "summary": "ECM extends ECT to IS context, adding PU as post-adoption belief.",
+    "replicationNotes": "Applicable to voluntary systems. Consider habit formation for long-term use."
+  }
+]

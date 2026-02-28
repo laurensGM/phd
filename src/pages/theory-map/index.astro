@@ -1,0 +1,55 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import TheoryMapGraph from '../../components/TheoryMapGraph';
+import models from '../../data/models.json';
+import constructs from '../../data/constructs.json';
+
+const constructToSlug: Record<string, string> = {};
+constructs.forEach((c: { name: string; id: string }) => {
+  constructToSlug[c.name] = c.id;
+});
+---
+
+<BaseLayout title="Theory Map" description="Visual map of model connections, overlaps, and gaps">
+  <h1>Theory Map</h1>
+  <p class="page-desc">Connect models, show overlaps through shared constructs, and identify gaps in the literature. Click construct nodes to view details.</p>
+
+  <section class="theory-map-viz">
+    <TheoryMapGraph client:load models={models} constructToSlug={constructToSlug} />
+  </section>
+
+  <section class="overlaps-section">
+    <h2>Model Overlaps</h2>
+    <p>Constructs shared across multiple models indicate theoretical convergence. TAM, ECT, and ECM share several constructs (e.g. Perceived Usefulness, Satisfaction), enabling integration and extension.</p>
+  </section>
+
+  <section class="gaps-section">
+    <h2>Identified Gaps</h2>
+    <p>Track gaps you identify over time. Example: <em>Limited research on continuance in [your specific context] — opportunity for contribution.</em></p>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-desc { color: var(--color-ink-muted); margin-bottom: 1.5rem; }
+
+  .theory-map-viz { margin-bottom: 2rem; }
+
+  .theory-map-viz :global(.theory-map-link) {
+    color: var(--color-ink);
+    text-decoration: none;
+    padding: 0.5rem;
+  }
+
+  .theory-map-viz :global(.theory-map-link:hover) {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .overlaps-section, .gaps-section {
+    padding: 1.5rem;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+</style>

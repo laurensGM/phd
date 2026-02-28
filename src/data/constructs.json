@@ -1,0 +1,154 @@
+[
+  {
+    "id": "perceived-usefulness",
+    "name": "Perceived Usefulness",
+    "abbreviation": "PU",
+    "definition": "The degree to which a person believes that using a particular system would enhance his or her job performance.",
+    "sourcePaper": "Davis (1989) - Perceived Usefulness, Perceived Ease of Use, and User Acceptance of Information Technology",
+    "doi": "10.2307/249008",
+    "theoreticalDomain": "Technology Acceptance",
+    "measurementItems": [
+      "Using the system improves my performance in my job.",
+      "Using the system increases my productivity.",
+      "Using the system enhances my effectiveness.",
+      "I find the system useful in my job."
+    ],
+    "measurementScale": "7-point Likert (Strongly disagree - Strongly agree)",
+    "relatedModels": ["TAM", "ECM", "TAM2"],
+    "relatedConstructs": ["Perceived Ease of Use", "Behavioral Intention", "Satisfaction"],
+    "notes": "Core construct in technology acceptance. Often mediates the effect of PEOU on intention."
+  },
+  {
+    "id": "perceived-ease-of-use",
+    "name": "Perceived Ease of Use",
+    "abbreviation": "PEOU",
+    "definition": "The degree to which a person believes that using a particular system would be free of effort.",
+    "sourcePaper": "Davis (1989) - Perceived Usefulness, Perceived Ease of Use, and User Acceptance of Information Technology",
+    "doi": "10.2307/249008",
+    "theoreticalDomain": "Technology Acceptance",
+    "measurementItems": [
+      "Learning to operate the system is easy for me.",
+      "I find it easy to get the system to do what I want.",
+      "My interaction with the system is clear and understandable.",
+      "I find the system flexible to interact with."
+    ],
+    "measurementScale": "7-point Likert (Strongly disagree - Strongly agree)",
+    "relatedModels": ["TAM", "TAM2"],
+    "relatedConstructs": ["Perceived Usefulness", "Behavioral Intention"],
+    "notes": "Often has both direct and indirect (via PU) effects on behavioral intention."
+  },
+  {
+    "id": "behavioral-intention",
+    "name": "Behavioral Intention",
+    "abbreviation": "BI",
+    "definition": "A person's subjective probability that he or she will perform a specified behavior.",
+    "sourcePaper": "Fishbein & Ajzen (1975) - Belief, Attitude, Intention, and Behavior",
+    "doi": "10.2307/2061315",
+    "theoreticalDomain": "Theory of Reasoned Action / Planned Behavior",
+    "measurementItems": [
+      "I intend to use the system in the future.",
+      "I will try to use the system in my daily work.",
+      "I plan to continue using the system."
+    ],
+    "measurementScale": "7-point Likert (Strongly disagree - Strongly agree)",
+    "relatedModels": ["TAM", "TRA", "TPB"],
+    "relatedConstructs": ["Perceived Usefulness", "Perceived Ease of Use", "Actual Usage"],
+    "notes": "Key predictor of actual behavior in TRA/TPB. Mediates attitudes toward behavior."
+  },
+  {
+    "id": "confirmation",
+    "name": "Confirmation",
+    "abbreviation": "Confirm",
+    "definition": "The extent to which the user's experience with the information system confirms his or her pre-acceptance expectations.",
+    "sourcePaper": "Bhattacherjee (2001) - Understanding Information Systems Continuance",
+    "doi": "10.2307/3250921",
+    "theoreticalDomain": "Expectation-Confirmation Theory",
+    "measurementItems": [
+      "My experience with using the system was better than I expected.",
+      "The service level provided by the system was better than I expected.",
+      "Overall, most of my expectations from using the system were confirmed."
+    ],
+    "measurementScale": "7-point Likert (Strongly disagree - Strongly agree)",
+    "relatedModels": ["ECT", "ECM"],
+    "relatedConstructs": ["Expectations", "Perceived Performance", "Satisfaction", "Perceived Usefulness"],
+    "notes": "Central to post-adoption research. Disconfirmation (negative confirmation) drives satisfaction changes."
+  },
+  {
+    "id": "satisfaction",
+    "name": "Satisfaction",
+    "abbreviation": "Sat",
+    "definition": "The affective state reflecting the degree to which the user is pleased with the prior use of the information system.",
+    "sourcePaper": "Oliver (1980) - A Cognitive Model of the Antecedents and Consequences of Satisfaction",
+    "doi": "10.1177/002224378001700104",
+    "theoreticalDomain": "Expectation-Confirmation Theory",
+    "measurementItems": [
+      "I am satisfied with the performance of the system.",
+      "I am pleased with the experience of using the system.",
+      "I am contented with the use of the system."
+    ],
+    "measurementScale": "7-point Likert (Strongly disagree - Strongly agree)",
+    "relatedModels": ["ECT", "ECM"],
+    "relatedConstructs": ["Confirmation", "Perceived Usefulness", "Continuance Intention"],
+    "notes": "Key mediator between confirmation and continuance intention in ECM."
+  },
+  {
+    "id": "continuance-intention",
+    "name": "Continuance Intention",
+    "abbreviation": "CI",
+    "definition": "The intention of a user to continue using an information system following initial adoption.",
+    "sourcePaper": "Bhattacherjee (2001) - Understanding Information Systems Continuance",
+    "doi": "10.2307/3250921",
+    "theoreticalDomain": "Expectation-Confirmation Model",
+    "measurementItems": [
+      "I intend to continue using the system rather than discontinue.",
+      "My intentions are to continue using the system.",
+      "I will keep using the system as regularly as I do now."
+    ],
+    "measurementScale": "7-point Likert (Strongly disagree - Strongly agree)",
+    "relatedModels": ["ECT", "ECM"],
+    "relatedConstructs": ["Satisfaction", "Perceived Usefulness"],
+    "notes": "Post-adoption equivalent of behavioral intention. Different from adoption intention."
+  },
+  {
+    "id": "expectations",
+    "name": "Expectations",
+    "abbreviation": "Expect",
+    "definition": "Pre-consumption beliefs about product or service performance.",
+    "sourcePaper": "Oliver (1980) - A Cognitive Model of the Antecedents and Consequences of Satisfaction",
+    "doi": "10.1177/002224378001700104",
+    "theoreticalDomain": "Expectation-Confirmation Theory",
+    "measurementItems": ["Pre-exposure expectation items adapted to context"],
+    "measurementScale": "7-point Likert",
+    "relatedModels": ["ECT"],
+    "relatedConstructs": ["Confirmation", "Satisfaction"],
+    "notes": "Forms baseline for confirmation/disconfirmation."
+  },
+  {
+    "id": "perceived-performance",
+    "name": "Perceived Performance",
+    "abbreviation": "Perf",
+    "definition": "The user's perception of how the system actually performed.",
+    "sourcePaper": "Oliver (1980) - Expectation-Confirmation Theory",
+    "doi": "10.1177/002224378001700104",
+    "theoreticalDomain": "Expectation-Confirmation Theory",
+    "measurementItems": ["Performance perception items adapted to IS context"],
+    "measurementScale": "7-point Likert",
+    "relatedModels": ["ECT"],
+    "relatedConstructs": ["Confirmation", "Expectations"],
+    "notes": "Compared against expectations to form confirmation."
+  },
+  {
+    "id": "actual-usage",
+    "name": "Actual Usage",
+    "abbreviation": "Usage",
+    "definition": "The actual behavior of using the information system.",
+    "sourcePaper": "Davis (1989) - TAM",
+    "doi": "10.2307/249008",
+    "theoreticalDomain": "Technology Acceptance",
+    "measurementItems": ["Self-reported or system-captured usage metrics"],
+    "measurementScale": "Behavioral measures",
+    "relatedModels": ["TAM"],
+    "relatedConstructs": ["Behavioral Intention"],
+    "notes": "Outcome of behavioral intention in adoption models."
+  }
+]

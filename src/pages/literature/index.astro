@@ -1,0 +1,73 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import literature from '../../data/literature.json';
+---
+
+<BaseLayout title="Literature" description="Literature database - citations, constructs, methods, findings">
+  <h1>Literature Database</h1>
+  <p class="page-desc">Papers with citations, key constructs, methods, findings, and your summaries.</p>
+
+  <div class="literature-list">
+    {literature.map((paper: any) => (
+      <article class="paper-card">
+        <h2>{paper.citation}</h2>
+        <div class="paper-meta">
+          {paper.doi && (
+            <a href={`https://doi.org/${paper.doi}`} target="_blank" rel="noopener">DOI: {paper.doi}</a>
+          )}
+          {paper.pdfLink && (
+            <a href={paper.pdfLink} target="_blank" rel="noopener">PDF</a>
+          )}
+        </div>
+
+        <section class="paper-section">
+          <h3>Key Constructs</h3>
+          <p>{paper.keyConstructs?.join(', ')}</p>
+        </section>
+
+        <section class="paper-section">
+          <h3>Method</h3>
+          <p>{paper.method}</p>
+        </section>
+
+        <section class="paper-section">
+          <h3>Findings</h3>
+          <p>{paper.findings}</p>
+        </section>
+
+        <section class="paper-section highlight">
+          <h3>Your Summary</h3>
+          <p>{paper.summary}</p>
+        </section>
+
+        {paper.replicationNotes && (
+          <section class="paper-section">
+            <h3>Replication Notes</h3>
+            <p>{paper.replicationNotes}</p>
+          </section>
+        )}
+      </article>
+    ))}
+  </div>
+</BaseLayout>
+
+<style>
+  .page-desc { color: var(--color-ink-muted); margin-bottom: 2rem; }
+
+  .literature-list { display: flex; flex-direction: column; gap: 2rem; }
+
+  .paper-card {
+    padding: 2rem;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+  }
+
+  .paper-card h2 { font-size: 1.1rem; font-weight: 600; margin-top: 0; }
+  .paper-meta { margin: 0.5rem 0; font-size: 0.9rem; }
+  .paper-meta a { margin-right: 1rem; }
+
+  .paper-section { margin-top: 1rem; }
+  .paper-section h3 { font-size: 1rem; margin-bottom: 0.35rem; }
+  .paper-section.highlight { padding: 1rem; background: var(--color-bg-alt); border-radius: 6px; }
+</style>

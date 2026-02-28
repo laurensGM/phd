@@ -1,0 +1,93 @@
+[
+  {
+    "id": "tam",
+    "name": "Technology Acceptance Model",
+    "abbreviation": "TAM",
+    "year": 1989,
+    "authors": ["Davis"],
+    "description": "A model explaining how users come to accept and use a technology based on perceived usefulness and ease of use.",
+    "constructs": [
+      "Perceived Usefulness",
+      "Perceived Ease of Use",
+      "Behavioral Intention",
+      "Actual Usage"
+    ],
+    "constructAbbreviations": {
+      "Perceived Usefulness": "PU",
+      "Perceived Ease of Use": "PEOU",
+      "Behavioral Intention": "BI",
+      "Actual Usage": "Usage"
+    },
+    "relationships": [
+      { "from": "PEOU", "to": "PU" },
+      { "from": "PU", "to": "BI" },
+      { "from": "PEOU", "to": "BI" },
+      { "from": "BI", "to": "Usage" }
+    ],
+    "keyCitations": [
+      { "authors": "Davis (1989)", "title": "Perceived Usefulness, Perceived Ease of Use, and User Acceptance of Information Technology", "doi": "10.2307/249008" }
+    ]
+  },
+  {
+    "id": "ect",
+    "name": "Expectation-Confirmation Theory",
+    "abbreviation": "ECT",
+    "year": 1980,
+    "authors": ["Oliver"],
+    "description": "Explains post-purchase satisfaction and continuance intention based on expectations and confirmation.",
+    "constructs": [
+      "Expectations",
+      "Perceived Performance",
+      "Confirmation",
+      "Satisfaction",
+      "Continuance Intention"
+    ],
+    "constructAbbreviations": {
+      "Expectations": "Expect",
+      "Perceived Performance": "Perf",
+      "Confirmation": "Confirm",
+      "Satisfaction": "Sat",
+      "Continuance Intention": "CI"
+    },
+    "relationships": [
+      { "from": "Expect", "to": "Confirm" },
+      { "from": "Perf", "to": "Confirm" },
+      { "from": "Expect", "to": "Sat" },
+      { "from": "Confirm", "to": "Sat" },
+      { "from": "Sat", "to": "CI" }
+    ],
+    "keyCitations": [
+      { "authors": "Oliver (1980)", "title": "A Cognitive Model of the Antecedents and Consequences of Satisfaction Decisions", "doi": "10.1177/002224378001700104" }
+    ]
+  },
+  {
+    "id": "ecm",
+    "name": "Expectation-Confirmation Model of IS Continuance",
+    "abbreviation": "ECM",
+    "year": 2001,
+    "authors": ["Bhattacherjee"],
+    "description": "Extends ECT to IS continuance, incorporating perceived usefulness as a post-adoption belief.",
+    "constructs": [
+      "Confirmation",
+      "Perceived Usefulness",
+      "Satisfaction",
+      "Continuance Intention"
+    ],
+    "constructAbbreviations": {
+      "Confirmation": "Confirm",
+      "Perceived Usefulness": "PU",
+      "Satisfaction": "Sat",
+      "Continuance Intention": "CI"
+    },
+    "relationships": [
+      { "from": "Confirm", "to": "PU" },
+      { "from": "Confirm", "to": "Sat" },
+      { "from": "PU", "to": "Sat" },
+      { "from": "PU", "to": "CI" },
+      { "from": "Sat", "to": "CI" }
+    ],
+    "keyCitations": [
+      { "authors": "Bhattacherjee (2001)", "title": "Understanding Information Systems Continuance: An Expectation-Confirmation Model", "doi": "10.2307/3250921" }
+    ]
+  }
+]

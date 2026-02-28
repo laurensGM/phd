@@ -1,0 +1,63 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import researchQuestions from '../../data/research-questions.json';
+---
+
+<BaseLayout title="Research Questions" description="RQ evolution - versions, changes, supervisory feedback">
+  <h1>Research Questions</h1>
+  <p class="page-desc">Track the evolution of your research questions, why they changed, and supervisory feedback.</p>
+
+  <div class="rq-timeline">
+    {researchQuestions.map((rq: any) => (
+      <article class={`rq-card ${rq.status}`}>
+        <div class="rq-header">
+          <span class="rq-version">RQ {rq.version}</span>
+          <span class="rq-status-badge">{rq.status}</span>
+        </div>
+        <h2>{rq.question}</h2>
+        {rq.whyChanged && (
+          <section>
+            <h3>Why changed</h3>
+            <p>{rq.whyChanged}</p>
+          </section>
+        )}
+        {rq.supervisoryFeedback && (
+          <section class="feedback">
+            <h3>Supervisory feedback</h3>
+            <p>{rq.supervisoryFeedback}</p>
+          </section>
+        )}
+      </article>
+    ))}
+  </div>
+</BaseLayout>
+
+<style>
+  .page-desc { color: var(--color-ink-muted); margin-bottom: 2rem; }
+
+  .rq-timeline { display: flex; flex-direction: column; gap: 1.5rem; }
+
+  .rq-card {
+    padding: 1.5rem;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    border-left: 4px solid var(--color-border);
+  }
+
+  .rq-card.current { border-left-color: var(--color-accent); }
+
+  .rq-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
+  .rq-version { font-weight: 600; color: var(--color-accent); }
+  .rq-status-badge {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.75rem;
+    background: var(--color-bg-alt);
+    border-radius: 4px;
+  }
+
+  .rq-card h2 { font-size: 1.15rem; margin: 0.5rem 0; }
+  .rq-card section { margin-top: 1rem; }
+  .rq-card h3 { font-size: 0.95rem; margin-bottom: 0.25rem; }
+  .rq-card .feedback { padding: 1rem; background: var(--color-bg-alt); border-radius: 6px; }
+</style>
