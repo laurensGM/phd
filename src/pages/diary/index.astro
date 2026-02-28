@@ -4,8 +4,8 @@ import DiaryPage from '../../components/DiaryPage';
 ---
 
 <BaseLayout title="Diary" description="Research diary - daily reflections, tags, linked constructs">
-  <h1>Diary</h1>
-  <p class="page-desc">Daily research reflections with tags and linked constructs. Add entries below—they're saved to your Supabase database.</p>
+  <h1>Research Diary</h1>
+  <p class="page-desc">Log what you did each day. Add entries below and browse your history—all saved to your Supabase database.</p>
 
   <DiaryPage client:load />
 </BaseLayout>
@@ -145,4 +145,22 @@ import DiaryPage from '../../components/DiaryPage';
   .diary-loading { padding: 2rem; color: var(--color-ink-muted); }
   .diary-error { color: #b91c1c; font-size: 0.9rem; margin-bottom: 1rem; }
   .diary-empty { color: var(--color-ink-muted); padding: 2rem; text-align: center; }
+
+  .diary-add-section {
+    margin-bottom: 2.5rem;
+    padding: 1.5rem;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+  }
+
+  .diary-history-section { margin-top: 2rem; }
+  .diary-history-title {
+    font-size: 1.15rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .entry-count { font-weight: 400; color: var(--color-ink-muted); font-size: 0.95rem; }
 </style>

@@ -36,7 +36,7 @@ export default function DiaryPage() {
   const [tagFilter, setTagFilter] = useState<string>('');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
-  const [showForm, setShowForm] = useState(false);
+  const [showForm, setShowForm] = useState(true);
   const [formData, setFormData] = useState({
     summary: '',
     detailedReflection: '',
@@ -124,7 +124,7 @@ export default function DiaryPage() {
     } else if (insertData) {
       setEntries((prev) => [mapRow({ ...insertData, id: insertData.id }), ...prev]);
       setFormData({ summary: '', detailedReflection: '', tags: [], linkedConstructs: '' });
-      setShowForm(false);
+      setShowForm(false); // Hide form after save; user can click "+ New Entry" to add another
     }
     setSaving(false);
   };
@@ -150,7 +150,78 @@ export default function DiaryPage() {
   return (
     <div className="diary-page">
       {error && <p className="diary-error">{error}</p>}
-      <div className="diary-filters">
+
+      <section className="diary-add-section">
+        <button
+          className="diary-add-btn"
+          onClick={() => setShowForm(!showForm)}
+        >
+          {showForm ? '− Hide form' : '+ New Entry'}
+        </button>
+
+        {showForm && (
+          <form className="diary-form" onSubmit={handleSubmit}>
+            <h3>New Diary Entry</h3>
+            <p className="form-date-hint">Date will be set to today automatically.</p>
+            <label>
+              Summary
+              <input
+                type="text"
+                value={formData.summary}
+                onChange={(e) => setFormData((d) => ({ ...d, summary: e.target.value }))}
+                required
+                placeholder="Brief summary of what you did"
+              />
+            </label>
+            <label>
+              Details
+              <textarea
+                value={formData.detailedReflection}
+                onChange={(e) =>
+                  setFormData((d) => ({ ...d, detailedReflection: e.target.value }))
+                }
+                rows={4}
+                placeholder="Describe what you did..."
+              />
+            </label>
+            <label>
+              Tags (click to select)
+              <div className="tag-chips">
+                {TAG_OPTIONS.map((t) => (
+                  <button
+                    key={t}
+                    type="button"
+                    className={`tag-chip ${formData.tags.includes(t) ? 'selected' : ''}`}
+                    onClick={() => toggleTag(t)}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+            </label>
+            <label>
+              Linked Constructs (comma or semicolon separated)
+              <input
+                type="text"
+                value={formData.linkedConstructs}
+                onChange={(e) =>
+                  setFormData((d) => ({ ...d, linkedConstructs: e.target.value }))
+                }
+                placeholder="e.g. Perceived Usefulness, Satisfaction"
+              />
+            </label>
+            <button type="submit" className="diary-submit" disabled={saving}>
+              {saving ? 'Saving...' : 'Save Entry'}
+            </button>
+          </form>
+        )}
+      </section>
+
+      <section className="diary-history-section">
+        <h3 className="diary-history-title">
+          Diary History {entries.length > 0 && <span className="entry-count">({filteredEntries.length} {filteredEntries.length === 1 ? 'entry' : 'entries'})</span>}
+        </h3>
+        <div className="diary-filters">
         <input
           type="search"
           placeholder="Search entries..."
@@ -184,73 +255,9 @@ export default function DiaryPage() {
           placeholder="To"
           className="diary-date"
         />
-      </div>
+        </div>
 
-      <button
-        className="diary-add-btn"
-        onClick={() => setShowForm(!showForm)}
-      >
-        {showForm ? 'Cancel' : '+ New Entry'}
-      </button>
-
-      {showForm && (
-        <form className="diary-form" onSubmit={handleSubmit}>
-          <h3>New Diary Entry</h3>
-          <p className="form-date-hint">Date will be set to today automatically.</p>
-          <label>
-            Summary
-            <input
-              type="text"
-              value={formData.summary}
-              onChange={(e) => setFormData((d) => ({ ...d, summary: e.target.value }))}
-              required
-              placeholder="Brief summary of what you did"
-            />
-          </label>
-          <label>
-            Details
-            <textarea
-              value={formData.detailedReflection}
-              onChange={(e) =>
-                setFormData((d) => ({ ...d, detailedReflection: e.target.value }))
-              }
-              rows={4}
-              placeholder="Describe what you did..."
-            />
-          </label>
-          <label>
-            Tags (click to select)
-            <div className="tag-chips">
-              {TAG_OPTIONS.map((t) => (
-                <button
-                  key={t}
-                  type="button"
-                  className={`tag-chip ${formData.tags.includes(t) ? 'selected' : ''}`}
-                  onClick={() => toggleTag(t)}
-                >
-                  {t}
-                </button>
-              ))}
-            </div>
-          </label>
-          <label>
-            Linked Constructs (comma or semicolon separated)
-            <input
-              type="text"
-              value={formData.linkedConstructs}
-              onChange={(e) =>
-                setFormData((d) => ({ ...d, linkedConstructs: e.target.value }))
-              }
-              placeholder="e.g. Perceived Usefulness, Satisfaction"
-            />
-          </label>
-          <button type="submit" className="diary-submit" disabled={saving}>
-            {saving ? 'Saving...' : 'Save Entry'}
-          </button>
-        </form>
-      )}
-
-      <div className="diary-entries">
+        <div className="diary-entries">
         {filteredEntries.map((entry) => (
           <article key={entry.id} className="diary-entry">
             <div className="entry-header">
@@ -277,7 +284,8 @@ export default function DiaryPage() {
         {filteredEntries.length === 0 && !loading && (
           <p className="diary-empty">No entries yet. Add your first diary entry above.</p>
         )}
-      </div>
+        </div>
+      </section>
     </div>
   );
 }
