@@ -150,8 +150,27 @@ export default function ModelGraph({ model, constructToSlug }: ModelGraphProps) 
   const [nodes, , onNodesChange] = useNodesState(initialNodes);
   const [edges, , onEdgesChange] = useEdgesState(initialEdges);
 
+  if (initialNodes.length === 0) {
+    return (
+      <div className="model-graph-wrapper model-diagram-root model-diagram-empty">
+        <p>No constructs to display.</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="model-graph-wrapper model-diagram-root" style={{ width: '100%', minHeight: 420 }}>
+    <div
+      className="model-graph-wrapper model-diagram-root"
+      style={{
+        width: '100%',
+        height: 480,
+        minHeight: 480,
+        position: 'relative',
+        background: 'var(--color-bg-alt, #f0e9e0)',
+        borderRadius: 12,
+        border: '1px solid var(--color-border, #e0d6cc)',
+      }}
+    >
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -159,9 +178,10 @@ export default function ModelGraph({ model, constructToSlug }: ModelGraphProps) 
         onEdgesChange={onEdgesChange}
         nodeTypes={nodeTypes}
         fitView
-        fitViewOptions={{ padding: 0.25 }}
+        fitViewOptions={{ padding: 0.2 }}
         minZoom={0.2}
         maxZoom={1.5}
+        style={{ width: '100%', height: '100%' }}
       >
         <Controls />
         <Background variant={BackgroundVariant.Dots} gap={16} size={1} />

@@ -107,10 +107,30 @@ if (!model) {
     border-radius: 12px;
     background: var(--color-bg-alt);
     overflow: hidden;
+    height: 480px;
   }
 
-  /* Diagram: clear boxes for constructs, arrows between them */
-  .model-diagram-root :global(.model-diagram-box) {
+  /* React Flow needs its parent to have explicit dimensions */
+  .model-graph-wrapper :global(.react-flow) {
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
+  }
+
+  .model-graph-wrapper :global(.react-flow__renderer),
+  .model-graph-wrapper :global(.react-flow__viewport) {
+    width: 100%;
+    height: 100%;
+  }
+
+  .model-diagram-empty {
+    padding: 2rem;
+    text-align: center;
+    color: var(--color-ink-muted);
+  }
+
+  /* Diagram: clear boxes for constructs, arrows between them (global so React-rendered nodes are styled) */
+  .model-graph-wrapper :global(.model-diagram-box) {
     background: #fff;
     border: 2px solid var(--color-maroon);
     border-radius: 8px;
@@ -123,7 +143,7 @@ if (!model) {
     box-shadow: var(--shadow-sm);
   }
 
-  .model-diagram-root :global(.model-diagram-box-link) {
+  .model-graph-wrapper :global(.model-diagram-box-link) {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -137,20 +157,20 @@ if (!model) {
     box-sizing: border-box;
   }
 
-  .model-diagram-root :global(.model-diagram-box-link:hover) {
+  .model-graph-wrapper :global(.model-diagram-box-link:hover) {
     background: var(--color-bg);
     color: var(--color-maroon);
     text-decoration: none;
   }
 
-  .model-diagram-root :global(.model-diagram-box-abbrev) {
+  .model-graph-wrapper :global(.model-diagram-box-abbrev) {
     font-weight: 700;
     font-size: 0.95rem;
     color: var(--color-maroon);
     display: block;
   }
 
-  .model-diagram-root :global(.model-diagram-box-name) {
+  .model-graph-wrapper :global(.model-diagram-box-name) {
     font-size: 0.75rem;
     color: var(--color-ink-muted);
     text-align: center;
@@ -159,14 +179,14 @@ if (!model) {
     display: block;
   }
 
-  .model-diagram-root :global(.model-diagram-handle) {
+  .model-graph-wrapper :global(.model-diagram-handle) {
     width: 8px;
     height: 8px;
     background: var(--color-maroon);
     border: 2px solid #fff;
   }
 
-  .model-diagram-root :global(.react-flow__edge-path) {
+  .model-graph-wrapper :global(.react-flow__edge-path) {
     stroke-width: 2;
   }
 </style>
