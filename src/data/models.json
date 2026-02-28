@@ -5,7 +5,8 @@
     "abbreviation": "TAM",
     "year": 1989,
     "authors": ["Davis"],
-    "description": "A model explaining how users come to accept and use a technology based on perceived usefulness and ease of use.",
+    "description": "Proposed by Fred Davis in his 1986 PhD dissertation, published formally in 1989. One of the most cited models in information systems research. Adapted TRA to address user acceptance of information systems. Posits that perceived usefulness (PU) and perceived ease of use (PEOU) directly affect behavioural intention (BI). Explains why users decide to adopt a technology. Focuses on pre-adoption or early adoption.",
+    "notes": "Core constructs:\n• Perceived usefulness: a user's subjective probability that using the system will increase his or her job performance.\n• Perceived ease of use: the degree to which a user expects use of the system to be free of effort.\n• Behavioural intention\n\nLimitations: Davis did not measure subjective norms (outside influences). Initial study did not find that attitude had a significant effect on behavioural intentions.",
     "constructs": [
       "Perceived Usefulness",
       "Perceived Ease of Use",
@@ -34,7 +35,8 @@
     "abbreviation": "ECT",
     "year": 1980,
     "authors": ["Oliver"],
-    "description": "Explains post-purchase satisfaction and continuance intention based on expectations and confirmation.",
+    "description": "Originally proposed by Richard Oliver in 1977–1980 in consumer behaviour research. Explains how post-purchase satisfaction and repurchase intentions depend on pre-purchase expectations and subsequent experience with products or services. Satisfaction is fuelled by belief disconfirmation from evaluating performance against expectations. Explains why consumers purchase again.",
+    "notes": "Steps: (1) Formation of expectation — consumers form initial expectations prior to purchase. (2) Interaction and experience — they use the product and form perceptions of performance. (3) Confirmation or disconfirmation — they assess perceived performance against expectations (positive or negative). (4) Cognitive adjustment — they form a level of satisfaction. Flow: Users form expectations → experience the product → confirm (or disconfirm) expectations → this shapes satisfaction → which shapes continuance intention → which drives actual continued use.",
     "constructs": [
       "Expectations",
       "Perceived Performance",
@@ -66,7 +68,8 @@
     "abbreviation": "ECM",
     "year": 2001,
     "authors": ["Bhattacherjee"],
-    "description": "Extends ECT to IS continuance, incorporating perceived usefulness as a post-adoption belief.",
+    "description": "Built by Bhattacherjee in 2001, adapting ECT specifically to information systems. Well-respected in IS/MIS. Explains why users continue using a technology after initial adoption. Focuses on post-adoption behaviour. Replaced repurchase intention in ECT with IS continuance intention. Confirmation is defined as congruence between expectation and actual performance; performance construct removed as its influence is captured by confirmation. Perceived usefulness from TAM was introduced to reflect post-acceptance expectations.",
+    "notes": "Users' intention to continue IS usage depends on three factors: (1) satisfaction with IS — stronger effect on continuance than PU; (2) degree of confirmation of expectations; (3) post-usage perceived usefulness — cognitive belief. Initial expectations and confirmation after first use are key antecedents to satisfaction. Model focuses on post-usage and post-acceptance variables to explain usage continuance.",
     "constructs": [
       "Confirmation",
       "Perceived Usefulness",
@@ -125,6 +128,168 @@
     "keyCitations": [
       { "authors": "Bhattacherjee (2001)", "title": "Understanding Information Systems Continuance: An Expectation-Confirmation Model", "doi": "10.2307/3250921" }
     ],
-    "diagramType": "ecm-is"
+    "diagramType": "ecm-is",
+    "notes": "Full flow from prior expectations through confirmation, perceived usefulness, satisfaction, continuance intention, and continued use. PU has a direct path to continuance intention (bypassing satisfaction)."
+  },
+  {
+    "id": "tra",
+    "name": "Theory of Reasoned Action",
+    "abbreviation": "TRA",
+    "year": 1975,
+    "authors": ["Fishbein", "Ajzen"],
+    "description": "Precursor of TAM. A person's performance of a specified behaviour is determined by behavioural intention (BI) to perform the behaviour. Behavioural intention is jointly determined by attitude (A) and subjective norms (SN) toward the behaviour: BI = A + SN.",
+    "notes": "Foundational theory linking attitudes and social norms to intention and behaviour.",
+    "constructs": ["Attitude", "Subjective Norms", "Behavioral Intention", "Actual Behavior"],
+    "constructAbbreviations": { "Attitude": "A", "Subjective Norms": "SN", "Behavioral Intention": "BI", "Actual Behavior": "Behavior" },
+    "relationships": [
+      { "from": "A", "to": "BI" },
+      { "from": "SN", "to": "BI" },
+      { "from": "BI", "to": "Behavior" }
+    ],
+    "keyCitations": [
+      { "authors": "Fishbein & Ajzen (1975)", "title": "Belief, Attitude, Intention, and Behavior: An Introduction to Theory and Research" }
+    ]
+  },
+  {
+    "id": "tpb",
+    "name": "Theory of Planned Behavior",
+    "abbreviation": "TPB",
+    "year": 1991,
+    "authors": ["Ajzen"],
+    "description": "Extends TRA by adding perceived behavioural control. Decomposed theory of planned behaviour: intention is determined by attitude, subjective norms, and perceived behavioural control; intention and PBC predict behaviour.",
+    "notes": "Addresses behaviours that are not under full volitional control.",
+    "constructs": ["Attitude", "Subjective Norms", "Perceived Behavioral Control", "Behavioral Intention", "Actual Behavior"],
+    "constructAbbreviations": { "Attitude": "A", "Subjective Norms": "SN", "Perceived Behavioral Control": "PBC", "Behavioral Intention": "BI", "Actual Behavior": "Behavior" },
+    "relationships": [
+      { "from": "A", "to": "BI" },
+      { "from": "SN", "to": "BI" },
+      { "from": "PBC", "to": "BI" },
+      { "from": "BI", "to": "Behavior" },
+      { "from": "PBC", "to": "Behavior" }
+    ],
+    "keyCitations": [
+      { "authors": "Ajzen (1991)", "title": "The theory of planned behavior" }
+    ]
+  },
+  {
+    "id": "tam2",
+    "name": "TAM 2",
+    "abbreviation": "TAM2",
+    "year": 2000,
+    "authors": ["Venkatesh", "Davis"],
+    "description": "Extends TAM by introducing social influencing processes and cognitive instrumental processes. Individuals form perceived usefulness by comparing what a system can do with job requirements. In high power-distance cultures, mandatory use can weaken the relationship between PU, PEOU and usage.",
+    "notes": "Social: Subjective norms (others' expectations); Image (status from using the technology). Cognitive: Job relevance; Output quality; Result demonstrability. Limitations: does not fully account for system cost, features, social norms, gender, culture, alternative systems; focuses on individual users not groups.",
+    "constructs": ["Subjective Norms", "Image", "Job Relevance", "Output Quality", "Result Demonstrability", "Perceived Usefulness", "Perceived Ease of Use", "Behavioral Intention"],
+    "constructAbbreviations": { "Subjective Norms": "SN", "Image": "Img", "Job Relevance": "JR", "Output Quality": "OQ", "Result Demonstrability": "RD", "Perceived Usefulness": "PU", "Perceived Ease of Use": "PEOU", "Behavioral Intention": "BI" },
+    "relationships": [
+      { "from": "SN", "to": "PU" },
+      { "from": "SN", "to": "Img" },
+      { "from": "Img", "to": "PU" },
+      { "from": "JR", "to": "PU" },
+      { "from": "OQ", "to": "PU" },
+      { "from": "RD", "to": "PU" },
+      { "from": "PEOU", "to": "PU" },
+      { "from": "PU", "to": "BI" },
+      { "from": "PEOU", "to": "BI" }
+    ],
+    "keyCitations": [
+      { "authors": "Venkatesh & Davis (2000)", "title": "A Theoretical Extension of the Technology Acceptance Model: Four Longitudinal Field Studies" }
+    ]
+  },
+  {
+    "id": "utaut",
+    "name": "Unified Theory of Acceptance and Use of Technology",
+    "abbreviation": "UTAUT",
+    "year": 2003,
+    "authors": ["Venkatesh", "Morris", "Davis", "Davis"],
+    "description": "Developed by Venkatesh and colleagues in 2003; consolidates TAM and several other models. Widely respected in IS research. Original UTAUT was validated primarily in organisational settings where technology use was mandatory or semi-mandatory.",
+    "notes": "In mandatory contexts, social influence works differently (managerial pressure). Extended to UTAUT2 (2012) for voluntary, consumer contexts.",
+    "constructs": ["Performance Expectancy", "Effort Expectancy", "Social Influence", "Facilitating Conditions", "Behavioral Intention", "Use Behavior"],
+    "constructAbbreviations": { "Performance Expectancy": "PE", "Effort Expectancy": "EE", "Social Influence": "SI", "Facilitating Conditions": "FC", "Behavioral Intention": "BI", "Use Behavior": "UB" },
+    "relationships": [
+      { "from": "PE", "to": "BI" },
+      { "from": "EE", "to": "BI" },
+      { "from": "SI", "to": "BI" },
+      { "from": "FC", "to": "UB" },
+      { "from": "BI", "to": "UB" }
+    ],
+    "keyCitations": [
+      { "authors": "Venkatesh et al. (2003)", "title": "User acceptance of information technology: Toward a unified view" }
+    ]
+  },
+  {
+    "id": "utaut2",
+    "name": "UTAUT 2",
+    "abbreviation": "UTAUT2",
+    "year": 2012,
+    "authors": ["Venkatesh", "Thong", "Xu"],
+    "description": "Extension of UTAUT for voluntary, consumer contexts. Venkatesh added hedonic motivation, price value, and habit so the model fits contexts where consumers choose freely whether to adopt. More appropriate for voluntary adoption than UTAUT.",
+    "notes": "UTAUT (2003) was organisational/mandatory; UTAUT2 addresses criticism that social influence and other factors work differently when adoption is voluntary.",
+    "constructs": ["Performance Expectancy", "Effort Expectancy", "Social Influence", "Facilitating Conditions", "Hedonic Motivation", "Price Value", "Habit", "Behavioral Intention", "Use Behavior"],
+    "constructAbbreviations": { "Performance Expectancy": "PE", "Effort Expectancy": "EE", "Social Influence": "SI", "Facilitating Conditions": "FC", "Hedonic Motivation": "HM", "Price Value": "PV", "Habit": "Hab", "Behavioral Intention": "BI", "Use Behavior": "UB" },
+    "relationships": [
+      { "from": "PE", "to": "BI" },
+      { "from": "EE", "to": "BI" },
+      { "from": "SI", "to": "BI" },
+      { "from": "HM", "to": "BI" },
+      { "from": "PV", "to": "BI" },
+      { "from": "Hab", "to": "BI" },
+      { "from": "Hab", "to": "UB" },
+      { "from": "FC", "to": "UB" },
+      { "from": "BI", "to": "UB" }
+    ],
+    "keyCitations": [
+      { "authors": "Venkatesh et al. (2012)", "title": "Consumer Acceptance and Use of Information Technology: Extending the Unified Theory of Acceptance and Use of Technology" }
+    ]
+  },
+  {
+    "id": "doi",
+    "name": "Diffusion of Innovations",
+    "abbreviation": "DOI",
+    "year": 1962,
+    "authors": ["Rogers"],
+    "description": "Originated with Everett Rogers in 1962 (Diffusion of Innovations, 1st edition). One of the most cited theories in social science, respected across multiple fields. The 2003 citation is the 5th edition. Describes how innovations spread and how adopters are categorised by stage of adoption.",
+    "notes": "Five adopter types: innovators, early adopters, early majority, late majority, laggards. Five stages of the innovation-decision process (Rogers, 1995): (1) Knowledge — gaining information about the innovation; (2) Persuasion — forming an attitude toward it; (3) Decision — deciding to adopt or reject; (4) Implementation — putting it into use; (5) Confirmation — reinforcing or reversing the decision (continuation or discontinuation).",
+    "constructs": ["Knowledge", "Persuasion", "Decision", "Implementation", "Confirmation"],
+    "constructAbbreviations": { "Knowledge": "Know", "Persuasion": "Pers", "Decision": "Dec", "Implementation": "Impl", "Confirmation": "Conf" },
+    "relationships": [
+      { "from": "Know", "to": "Pers" },
+      { "from": "Pers", "to": "Dec" },
+      { "from": "Dec", "to": "Impl" },
+      { "from": "Impl", "to": "Conf" }
+    ],
+    "keyCitations": [
+      { "authors": "Rogers (1962)", "title": "Diffusion of Innovations", "doi": "" },
+      { "authors": "Rogers (2003)", "title": "Diffusion of Innovations (5th ed.)" }
+    ]
+  },
+  {
+    "id": "cjm",
+    "name": "Customer Journey Map",
+    "abbreviation": "CJM",
+    "year": 2007,
+    "authors": ["Meyer", "Schwager"],
+    "description": "Concept emerged in the 1990s–2000s from service design and marketing practice; practitioner framework rather than a single academic theory. Meyer & Schwager (2007) in Harvard Business Review helped popularise it academically. Maps the sequence of customer experiences from first contact to full description of the service (Micheaux & Bosio, 2019).",
+    "notes": "A customer journey is a series of direct and indirect contacts or interactions with a product or service (Meyer & Schwager, 2007), which may be positive, negative, or neutral (Berry et al., 2002). Experience at each touchpoint affects perceived relationship quality and customer commitment (Palmatier et al., 2006).",
+    "constructs": ["Touchpoints", "Customer Experience", "Journey Stages", "Relationship Quality", "Commitment"],
+    "constructAbbreviations": { "Touchpoints": "TP", "Customer Experience": "CX", "Journey Stages": "Stages", "Relationship Quality": "RQ", "Commitment": "Comm" },
+    "relationships": [],
+    "keyCitations": [
+      { "authors": "Meyer & Schwager (2007)", "title": "Understanding Customer Experience", "doi": "" },
+      { "authors": "Micheaux & Bosio (2019)", "title": "Customer journey mapping as a new way to teach data-driven marketing" }
+    ]
+  },
+  {
+    "id": "tajm",
+    "name": "Technology Adoption Journey Map",
+    "abbreviation": "TAJM",
+    "year": 2020,
+    "authors": [],
+    "description": "Used to document the adoption experience of innovators and early adopters, forming the basis for developing the adoption journey map for the early majority. CJM is fundamental for the development of TAJM — applies customer journey mapping to technology adoption.",
+    "notes": "Bridges DOI adopter segments with journey mapping; builds on CJM for technology adoption contexts.",
+    "constructs": ["Adopter Experience", "Journey Stages", "Early Majority Mapping"],
+    "constructAbbreviations": { "Adopter Experience": "AE", "Journey Stages": "Stages", "Early Majority Mapping": "EM" },
+    "relationships": [],
+    "keyCitations": []
   }
 ]

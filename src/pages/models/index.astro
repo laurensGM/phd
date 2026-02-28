@@ -1,7 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import ModelGraph from '../../components/ModelGraph';
-import EcmIsDiagram from '../../components/EcmIsDiagram';
+import ModelsPage from '../../components/ModelsPage';
 import models from '../../data/models.json';
 import constructs from '../../data/constructs.json';
 
@@ -14,50 +13,9 @@ constructs.forEach((c: { name: string; id: string }) => {
 
 <BaseLayout title="Models" description="Theoretical models - TAM, ECT, ECM with interactive diagrams">
   <h1>Models</h1>
-  <p class="page-desc">Theoretical models with overviews, interactive diagrams, constructs, and key citations. For ECM-IS: click a construct to see details on this page. For others: click a node to go to the construct page.</p>
+  <p class="page-desc">Click a card to open the model and see its diagram, constructs, and citations. For ECM-IS: click a construct in the diagram to see details on the page.</p>
 
-  <div class="models-list">
-    {models.map((model: any) => (
-      <section class="model-card" id={model.id}>
-        <h2>{model.name} ({model.abbreviation})</h2>
-        <p class="model-meta">Developed by: {model.authors.join(', ')} ({model.year})</p>
-        <p class="model-desc">{model.description}</p>
-
-        <h3>Interactive Diagram</h3>
-        {model.diagramType === 'ecm-is' ? (
-          <EcmIsDiagram client:load />
-        ) : (
-          <ModelGraph client:load model={model} constructToSlug={constructToSlug} />
-        )}
-
-        <h3>Core Constructs</h3>
-        <ul class="construct-list">
-          {model.constructs.map((c: string) => (
-            <li>
-              <a href={`${base}constructs/${constructToSlug[c] || '#'}/`}>{model.constructAbbreviations?.[c] || c} — {c}</a>
-            </li>
-          ))}
-        </ul>
-
-        <h3>Relationships</h3>
-        <ul class="relationship-list">
-          {model.relationships.map((r: any) => (
-            <li><code>{r.from}</code> → <code>{r.to}</code></li>
-          ))}
-        </ul>
-
-        <h3>Key Citations</h3>
-        <ul class="citations-list">
-          {model.keyCitations.map((cite: any) => (
-            <li>
-              <strong>{cite.authors}</strong> — {cite.title}
-              {cite.doi && <a href={`https://doi.org/${cite.doi}`} target="_blank" rel="noopener"> DOI</a>}
-            </li>
-          ))}
-        </ul>
-      </section>
-    ))}
-  </div>
+  <ModelsPage client:load models={models} constructToSlug={constructToSlug} base={base} />
 </BaseLayout>
 
 <style>
@@ -66,41 +24,145 @@ constructs.forEach((c: { name: string; id: string }) => {
     margin-bottom: 2rem;
   }
 
-  .models-list {
-    display: flex;
-    flex-direction: column;
-    gap: 3rem;
+  .models-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
   }
 
-  .model-card {
-    padding: 2rem;
+  .model-teaser-card {
     background: white;
     border: 1px solid var(--color-border);
     border-radius: 8px;
+    overflow: hidden;
+    transition: box-shadow 0.2s, border-color 0.2s;
   }
 
-  .model-meta {
-    font-size: 0.9rem;
+  .model-teaser-card:hover {
+    border-color: var(--color-gold);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  }
+
+  .model-teaser-card.expanded {
+    border-color: var(--color-maroon);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    grid-column: 1 / -1;
+  }
+
+  .model-teaser-header {
+    width: 100%;
+    padding: 1.25rem 1.5rem;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    color: inherit;
+    position: relative;
+    padding-right: 2.5rem;
+  }
+
+  .model-teaser-header:hover {
+    background: var(--color-bg);
+  }
+
+  .model-teaser-title {
+    font-size: 1.1rem;
+    margin: 0 0 0.35rem 0;
+    line-height: 1.35;
+  }
+
+  .model-teaser-abbrev {
+    color: var(--color-maroon);
+    font-weight: 600;
+  }
+
+  .model-teaser-meta {
+    font-size: 0.85rem;
     color: var(--color-ink-muted);
-    margin-bottom: 0.75rem;
+    margin: 0 0 0.75rem 0;
   }
 
-  .model-desc {
-    margin-bottom: 1.5rem;
+  .model-teaser-constructs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
   }
 
-  .construct-list, .relationship-list, .citations-list {
+  .model-teaser-tag {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.5rem;
+    background: var(--color-bg-alt);
+    border-radius: 4px;
+    color: var(--color-ink-muted);
+  }
+
+  .model-teaser-chevron {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.25rem;
+    font-weight: 300;
+    color: var(--color-maroon);
+  }
+
+  .model-teaser-body {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .model-teaser-body .model-desc {
+    margin: 1rem 0 1rem 0;
+    color: var(--color-ink-muted);
+  }
+
+  .model-notes {
+    margin: 1rem 0 1.5rem 0;
+    padding: 1rem 1.25rem;
+    background: var(--color-bg);
+    border-radius: 8px;
+    border-left: 4px solid var(--color-gold);
+  }
+
+  .model-notes h3 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+
+  .model-notes-content {
+    font-size: 0.9rem;
+    color: var(--color-ink);
+    line-height: 1.65;
+    white-space: pre-line;
+  }
+
+  .model-teaser-body h3 {
+    font-size: 1rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .model-teaser-body .construct-list,
+  .model-teaser-body .relationship-list,
+  .model-teaser-body .citations-list {
     line-height: 1.8;
+    margin: 0;
+    padding-left: 1.25rem;
   }
 
-  .construct-list a, .relationship-list code {
+  .model-teaser-body .construct-list a {
     font-family: var(--font-sans);
+  }
+
+  .model-graph-wrapper {
+    margin: 1rem 0;
   }
 
   .model-graph-wrapper :global(.construct-node-link) {
     display: inline-block;
     padding: 0.5rem 1rem;
-    background: var(--color-accent);
+    background: var(--color-maroon);
     color: white !important;
     border-radius: 6px;
     text-decoration: none;
@@ -109,7 +171,7 @@ constructs.forEach((c: { name: string; id: string }) => {
   }
 
   .model-graph-wrapper :global(.construct-node-link:hover) {
-    background: var(--color-accent-hover);
+    background: var(--color-maroon-dark);
     text-decoration: none;
     color: white !important;
   }
