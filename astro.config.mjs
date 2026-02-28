@@ -5,7 +5,8 @@ import react from '@astrojs/react';
 export default defineConfig({
   integrations: [mdx(), react()],
   site: 'https://your-username.github.io',
-  base: '/',
+  // Use your repo name for project sites: base: '/phd/' → site at username.github.io/phd/
+  base: '/phd/',
   output: 'static',
   trailingSlash: 'always',
 });
