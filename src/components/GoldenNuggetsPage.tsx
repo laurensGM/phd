@@ -53,6 +53,7 @@ export default function GoldenNuggetsPage({ staticFaq, staticQuotes }: GoldenNug
   const [editContent, setEditContent] = useState('');
   const [editAuthor, setEditAuthor] = useState('');
   const [editType, setEditType] = useState<NuggetType | null>(null);
+  const [importing, setImporting] = useState(false);
 
   const fetchNuggets = useCallback(async () => {
     if (!supabase) return;
@@ -177,6 +178,32 @@ export default function GoldenNuggetsPage({ staticFaq, staticQuotes }: GoldenNug
     else setQuotes((prev) => prev.filter((n) => n.id !== id));
   };
 
+  const handleImportFromJson = async () => {
+    if (!supabase || (!staticFaq.length && !staticQuotes.length)) return;
+    setImporting(true);
+    setError(null);
+    try {
+      for (const item of staticFaq) {
+        await supabase.from('golden_nuggets').insert({
+          type: 'faq',
+          content: item.question,
+          author: item.author ?? null,
+        });
+      }
+      for (const item of staticQuotes) {
+        await supabase.from('golden_nuggets').insert({
+          type: 'quote',
+          content: item.text,
+          author: item.author ?? null,
+        });
+      }
+      await fetchNuggets();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Import failed');
+    }
+    setImporting(false);
+  };
+
   if (!isSupabaseConfigured()) {
     return (
       <div className="golden-nuggets-page">
@@ -217,9 +244,25 @@ export default function GoldenNuggetsPage({ staticFaq, staticQuotes }: GoldenNug
     return <p className="nuggets-loading">Loading golden nuggets…</p>;
   }
 
+  const canImport = (staticFaq.length > 0 || staticQuotes.length > 0) && faq.length === 0 && quotes.length === 0;
+
   return (
     <div className="golden-nuggets-page">
       {error && <p className="nuggets-error">{error}</p>}
+
+      {canImport && (
+        <div className="nuggets-import-bar">
+          <p className="nuggets-import-text">Import the default FAQs and quotes from the site’s JSON into your list.</p>
+          <button
+            type="button"
+            className="nuggets-import-btn"
+            onClick={handleImportFromJson}
+            disabled={importing}
+          >
+            {importing ? 'Importing…' : 'Import from JSON'}
+          </button>
+        </div>
+      )}
 
       <section className="nuggets-section">
         <h2 className="section-title">FAQ</h2>

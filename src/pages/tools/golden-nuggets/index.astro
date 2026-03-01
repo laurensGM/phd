@@ -31,6 +31,40 @@ const staticQuotes = (nuggets as { quotes: { text: string; author: string | null
   }
 
   /* Golden nuggets (React) */
+  :global(.golden-nuggets-page .nuggets-import-bar) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.25rem;
+    background: rgba(113, 32, 56, 0.06);
+    border: 1px solid var(--color-maroon-muted);
+    border-radius: 8px;
+  }
+  :global(.golden-nuggets-page .nuggets-import-text) {
+    flex: 1;
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--color-ink);
+  }
+  :global(.golden-nuggets-page .nuggets-import-btn) {
+    padding: 0.5rem 1rem;
+    background: var(--color-maroon);
+    color: #fff;
+    border: 2px solid var(--color-gold);
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+  :global(.golden-nuggets-page .nuggets-import-btn:hover:not(:disabled)) {
+    background: var(--color-maroon-dark);
+  }
+  :global(.golden-nuggets-page .nuggets-import-btn:disabled) {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
   :global(.golden-nuggets-page .nuggets-setup),
   :global(.golden-nuggets-page .nuggets-loading),
   :global(.golden-nuggets-page .nuggets-empty) {
