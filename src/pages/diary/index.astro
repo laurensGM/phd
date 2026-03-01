@@ -45,9 +45,9 @@ import DiaryPage from '../../components/DiaryPage';
     border-color: var(--color-gold-light);
   }
 
-  /* Form container */
+  /* Form container – wider for summary and details */
   .diary-form {
-    max-width: 720px;
+    max-width: 960px;
     padding: 2.5rem 3rem;
     background: #fff;
     border: 1px solid var(--color-border);
@@ -79,6 +79,12 @@ import DiaryPage from '../../components/DiaryPage';
 
   .diary-form-field-details {
     margin-bottom: 3.5rem;
+    gap: 1rem;
+  }
+
+  .diary-form-field-details label {
+    display: block;
+    margin-bottom: 0.25rem;
   }
 
   .diary-form-field label,
@@ -115,25 +121,25 @@ import DiaryPage from '../../components/DiaryPage';
   }
 
   .diary-textarea {
-    min-height: 420px;
+    min-height: 260px;
     resize: vertical;
     line-height: 1.6;
   }
 
-  /* Tags */
+  /* Tags – bigger chips, more space, nicer color */
   .tag-chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.85rem;
   }
 
   .tag-chip {
-    padding: 0.4rem 0.9rem;
+    padding: 0.6rem 1.2rem;
     border: 2px solid var(--color-border);
-    background: #fff;
+    background: var(--color-bg-alt);
     border-radius: 999px;
     cursor: pointer;
-    font-size: 0.875rem;
+    font-size: 0.95rem;
     font-weight: 500;
     color: var(--color-ink);
     transition: border-color 0.2s, background 0.2s, color 0.2s;
@@ -141,6 +147,7 @@ import DiaryPage from '../../components/DiaryPage';
 
   .tag-chip:hover {
     border-color: var(--color-maroon-muted);
+    background: rgba(113, 32, 56, 0.06);
   }
 
   .tag-chip.selected {

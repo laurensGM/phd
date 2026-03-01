@@ -185,7 +185,7 @@ export default function DiaryPage() {
                 onChange={(e) =>
                   setFormData((d) => ({ ...d, detailedReflection: e.target.value }))
                 }
-                rows={18}
+                rows={10}
                 placeholder="Describe what you did, key decisions, reflections..."
                 className="diary-textarea"
               />
