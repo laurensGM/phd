@@ -4,8 +4,10 @@ interface Props {
   description?: string;
 }
 
-const { title, description = "PhD Knowledge System - Organizing research, models, constructs, and literature" } = Astro.props;
+const { title, description = "PhD Operating System - Organizing research, models, constructs, and literature" } = Astro.props;
 const base = import.meta.env.BASE_URL;
+// Logo and home: always link to this site's root (base), never external
+const homeHref = base.endsWith('/') ? base : `${base}/`;
 ---
 
 <!DOCTYPE html>
@@ -15,7 +17,7 @@ const base = import.meta.env.BASE_URL;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
     <meta name="description" content={description} />
-    <title>{title} | PhD Knowledge System</title>
+    <title>{title} | PhD Operating System</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=DM+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet" />
@@ -23,9 +25,12 @@ const base = import.meta.env.BASE_URL;
   <body>
     <header class="site-header">
       <nav class="nav-container">
-        <a href={base} class="logo">PhD Knowledge System</a>
+        <a href={homeHref} class="logo" rel="home" aria-label="Home – PhD Operating System">
+          <img src={`${base}logo-sbs.png`} alt="" class="logo-img" width="40" height="40" />
+          <span class="logo-text">PhD Operating System</span>
+        </a>
         <ul class="nav-links">
-          <li><a href={base}>Home</a></li>
+          <li><a href={homeHref}>Home</a></li>
           <li><a href={`${base}models/`}>Models</a></li>
           <li><a href={`${base}constructs/`}>Constructs</a></li>
           <li><a href={`${base}diary/`}>Diary</a></li>
@@ -41,24 +46,33 @@ const base = import.meta.env.BASE_URL;
       <slot />
     </main>
     <footer class="site-footer">
-      <p>PhD Knowledge System — Organizing research one note at a time</p>
+      <div class="footer-brand">
+        <img src={`${base}logo-sbs.png`} alt="" class="footer-logo" width="32" height="32" />
+        <div>
+          <p class="footer-title">PhD Operating System</p>
+          <p class="footer-university">Stellenbosch University</p>
+        </div>
+      </div>
+      <p class="footer-tagline">Organizing research one note at a time</p>
     </footer>
   </body>
 </html>
 
 <style is:global>
   :root {
-    /* Stellenbosch Business School–inspired palette */
-    --color-bg: #F9F4EE;
-    --color-bg-alt: #F0E9E0;
+    /* Stellenbosch Business School branding (aligned with logo) */
+    --color-bg: #F8F5F2;
+    --color-bg-alt: #EDE8E2;
     --color-ink: #2D1F24;
     --color-ink-muted: #5C4A4F;
-    --color-maroon: #722F37;
-    --color-maroon-dark: #5A2632;
-    --color-gold: #B8860B;
-    --color-gold-light: #D4A84B;
-    --color-accent: #722F37;
-    --color-accent-hover: #5A2632;
+    --color-maroon: #622130;
+    --color-maroon-dark: #4A1925;
+    --color-maroon-muted: #9C416B;
+    --color-gold: #D4AF37;
+    --color-gold-light: #E5C65C;
+    --color-gold-dark: #8B704C;
+    --color-accent: #622130;
+    --color-accent-hover: #4A1925;
     --color-border: #E0D6CC;
     --font-serif: 'Crimson Pro', Georgia, serif;
     --font-sans: 'DM Sans', system-ui, sans-serif;
@@ -105,15 +119,33 @@ const base = import.meta.env.BASE_URL;
   }
 
   .logo {
-    font-family: var(--font-serif);
-    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: var(--font-sans);
+    font-size: 1.1rem;
     font-weight: 600;
-    color: white;
+    color: #fff;
     text-decoration: none;
   }
 
   .logo:hover {
     color: var(--color-gold-light);
+  }
+
+  .logo:hover .logo-img {
+    opacity: 0.95;
+  }
+
+  .logo-img {
+    flex-shrink: 0;
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+  }
+
+  .logo-text {
+    white-space: nowrap;
   }
 
   .nav-links {
@@ -143,12 +175,44 @@ const base = import.meta.env.BASE_URL;
   }
 
   .site-footer {
-    background: var(--color-bg-alt);
-    padding: 1rem 1.5rem;
+    background: var(--color-maroon);
+    color: var(--color-gold-light);
+    padding: 1.25rem 1.5rem;
     text-align: center;
     font-size: 0.85rem;
-    color: var(--color-ink-muted);
-    border-top: 1px solid var(--color-border);
+    border-top: 3px solid var(--color-gold);
+  }
+
+  .footer-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .footer-logo {
+    opacity: 0.95;
+  }
+
+  .footer-title {
+    font-weight: 600;
+    margin: 0;
+    font-size: 0.95rem;
+    color: #fff;
+  }
+
+  .footer-university {
+    margin: 0.15rem 0 0 0;
+    font-size: 0.75rem;
+    color: var(--color-gold-light);
+    letter-spacing: 0.02em;
+  }
+
+  .footer-tagline {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.8rem;
   }
 
   h1, h2, h3 {

@@ -1,6 +1,5 @@
 import React from 'react';
-import ModelGraph from './ModelGraph';
-import EcmIsDiagram from './EcmIsDiagram';
+import ModelDiagramStatic from './ModelDiagramStatic';
 
 interface Model {
   id: string;
@@ -39,12 +38,8 @@ export default function ModelDetailView({ model, constructToSlug, base }: ModelD
 
       {hasDiagram && (
         <>
-          <h3>Interactive Diagram</h3>
-          {model.diagramType === 'ecm-is' ? (
-            <EcmIsDiagram />
-          ) : (
-            <ModelGraph model={model} constructToSlug={constructToSlug} />
-          )}
+          <h3>Model diagram</h3>
+          <ModelDiagramStatic model={model} constructToSlug={constructToSlug} base={base} />
         </>
       )}
 

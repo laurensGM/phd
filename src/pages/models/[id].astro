@@ -189,4 +189,163 @@ if (!model) {
   .model-graph-wrapper :global(.react-flow__edge-path) {
     stroke-width: 2;
   }
+
+  /* Static model diagram (ECM-style: boxes + arrows + legend) */
+  .model-detail-view :global(.static-diagram) {
+    margin: 1.5rem 0;
+    padding: 1.5rem;
+    background: var(--color-bg-alt);
+    border-radius: 12px;
+    border: 1px solid var(--color-border);
+  }
+
+  .model-detail-view :global(.static-diagram-hint) {
+    font-size: 0.875rem;
+    color: var(--color-ink-muted);
+    margin: 0 0 1rem 0;
+  }
+
+  .model-detail-view :global(.static-diagram-flow) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1rem;
+  }
+
+  .model-detail-view :global(.static-diagram-box) {
+    display: flex;
+    flex-direction: column;
+    padding: 0.75rem 1rem;
+    min-width: 180px;
+    background: #fff;
+    border-radius: 10px;
+    border: 2px solid var(--color-border);
+    text-decoration: none;
+    color: var(--color-ink);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .model-detail-view :global(.static-diagram-box:hover) {
+    border-color: var(--color-gold);
+    text-decoration: none;
+    color: var(--color-ink);
+  }
+
+  .model-detail-view :global(.static-diagram-box-prior) { border-color: var(--color-maroon-muted); }
+  .model-detail-view :global(.static-diagram-box-postuse) { border-color: #6B9AC4; }
+  .model-detail-view :global(.static-diagram-box-affective) { border-color: var(--color-gold); }
+  .model-detail-view :global(.static-diagram-box-intention) { border-color: var(--color-gold-dark); }
+  .model-detail-view :global(.static-diagram-box-behavior) { border-color: var(--color-maroon); }
+  .model-detail-view :global(.static-diagram-box-generic) { border-color: var(--color-maroon); }
+
+  .model-detail-view :global(.static-diagram-box-label) {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--color-ink-muted);
+    margin-bottom: 0.25rem;
+  }
+
+  .model-detail-view :global(.static-diagram-box-name) {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--color-ink);
+  }
+
+  .model-detail-view :global(.static-diagram-box-desc) {
+    font-size: 0.8rem;
+    color: var(--color-ink-muted);
+    margin-top: 0.25rem;
+  }
+
+  .model-detail-view :global(.static-diagram-box-abbrev) {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--color-maroon);
+  }
+
+  .model-detail-view :global(.static-diagram-stack) {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .model-detail-view :global(.static-diagram-arrows-row) {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .model-detail-view :global(.static-diagram-arrow-wrap) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .model-detail-view :global(.static-diagram-arrow-label) {
+    font-size: 0.75rem;
+    color: var(--color-ink-muted);
+    font-style: italic;
+  }
+
+  .model-detail-view :global(.static-diagram-arrow) {
+    color: var(--color-maroon);
+    font-size: 1.25rem;
+  }
+
+  .model-detail-view :global(.static-diagram-note) {
+    margin: 1.25rem 0 0 0;
+    padding: 0.75rem 1rem;
+    background: #fff;
+    border-left: 4px solid var(--color-gold);
+    border-radius: 6px;
+    font-size: 0.9rem;
+  }
+
+  .model-detail-view :global(.static-diagram-legend) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    color: var(--color-ink-muted);
+  }
+
+  .model-detail-view :global(.static-diagram-legend-dot) {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    margin-right: 0.35rem;
+    vertical-align: middle;
+  }
+
+  .model-detail-view :global(.static-diagram-legend-dot.prior) { background: var(--color-maroon-muted); }
+  .model-detail-view :global(.static-diagram-legend-dot.postuse) { background: #6B9AC4; }
+  .model-detail-view :global(.static-diagram-legend-dot.affective) { background: var(--color-gold); }
+  .model-detail-view :global(.static-diagram-legend-dot.intention) { background: var(--color-gold-dark); }
+  .model-detail-view :global(.static-diagram-legend-dot.behavior) { background: var(--color-maroon); }
+
+  .model-detail-view :global(.static-diagram-generic-grid) {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .model-detail-view :global(.static-diagram-relationships) {
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .model-detail-view :global(.static-diagram-relationships h4) {
+    font-size: 0.95rem;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .model-detail-view :global(.static-diagram-relationships ul) {
+    margin: 0;
+    padding-left: 1.25rem;
+    line-height: 1.8;
+  }
 </style>

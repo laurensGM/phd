@@ -1,4 +1,4 @@
-# PhD Knowledge System
+# PhD Operating System
 
 A static website for organizing PhD research: theoretical models, constructs, diary entries, literature, research questions, methods, and a visual theory map.
 
