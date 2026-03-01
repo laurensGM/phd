@@ -30,6 +30,28 @@ export interface Database {
           created_at?: string;
         };
       };
+      saved_papers: {
+        Row: {
+          id: string;
+          url: string;
+          motivation: string | null;
+          tags: string[];
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          url: string;
+          motivation?: string | null;
+          tags?: string[];
+          created_at?: string;
+        };
+        Update: {
+          url?: string;
+          motivation?: string | null;
+          tags?: string[];
+          created_at?: string;
+        };
+      };
     };
   };
 }

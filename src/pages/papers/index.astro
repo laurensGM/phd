@@ -1,73 +1,403 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import PapersPage from '../../components/PapersPage';
 import literature from '../../data/literature.json';
 ---
 
-<BaseLayout title="Papers" description="Literature database - citations, constructs, methods, findings">
+<BaseLayout title="Papers" description="Save paper links with motivation and tags; key literature reference">
   <h1>Papers</h1>
-  <p class="page-desc">Papers with citations, key constructs, methods, findings, and your summaries.</p>
+  <p class="page-desc">Save interesting papers with a link and why you kept them. Tag them for later. Below, your saved list and key literature.</p>
 
-  <div class="literature-list">
-    {literature.map((paper: any) => (
-      <article class="paper-card">
-        <h2>{paper.citation}</h2>
-        <div class="paper-meta">
-          {paper.doi && (
-            <a href={`https://doi.org/${paper.doi}`} target="_blank" rel="noopener">DOI: {paper.doi}</a>
-          )}
-          {paper.pdfLink && (
-            <a href={paper.pdfLink} target="_blank" rel="noopener">PDF</a>
-          )}
-        </div>
+  <PapersPage client:load />
 
-        <section class="paper-section">
-          <h3>Key Constructs</h3>
-          <p>{paper.keyConstructs?.join(', ')}</p>
-        </section>
-
-        <section class="paper-section">
-          <h3>Method</h3>
-          <p>{paper.method}</p>
-        </section>
-
-        <section class="paper-section">
-          <h3>Findings</h3>
-          <p>{paper.findings}</p>
-        </section>
-
-        <section class="paper-section highlight">
-          <h3>Your Summary</h3>
-          <p>{paper.summary}</p>
-        </section>
-
-        {paper.replicationNotes && (
-          <section class="paper-section">
-            <h3>Replication Notes</h3>
-            <p>{paper.replicationNotes}</p>
-          </section>
-        )}
-      </article>
-    ))}
-  </div>
+  {literature.length > 0 && (
+    <section class="literature-ref-section">
+      <h2 class="literature-ref-title">Key papers (reference)</h2>
+      <p class="literature-ref-desc">Curated literature with citations, constructs, methods and findings.</p>
+      <div class="literature-list">
+        {literature.map((paper: any) => (
+          <article class="paper-card">
+            <h3>{paper.citation}</h3>
+            <div class="paper-meta">
+              {paper.doi && (
+                <a href={`https://doi.org/${paper.doi}`} target="_blank" rel="noopener">DOI: {paper.doi}</a>
+              )}
+              {paper.pdfLink && (
+                <a href={paper.pdfLink} target="_blank" rel="noopener">PDF</a>
+              )}
+            </div>
+            {paper.keyConstructs?.length > 0 && (
+              <section class="paper-section">
+                <h4>Key Constructs</h4>
+                <p>{paper.keyConstructs.join(', ')}</p>
+              </section>
+            )}
+            {paper.method && (
+              <section class="paper-section">
+                <h4>Method</h4>
+                <p>{paper.method}</p>
+              </section>
+            )}
+            {paper.findings && (
+              <section class="paper-section">
+                <h4>Findings</h4>
+                <p>{paper.findings}</p>
+              </section>
+            )}
+            {paper.summary && (
+              <section class="paper-section highlight">
+                <h4>Your Summary</h4>
+                <p>{paper.summary}</p>
+              </section>
+            )}
+            {paper.replicationNotes && (
+              <section class="paper-section">
+                <h4>Replication Notes</h4>
+                <p>{paper.replicationNotes}</p>
+              </section>
+            )}
+          </article>
+        ))}
+      </div>
+    </section>
+  )}
 </BaseLayout>
 
 <style>
-  .page-desc { color: var(--color-ink-muted); margin-bottom: 2rem; }
+  .page-desc {
+    color: var(--color-ink-muted);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
 
-  .literature-list { display: flex; flex-direction: column; gap: 2rem; }
+  /* Papers form & list (React) – use :global so styles apply */
+  :global(.papers-page .papers-add-section) {
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+  }
+  :global(.papers-page .papers-add-btn) {
+    margin-bottom: 2rem;
+    padding: 0.65rem 1.25rem;
+    background: var(--color-maroon);
+    color: #fff;
+    border: 2px solid var(--color-gold);
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  :global(.papers-page .papers-add-btn:hover) {
+    background: var(--color-maroon-dark);
+    border-color: var(--color-gold-light);
+  }
+  :global(.papers-page .papers-form) {
+    max-width: 960px;
+    padding: 2.5rem 3rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    border-left: 4px solid var(--color-maroon);
+    box-shadow: var(--shadow-sm);
+  }
+  :global(.papers-page .papers-form-title) {
+    font-family: var(--font-serif);
+    font-size: 1.35rem;
+    color: var(--color-ink);
+    margin: 0 0 0.5rem 0;
+  }
+  :global(.papers-page .papers-form-hint) {
+    font-size: 0.875rem;
+    color: var(--color-ink-muted);
+    margin-bottom: 2.5rem;
+  }
+  :global(.papers-page .papers-form-field) {
+    margin-bottom: 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  :global(.papers-page .papers-form-field-motivation) {
+    margin-bottom: 3.5rem;
+    gap: 1.25rem;
+  }
+  :global(.papers-page .papers-form-field-motivation label) {
+    display: block;
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+  :global(.papers-page .papers-form-field label),
+  :global(.papers-page .papers-form-label) {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+  :global(.papers-page .papers-input),
+  :global(.papers-page .papers-textarea) {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--color-border);
+    border-radius: 8px;
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    color: var(--color-ink);
+    background: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+  }
+  :global(.papers-page .papers-input:focus),
+  :global(.papers-page .papers-textarea:focus) {
+    outline: none;
+    border-color: var(--color-maroon);
+    box-shadow: 0 0 0 3px rgba(113, 32, 56, 0.12);
+  }
+  :global(.papers-page .papers-textarea) {
+    min-height: 140px;
+    resize: vertical;
+    line-height: 1.6;
+  }
+  :global(.papers-page .papers-tag-chips) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  :global(.papers-page .papers-tag-chip) {
+    padding: 0.65rem 1.35rem;
+    border: 2px solid var(--color-border);
+    background: var(--color-bg-alt);
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--color-ink);
+    transition: border-color 0.2s, background 0.2s, color 0.2s;
+  }
+  :global(.papers-page .papers-tag-chip:hover) {
+    border-color: var(--color-maroon-muted);
+    background: rgba(113, 32, 56, 0.06);
+  }
+  :global(.papers-page .papers-tag-chip.selected) {
+    background: var(--color-maroon);
+    color: #fff;
+    border-color: var(--color-maroon);
+  }
+  :global(.papers-page .papers-submit) {
+    margin-top: 1.5rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--color-maroon);
+    color: #fff;
+    border: 2px solid var(--color-gold);
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  :global(.papers-page .papers-submit:hover:not(:disabled)) {
+    background: var(--color-maroon-dark);
+    border-color: var(--color-gold-light);
+  }
+  :global(.papers-page .papers-submit:disabled) {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+  :global(.papers-page .papers-history-section) {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-border);
+  }
+  :global(.papers-page .papers-history-title) {
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--color-border);
+    color: var(--color-ink);
+  }
+  :global(.papers-page .papers-filters) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  :global(.papers-page .papers-search) {
+    flex: 1;
+    min-width: 200px;
+    padding: 0.65rem 1rem;
+    border: 2px solid var(--color-border);
+    border-radius: 8px;
+    font-size: 0.95rem;
+  }
+  :global(.papers-page .papers-search:focus) {
+    outline: none;
+    border-color: var(--color-maroon);
+  }
+  :global(.papers-page .papers-select) {
+    padding: 0.65rem 1rem;
+    border: 2px solid var(--color-border);
+    border-radius: 8px;
+    font-size: 0.95rem;
+  }
+  :global(.papers-page .papers-entries) {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  :global(.papers-page .papers-entry) {
+    padding: 1.5rem 1.75rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    box-shadow: var(--shadow-sm);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  :global(.papers-page .papers-entry:hover) {
+    border-color: var(--color-maroon-muted);
+    box-shadow: var(--shadow-md);
+  }
+  :global(.papers-page .papers-entry-header) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+  :global(.papers-page .papers-entry-header time) {
+    font-size: 0.9rem;
+    color: var(--color-ink-muted);
+  }
+  :global(.papers-page .papers-entry-tags) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  :global(.papers-page .papers-tag-badge) {
+    padding: 0.25rem 0.6rem;
+    background: var(--color-bg-alt);
+    font-size: 0.75rem;
+    border-radius: 6px;
+    color: var(--color-ink-muted);
+    border: 1px solid var(--color-border);
+  }
+  :global(.papers-page .papers-entry-link) {
+    margin: 0.5rem 0 0.75rem 0;
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+  :global(.papers-page .papers-entry-link a) {
+    color: var(--color-maroon);
+    text-decoration: none;
+  }
+  :global(.papers-page .papers-entry-link a:hover) {
+    text-decoration: underline;
+  }
+  :global(.papers-page .papers-entry-motivation) {
+    margin: 0.5rem 0 0;
+    color: var(--color-ink-muted);
+    line-height: 1.6;
+    font-size: 0.95rem;
+  }
+  :global(.papers-page .papers-empty) {
+    color: var(--color-ink-muted);
+    padding: 2.5rem;
+    text-align: center;
+    font-size: 0.95rem;
+  }
+  :global(.papers-page .papers-entry-count) {
+    font-weight: 400;
+    color: var(--color-ink-muted);
+    font-size: 0.95rem;
+  }
+  :global(.papers-page .papers-setup) {
+    max-width: 480px;
+    padding: 2rem 2.5rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    border-left: 4px solid var(--color-gold);
+  }
+  :global(.papers-page .papers-setup-hint) {
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    color: var(--color-ink-muted);
+  }
+  :global(.papers-page .papers-setup code),
+  :global(.papers-page .papers-setup-hint code) {
+    background: var(--color-bg-alt);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+  }
+  :global(.papers-page .papers-loading) {
+    padding: 2.5rem;
+    color: var(--color-ink-muted);
+    text-align: center;
+  }
+  :global(.papers-page .papers-error) {
+    color: var(--color-maroon);
+    font-size: 0.95rem;
+    margin-bottom: 1.25rem;
+    padding: 1rem 1.25rem;
+    background: rgba(113, 32, 56, 0.08);
+    border-radius: 8px;
+    border-left: 4px solid var(--color-maroon);
+  }
 
+  /* Key papers (static literature) */
+  .literature-ref-section {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-border);
+  }
+  .literature-ref-title {
+    font-family: var(--font-serif);
+    font-size: 1.35rem;
+    color: var(--color-maroon);
+    margin: 0 0 0.5rem 0;
+  }
+  .literature-ref-desc {
+    color: var(--color-ink-muted);
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+  }
+  .literature-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
   .paper-card {
     padding: 2rem;
     background: white;
     border: 1px solid var(--color-border);
     border-radius: 8px;
   }
-
-  .paper-card h2 { font-size: 1.1rem; font-weight: 600; margin-top: 0; }
-  .paper-meta { margin: 0.5rem 0; font-size: 0.9rem; }
-  .paper-meta a { margin-right: 1rem; }
-
-  .paper-section { margin-top: 1rem; }
-  .paper-section h3 { font-size: 1rem; margin-bottom: 0.35rem; }
-  .paper-section.highlight { padding: 1rem; background: var(--color-bg-alt); border-radius: 6px; }
+  .paper-card h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-top: 0;
+  }
+  .paper-meta {
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+  }
+  .paper-meta a {
+    margin-right: 1rem;
+  }
+  .paper-section {
+    margin-top: 1rem;
+  }
+  .paper-section h4 {
+    font-size: 1rem;
+    margin-bottom: 0.35rem;
+  }
+  .paper-section.highlight {
+    padding: 1rem;
+    background: var(--color-bg-alt);
+    border-radius: 6px;
+  }
 </style>
