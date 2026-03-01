@@ -8,6 +8,7 @@ interface Model {
   authors: string[];
   constructs: string[];
   constructAbbreviations?: Record<string, string>;
+  constructCategories?: Record<string, string>;
   relationships: { from: string; to: string }[];
   diagramType?: string;
   keyCitations?: { authors: string; title: string; doi?: string }[];
@@ -165,12 +166,159 @@ function EcmIsDiagram({ base = '', constructToSlug = {} }: { base: string; const
   );
 }
 
+const NODE_WIDTH = 160;
+const NODE_HEIGHT = 52;
+const LEVEL_GAP = 64;
+const NODE_GAP = 14;
+const PADDING = 24;
+
+interface FlowNode {
+  abbrev: string;
+  name: string;
+  level: number;
+  x: number;
+  y: number;
+  category: string;
+}
+
+function getLayeredLayout(model: Model): { nodes: FlowNode[]; edges: { from: string; to: string }[]; width: number; height: number } {
+  const abbrevMap = model.constructAbbreviations || {};
+  const categories = model.constructCategories || {};
+  const { constructs, relationships } = model;
+  const abbrevToName: Record<string, string> = {};
+  constructs.forEach((name) => {
+    const ab = abbrevMap[name] || name.slice(0, 12);
+    abbrevToName[ab] = name;
+  });
+  const allAbbrevs = constructs.map((n) => abbrevMap[n] || n.slice(0, 12));
+  const predecessors: Record<string, string[]> = {};
+  allAbbrevs.forEach((ab) => { predecessors[ab] = []; });
+  relationships.forEach(({ from: u, to: v }) => {
+    if (allAbbrevs.includes(v) && allAbbrevs.includes(u) && u !== v) {
+      if (!predecessors[v].includes(u)) predecessors[v].push(u);
+    }
+  });
+  const level: Record<string, number> = {};
+  allAbbrevs.forEach((ab) => { level[ab] = 0; });
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const v of allAbbrevs) {
+      for (const u of predecessors[v]) {
+        const newL = level[u] + 1;
+        if (newL > level[v]) { level[v] = newL; changed = true; }
+      }
+    }
+  }
+  const levelsToNodes: Record<number, string[]> = {};
+  allAbbrevs.forEach((ab) => {
+    const L = level[ab];
+    if (!levelsToNodes[L]) levelsToNodes[L] = [];
+    levelsToNodes[L].push(ab);
+  });
+  const maxLevel = Math.max(...Object.keys(levelsToNodes).map(Number), 0);
+  const nodes: FlowNode[] = [];
+  let maxY = 0;
+  for (let L = 0; L <= maxLevel; L++) {
+    const list = levelsToNodes[L] || [];
+    list.forEach((ab, idx) => {
+      const x = PADDING + L * (NODE_WIDTH + LEVEL_GAP);
+      const y = PADDING + idx * (NODE_HEIGHT + NODE_GAP);
+      maxY = Math.max(maxY, y + NODE_HEIGHT);
+      nodes.push({
+        abbrev: ab,
+        name: abbrevToName[ab],
+        level: L,
+        x,
+        y,
+        category: categories[ab] || 'neutral',
+      });
+    });
+  }
+  const width = PADDING * 2 + (maxLevel + 1) * NODE_WIDTH + maxLevel * LEVEL_GAP;
+  const height = maxY + PADDING;
+  return { nodes, edges: relationships, width, height };
+}
+
+function GenericFlowDiagram({ model, base = '', constructToSlug = {} }: ModelDiagramStaticProps) {
+  const layout = React.useMemo(() => getLayeredLayout(model), [model]);
+  const { nodes, edges, width, height } = layout;
+  const posByAbbrev = React.useMemo(() => {
+    const m: Record<string, { x: number; y: number }> = {};
+    nodes.forEach((n) => { m[n.abbrev] = { x: n.x + NODE_WIDTH / 2, y: n.y + NODE_HEIGHT / 2 }; });
+    return m;
+  }, [nodes]);
+
+  return (
+    <div className="flow-diagram-wrap">
+      <p className="flow-diagram-hint">Constructs and relationships (left to right).</p>
+      <div className="flow-diagram-inner" style={{ width, height }}>
+        <svg className="flow-diagram-svg" width={width} height={height} xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id={`flow-arrow-${model.id}`} markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L9,3 z" fill="var(--color-ink-muted)" />
+            </marker>
+          </defs>
+          {edges.map(({ from: fromAb, to: toAb }, i) => {
+            const fromPos = posByAbbrev[fromAb];
+            const toPos = posByAbbrev[toAb];
+            if (!fromPos || !toPos) return null;
+            const dx = toPos.x - fromPos.x;
+            const dy = toPos.y - fromPos.y;
+            const dist = Math.hypot(dx, dy) || 1;
+            const startX = fromPos.x + (dx / dist) * (NODE_WIDTH / 2 + 4);
+            const startY = fromPos.y + (dy / dist) * (NODE_HEIGHT / 2 + 4);
+            const endX = toPos.x - (dx / dist) * (NODE_WIDTH / 2 + 4);
+            const endY = toPos.y - (dy / dist) * (NODE_HEIGHT / 2 + 4);
+            const midX = (startX + endX) / 2;
+            const midY = (startY + endY) / 2;
+            const perpX = -dy / dist;
+            const perpY = dx / dist;
+            const ctrlOffset = Math.min(40, Math.abs(dx) * 0.3) * (dx >= 0 ? 1 : -1);
+            const cx = midX + perpX * ctrlOffset;
+            const cy = midY + perpY * ctrlOffset;
+            const pathD = `M ${startX} ${startY} Q ${cx} ${cy} ${endX} ${endY}`;
+            return (
+              <path key={i} d={pathD} fill="none" stroke="var(--color-ink-muted)" strokeWidth="1.5" markerEnd={`url(#flow-arrow-${model.id})`} />
+            );
+          })}
+        </svg>
+        {nodes.map((node) => {
+          const slug = constructToSlug[node.name];
+          const href = slug ? `${base}constructs/${slug}/` : '#';
+          return (
+            <a
+              key={node.abbrev}
+              href={href}
+              className={`flow-diagram-node flow-diagram-node--${node.category}`}
+              style={{ left: node.x, top: node.y, width: NODE_WIDTH, height: NODE_HEIGHT }}
+            >
+              <span className="flow-diagram-node-abbrev">{node.abbrev}</span>
+              <span className="flow-diagram-node-name">{node.name}</span>
+            </a>
+          );
+        })}
+      </div>
+      {(model.constructCategories && Object.keys(model.constructCategories).length > 0) && (
+        <div className="flow-diagram-legend">
+          {['social', 'cognitive'].map((cat) => (
+            <span key={cat} className="flow-diagram-legend-item">
+              <span className={`flow-diagram-legend-dot flow-diagram-legend-dot--${cat}`} />
+              {cat === 'social' ? 'Social influencing' : 'Cognitive instrumental'}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function GenericStatic({ model, base = '', constructToSlug = {} }: ModelDiagramStaticProps) {
   const abbrevMap = model.constructAbbreviations || {};
-  const { constructs, relationships } = model;
+  const { constructs } = model;
   return (
     <div className="static-diagram static-diagram-generic">
-      <p className="static-diagram-hint">Constructs and relationships in the model.</p>
+      <p className="static-diagram-hint">Constructs in the model (no relationship paths defined).</p>
       <div className="static-diagram-generic-grid">
         {constructs.map((name) => {
           const abbrev = abbrevMap[name] || name.slice(0, 12);
@@ -184,16 +332,6 @@ function GenericStatic({ model, base = '', constructToSlug = {} }: ModelDiagramS
           );
         })}
       </div>
-      {relationships.length > 0 && (
-        <div className="static-diagram-relationships">
-          <h4>Relationships</h4>
-          <ul>
-            {relationships.map((r, i) => (
-              <li key={i}><code>{r.from}</code> → <code>{r.to}</code></li>
-            ))}
-          </ul>
-        </div>
-      )}
     </div>
   );
 }
@@ -201,6 +339,9 @@ function GenericStatic({ model, base = '', constructToSlug = {} }: ModelDiagramS
 export default function ModelDiagramStatic({ model, constructToSlug = {}, base = '' }: ModelDiagramStaticProps) {
   if (model.diagramType === 'ecm-is') {
     return <EcmIsDiagram base={base} constructToSlug={constructToSlug} />;
+  }
+  if (model.relationships && model.relationships.length > 0) {
+    return <GenericFlowDiagram model={model} base={base} constructToSlug={constructToSlug} />;
   }
   return <GenericStatic model={model} base={base} constructToSlug={constructToSlug} />;
 }

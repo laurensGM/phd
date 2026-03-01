@@ -193,6 +193,19 @@
       "Behavioral Intention": "BI",
       "Actual System Use": "Use"
     },
+    "constructCategories": {
+      "SN": "social",
+      "Img": "social",
+      "Vol": "social",
+      "JR": "cognitive",
+      "OQ": "cognitive",
+      "RD": "cognitive",
+      "PU": "cognitive",
+      "PEOU": "cognitive",
+      "Exp": "neutral",
+      "BI": "neutral",
+      "Use": "neutral"
+    },
     "relationships": [
       { "from": "SN", "to": "PU" },
       { "from": "Img", "to": "PU" },

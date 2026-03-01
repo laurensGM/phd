@@ -35,7 +35,6 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
           <span class="logo-text">PhD Operating System</span>
         </a>
         <ul class="nav-links">
-          <li><a href={homeHref}>Home</a></li>
           <li><a href={`${base}models/`}>Models</a></li>
           <li><a href={`${base}constructs/`}>Constructs</a></li>
           <li><a href={`${base}diary/`}>Diary</a></li>
@@ -155,10 +154,14 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
 
   .nav-links {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
     gap: 1.5rem;
     list-style: none;
     margin: 0;
     padding: 0;
+    flex: 1;
   }
 
   .nav-links a {
