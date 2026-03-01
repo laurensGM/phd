@@ -1,0 +1,26 @@
+{
+  "faq": [
+    { "question": "How do you measure it?", "author": "C. Gerber" },
+    { "question": "What is the academic construct?", "author": "C. Gerber" },
+    { "question": "What is your outcome variable and how do you measure it?", "author": "C. Gerber" },
+    { "question": "What is your unit of analysis?", "author": "C. Gerber" },
+    { "question": "Is your outcome variable not a biased measure?", "author": "C. Gerber" },
+    { "question": "Are your factor and outcome variable not correlated?", "author": "C. Gerber" }
+  ],
+  "quotes": [
+    { "text": "Answer your own research question. If multiple answers, pick the one you like most, link it to literature and repeat.", "author": "C. Gerber" },
+    { "text": "If the results in WoS are more than 500, it's too much.", "author": "C. Gerber" },
+    { "text": "The F statistic tells you if any of the variables play a significant role. The H0 is that all coefficients are 0.", "author": null },
+    { "text": "A control factor is used when other factors then the ones I consider are also affecting the outcome variable.", "author": null },
+    { "text": "There are 2 limitations to the variables you consider: they must be theory driven and sufficient data must exist.", "author": null },
+    { "text": "When your outcome variable is not continuous, you can consider discrete choice models.", "author": null },
+    { "text": "The best way to put forward a theory is in a mathematical equation.", "author": "C. Gerber" },
+    { "text": "Take a global north idea and consider why it doesn't apply to the global south or SSA.", "author": null },
+    { "text": "Every decision you make must be argued and requires a reference.", "author": "C. Gerber" },
+    { "text": "If two or more of your predictors (X variables) are highly correlated with each other, it becomes hard for the model to separate their individual effects on Y.", "author": null },
+    { "text": "Reflecting on your outcome variable and how you measure it gives you perspective and makes your argument flow.", "author": "C. Gerber" },
+    { "text": "Your outcome variable should not change frequently. Your input variables might change more often.", "author": "C. Gerber" },
+    { "text": "Like artists are trained by first copying from masters, copy constructs, how constructs relate, arguments and then bring them towards something original.", "author": "C. Gerber" },
+    { "text": "Understand the theory the academic construct is a part of.", "author": "C. Gerber" }
+  ]
+}
