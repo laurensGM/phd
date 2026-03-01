@@ -166,22 +166,13 @@ function EcmIsDiagram({ base = '', constructToSlug = {} }: { base: string; const
   );
 }
 
-const NODE_WIDTH = 160;
-const NODE_HEIGHT = 52;
-const LEVEL_GAP = 64;
-const NODE_GAP = 14;
-const PADDING = 24;
-
-interface FlowNode {
+interface LevelNode {
   abbrev: string;
   name: string;
-  level: number;
-  x: number;
-  y: number;
   category: string;
 }
 
-function getLayeredLayout(model: Model): { nodes: FlowNode[]; edges: { from: string; to: string }[]; width: number; height: number } {
+function getLayeredLevels(model: Model): LevelNode[][] {
   const abbrevMap = model.constructAbbreviations || {};
   const categories = model.constructCategories || {};
   const { constructs, relationships } = model;
@@ -217,96 +208,60 @@ function getLayeredLayout(model: Model): { nodes: FlowNode[]; edges: { from: str
     levelsToNodes[L].push(ab);
   });
   const maxLevel = Math.max(...Object.keys(levelsToNodes).map(Number), 0);
-  const nodes: FlowNode[] = [];
-  let maxY = 0;
+  const levels: LevelNode[][] = [];
   for (let L = 0; L <= maxLevel; L++) {
     const list = levelsToNodes[L] || [];
-    list.forEach((ab, idx) => {
-      const x = PADDING + L * (NODE_WIDTH + LEVEL_GAP);
-      const y = PADDING + idx * (NODE_HEIGHT + NODE_GAP);
-      maxY = Math.max(maxY, y + NODE_HEIGHT);
-      nodes.push({
+    levels.push(
+      list.map((ab) => ({
         abbrev: ab,
         name: abbrevToName[ab],
-        level: L,
-        x,
-        y,
         category: categories[ab] || 'neutral',
-      });
-    });
+      }))
+    );
   }
-  const width = PADDING * 2 + (maxLevel + 1) * NODE_WIDTH + maxLevel * LEVEL_GAP;
-  const height = maxY + PADDING;
-  return { nodes, edges: relationships, width, height };
+  return levels;
 }
 
 function GenericFlowDiagram({ model, base = '', constructToSlug = {} }: ModelDiagramStaticProps) {
-  const layout = React.useMemo(() => getLayeredLayout(model), [model]);
-  const { nodes, edges, width, height } = layout;
-  const posByAbbrev = React.useMemo(() => {
-    const m: Record<string, { x: number; y: number }> = {};
-    nodes.forEach((n) => { m[n.abbrev] = { x: n.x + NODE_WIDTH / 2, y: n.y + NODE_HEIGHT / 2 }; });
-    return m;
-  }, [nodes]);
+  const levels = React.useMemo(() => getLayeredLevels(model), [model]);
 
   return (
-    <div className="flow-diagram-wrap">
-      <p className="flow-diagram-hint">Constructs and relationships (left to right).</p>
-      <div className="flow-diagram-inner" style={{ width, height }}>
-        <svg className="flow-diagram-svg" width={width} height={height} xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <marker id={`flow-arrow-${model.id}`} markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-              <path d="M0,0 L0,6 L9,3 z" fill="var(--color-ink-muted)" />
-            </marker>
-          </defs>
-          {edges.map(({ from: fromAb, to: toAb }, i) => {
-            const fromPos = posByAbbrev[fromAb];
-            const toPos = posByAbbrev[toAb];
-            if (!fromPos || !toPos) return null;
-            const dx = toPos.x - fromPos.x;
-            const dy = toPos.y - fromPos.y;
-            const dist = Math.hypot(dx, dy) || 1;
-            const startX = fromPos.x + (dx / dist) * (NODE_WIDTH / 2 + 4);
-            const startY = fromPos.y + (dy / dist) * (NODE_HEIGHT / 2 + 4);
-            const endX = toPos.x - (dx / dist) * (NODE_WIDTH / 2 + 4);
-            const endY = toPos.y - (dy / dist) * (NODE_HEIGHT / 2 + 4);
-            const midX = (startX + endX) / 2;
-            const midY = (startY + endY) / 2;
-            const perpX = -dy / dist;
-            const perpY = dx / dist;
-            const ctrlOffset = Math.min(40, Math.abs(dx) * 0.3) * (dx >= 0 ? 1 : -1);
-            const cx = midX + perpX * ctrlOffset;
-            const cy = midY + perpY * ctrlOffset;
-            const pathD = `M ${startX} ${startY} Q ${cx} ${cy} ${endX} ${endY}`;
-            return (
-              <path key={i} d={pathD} fill="none" stroke="var(--color-ink-muted)" strokeWidth="1.5" markerEnd={`url(#flow-arrow-${model.id})`} />
-            );
-          })}
-        </svg>
-        {nodes.map((node) => {
-          const slug = constructToSlug[node.name];
-          const href = slug ? `${base}constructs/${slug}/` : '#';
-          return (
-            <a
-              key={node.abbrev}
-              href={href}
-              className={`flow-diagram-node flow-diagram-node--${node.category}`}
-              style={{ left: node.x, top: node.y, width: NODE_WIDTH, height: NODE_HEIGHT }}
-            >
-              <span className="flow-diagram-node-abbrev">{node.abbrev}</span>
-              <span className="flow-diagram-node-name">{node.name}</span>
-            </a>
-          );
-        })}
+    <div className="ecm-diagram-wrap">
+      <p className="ecm-diagram-subtitle">Constructs and relationships (left to right).</p>
+      <div className="ecm-diagram">
+        {levels.map((levelNodes, levelIndex) => (
+          <React.Fragment key={levelIndex}>
+            <div className="ecm-box-stack">
+              {levelNodes.map((node) => {
+                const slug = constructToSlug[node.name];
+                const href = slug ? `${base}constructs/${slug}/` : '#';
+                return (
+                  <a
+                    key={node.abbrev}
+                    href={href}
+                    className={`ecm-box ecm-box--${node.category}`}
+                  >
+                    <div className="ecm-box-label">{node.abbrev}</div>
+                    <div className="ecm-box-name">{node.name}</div>
+                  </a>
+                );
+              })}
+            </div>
+            {levelIndex < levels.length - 1 && (
+              <div className="ecm-arrow-group">
+                <div className="ecm-arrow">
+                  <div className="ecm-arrow-line" />
+                  <span className="ecm-arrow-label">→</span>
+                </div>
+              </div>
+            )}
+          </React.Fragment>
+        ))}
       </div>
       {(model.constructCategories && Object.keys(model.constructCategories).length > 0) && (
-        <div className="flow-diagram-legend">
-          {['social', 'cognitive'].map((cat) => (
-            <span key={cat} className="flow-diagram-legend-item">
-              <span className={`flow-diagram-legend-dot flow-diagram-legend-dot--${cat}`} />
-              {cat === 'social' ? 'Social influencing' : 'Cognitive instrumental'}
-            </span>
-          ))}
+        <div className="ecm-legend" style={{ marginTop: '1rem' }}>
+          <div className="ecm-legend-item"><span className="ecm-legend-dot ecm-legend-dot--social" /> Social influencing</div>
+          <div className="ecm-legend-item"><span className="ecm-legend-dot ecm-legend-dot--cognitive" /> Cognitive instrumental</div>
         </div>
       )}
     </div>

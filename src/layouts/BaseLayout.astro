@@ -131,10 +131,15 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
     font-weight: 600;
     color: #fff;
     text-decoration: none;
+    padding: 0.4rem 0.65rem;
+    border-radius: 6px;
+    transition: color 0.2s ease, background 0.2s ease;
   }
 
   .logo:hover {
     color: var(--color-gold-light);
+    background: rgba(255, 255, 255, 0.12);
+    text-decoration: none;
   }
 
   .logo:hover .logo-img {
@@ -346,6 +351,13 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
   .ecm-box.intention .ecm-box-label { color: var(--color-gold-dark); }
   .ecm-box.behavior { border-color: var(--color-maroon); }
   .ecm-box.behavior .ecm-box-label { color: var(--color-maroon); }
+  /* Generic model diagram (TAM2, UTAUT, etc.) – same box styling with category colors */
+  .ecm-box.ecm-box--social { border-color: var(--color-maroon-muted); }
+  .ecm-box.ecm-box--social .ecm-box-label { color: var(--color-maroon-muted); }
+  .ecm-box.ecm-box--cognitive { border-color: var(--color-gold-dark); }
+  .ecm-box.ecm-box--cognitive .ecm-box-label { color: var(--color-gold-dark); }
+  .ecm-box.ecm-box--neutral { border-color: var(--color-border); }
+  .ecm-box.ecm-box--neutral .ecm-box-label { color: var(--color-ink-muted); }
   .ecm-arrow-group {
     display: flex;
     flex-direction: column;
@@ -454,6 +466,8 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
   .ecm-legend-dot.satisfy { background: var(--color-gold); }
   .ecm-legend-dot.intention { background: var(--color-gold-light); }
   .ecm-legend-dot.behavior { background: var(--color-maroon); }
+  .ecm-legend-dot.ecm-legend-dot--social { background: var(--color-maroon-muted); }
+  .ecm-legend-dot.ecm-legend-dot--cognitive { background: var(--color-gold-dark); }
   .ecm-source-note {
     margin-top: 28px;
     font-size: 0.75rem;
