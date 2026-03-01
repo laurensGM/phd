@@ -161,31 +161,38 @@ export default function DiaryPage() {
 
         {showForm && (
           <form className="diary-form" onSubmit={handleSubmit}>
-            <h3>New Diary Entry</h3>
+            <h3 className="diary-form-title">New Diary Entry</h3>
             <p className="form-date-hint">Date will be set to today automatically.</p>
-            <label>
-              Summary
+
+            <div className="diary-form-field">
+              <label htmlFor="diary-summary">Summary</label>
               <input
+                id="diary-summary"
                 type="text"
                 value={formData.summary}
                 onChange={(e) => setFormData((d) => ({ ...d, summary: e.target.value }))}
                 required
                 placeholder="Brief summary of what you did"
+                className="diary-input diary-input-summary"
               />
-            </label>
-            <label>
-              Details
+            </div>
+
+            <div className="diary-form-field diary-form-field-details">
+              <label htmlFor="diary-details">Details</label>
               <textarea
+                id="diary-details"
                 value={formData.detailedReflection}
                 onChange={(e) =>
                   setFormData((d) => ({ ...d, detailedReflection: e.target.value }))
                 }
-                rows={4}
-                placeholder="Describe what you did..."
+                rows={12}
+                placeholder="Describe what you did, key decisions, reflections..."
+                className="diary-textarea"
               />
-            </label>
-            <label>
-              Tags (click to select)
+            </div>
+
+            <div className="diary-form-field">
+              <span className="diary-form-label">Tags (click to select)</span>
               <div className="tag-chips">
                 {TAG_OPTIONS.map((t) => (
                   <button
@@ -198,18 +205,22 @@ export default function DiaryPage() {
                   </button>
                 ))}
               </div>
-            </label>
-            <label>
-              Linked Constructs (comma or semicolon separated)
+            </div>
+
+            <div className="diary-form-field">
+              <label htmlFor="diary-constructs">Linked Constructs (comma or semicolon separated)</label>
               <input
+                id="diary-constructs"
                 type="text"
                 value={formData.linkedConstructs}
                 onChange={(e) =>
                   setFormData((d) => ({ ...d, linkedConstructs: e.target.value }))
                 }
                 placeholder="e.g. Perceived Usefulness, Satisfaction"
+                className="diary-input"
               />
-            </label>
+            </div>
+
             <button type="submit" className="diary-submit" disabled={saving}>
               {saving ? 'Saving...' : 'Save Entry'}
             </button>
