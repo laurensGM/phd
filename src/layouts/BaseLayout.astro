@@ -6,8 +6,13 @@ interface Props {
 
 const { title, description = "PhD Operating System - Organizing research, models, constructs, and literature" } = Astro.props;
 const base = import.meta.env.BASE_URL;
-// Logo and home: always link to this site's root (base), never external
-const homeHref = base.endsWith('/') ? base : `${base}/`;
+// Home link: use path-relative URL so it always resolves to this app's root (avoids going to portfolio when base is wrong)
+const pathname = (Astro.url.pathname || '/').replace(/\/$/, '') || '/';
+const pathSegments = pathname.split('/').filter(Boolean);
+const baseSegments = base.replace(/\/$/, '').split('/').filter(Boolean);
+const baseDepth = baseSegments.length;
+const upLevels = Math.max(0, pathSegments.length - baseDepth);
+const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
 ---
 
 <!DOCTYPE html>
