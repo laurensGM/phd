@@ -36,6 +36,9 @@ export interface Database {
           url: string;
           motivation: string | null;
           tags: string[];
+          title: string | null;
+          authors: string | null;
+          year: string | null;
           created_at: string;
         };
         Insert: {
@@ -43,12 +46,18 @@ export interface Database {
           url: string;
           motivation?: string | null;
           tags?: string[];
+          title?: string | null;
+          authors?: string | null;
+          year?: string | null;
           created_at?: string;
         };
         Update: {
           url?: string;
           motivation?: string | null;
           tags?: string[];
+          title?: string | null;
+          authors?: string | null;
+          year?: string | null;
           created_at?: string;
         };
       };

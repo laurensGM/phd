@@ -76,9 +76,10 @@ The diary uses **Supabase** for persistent storage. No login—just add entries.
 
 1. Create a [Supabase](https://supabase.com) project (free tier works).
 
-2. Run the migration in **SQL Editor**:
-   - Open `supabase/migrations/001_create_diary_entries.sql`
-   - Copy the contents and run in Supabase Dashboard → SQL Editor
+2. Run the migrations in **SQL Editor** (Supabase Dashboard → **SQL Editor** → **New query**). Run each block once:
+   - **Diary:** copy/paste the contents of `supabase/migrations/001_create_diary_entries.sql` and click **Run**.
+   - **Saved papers:** copy/paste the contents of `supabase/migrations/002_create_saved_papers.sql` and click **Run**.
+   - **Saved papers metadata (title, authors, year):** copy/paste the contents of `supabase/migrations/003_saved_papers_metadata.sql` and click **Run**.
 
 3. Add env vars locally. Create `.env`:
    ```

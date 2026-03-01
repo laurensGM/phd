@@ -115,6 +115,56 @@ import literature from '../../data/literature.json';
     color: var(--color-ink-muted);
     margin-bottom: 2.5rem;
   }
+  :global(.papers-page .papers-url-row) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+  }
+  :global(.papers-page .papers-url-row .papers-input) {
+    flex: 1;
+    min-width: 200px;
+  }
+  :global(.papers-page .papers-fetch-btn) {
+    flex-shrink: 0;
+    padding: 0.65rem 1.25rem;
+    background: var(--color-bg-alt);
+    border: 2px solid var(--color-maroon);
+    color: var(--color-maroon);
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+  :global(.papers-page .papers-fetch-btn:hover:not(:disabled)) {
+    background: var(--color-maroon);
+    color: #fff;
+  }
+  :global(.papers-page .papers-fetch-btn:disabled) {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  :global(.papers-page .papers-field-hint) {
+    font-size: 0.8rem;
+    color: var(--color-ink-muted);
+    margin-top: 0.25rem;
+  }
+  :global(.papers-page .papers-form-field-row) {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+  :global(.papers-page .papers-form-field-row > div) {
+    flex: 1;
+    min-width: 180px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  :global(.papers-page .papers-input-short) {
+    max-width: 6rem;
+  }
   :global(.papers-page .papers-form-field) {
     margin-bottom: 3rem;
     display: flex;
@@ -262,14 +312,97 @@ import literature from '../../data/literature.json';
   :global(.papers-page .papers-entry-header) {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.75rem;
     margin-bottom: 0.75rem;
+  }
+  :global(.papers-page .papers-entry-header-left) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  :global(.papers-page .papers-entry-actions) {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+  :global(.papers-page .papers-entry-action) {
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid var(--color-border);
+    background: #fff;
+    color: var(--color-ink);
+    transition: border-color 0.2s, background 0.2s;
+  }
+  :global(.papers-page .papers-entry-action:hover:not(:disabled)) {
+    border-color: var(--color-maroon-muted);
+    background: rgba(113, 32, 56, 0.06);
+  }
+  :global(.papers-page .papers-entry-action.papers-entry-delete:hover:not(:disabled)) {
+    border-color: var(--color-maroon);
+    background: rgba(113, 32, 56, 0.1);
+    color: var(--color-maroon);
+  }
+  :global(.papers-page .papers-entry-action:disabled) {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  :global(.papers-page .papers-entry-edit-form) {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  :global(.papers-page .papers-entry-edit-form .papers-form-field) {
+    margin-bottom: 0;
+  }
+  :global(.papers-page .papers-entry-edit-actions) {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+  :global(.papers-page .papers-btn) {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  :global(.papers-page .papers-btn-primary) {
+    background: var(--color-maroon);
+    color: #fff;
+    border-color: var(--color-gold);
+  }
+  :global(.papers-page .papers-btn-primary:hover:not(:disabled)) {
+    background: var(--color-maroon-dark);
+    border-color: var(--color-gold-light);
+  }
+  :global(.papers-page .papers-btn-secondary) {
+    background: var(--color-bg-alt);
+    color: var(--color-ink);
+    border-color: var(--color-border);
+  }
+  :global(.papers-page .papers-btn-secondary:hover) {
+    border-color: var(--color-maroon-muted);
+  }
+  :global(.papers-page .papers-btn:disabled) {
+    opacity: 0.7;
+    cursor: not-allowed;
   }
   :global(.papers-page .papers-entry-header time) {
     font-size: 0.9rem;
     color: var(--color-ink-muted);
+  }
+  :global(.papers-page .papers-entry-year) {
+    font-size: 0.9rem;
+    color: var(--color-ink-muted);
+    font-weight: 600;
   }
   :global(.papers-page .papers-entry-tags) {
     display: flex;
@@ -284,17 +417,30 @@ import literature from '../../data/literature.json';
     color: var(--color-ink-muted);
     border: 1px solid var(--color-border);
   }
-  :global(.papers-page .papers-entry-link) {
-    margin: 0.5rem 0 0.75rem 0;
-    font-size: 1rem;
+  :global(.papers-page .papers-entry-title) {
+    margin: 0.5rem 0 0.25rem 0;
+    font-size: 1.1rem;
     line-height: 1.4;
   }
-  :global(.papers-page .papers-entry-link a) {
+  :global(.papers-page .papers-entry-title a) {
     color: var(--color-maroon);
     text-decoration: none;
   }
-  :global(.papers-page .papers-entry-link a:hover) {
+  :global(.papers-page .papers-entry-title a:hover) {
     text-decoration: underline;
+  }
+  :global(.papers-page .papers-entry-authors) {
+    margin: 0.25rem 0 0.5rem 0;
+    font-size: 0.9rem;
+    color: var(--color-ink-muted);
+    line-height: 1.4;
+  }
+  :global(.papers-page .papers-entry-url-fallback) {
+    margin: 0.25rem 0 0.5rem 0;
+    font-size: 0.85rem;
+  }
+  :global(.papers-page .papers-entry-url-fallback a) {
+    color: var(--color-maroon);
   }
   :global(.papers-page .papers-entry-motivation) {
     margin: 0.5rem 0 0;
