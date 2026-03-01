@@ -1,12 +1,13 @@
 import React from 'react';
 import ModelDiagramStatic from './ModelDiagramStatic';
+import ModelNotes from './ModelNotes';
 
 interface Model {
   id: string;
   name: string;
   abbreviation: string;
-  year: number;
-  authors: string[];
+  year?: number | null;
+  authors?: string[];
   description: string;
   constructs: string[];
   constructAbbreviations?: Record<string, string>;
@@ -29,12 +30,7 @@ export default function ModelDetailView({ model, constructToSlug, base }: ModelD
     <div className="model-detail-view">
       <p className="model-desc">{model.description}</p>
 
-      {model.notes && (
-        <div className="model-notes">
-          <h3>Key points</h3>
-          <div className="model-notes-content">{model.notes}</div>
-        </div>
-      )}
+      <ModelNotes modelId={model.id} staticNote={model.notes} />
 
       {hasDiagram && (
         <>

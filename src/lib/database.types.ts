@@ -106,6 +106,27 @@ export interface Database {
           updated_at?: string;
         };
       };
+      model_notes: {
+        Row: {
+          id: string;
+          model_id: string;
+          content: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          model_id: string;
+          content: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          model_id?: string;
+          content?: string;
+          updated_at?: string;
+        };
+      };
     };
   };
 }
