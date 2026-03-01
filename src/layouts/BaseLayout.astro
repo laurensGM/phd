@@ -257,7 +257,7 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
   }
 
   /* ECM-IS diagram (global so React-rendered diagram gets layout) */
-  :global(.ecm-diagram-wrap) {
+  .ecm-diagram-wrap {
     margin: 1.5rem 0;
     padding: 2rem 1rem;
     background: #f0f4f8;
@@ -266,19 +266,19 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
     flex-direction: column;
     align-items: center;
   }
-  :global(.ecm-diagram-title) {
+  .ecm-diagram-title {
     font-size: 1.4rem;
     color: #1a2e4a;
     margin-bottom: 6px;
     text-align: center;
   }
-  :global(.ecm-diagram-subtitle) {
+  .ecm-diagram-subtitle {
     font-size: 0.85rem;
     color: #5a7a9a;
     margin-bottom: 2rem;
     text-align: center;
   }
-  :global(.ecm-diagram) {
+  .ecm-diagram {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -289,7 +289,7 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
     overflow-x: auto;
     padding: 0.5rem 0;
   }
-  :global(.ecm-box) {
+  .ecm-box {
     background: white;
     border-radius: 12px;
     padding: 18px 16px;
@@ -304,60 +304,60 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
     text-decoration: none;
     color: inherit;
   }
-  :global(.ecm-box:hover) {
+  .ecm-box:hover {
     transform: translateY(-3px);
     box-shadow: 0 6px 20px rgba(0,0,0,0.13);
     text-decoration: none;
     color: inherit;
   }
-  :global(.ecm-box .ecm-box-label) {
+  .ecm-box .ecm-box-label {
     font-size: 0.78rem;
     font-weight: 700;
     letter-spacing: 0.04em;
     margin-bottom: 6px;
   }
-  :global(.ecm-box .ecm-box-name) {
+  .ecm-box .ecm-box-name {
     font-size: 0.92rem;
     font-weight: 600;
     color: #1a2e4a;
     margin-bottom: 6px;
     line-height: 1.3;
   }
-  :global(.ecm-box .ecm-box-desc) {
+  .ecm-box .ecm-box-desc {
     font-size: 0.72rem;
     color: #6b8aaa;
     line-height: 1.4;
   }
-  :global(.ecm-box.prior) { border-color: #7c3aed; }
-  :global(.ecm-box.prior .ecm-box-label) { color: #7c3aed; }
-  :global(.ecm-box.confirm) { border-color: #0ea5e9; }
-  :global(.ecm-box.confirm .ecm-box-label) { color: #0ea5e9; }
-  :global(.ecm-box.satisfy) { border-color: #10b981; }
-  :global(.ecm-box.satisfy .ecm-box-label) { color: #10b981; }
-  :global(.ecm-box.intention) { border-color: #f59e0b; }
-  :global(.ecm-box.intention .ecm-box-label) { color: #f59e0b; }
-  :global(.ecm-box.behavior) { border-color: #ef4444; }
-  :global(.ecm-box.behavior .ecm-box-label) { color: #ef4444; }
-  :global(.ecm-arrow-group) {
+  .ecm-box.prior { border-color: #7c3aed; }
+  .ecm-box.prior .ecm-box-label { color: #7c3aed; }
+  .ecm-box.confirm { border-color: #0ea5e9; }
+  .ecm-box.confirm .ecm-box-label { color: #0ea5e9; }
+  .ecm-box.satisfy { border-color: #10b981; }
+  .ecm-box.satisfy .ecm-box-label { color: #10b981; }
+  .ecm-box.intention { border-color: #f59e0b; }
+  .ecm-box.intention .ecm-box-label { color: #f59e0b; }
+  .ecm-box.behavior { border-color: #ef4444; }
+  .ecm-box.behavior .ecm-box-label { color: #ef4444; }
+  .ecm-arrow-group {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
   }
-  :global(.ecm-arrow) {
+  .ecm-arrow {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 2px;
   }
-  :global(.ecm-arrow-line) {
+  .ecm-arrow-line {
     width: 48px;
     height: 2px;
     background: #94a3b8;
     position: relative;
   }
-  :global(.ecm-arrow-line::after) {
+  .ecm-arrow-line::after {
     content: '';
     position: absolute;
     right: -6px;
@@ -365,7 +365,7 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
     border: 5px solid transparent;
     border-left-color: #94a3b8;
   }
-  :global(.ecm-arrow-label) {
+  .ecm-arrow-label {
     font-size: 0.65rem;
     color: #94a3b8;
     text-align: center;
@@ -373,28 +373,28 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
     line-height: 1.2;
     margin-top: 2px;
   }
-  :global(.ecm-multi-arrow) {
+  .ecm-multi-arrow {
     display: flex;
     flex-direction: column;
     gap: 18px;
     align-items: center;
   }
-  :global(.ecm-box-stack) {
+  .ecm-box-stack {
     display: flex;
     flex-direction: column;
     gap: 16px;
     flex-shrink: 0;
   }
-  :global(.ecm-box-stack .ecm-box) {
+  .ecm-box-stack .ecm-box {
     max-width: 150px;
   }
-  :global(.ecm-note-line) {
+  .ecm-note-line {
     margin-top: 14px;
     font-size: 0.75rem;
     color: #0ea5e9;
     text-align: center;
   }
-  :global(.ecm-tooltip-area) {
+  .ecm-tooltip-area {
     margin-top: 28px;
     background: white;
     border-radius: 12px;
@@ -404,48 +404,48 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
     box-shadow: 0 2px 12px rgba(0,0,0,0.07);
     min-height: 80px;
   }
-  :global(.ecm-tooltip-area h3) {
+  .ecm-tooltip-area h3 {
     font-size: 0.95rem;
     color: #1a2e4a;
     margin-bottom: 6px;
   }
-  :global(.ecm-tooltip-area p) {
+  .ecm-tooltip-area p {
     font-size: 0.82rem;
     color: #5a7a9a;
     line-height: 1.6;
   }
-  :global(.ecm-tooltip-default) {
+  .ecm-tooltip-default {
     color: #94a3b8;
     font-style: italic;
     font-size: 0.82rem;
     margin: 0;
   }
-  :global(.ecm-legend) {
+  .ecm-legend {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
     margin-top: 28px;
     justify-content: center;
   }
-  :global(.ecm-legend-item) {
+  .ecm-legend-item {
     display: flex;
     align-items: center;
     gap: 6px;
     font-size: 0.75rem;
     color: #4a6a8a;
   }
-  :global(.ecm-legend-dot) {
+  .ecm-legend-dot {
     width: 12px;
     height: 12px;
     border-radius: 3px;
     display: inline-block;
   }
-  :global(.ecm-legend-dot.prior) { background: #7c3aed; }
-  :global(.ecm-legend-dot.confirm) { background: #0ea5e9; }
-  :global(.ecm-legend-dot.satisfy) { background: #10b981; }
-  :global(.ecm-legend-dot.intention) { background: #f59e0b; }
-  :global(.ecm-legend-dot.behavior) { background: #ef4444; }
-  :global(.ecm-source-note) {
+  .ecm-legend-dot.prior { background: #7c3aed; }
+  .ecm-legend-dot.confirm { background: #0ea5e9; }
+  .ecm-legend-dot.satisfy { background: #10b981; }
+  .ecm-legend-dot.intention { background: #f59e0b; }
+  .ecm-legend-dot.behavior { background: #ef4444; }
+  .ecm-source-note {
     margin-top: 28px;
     font-size: 0.75rem;
     color: #94a3b8;
