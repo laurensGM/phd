@@ -1,0 +1,65 @@
+[
+  {
+    "id": "concept-note",
+    "title": "Concept note (written)",
+    "date": "2026-03-05",
+    "dateLabel": "Evening of 5 March 2026",
+    "notes": "Written submission of the concept note."
+  },
+  {
+    "id": "presentation-research-problem",
+    "title": "10-minute presentation: Research problem",
+    "date": "2026-03-06",
+    "dateLabel": "6 March 2026",
+    "notes": "Student selects timeslot (check with supervisors)."
+  },
+  {
+    "id": "preliminary-literature-review",
+    "title": "Preliminary literature review",
+    "date": "2026-05-18",
+    "dateLabel": "18 May 2026",
+    "notes": "Submission deadline for the preliminary literature review."
+  },
+  {
+    "id": "concept-note-method",
+    "title": "Concept note: method",
+    "date": "2026-06-11",
+    "dateLabel": "Evening of 11 June 2026",
+    "notes": "Written submission of the method concept note."
+  },
+  {
+    "id": "presentation-contribution-method",
+    "title": "10-minute presentation: Research contribution and proposed method",
+    "date": "2026-06-12",
+    "dateLabel": "12 June 2026",
+    "notes": "Student selects timeslot (check with supervisors)."
+  },
+  {
+    "id": "draft-research-proposal",
+    "title": "Draft research proposal",
+    "date": "2026-09-28",
+    "dateLabel": "28 September 2026",
+    "notes": "Submission deadline for the draft research proposal."
+  },
+  {
+    "id": "mock-phd-proposal",
+    "title": "Mock PhD proposal presentation",
+    "date": "2026-10-06",
+    "dateLabel": "6 to 8 October 2026",
+    "notes": "Student selects timeslot (check with supervisors)."
+  },
+  {
+    "id": "final-phd-proposal",
+    "title": "Final submission: PhD proposal",
+    "date": "2026-11-09",
+    "dateLabel": "9 November 2026",
+    "notes": "Final submission deadline for the PhD proposal."
+  },
+  {
+    "id": "phd-proposal-defence",
+    "title": "PhD proposal defence",
+    "date": "2026-11-24",
+    "dateLabel": "24 to 26 November 2026",
+    "notes": "Timeslots to be confirmed by PhD Manager."
+  }
+]

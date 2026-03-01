@@ -1,0 +1,284 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import outline from '../../data/outline.json';
+
+const base = import.meta.env.BASE_URL;
+const STORAGE_KEY = 'phd-outline-completed';
+---
+
+<BaseLayout title="PhD Outline" description="PhD program stages and timeline – concept note, literature review, proposal, defence">
+  <article class="outline-page">
+    <header class="outline-header">
+      <h1>PhD Outline</h1>
+      <p class="outline-intro">Stages and milestones of the PhD program. Mark items complete as you go; progress is saved in your browser.</p>
+    </header>
+
+    <div class="outline-progress-wrap">
+      <div class="outline-progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax={outline.length} id="outline-progress-bar">
+        <div class="outline-progress-fill" id="outline-progress-fill"></div>
+      </div>
+      <p class="outline-progress-text" id="outline-progress-text">0 of {outline.length} completed</p>
+    </div>
+
+    <ol class="outline-list">
+      {outline.map((item: { id: string; title: string; dateLabel: string; notes: string }) => (
+        <li class="outline-item" data-id={item.id} id={`outline-${item.id}`}>
+          <div class="outline-item-head">
+            <button type="button" class="outline-check" aria-label={`Mark "${item.title}" complete`} title="Mark complete"></button>
+            <div class="outline-item-main">
+              <span class="outline-item-title">{item.title}</span>
+              <time class="outline-item-date" datetime={item.date}>{item.dateLabel}</time>
+            </div>
+            <span class="outline-item-toggle" aria-hidden="true">▼</span>
+          </div>
+          <div class="outline-item-detail" hidden>
+            <p class="outline-item-notes">{item.notes}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </article>
+
+  <script define:vars={{ storageKey: STORAGE_KEY, total: outline.length }}>
+    (function () {
+      const STORAGE_KEY = storageKey;
+      const TOTAL = total;
+
+      function getCompleted() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          return raw ? JSON.parse(raw) : [];
+        } catch {
+          return [];
+        }
+      }
+
+      function setCompleted(ids) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
+        updateProgress(ids.length);
+      }
+
+      function updateProgress(completedCount) {
+        const fill = document.getElementById('outline-progress-fill');
+        const bar = document.getElementById('outline-progress-bar');
+        const text = document.getElementById('outline-progress-text');
+        if (fill) fill.style.width = `${(completedCount / TOTAL) * 100}%`;
+        if (bar) bar.setAttribute('aria-valuenow', String(completedCount));
+        if (text) text.textContent = `${completedCount} of ${TOTAL} completed`;
+      }
+
+      function toggleComplete(id) {
+        const completed = getCompleted();
+        const idx = completed.indexOf(id);
+        if (idx === -1) completed.push(id);
+        else completed.splice(idx, 1);
+        setCompleted(completed);
+        const el = document.querySelector(`.outline-item[data-id="${id}"]`);
+        if (el) el.classList.toggle('is-complete', completed.includes(id));
+      }
+
+      function init() {
+        const completed = getCompleted();
+        updateProgress(completed.length);
+
+        document.querySelectorAll('.outline-item').forEach((li) => {
+          const id = li.getAttribute('data-id');
+          if (!id) return;
+          if (completed.includes(id)) li.classList.add('is-complete');
+
+          const head = li.querySelector('.outline-item-head');
+          const detail = li.querySelector('.outline-item-detail');
+          const check = li.querySelector('.outline-check');
+
+          if (check) {
+            check.addEventListener('click', (e) => {
+              e.stopPropagation();
+              toggleComplete(id);
+            });
+          }
+
+          if (head && detail) {
+            head.addEventListener('click', () => {
+              const isOpen = !detail.hasAttribute('hidden');
+              detail.toggleAttribute('hidden', isOpen);
+              li.classList.toggle('is-open', !isOpen);
+            });
+          }
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+    })();
+  </script>
+</BaseLayout>
+
+<style>
+  .outline-page {
+    max-width: 720px;
+  }
+
+  .outline-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .outline-intro {
+    color: var(--color-ink-muted);
+    margin: 0.5rem 0 0 0;
+    line-height: 1.6;
+  }
+
+  .outline-progress-wrap {
+    margin-bottom: 2.5rem;
+    padding: 1.25rem 1.5rem;
+    background: var(--color-bg-alt);
+    border-radius: 12px;
+    border: 1px solid var(--color-border);
+  }
+
+  .outline-progress-bar {
+    height: 12px;
+    background: var(--color-border);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+
+  .outline-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--color-maroon);
+    border-radius: 6px;
+    transition: width 0.3s ease;
+  }
+
+  .outline-progress-text {
+    font-size: 0.9rem;
+    color: var(--color-ink-muted);
+    margin: 0;
+  }
+
+  .outline-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .outline-item {
+    background: #fff;
+    border: 2px solid var(--color-border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .outline-item:hover {
+    border-color: var(--color-maroon-muted);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .outline-item.is-complete {
+    border-color: var(--color-gold-dark);
+    background: rgba(139, 112, 76, 0.06);
+  }
+
+  .outline-item.is-complete .outline-check {
+    background: var(--color-gold-dark);
+    border-color: var(--color-gold-dark);
+  }
+
+  .outline-item.is-complete .outline-check::after {
+    opacity: 1;
+  }
+
+  .outline-item.is-open .outline-item-toggle {
+    transform: rotate(180deg);
+  }
+
+  .outline-item-head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    border: none;
+    background: none;
+    font: inherit;
+    color: inherit;
+  }
+
+  .outline-check {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--color-border);
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .outline-check:hover {
+    border-color: var(--color-maroon);
+  }
+
+  .outline-check::after {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 3px;
+    width: 6px;
+    height: 12px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    opacity: 0;
+  }
+
+  .outline-item-main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .outline-item-title {
+    display: block;
+    font-weight: 600;
+    color: var(--color-ink);
+    margin-bottom: 0.2rem;
+  }
+
+  .outline-item-date {
+    font-size: 0.875rem;
+    color: var(--color-ink-muted);
+  }
+
+  .outline-item-toggle {
+    flex-shrink: 0;
+    font-size: 0.7rem;
+    color: var(--color-ink-muted);
+    transition: transform 0.2s ease;
+  }
+
+  .outline-item-detail {
+    padding: 0 1.25rem 1rem 3.5rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .outline-item-notes {
+    margin: 0.75rem 0 0 0;
+    font-size: 0.9rem;
+    color: var(--color-ink-muted);
+    line-height: 1.55;
+  }
+</style>

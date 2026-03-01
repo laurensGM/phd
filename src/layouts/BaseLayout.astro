@@ -42,7 +42,13 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
           <li><a href={`${base}research-questions/`}>Research Questions</a></li>
           <li><a href={`${base}methods/`}>Methods</a></li>
           <li><a href={`${base}theory-map/`}>Theory Map</a></li>
-          <li><a href={`${base}supervisor/`}>Supervisor</a></li>
+          <li class="nav-dropdown-wrap">
+            <span class="nav-dropdown-trigger" tabindex="0" aria-haspopup="true" aria-expanded="false" id="phd-outline-trigger">PhD outline</span>
+            <ul class="nav-dropdown" aria-labelledby="phd-outline-trigger">
+              <li><a href={`${base}outline/`}>Outline</a></li>
+              <li><a href={`${base}supervisor/`}>Supervisor</a></li>
+            </ul>
+          </li>
         </ul>
       </nav>
     </header>
@@ -54,7 +60,6 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
         <img src={`${base}logo-pos.jpeg`} alt="PhD Operating System" class="footer-logo" width="32" height="32" />
         <div>
           <p class="footer-title">PhD Operating System</p>
-          <p class="footer-university">Stellenbosch University</p>
         </div>
       </div>
       <p class="footer-tagline">Organizing research one note at a time</p>
@@ -69,13 +74,13 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
     --color-bg-alt: #EDE8E2;
     --color-ink: #2D1F24;
     --color-ink-muted: #5C4A4F;
-    --color-maroon: #622130;
+    --color-maroon: #5C1D2A;
     --color-maroon-dark: #4A1925;
     --color-maroon-muted: #9C416B;
     --color-gold: #D4AF37;
     --color-gold-light: #E5C65C;
     --color-gold-dark: #8B704C;
-    --color-accent: #622130;
+    --color-accent: #5C1D2A;
     --color-accent-hover: #4A1925;
     --color-border: #E0D6CC;
     --font-serif: 'Crimson Pro', Georgia, serif;
@@ -184,6 +189,72 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
     text-decoration: none;
   }
 
+  .nav-dropdown-wrap {
+    position: relative;
+    list-style: none;
+  }
+
+  .nav-dropdown-trigger {
+    display: inline-block;
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 0.9rem;
+    padding: 0.4rem 0.65rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: color 0.2s ease, background 0.2s ease;
+    user-select: none;
+  }
+
+  .nav-dropdown-wrap:hover .nav-dropdown-trigger,
+  .nav-dropdown-wrap:focus-within .nav-dropdown-trigger {
+    color: var(--color-gold-light);
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .nav-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin: 0.25rem 0 0 0;
+    padding: 0.35rem 0;
+    list-style: none;
+    background: var(--color-maroon);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    min-width: 140px;
+    box-shadow: var(--shadow-md);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px);
+    transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+    z-index: 50;
+  }
+
+  .nav-dropdown-wrap:hover .nav-dropdown,
+  .nav-dropdown-wrap:focus-within .nav-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .nav-dropdown li {
+    margin: 0;
+  }
+
+  .nav-dropdown a {
+    display: block;
+    padding: 0.5rem 1rem;
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 0.9rem;
+    text-decoration: none;
+  }
+
+  .nav-dropdown a:hover {
+    color: var(--color-gold-light);
+    background: rgba(255, 255, 255, 0.12);
+    text-decoration: none;
+  }
+
   .main-content {
     flex: 1;
     max-width: 1200px;
@@ -218,13 +289,6 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
     margin: 0;
     font-size: 0.95rem;
     color: #fff;
-  }
-
-  .footer-university {
-    margin: 0.15rem 0 0 0;
-    font-size: 0.75rem;
-    color: var(--color-gold-light);
-    letter-spacing: 0.02em;
   }
 
   .footer-tagline {
