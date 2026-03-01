@@ -30,8 +30,6 @@ export default function ModelDetailView({ model, constructToSlug, base }: ModelD
     <div className="model-detail-view">
       <p className="model-desc">{model.description}</p>
 
-      <ModelNotes modelId={model.id} staticNote={model.notes} />
-
       {hasDiagram && (
         <>
           <h3>Model diagram</h3>
@@ -77,6 +75,8 @@ export default function ModelDetailView({ model, constructToSlug, base }: ModelD
           </li>
         ))}
       </ul>
+
+      <ModelNotes modelId={model.id} staticNote={model.notes} />
     </div>
   );
 }
