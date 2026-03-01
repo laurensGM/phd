@@ -35,10 +35,17 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
           <span class="logo-text">PhD Operating System</span>
         </a>
         <ul class="nav-links">
-          <li><a href={`${base}models/`}>Models</a></li>
-          <li><a href={`${base}constructs/`}>Constructs</a></li>
+          <li class="nav-dropdown-wrap">
+            <span class="nav-dropdown-trigger" tabindex="0" aria-haspopup="true" aria-expanded="false" id="literature-trigger">Literature</span>
+            <ul class="nav-dropdown" aria-labelledby="literature-trigger">
+              <li><a href={`${base}models/`}>Models</a></li>
+              <li><a href={`${base}constructs/`}>Constructs</a></li>
+              <li><a href={`${base}papers/`}>Papers</a></li>
+              <li><a href={`${base}academics/`}>Academics</a></li>
+            </ul>
+          </li>
           <li><a href={`${base}diary/`}>Diary</a></li>
-          <li><a href={`${base}literature/`}>Literature</a></li>
+          <li><a href={`${base}tools/`}>Tools</a></li>
           <li><a href={`${base}research-questions/`}>Research Questions</a></li>
           <li><a href={`${base}methods/`}>Methods</a></li>
           <li><a href={`${base}theory-map/`}>Theory Map</a></li>

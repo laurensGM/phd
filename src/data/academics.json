@@ -1,0 +1,87 @@
+[
+  {
+    "id": "bhattacherjee",
+    "name": "Anol Bhattacherjee",
+    "bio": "Anol Bhattacherjee is a Professor of Information Systems at the University of South Florida. He is best known for developing the Expectation-Confirmation Model of IS Continuance (ECM), which explains why users continue or discontinue using information systems after initial adoption. His work bridges consumer behaviour (Oliver's Expectation-Confirmation Theory) with information systems research, focusing on post-adoption behaviour.",
+    "keyContributions": [
+      {
+        "title": "Expectation-Confirmation Model of IS Continuance",
+        "modelId": "ecm-is",
+        "year": 2001
+      },
+      {
+        "title": "ECM (base model)",
+        "modelId": "ecm",
+        "year": 2001
+      }
+    ],
+    "keyArticles": [
+      {
+        "citation": "Bhattacherjee, A. (2001). Understanding information systems continuance: An expectation-confirmation model. MIS Quarterly, 25(3), 351–370.",
+        "doi": "10.2307/3250921",
+        "description": "Foundational paper introducing ECM. Extended Oliver's ECT to IS context, adding perceived usefulness and replacing repurchase intention with continuance intention."
+      }
+    ],
+    "constructs": ["Confirmation", "Perceived Usefulness", "Satisfaction", "Continuance Intention"]
+  },
+  {
+    "id": "davis",
+    "name": "Fred Davis",
+    "bio": "Fred D. Davis is a Distinguished Professor Emeritus at the University of Arkansas. He proposed the Technology Acceptance Model (TAM) in his 1986 PhD dissertation at MIT, which was formally published in MIS Quarterly in 1989. TAM has become one of the most widely cited and applied models in information systems and technology adoption research. Davis adapted Fishbein and Ajzen's Theory of Reasoned Action to focus specifically on system acceptance.",
+    "keyContributions": [
+      {
+        "title": "Technology Acceptance Model (TAM)",
+        "modelId": "tam",
+        "year": 1989
+      }
+    ],
+    "keyArticles": [
+      {
+        "citation": "Davis, F. D. (1989). Perceived usefulness, perceived ease of use, and user acceptance of information technology. MIS Quarterly, 13(3), 319–340.",
+        "doi": "10.2307/249008",
+        "description": "Foundational TAM paper establishing perceived usefulness (PU) and perceived ease of use (PEOU) as key predictors of behavioral intention and technology adoption."
+      }
+    ],
+    "constructs": ["Perceived Usefulness", "Perceived Ease of Use", "Behavioral Intention", "Actual Usage"]
+  },
+  {
+    "id": "venkatesh",
+    "name": "Viswanath Venkatesh",
+    "bio": "Viswanath Venkatesh is a Distinguished Professor at the University of Arkansas. He is a leading researcher in technology adoption and use, best known for the Unified Theory of Acceptance and Use of Technology (UTAUT, 2003) and UTAUT2 (2012). Venkatesh and colleagues consolidated eight competing models of technology acceptance into UTAUT, significantly advancing the field. He has also contributed to TAM2 (with Davis) and various extensions for consumer and voluntary contexts.",
+    "keyContributions": [
+      {
+        "title": "Unified Theory of Acceptance and Use of Technology (UTAUT)",
+        "modelId": "utaut",
+        "year": 2003
+      },
+      {
+        "title": "UTAUT 2",
+        "modelId": "utaut2",
+        "year": 2012
+      },
+      {
+        "title": "TAM 2 (with Davis)",
+        "modelId": "tam2",
+        "year": 2000
+      }
+    ],
+    "keyArticles": [
+      {
+        "citation": "Venkatesh, V., Morris, M. G., Davis, G. B., & Davis, F. D. (2003). User acceptance of information technology: Toward a unified view. MIS Quarterly, 27(3), 425–478.",
+        "doi": "10.2307/30036540",
+        "description": "Seminal paper consolidating TAM, TPB, and other models into UTAUT. Identifies performance expectancy, effort expectancy, social influence, and facilitating conditions as core determinants."
+      },
+      {
+        "citation": "Venkatesh, V., Thong, J. Y. L., & Xu, X. (2012). Consumer acceptance and use of information technology: Extending the unified theory of acceptance and use of technology. MIS Quarterly, 36(1), 157–178.",
+        "doi": "10.2307/41410412",
+        "description": "UTAUT2 extends UTAUT for voluntary consumer contexts, adding hedonic motivation, price value, and habit."
+      },
+      {
+        "citation": "Venkatesh, V., & Davis, F. D. (2000). A theoretical extension of the technology acceptance model: Four longitudinal field studies. Management Science, 46(2), 186–204.",
+        "doi": "10.1287/mnsc.46.2.186.11926",
+        "description": "TAM2 introduces social influencing processes and cognitive instrumental processes as determinants of perceived usefulness."
+      }
+    ],
+    "constructs": ["Performance Expectancy", "Effort Expectancy", "Social Influence", "Facilitating Conditions", "Behavioral Intention", "Use Behavior", "Hedonic Motivation", "Price Value", "Habit"]
+  }
+]
