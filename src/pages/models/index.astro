@@ -13,7 +13,7 @@ const base = import.meta.env.BASE_URL;
       <article class="model-card">
         <h2><a href={`${base}models/${model.id}/`}>{model.name}</a></h2>
         <span class="abbrev">{model.abbreviation}</span>
-        <p class="model-meta">{model.authors.join(', ')} ({model.year})</p>
+        <p class="model-meta">{(model.authors && model.authors.length > 0 ? model.authors.join(', ') : '—')}{(model.year != null ? ` (${model.year})` : '')}</p>
         <p class="model-desc-teaser">{model.description.slice(0, 160)}{model.description.length > 160 ? '…' : ''}</p>
         <div class="meta">
           <span>Constructs: {model.constructs.slice(0, 4).map((c: string) => model.constructAbbreviations?.[c] || c).join(', ')}{model.constructs.length > 4 ? '…' : ''}</span>

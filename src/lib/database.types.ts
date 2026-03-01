@@ -82,6 +82,30 @@ export interface Database {
           updated_at?: string;
         };
       };
+      golden_nuggets: {
+        Row: {
+          id: string;
+          type: string;
+          content: string;
+          author: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          type: string;
+          content: string;
+          author?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          type?: string;
+          content?: string;
+          author?: string | null;
+          updated_at?: string;
+        };
+      };
     };
   };
 }

@@ -26,7 +26,7 @@ if (!model) {
     <a href={`${base}models/`} class="back-link">← All Models</a>
     <header class="model-detail-header">
       <h1>{model.name} ({model.abbreviation})</h1>
-      <p class="model-meta">Developed by: {model.authors.join(', ')} ({model.year})</p>
+      <p class="model-meta">{model.authors?.length ? `Developed by: ${model.authors.join(', ')}` : ''}{model.year != null ? ` (${model.year})` : ''}{!model.authors?.length && model.year == null ? 'Your thesis model' : ''}</p>
     </header>
 
     <ModelDetailView client:load model={model} constructToSlug={constructToSlug} base={base} />

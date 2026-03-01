@@ -320,5 +320,48 @@
     "constructAbbreviations": { "Adopter Experience": "AE", "Journey Stages": "Stages", "Early Majority Mapping": "EM" },
     "relationships": [],
     "keyCitations": []
+  },
+  {
+    "id": "my-thesis-model",
+    "name": "My Thesis Model",
+    "abbreviation": "Thesis",
+    "year": null,
+    "authors": [],
+    "description": "Thesis model linking product discovery quality (your contribution) to continuance intention through confirmation, perceived usefulness, and satisfaction. Continuance intention leads to actual continued usage as an optional outcome.",
+    "notes": "Independent variable: Product Discovery Quality (your contribution). Mediators: Confirmation, Perceived Usefulness, Satisfaction. Dependent variable: Continuance Intention. Optional outcome: Actual Continued Usage.",
+    "constructs": [
+      "Product Discovery Quality",
+      "Confirmation",
+      "Perceived Usefulness",
+      "Satisfaction",
+      "Continuance Intention",
+      "Actual Continued Usage"
+    ],
+    "constructAbbreviations": {
+      "Product Discovery Quality": "PDQ",
+      "Confirmation": "Confirm",
+      "Perceived Usefulness": "PU",
+      "Satisfaction": "Sat",
+      "Continuance Intention": "CI",
+      "Actual Continued Usage": "Use"
+    },
+    "constructCategories": {
+      "PDQ": "neutral",
+      "Confirm": "cognitive",
+      "PU": "cognitive",
+      "Sat": "cognitive",
+      "CI": "neutral",
+      "Use": "neutral"
+    },
+    "relationships": [
+      { "from": "PDQ", "to": "Confirm" },
+      { "from": "Confirm", "to": "PU" },
+      { "from": "Confirm", "to": "Sat" },
+      { "from": "PU", "to": "Sat" },
+      { "from": "PU", "to": "CI" },
+      { "from": "Sat", "to": "CI" },
+      { "from": "CI", "to": "Use" }
+    ],
+    "keyCitations": []
   }
 ]

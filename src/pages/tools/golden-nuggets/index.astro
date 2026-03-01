@@ -1,42 +1,19 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
+import GoldenNuggetsPage from '../../../components/GoldenNuggetsPage';
 import nuggets from '../../../data/golden-nuggets.json';
 
 const base = import.meta.env.BASE_URL;
-const faq = nuggets.faq as { question: string; author: string | null }[];
-const quotes = nuggets.quotes as { text: string; author: string | null }[];
+const staticFaq = (nuggets as { faq: { question: string; author: string | null }[] }).faq;
+const staticQuotes = (nuggets as { quotes: { text: string; author: string | null }[] }).quotes;
 ---
 
 <BaseLayout title="Golden nuggets" description="Key insights, quotes, and FAQs from your PhD journey">
   <p class="back-link"><a href={`${base}tools/`}>← Tools</a></p>
   <h1>Golden nuggets</h1>
-  <p class="page-desc">Key insights, words of wisdom, and frequently asked questions — usually a quote or a question worth remembering.</p>
+  <p class="page-desc">Key insights, words of wisdom, and frequently asked questions. Add, edit, or delete FAQs and quotes below (saved in Supabase).</p>
 
-  <section class="nuggets-section">
-    <h2 class="section-title">FAQ</h2>
-    <ul class="nuggets-list faq-list">
-      {faq.map((item) => (
-        <li class="nugget-item faq-item">
-          <span class="nugget-text">"{item.question}"</span>
-          {item.author && <cite class="nugget-author">— {item.author}</cite>}
-        </li>
-      ))}
-    </ul>
-  </section>
-
-  <section class="nuggets-section">
-    <h2 class="section-title">Quotes &amp; insights</h2>
-    <ul class="nuggets-list quotes-list">
-      {quotes.map((item) => (
-        <li class="nugget-item quote-item">
-          <blockquote class="nugget-quote">
-            <p class="nugget-text">{item.text}</p>
-            {item.author && <footer><cite class="nugget-author">— {item.author}</cite></footer>}
-          </blockquote>
-        </li>
-      ))}
-    </ul>
-  </section>
+  <GoldenNuggetsPage client:load staticFaq={staticFaq} staticQuotes={staticQuotes} />
 </BaseLayout>
 
 <style>
@@ -52,70 +29,219 @@ const quotes = nuggets.quotes as { text: string; author: string | null }[];
     margin-bottom: 2.5rem;
     line-height: 1.6;
   }
-  .nuggets-section {
+
+  /* Golden nuggets (React) */
+  :global(.golden-nuggets-page .nuggets-setup),
+  :global(.golden-nuggets-page .nuggets-loading),
+  :global(.golden-nuggets-page .nuggets-empty) {
+    color: var(--color-ink-muted);
+    margin: 0.5rem 0 1.5rem 0;
+  }
+  :global(.golden-nuggets-page .nuggets-error) {
+    color: var(--color-maroon);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: rgba(113, 32, 56, 0.08);
+    border-radius: 6px;
+  }
+  :global(.golden-nuggets-page .nuggets-section) {
     margin-bottom: 3rem;
   }
-  .section-title {
+  :global(.golden-nuggets-page .section-title) {
     font-family: var(--font-serif);
     font-size: 1.35rem;
     color: var(--color-maroon);
-    margin: 0 0 1.25rem 0;
+    margin: 0 0 1rem 0;
     padding-bottom: 0.5rem;
     border-bottom: 2px solid var(--color-border);
   }
-  .nuggets-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+  :global(.golden-nuggets-page .nuggets-add-form) {
+    margin-bottom: 1.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
   }
-  .nugget-item {
+  :global(.golden-nuggets-page .nuggets-add-form-quote) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  :global(.golden-nuggets-page .nuggets-add-form-quote .nuggets-textarea) {
+    width: 100%;
+  }
+  :global(.golden-nuggets-page .nuggets-input),
+  :global(.golden-nuggets-page .nuggets-textarea) {
+    padding: 0.5rem 0.75rem;
+    border: 2px solid var(--color-border);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    background: #fff;
+    flex: 1;
+    min-width: 200px;
+    box-sizing: border-box;
+  }
+  :global(.golden-nuggets-page .nuggets-textarea) {
+    resize: vertical;
+    line-height: 1.5;
+  }
+  :global(.golden-nuggets-page .nuggets-input-author) {
+    flex: 0 1 180px;
+    min-width: 120px;
+  }
+  :global(.golden-nuggets-page .nuggets-input:focus),
+  :global(.golden-nuggets-page .nuggets-textarea:focus) {
+    outline: none;
+    border-color: var(--color-maroon);
+  }
+  :global(.golden-nuggets-page .nuggets-add-btn) {
+    padding: 0.5rem 1rem;
+    background: var(--color-maroon);
+    color: #fff;
+    border: 2px solid var(--color-gold);
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+  :global(.golden-nuggets-page .nuggets-add-btn:hover:not(:disabled)) {
+    background: var(--color-maroon-dark);
+  }
+  :global(.golden-nuggets-page .nuggets-add-btn:disabled) {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  :global(.golden-nuggets-page .nuggets-list) {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  :global(.golden-nuggets-page .nugget-item) {
     margin-bottom: 1.25rem;
   }
-  .faq-item {
+  :global(.golden-nuggets-page .faq-item) {
     padding: 1rem 1.25rem;
     background: var(--color-bg-alt, #f8f6f4);
     border-left: 4px solid var(--color-maroon);
     border-radius: 0 8px 8px 0;
   }
-  .faq-item .nugget-text {
+  :global(.golden-nuggets-page .faq-item .nugget-text) {
     font-style: normal;
     font-weight: 500;
   }
-  .quote-item {
+  :global(.golden-nuggets-page .nugget-item-header) {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  :global(.golden-nuggets-page .nugget-item-header .nugget-text) {
+    flex: 1;
+  }
+  :global(.golden-nuggets-page .nugget-item-actions) {
+    display: flex;
+    gap: 0.4rem;
+    flex-shrink: 0;
+  }
+  :global(.golden-nuggets-page .nugget-action) {
+    padding: 0.25rem 0.6rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 1px solid var(--color-border);
+    background: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--color-ink);
+  }
+  :global(.golden-nuggets-page .nugget-action:hover:not(:disabled)) {
+    border-color: var(--color-maroon-muted);
+    background: rgba(113, 32, 56, 0.06);
+  }
+  :global(.golden-nuggets-page .nugget-action-delete:hover:not(:disabled)) {
+    border-color: var(--color-maroon);
+    color: var(--color-maroon);
+  }
+  :global(.golden-nuggets-page .nugget-author) {
+    display: block;
+    margin-top: 0.35rem;
+    font-style: normal;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-maroon);
+  }
+  :global(.golden-nuggets-page .quote-item) {
     padding: 0;
   }
-  .nugget-quote {
+  :global(.golden-nuggets-page .nugget-quote-wrap) {
+    position: relative;
+  }
+  :global(.golden-nuggets-page .nugget-quote-wrap .nugget-item-actions) {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+  :global(.golden-nuggets-page .nugget-quote) {
     margin: 0;
     padding: 1.25rem 1.5rem;
+    padding-right: 6rem;
     background: #fff;
     border: 1px solid var(--color-border);
     border-radius: 10px;
     position: relative;
   }
-  .nugget-quote::before {
+  :global(.golden-nuggets-page .nugget-quote::before) {
     content: '"';
     position: absolute;
     top: 0.5rem;
     left: 1rem;
     font-size: 2.5rem;
     font-family: var(--font-serif);
-    color: var(--color-maroon-muted, rgba(92, 29, 42, 0.25));
+    color: rgba(92, 29, 42, 0.25);
     line-height: 1;
   }
-  .nugget-quote .nugget-text {
+  :global(.golden-nuggets-page .nugget-quote .nugget-text) {
     margin: 0 0 0.75rem 0;
     padding-left: 1.5rem;
     font-style: italic;
     line-height: 1.6;
     color: var(--color-ink);
+    white-space: pre-wrap;
   }
-  .nugget-quote footer {
+  :global(.golden-nuggets-page .nugget-quote footer) {
     padding-left: 1.5rem;
   }
-  .nugget-author {
-    font-style: normal;
-    font-size: 0.9rem;
+  :global(.golden-nuggets-page .nuggets-edit-form) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  :global(.golden-nuggets-page .nuggets-edit-form .nuggets-input),
+  :global(.golden-nuggets-page .nuggets-edit-form .nuggets-textarea) {
+    min-width: 0;
+  }
+  :global(.golden-nuggets-page .nuggets-edit-actions) {
+    display: flex;
+    gap: 0.5rem;
+  }
+  :global(.golden-nuggets-page .nuggets-btn) {
+    padding: 0.4rem 0.9rem;
+    font-size: 0.85rem;
     font-weight: 600;
-    color: var(--color-maroon);
+    border-radius: 6px;
+    cursor: pointer;
+    border: 2px solid transparent;
+  }
+  :global(.golden-nuggets-page .nuggets-btn-primary) {
+    background: var(--color-maroon);
+    color: #fff;
+    border-color: var(--color-gold);
+  }
+  :global(.golden-nuggets-page .nuggets-btn-secondary) {
+    background: var(--color-bg-alt);
+    color: var(--color-ink);
+    border-color: var(--color-border);
   }
 </style>
