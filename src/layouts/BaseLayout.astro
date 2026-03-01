@@ -45,7 +45,14 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
             </ul>
           </li>
           <li><a href={`${base}diary/`}>Diary</a></li>
-          <li><a href={`${base}tools/`}>Tools</a></li>
+          <li class="nav-dropdown-wrap">
+            <span class="nav-dropdown-trigger" tabindex="0" aria-haspopup="true" aria-expanded="false" id="tools-trigger">Tools</span>
+            <ul class="nav-dropdown" aria-labelledby="tools-trigger">
+              <li><a href={`${base}tools/ai/`}>AI tools</a></li>
+              <li><a href={`${base}tools/databases/`}>Databases</a></li>
+              <li><a href={`${base}tools/memes/`}>Memes</a></li>
+            </ul>
+          </li>
           <li><a href={`${base}research-questions/`}>Research Questions</a></li>
           <li><a href={`${base}methods/`}>Methods</a></li>
           <li><a href={`${base}theory-map/`}>Theory Map</a></li>

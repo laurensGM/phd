@@ -1,0 +1,35 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import toolsData from '../../../data/tools.json';
+
+const base = import.meta.env.BASE_URL;
+const tools = toolsData.filter((t: { category: string }) => t.category === 'databases');
+---
+
+<BaseLayout title="Databases" description="Citation and discovery databases - Web of Science, Google Scholar, Scopus">
+  <p class="back-link"><a href={`${base}tools/`}>← Tools</a></p>
+  <h1>Databases</h1>
+  <p class="page-desc">Citation databases and discovery platforms for finding and tracking academic literature.</p>
+
+  <div class="tools-grid">
+    {tools.map((tool: { id: string; name: string; description: string; url: string }) => (
+      <a href={tool.url} target="_blank" rel="noopener" class="tool-card">
+        <h3 class="tool-name">{tool.name}</h3>
+        <p class="tool-desc">{tool.description}</p>
+        <span class="tool-link">Visit site →</span>
+      </a>
+    ))}
+  </div>
+</BaseLayout>
+
+<style>
+  .back-link { margin-bottom: 1rem; font-size: 0.9rem; }
+  .back-link a { color: var(--color-maroon); }
+  .page-desc { color: var(--color-ink-muted); margin-bottom: 2rem; line-height: 1.6; }
+  .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
+  .tool-card { display: flex; flex-direction: column; padding: 1.5rem; background: #fff; border: 1px solid var(--color-border); border-radius: 10px; text-decoration: none; color: inherit; transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s; }
+  .tool-card:hover { border-color: var(--color-maroon-muted); box-shadow: var(--shadow-md); transform: translateY(-2px); text-decoration: none; color: inherit; }
+  .tool-name { font-family: var(--font-serif); font-size: 1.15rem; margin: 0 0 0.5rem 0; color: var(--color-maroon); }
+  .tool-desc { flex: 1; margin: 0; font-size: 0.9rem; line-height: 1.55; color: var(--color-ink); }
+  .tool-link { margin-top: 1rem; font-size: 0.85rem; font-weight: 600; color: var(--color-maroon); }
+</style>

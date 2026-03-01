@@ -1,20 +1,32 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import tools from '../../data/tools.json';
+
+const base = import.meta.env.BASE_URL;
 ---
 
-<BaseLayout title="Tools" description="Research tools - literature search, AI assistants, citation analysis, visualization">
+<BaseLayout title="Tools" description="Research tools - AI assistants, databases, and a bit of humour">
   <h1>Tools</h1>
-  <p class="page-desc">Tools for literature search, writing, data analysis, and research visualization.</p>
+  <p class="page-desc">AI tools for research and writing, citation databases, and links to PhD memes and academic humour.</p>
 
-  <div class="tools-grid">
-    {tools.map((tool: { id: string; name: string; description: string; url: string }) => (
-      <a href={tool.url} target="_blank" rel="noopener" class="tool-card">
-        <h3 class="tool-name">{tool.name}</h3>
-        <p class="tool-desc">{tool.description}</p>
-        <span class="tool-link">Visit site →</span>
-      </a>
-    ))}
+  <div class="tools-categories">
+    <a href={`${base}tools/ai/`} class="category-card">
+      <span class="category-icon">🤖</span>
+      <h2 class="category-title">AI tools</h2>
+      <p class="category-desc">Elicit, SciSpace, Jenni, Julius, Notebook LM and more for literature search, writing, and analysis.</p>
+      <span class="category-link">Browse AI tools →</span>
+    </a>
+    <a href={`${base}tools/databases/`} class="category-card">
+      <span class="category-icon">📚</span>
+      <h2 class="category-title">Databases</h2>
+      <p class="category-desc">Web of Science, Google Scholar, Scopus, VOSviewer and other citation and discovery platforms.</p>
+      <span class="category-link">Browse databases →</span>
+    </a>
+    <a href={`${base}tools/memes/`} class="category-card">
+      <span class="category-icon">😄</span>
+      <h2 class="category-title">Memes</h2>
+      <p class="category-desc">Funny and relatable memes and jokes about doing a PhD. When you need a laugh between chapters.</p>
+      <span class="category-link">Browse memes →</span>
+    </a>
   </div>
 </BaseLayout>
 
@@ -25,25 +37,26 @@ import tools from '../../data/tools.json';
     line-height: 1.6;
   }
 
-  .tools-grid {
+  .tools-categories {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.25rem;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
   }
 
-  .tool-card {
+  .category-card {
     display: flex;
     flex-direction: column;
-    padding: 1.5rem;
+    padding: 2rem;
     background: #fff;
     border: 1px solid var(--color-border);
-    border-radius: 10px;
+    border-radius: 12px;
+    border-left: 4px solid var(--color-maroon);
     text-decoration: none;
     color: inherit;
     transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
   }
 
-  .tool-card:hover {
+  .category-card:hover {
     border-color: var(--color-maroon-muted);
     box-shadow: var(--shadow-md);
     transform: translateY(-2px);
@@ -51,24 +64,29 @@ import tools from '../../data/tools.json';
     color: inherit;
   }
 
-  .tool-name {
+  .category-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .category-title {
     font-family: var(--font-serif);
-    font-size: 1.15rem;
+    font-size: 1.35rem;
     margin: 0 0 0.5rem 0;
     color: var(--color-maroon);
   }
 
-  .tool-desc {
+  .category-desc {
     flex: 1;
     margin: 0;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     line-height: 1.55;
     color: var(--color-ink);
   }
 
-  .tool-link {
+  .category-link {
     margin-top: 1rem;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     font-weight: 600;
     color: var(--color-maroon);
   }

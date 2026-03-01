@@ -2,67 +2,113 @@
   {
     "id": "elicit",
     "name": "Elicit",
+    "category": "ai",
     "description": "AI research assistant that helps you find, summarize, and understand academic papers. Uses language models to answer research questions and extract key information.",
     "url": "https://elicit.com"
   },
   {
     "id": "scispace",
     "name": "SciSpace",
+    "category": "ai",
     "description": "AI-powered platform to read, understand, and analyze research papers. Explains complex concepts and helps with literature review.",
     "url": "https://typeset.io"
   },
   {
     "id": "litmaps",
     "name": "Litmaps",
+    "category": "ai",
     "description": "Literature mapping tool that visualizes connections between papers. Discover related research and build citation networks.",
     "url": "https://www.litmaps.com"
   },
   {
     "id": "jenni",
     "name": "Jenni",
+    "category": "ai",
     "description": "AI writing assistant for academics. Helps with drafting, citations, and overcoming writer's block for papers and essays.",
     "url": "https://jenni.ai"
   },
   {
     "id": "julius",
     "name": "Julius",
+    "category": "ai",
     "description": "AI data analyst. Upload datasets, ask questions in natural language, and get statistical analysis and visualizations.",
     "url": "https://julius.ai"
   },
   {
     "id": "notebook-lm",
     "name": "Notebook LM",
+    "category": "ai",
     "description": "Google's AI notebook for research. Ground an AI assistant in your documents, notes, and sources to summarize and explore ideas.",
     "url": "https://notebooklm.google.com"
   },
   {
-    "id": "vosviewer",
-    "name": "VOSviewer",
-    "description": "Software for constructing and visualizing bibliometric networks. Map co-authorship, citation, and term co-occurrence for literature analysis.",
-    "url": "https://www.vosviewer.com"
-  },
-  {
     "id": "webofscience",
     "name": "Web of Science",
+    "category": "databases",
     "description": "Leading citation database. Search across journals, books, and conference proceedings. Track citations and research impact.",
     "url": "https://www.webofscience.com"
   },
   {
     "id": "google-scholar",
     "name": "Google Scholar",
+    "category": "databases",
     "description": "Free academic search engine. Find papers across disciplines, track citations, and discover related research.",
     "url": "https://scholar.google.com"
   },
   {
+    "id": "scopus",
+    "name": "Scopus",
+    "category": "databases",
+    "description": "Elsevier's abstract and citation database. Millions of peer-reviewed articles, books, and conference papers. Author and journal metrics.",
+    "url": "https://www.scopus.com"
+  },
+  {
     "id": "ipsco",
     "name": "Ipsco",
+    "category": "databases",
     "description": "Research and analytics platform for academic literature and citation analysis.",
     "url": "https://incites.clarivate.com"
   },
   {
-    "id": "scopus",
-    "name": "Scopus",
-    "description": "Elsevier's abstract and citation database. Millions of peer-reviewed articles, books, and conference papers. Author and journal metrics.",
-    "url": "https://www.scopus.com"
+    "id": "vosviewer",
+    "name": "VOSviewer",
+    "category": "databases",
+    "description": "Software for constructing and visualizing bibliometric networks. Map co-authorship, citation, and term co-occurrence for literature analysis.",
+    "url": "https://www.vosviewer.com"
+  },
+  {
+    "id": "phd-comics",
+    "name": "PhD Comics",
+    "category": "memes",
+    "description": "The classic comic strip about life in academia. Piled Higher and Deeper — relatable humour about grad school, theses, and research.",
+    "url": "https://phdcomics.com"
+  },
+  {
+    "id": "academic-memes",
+    "name": "Academic Memes for Theoretical Teens",
+    "category": "memes",
+    "description": "Popular Facebook community sharing memes about academia, PhD life, writing, and the struggles of research.",
+    "url": "https://www.facebook.com/AcademicMemeStudies"
+  },
+  {
+    "id": "reddit-phd",
+    "name": "r/PhD",
+    "category": "memes",
+    "description": "Reddit community for PhD students and academics. Mix of support, advice, and memes about the doctoral journey.",
+    "url": "https://www.reddit.com/r/PhD"
+  },
+  {
+    "id": "reddit-gradschool",
+    "name": "r/GradSchool",
+    "category": "memes",
+    "description": "Reddit community for grad students. Memes, rants, and solidarity about thesis life, advisors, and academia.",
+    "url": "https://www.reddit.com/r/GradSchool"
+  },
+  {
+    "id": "phd-memes-twitter",
+    "name": "PhD Memes & Academic Humour",
+    "category": "memes",
+    "description": "Curated Twitter/X and web humour about PhD life, deadlines, and the eternal struggle of writing.",
+    "url": "https://twitter.com/search?q=phd%20memes"
   }
 ]

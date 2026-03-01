@@ -83,5 +83,42 @@
       }
     ],
     "constructs": ["Performance Expectancy", "Effort Expectancy", "Social Influence", "Facilitating Conditions", "Behavioral Intention", "Use Behavior", "Hedonic Motivation", "Price Value", "Habit"]
+  },
+  {
+    "id": "marlize-terblanche-smit",
+    "name": "Marlize Terblanche-Smit",
+    "bio": "Marlize Terblanche-Smit is a Professor of Marketing at Stellenbosch Business School (USB), where she has been based since 2019. She previously served as Associate Professor at Stellenbosch University (2013–2018) and was head of the MBA programme at USB from 2014. Her research focuses on marketing strategy, branding, digital marketing, consumer behaviour, and non-profit marketing. Her institutional profile is tagged with Responsible Leadership. Stellenbosch Business School holds AACSB, EQUIS and AMBA accreditation.",
+    "keyContributions": [],
+    "keyArticles": [],
+    "constructs": [],
+    "profilePath": "supervisor"
+  },
+  {
+    "id": "nicky-terblanche",
+    "name": "Nicky Terblanche",
+    "bio": "Nicky Terblanche is an Associate Professor of Leadership Coaching at Stellenbosch Business School and Head of the MPhil Leadership Coaching and PhD programmes. He holds a PhD in Business Management and an MSc in Electronic Engineering. His research focuses on transition coaching, transformative learning, social network analysis, complexity theory, and the application of AI and machine learning in coaching. He has developed an AI Bot Coach called Vici and researches how newly appointed senior leaders can be supported during career transitions.",
+    "keyContributions": [],
+    "keyArticles": [
+      {
+        "citation": "Terblanche, N., Albertyn, R., & Van Coller-Peter, S. (2020). Why newly appointed senior leaders need support. Stellenbosch Business School Management Review.",
+        "doi": "",
+        "description": "Explores organisational support for newly promoted leaders during critical transitions."
+      }
+    ],
+    "constructs": []
+  },
+  {
+    "id": "charlene-gerber",
+    "name": "Charlene Gerber",
+    "bio": "Charlene Gerber is a researcher in the Department of Business Management at Stellenbosch University. Her work spans social media in recruitment, behavioral finance, and student engagement. Her highly cited paper on social media and recruitment (SA Journal of Human Resource Management, 2018) has received hundreds of citations. She has also published on familiarity bias amongst individual investors and longitudinal studies of academic performance.",
+    "keyContributions": [],
+    "keyArticles": [
+      {
+        "citation": "Gerber, C., & Schlechter, C. (2018). The impact of social media on recruitment: Are you LinkedIn? SA Journal of Human Resource Management, 16, a861.",
+        "doi": "10.4102/sajhrm.v16i0.861",
+        "description": "Examines how social media platforms influence recruitment practices and employer branding."
+      }
+    ],
+    "constructs": []
   }
 ]
