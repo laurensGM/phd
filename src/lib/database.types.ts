@@ -61,6 +61,27 @@ export interface Database {
           created_at?: string;
         };
       };
+      construct_notes: {
+        Row: {
+          id: string;
+          construct_id: string;
+          content: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          construct_id: string;
+          content: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          construct_id?: string;
+          content?: string;
+          updated_at?: string;
+        };
+      };
     };
   };
 }
