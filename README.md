@@ -66,7 +66,7 @@ Edit JSON in `src/data/`:
 - `literature.json` — papers and summaries
 - `research-questions.json` — RQ evolution
 - `diary-entries.json` — (legacy; diary now uses Supabase)
-- `methods.json` — hypotheses, operationalization, instrument
+- Methods page content is static (no JSON)
 
 ## Diary (Supabase)
 

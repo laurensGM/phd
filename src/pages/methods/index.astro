@@ -1,80 +1,125 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import methods from '../../data/methods.json';
 ---
 
-<BaseLayout title="Methods" description="Constructs operationalization, hypotheses, survey instrument, model versions">
+<BaseLayout title="Methods" description="Data collection and analysis - secondary and primary data, quantitative and qualitative">
   <h1>Methods</h1>
-  <p class="page-desc">Construct operationalization, hypotheses, survey instrument drafts, and model versions.</p>
+  <p class="methods-intro">The Method implies getting data and using data (analysis). There are 2 types of data: numerical data and non numerical data (words). Your research objective dictates whether you need numbers or words or both. There are 3 different ways of getting the data.<br /><strong>Data is always contextual. Not theory (content).</strong></p>
 
   <section class="methods-section">
-    <h2>Constructs Operationalization</h2>
-    <div class="op-list">
-      {methods.constructsOperationalization.map((op: any) => (
-        <div class="op-card">
-          <h3>{op.construct}</h3>
-          <p><strong>Source:</strong> {op.source}</p>
-          <p><strong>Adaptation:</strong> {op.adaptation}</p>
-        </div>
-      ))}
-    </div>
-  </section>
+    <h2>1. Secondary data. Quantitative.</h2>
+    <p>The getting data is short (easier), the using data part is long and hard. Secondary data is readily available to analyze. F.e. you can copy columns from Worldbank. The data context refers to the country and a time frame.</p>
 
-  <section class="methods-section">
-    <h2>Hypotheses</h2>
-    <ul class="hypothesis-list">
-      {methods.hypotheses.map((h: any) => (
-        <li class="hypothesis-item">
-          <strong>{h.id}</strong>: {h.statement}
-          <span class="hyp-meta">({h.model}, {h.status})</span>
-        </li>
-      ))}
+    <h3>1.1 Data sources</h3>
+    <ul>
+      <li><strong>Public domain data</strong>: easy for ethical clearance. You have to specify and name it.</li>
+      <li><strong>Private data</strong>: f.e. Bloomberg</li>
+      <li><strong>Company data</strong>: requires NDA.</li>
     </ul>
+    <p>Whatever data you collect, you have to argue <strong>WHY</strong> this data and not other data. You need a reference for it. Every decision you make must come with a reference.</p>
+    <p>Then you must <strong>operationalise the data</strong>: to match theory with variables. There may be different variables for the same construct. There will be multiple variables for 1 thing: which one do you pick? Must be informed from literature.</p>
+    <p>You must create a table with columns <strong>"variable"</strong>, <strong>"dataset"</strong> and <strong>"operationalised (variable in the dataset)"</strong>. Examples of variables column are Y, X, c (constants, covariants, …). The dataset column could contain the URL to the dataset. One example row could be "poverty", "url" and "gini coefficient".</p>
+
+    <h3>1.2 Method, data analysis (use data)</h3>
+    <p>This is the hard part for secondary data. They call it <strong>model specification</strong>. Ideally put into some formula: y = a + bx + c.</p>
+    <p>This will be something new from my thesis. Not done before. But parts of it will be done before. A good theory is always summarized in a math formula.</p>
+    <p>Needs a minimum of 40 rows.</p>
   </section>
 
   <section class="methods-section">
-    <h2>Survey Instrument</h2>
-    <div class="instrument-card">
-      <p><strong>Status:</strong> {methods.surveyInstrument.status}</p>
-      <p>{methods.surveyInstrument.notes}</p>
-    </div>
-  </section>
+    <h2>2. Primary data. Quantitative.</h2>
+    <p>Numerical data. Long on the getting the data part. Shorter on the using of the data. Dataset with numbers only.</p>
 
-  <section class="methods-section">
-    <h2>Model Versions</h2>
-    <ul class="model-versions">
-      {methods.modelVersions.map((mv: any) => (
-        <li>
-          <strong>{mv.version}</strong> ({mv.date}): {mv.description}
-        </li>
-      ))}
+    <h3>2.1 Method</h3>
+    <p><strong>Techniques:</strong></p>
+    <ul>
+      <li><strong>Survey</strong>. Survey always uses questionnaire measurement</li>
+      <li><strong>Experiment</strong>: P/P (pre vs post), quasi and PF</li>
+      <li><strong>Observation</strong>: for example eye tracker, scanner. Could be machine observation, structured, counting how many (camera).</li>
     </ul>
+
+    <h3>2.2 Measurement instrument</h3>
+    <p>Questionnaire. NOT always survey.</p>
+
+    <h3>2.3 Sampling</h3>
+    <p>Target population. No one gives you the population. You need to define this yourself.</p>
+
+    <h3>2.4 Data analysis</h3>
+    <p>Descriptive or inferential (conceptual model testing).</p>
+    <p>For 1 construct, you need at least <strong>5 items</strong>. 5 questions to measure 1 thing. Question items. For latent variables. For those 5 questions, you need a reference. You need to find the items in literature. This becomes a master doc of items which will be an annex to the PhD. Could be 20 pages of items. The mother doc. Mostly deal with latent variables. F.e. motivation. Every X and Y needs at least 5 items. Start finding them already now. Don't come up with your own questions.</p>
+    <p>For every item questions, you need at least <strong>5 people</strong>. The final questionnaire can not be longer than <strong>3 pages</strong> or <strong>7 to 10 minutes</strong>. You need references for all X and Y.</p>
+  </section>
+
+  <section class="methods-section">
+    <h2>3. Primary data. Qualitative.</h2>
+    <p>Qualitative data is to help understand, to give meaning.</p>
+
+    <h3>3.1 Method</h3>
+    <p><strong>Interviews:</strong></p>
+    <ul>
+      <li><strong>Semi structured</strong>: somewhat experts, 30 minutes. Not probing, 12 questions. You need &gt;12 × 3. ×3 because of triangulation. Need to repeat 3 times to ensure it's credible.</li>
+      <li><strong>In depth</strong>: with experts, 60 to 90 minutes. 5 questions: allow for follow up, probing. Needs &gt;7 × 3, also need to repeat 3 times.</li>
+    </ul>
+    <p><strong>Focus groups</strong>: 6–8 people online. 10–12 people in person. Need to run 3 to 5 focus groups.</p>
+    <p><strong>Observation</strong>: camera, to see HOW they behave (not count how many). Can also be document analysis.</p>
+    <p><strong>Themes</strong>: content analysis, coding into themes. Also narrative analysis leading to themes. Themes lead to a conceptual model.</p>
+    <p><strong>Projective technique</strong>: would you recommend X to someone else?</p>
+    <p><strong>Sentence completion</strong>: I love X because …</p>
+
+    <h3>3.2 Measurement</h3>
+    <p>Interviewer manual</p>
+
+    <h3>3.3 Sampling</h3>
+    <p>Target population</p>
+
+    <h3>3.4 Data analysis</h3>
   </section>
 </BaseLayout>
 
 <style>
-  .page-desc { color: var(--color-ink-muted); margin-bottom: 2rem; }
-
-  .methods-section { margin-bottom: 2.5rem; }
-
-  .op-list { display: flex; flex-direction: column; gap: 1rem; }
-  .op-card {
-    padding: 1rem;
-    background: white;
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
+  .methods-intro {
+    color: var(--color-ink);
+    line-height: 1.65;
+    margin-bottom: 2.5rem;
+    font-size: 1.05rem;
   }
 
-  .hypothesis-list { list-style: none; padding: 0; }
-  .hypothesis-item { margin-bottom: 1rem; padding: 1rem; background: white; border: 1px solid var(--color-border); border-radius: 8px; }
-  .hyp-meta { font-size: 0.9rem; color: var(--color-ink-muted); }
-
-  .instrument-card {
-    padding: 1rem;
-    background: white;
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
+  .methods-section {
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--color-border);
   }
 
-  .model-versions { line-height: 1.8; }
+  .methods-section:last-of-type {
+    border-bottom: none;
+  }
+
+  .methods-section h2 {
+    font-family: var(--font-serif);
+    font-size: 1.35rem;
+    color: var(--color-maroon);
+    margin: 0 0 1rem 0;
+  }
+
+  .methods-section h3 {
+    font-size: 1.1rem;
+    color: var(--color-ink);
+    margin: 1.5rem 0 0.75rem 0;
+  }
+
+  .methods-section p {
+    margin: 0 0 1rem 0;
+    line-height: 1.65;
+    color: var(--color-ink);
+  }
+
+  .methods-section ul {
+    margin: 0 0 1rem 0;
+    padding-left: 1.5rem;
+    line-height: 1.75;
+  }
+
+  .methods-section li {
+    margin-bottom: 0.5rem;
+  }
 </style>
