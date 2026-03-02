@@ -272,6 +272,39 @@
     ]
   },
   {
+    "id": "ttf",
+    "name": "Task-Technology Fit",
+    "abbreviation": "TTF",
+    "year": 1995,
+    "authors": ["Goodhue", "Thompson"],
+    "description": "A theory developed by Goodhue and Thompson (1995). Technology is more likely to have a positive impact on performance when the capabilities of the technology match the tasks the user needs to perform. It is about the fit between task requirements and technology functionality. Task characteristics and technology characteristics jointly determine task-technology fit; fit influences utilization and performance impact.",
+    "notes": "Core idea: fit between what the task demands and what the technology provides. When fit is high, users are more likely to use the technology (utilization) and to experience better performance outcomes. TTF is itself a measurable construct.",
+    "constructs": [
+      "Task Characteristics",
+      "Technology Characteristics",
+      "Task-Technology Fit",
+      "Utilization",
+      "Performance Impact"
+    ],
+    "constructAbbreviations": {
+      "Task Characteristics": "Task",
+      "Technology Characteristics": "Tech",
+      "Task-Technology Fit": "TTF",
+      "Utilization": "Util",
+      "Performance Impact": "Perf"
+    },
+    "relationships": [
+      { "from": "Task", "to": "TTF" },
+      { "from": "Tech", "to": "TTF" },
+      { "from": "TTF", "to": "Util" },
+      { "from": "TTF", "to": "Perf" },
+      { "from": "Util", "to": "Perf" }
+    ],
+    "keyCitations": [
+      { "authors": "Goodhue & Thompson (1995)", "title": "Task-Technology Fit and Individual Performance", "doi": "10.2307/249689" }
+    ]
+  },
+  {
     "id": "doi",
     "name": "Diffusion of Innovations",
     "abbreviation": "DOI",
