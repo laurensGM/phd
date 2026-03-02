@@ -396,5 +396,52 @@
       { "from": "CI", "to": "Use" }
     ],
     "keyCitations": []
+  },
+  {
+    "id": "my-thesis-2",
+    "name": "My Thesis 2",
+    "abbreviation": "Thesis2",
+    "year": null,
+    "authors": [],
+    "description": "Integrates Task-Technology Fit (TTF) with the Expectation-Confirmation Model of IS Continuance (ECM-IS). When a digital agritech tool fits the tasks farmers or agribusiness users need to perform (TTF), they are more likely to continue using it (Continuance Intention). TTF adds a functional fit dimension that ECM alone does not fully capture. The research question: Does task-technology fit influence not only initial utilization but also long-term continuance intention? Context: Agritech in Sub-Saharan Africa — an emerging, underresearched setting where SSA-specific factors (low digital literacy, connectivity, trust, switching costs) may strengthen, weaken, or disrupt the TTF → CI relationship.",
+    "notes": "Theoretical logic: Fit drives satisfaction and continued engagement. Utilization (TTF) ≠ Continuance Intention (ECM): utilization is actual behavior; CI is forward-looking intention. TTF was designed for adoption/usage phase; ECM for post-adoption. CI predicts sustained adoption — critical in agritech where tool abandonment is a real problem. Potential mediators: Satisfaction (bridging TTF and ECM). Potential moderators: Digital literacy, infrastructure quality, Trust. SSA boundary conditions: data costs, connectivity, social norms, low literacy may disrupt fit-continuance link. Defensible framing: The TTF → CI relationship is theoretically logical but empirically unverified in agritech in SSA, where unique contextual factors may strengthen, weaken, or disrupt this relationship.",
+    "constructs": [
+      "Task-Technology Fit",
+      "Confirmation",
+      "Perceived Usefulness",
+      "Satisfaction",
+      "Continuance Intention",
+      "Continued Use"
+    ],
+    "constructAbbreviations": {
+      "Task-Technology Fit": "TTF",
+      "Confirmation": "Confirm",
+      "Perceived Usefulness": "PU",
+      "Satisfaction": "Sat",
+      "Continuance Intention": "CI",
+      "Continued Use": "Use"
+    },
+    "constructCategories": {
+      "TTF": "neutral",
+      "Confirm": "cognitive",
+      "PU": "cognitive",
+      "Sat": "cognitive",
+      "CI": "neutral",
+      "Use": "neutral"
+    },
+    "relationships": [
+      { "from": "TTF", "to": "Sat" },
+      { "from": "TTF", "to": "CI" },
+      { "from": "Confirm", "to": "PU" },
+      { "from": "Confirm", "to": "Sat" },
+      { "from": "PU", "to": "Sat" },
+      { "from": "PU", "to": "CI" },
+      { "from": "Sat", "to": "CI" },
+      { "from": "CI", "to": "Use" }
+    ],
+    "keyCitations": [
+      { "authors": "Goodhue & Thompson (1995)", "title": "Task-Technology Fit and Individual Performance", "doi": "10.2307/249689" },
+      { "authors": "Bhattacherjee (2001)", "title": "Understanding Information Systems Continuance: An Expectation-Confirmation Model", "doi": "10.2307/3250921" }
+    ]
   }
 ]
