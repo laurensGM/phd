@@ -3,60 +3,135 @@
     "id": "information-systems",
     "name": "Information Systems (IS)",
     "category": "primary",
-    "description": "This is your primary disciplinary home. TTF, ECM, TAM, continuance intention are all core IS theories. Most of your citations will likely come from here."
+    "description": "This is your primary disciplinary home. TTF, ECM, TAM, continuance intention are all core IS theories. Most of your citations will likely come from here.",
+    "journals": [
+      "MIS Quarterly (MISQ) — the gold standard",
+      "Information Systems Research (ISR)",
+      "Journal of Management Information Systems (JMIS)",
+      "European Journal of Information Systems (EJIS)",
+      "Journal of the Association for Information Systems (JAIS)",
+      "Information & Management"
+    ]
   },
   {
     "id": "ict4d",
     "name": "ICT4D",
     "category": "primary",
-    "description": "As discussed — your broader contextual umbrella. Positions your work in the developing country / Global South discourse."
+    "description": "As discussed — your broader contextual umbrella. Positions your work in the developing country / Global South discourse.",
+    "journals": [
+      "Information Technology for Development",
+      "Electronic Journal of Information Systems in Developing Countries (EJISDC)",
+      "Information Technologies & International Development (ITID)",
+      "Journal of Information Technology for Development"
+    ]
   },
   {
     "id": "agricultural-economics",
     "name": "Agricultural Economics / Agricultural Science",
     "category": "secondary",
-    "description": "Agritech is inherently about agricultural productivity and decision-making. Journals in this space increasingly publish on digital tool adoption."
+    "description": "Agritech is inherently about agricultural productivity and decision-making. Journals in this space increasingly publish on digital tool adoption.",
+    "journals": [
+      "American Journal of Agricultural Economics",
+      "Journal of Agricultural Economics",
+      "Food Policy",
+      "Agricultural Systems",
+      "World Development (also crosses into development studies)",
+      "NJAS — Wageningen Journal of Life Sciences"
+    ]
   },
   {
     "id": "development-studies",
     "name": "Development Studies / Development Economics",
     "category": "secondary",
-    "description": "Concerned with poverty, smallholder farming, rural livelihoods. Your SSA context plugs directly into this literature."
+    "description": "Concerned with poverty, smallholder farming, rural livelihoods. Your SSA context plugs directly into this literature.",
+    "journals": [
+      "World Development",
+      "Journal of Development Economics",
+      "Development Policy Review",
+      "Journal of Development Studies",
+      "Oxford Development Studies",
+      "European Journal of Development Research"
+    ]
   },
   {
     "id": "innovation-entrepreneurship",
     "name": "Innovation & Entrepreneurship",
     "category": "secondary",
-    "description": "Agritech is a growing startup ecosystem in SSA. Product discovery connects to innovation diffusion (Rogers' Diffusion of Innovations theory is relevant here)."
+    "description": "Agritech is a growing startup ecosystem in SSA. Product discovery connects to innovation diffusion (Rogers' Diffusion of Innovations theory is relevant here).",
+    "journals": [
+      "Research Policy",
+      "Journal of Business Venturing",
+      "Technovation",
+      "Small Business Economics",
+      "Strategic Management Journal (for innovation angles)",
+      "Journal of Product Innovation Management"
+    ]
   },
   {
     "id": "marketing-consumer-behavior",
     "name": "Marketing & Consumer Behavior",
     "category": "secondary",
-    "description": "Continuance intention has strong parallels with customer retention, loyalty, and repeat purchase behavior. Product discovery overlaps with consumer search behavior and decision journeys."
+    "description": "Continuance intention has strong parallels with customer retention, loyalty, and repeat purchase behavior. Product discovery overlaps with consumer search behavior and decision journeys.",
+    "journals": [
+      "Journal of Marketing Research",
+      "Journal of Consumer Research",
+      "Journal of the Academy of Marketing Science",
+      "Journal of Marketing",
+      "Journal of Retailing",
+      "Journal of Interactive Marketing (relevant for digital products)"
+    ]
   },
   {
     "id": "hci",
     "name": "Human-Computer Interaction (HCI)",
     "category": "secondary",
-    "description": "Concerned with usability, user experience, and interface design. Closely related to why tools fit or don't fit user tasks."
+    "description": "Concerned with usability, user experience, and interface design. Closely related to why tools fit or don't fit user tasks.",
+    "journals": [
+      "ACM CHI Conference Proceedings — the premier HCI venue (conference, not journal)",
+      "ACM Transactions on Computer-Human Interaction (TOCHI)",
+      "Human-Computer Interaction (Taylor & Francis)",
+      "International Journal of Human-Computer Studies",
+      "Behaviour & Information Technology",
+      "Interacting with Computers"
+    ]
   },
   {
     "id": "sociology",
     "name": "Sociology / Rural Sociology",
     "category": "peripheral",
-    "description": "Social dynamics, community influence, gender dimensions of technology adoption in SSA."
+    "description": "Social dynamics, community influence, gender dimensions of technology adoption in SSA.",
+    "journals": [
+      "Rural Sociology",
+      "Journal of Rural Studies",
+      "Sociologia Ruralis",
+      "American Journal of Sociology",
+      "African Sociological Review (relevant for SSA context)"
+    ]
   },
   {
     "id": "behavioral-science",
     "name": "Behavioral Science / Psychology",
     "category": "peripheral",
-    "description": "Underpins most IS models — TAM, ECM draw heavily on psychology of behavior and motivation."
+    "description": "Underpins most IS models — TAM, ECM draw heavily on psychology of behavior and motivation.",
+    "journals": [
+      "Psychological Science",
+      "Journal of Behavioral Decision Making",
+      "Organizational Behavior and Human Decision Processes (very relevant — bridges psychology and management)",
+      "Journal of Applied Psychology",
+      "Computers in Human Behavior (highly relevant — sits between IS and psychology)"
+    ]
   },
   {
     "id": "public-policy",
     "name": "Public Policy / e-Government",
     "category": "peripheral",
-    "description": "If your agritech tools involve government or NGO-driven initiatives, this field becomes relevant."
+    "description": "If your agritech tools involve government or NGO-driven initiatives, this field becomes relevant.",
+    "journals": [
+      "Government Information Quarterly (GIQ) — most directly relevant",
+      "Information Polity",
+      "Public Administration Review",
+      "Journal of Public Administration Research and Theory",
+      "Transforming Government: People, Process and Policy"
+    ]
   }
 ]

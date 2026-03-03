@@ -33,6 +33,17 @@ if (!field) {
     <section class="field-description">
       <p>{field.description}</p>
     </section>
+
+    {field.journals && field.journals.length > 0 && (
+      <section class="field-journals">
+        <h2>Top journals</h2>
+        <ul class="journals-list">
+          {field.journals.map((entry: string) => (
+            <li class="journal-entry">{entry}</li>
+          ))}
+        </ul>
+      </section>
+    )}
   </article>
 </BaseLayout>
 
@@ -84,5 +95,31 @@ if (!field) {
   }
   .field-description p {
     margin: 0;
+  }
+
+  .field-journals {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-border);
+  }
+  .field-journals h2 {
+    font-size: 1.2rem;
+    color: var(--color-maroon);
+    margin: 0 0 0.75rem 0;
+  }
+  .journals-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .journal-entry {
+    padding: 0.35rem 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--color-ink);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .journal-entry:last-child {
+    border-bottom: none;
   }
 </style>
