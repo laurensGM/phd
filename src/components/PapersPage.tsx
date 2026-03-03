@@ -91,6 +91,8 @@ const TAG_OPTIONS = [
   'agritech',
   'SSA',
   'results',
+  'seminal',
+  'ICT4D',
 ];
 
 function mapRow(row: {
