@@ -1,0 +1,88 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import fields from '../../data/fields.json';
+
+export function getStaticPaths() {
+  return fields.map((f: { id: string }) => ({ params: { id: f.id } }));
+}
+
+const { id } = Astro.params;
+const field = fields.find((f: { id: string }) => f.id === id);
+const base = import.meta.env.BASE_URL;
+
+function categoryLabel(cat: string) {
+  if (cat === 'primary') return 'Primary field';
+  if (cat === 'secondary') return 'Secondary field';
+  if (cat === 'peripheral') return 'Peripheral field';
+  return cat;
+}
+
+if (!field) {
+  return Astro.redirect(`${base}fields/`);
+}
+---
+
+<BaseLayout title={field.name} description={field.description}>
+  <article class="field-detail">
+    <header>
+      <a href={`${base}fields/`} class="back-link">← All Fields</a>
+      <h1>{field.name}</h1>
+      <span class="field-detail-category field-detail-category--{field.category}">{categoryLabel(field.category)}</span>
+    </header>
+
+    <section class="field-description">
+      <p>{field.description}</p>
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .back-link {
+    display: inline-block;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  .back-link { color: var(--color-maroon); }
+
+  .field-detail header {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .field-detail h1 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.75rem;
+  }
+
+  .field-detail-category {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    border-radius: 6px;
+  }
+  .field-detail-category--primary {
+    background: rgba(92, 29, 42, 0.12);
+    color: var(--color-maroon);
+  }
+  .field-detail-category--secondary {
+    background: var(--color-bg-alt);
+    color: var(--color-ink-muted);
+  }
+  .field-detail-category--peripheral {
+    background: var(--color-bg-alt);
+    color: var(--color-ink-muted);
+  }
+
+  .field-description {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--color-ink);
+  }
+  .field-description p {
+    margin: 0;
+  }
+</style>

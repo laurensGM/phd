@@ -120,5 +120,43 @@
       }
     ],
     "constructs": []
+  },
+  {
+    "id": "richard-heeks",
+    "name": "Richard Heeks",
+    "bio": "Richard Heeks is Professor of Development Informatics at the University of Manchester and a leading scholar in ICT4D (Information and Communication Technology for Development). His work focuses on how digital technologies shape development outcomes in low- and middle-income countries, including issues of digital exclusion, e-government, and development failures and success factors. He founded the Centre for Digital Development (formerly Centre for Development Informatics) and has written extensively on how context and institutions shape ICT projects in the Global South.",
+    "keyContributions": [],
+    "keyArticles": [
+      {
+        "citation": "Heeks, R. (2002). Information systems and developing countries: Failure, success, and local improvisations. The Information Society, 18(2), 101–112.",
+        "doi": "",
+        "description": "Explores why many ICT projects in developing countries fail and highlights the importance of contextual fit, local improvisation, and institutional factors."
+      },
+      {
+        "citation": "Heeks, R. (2010). Do information and communication technologies (ICTs) contribute to development? Journal of International Development, 22(5), 625–640.",
+        "doi": "",
+        "description": "Reviews the evidence base on ICT4D and proposes a more nuanced understanding of how ICTs contribute to development outcomes."
+      }
+    ],
+    "constructs": []
+  },
+  {
+    "id": "geoff-walsham",
+    "name": "Geoff Walsham",
+    "bio": "Geoff Walsham is Emeritus Professor of Management Studies at the University of Cambridge Judge Business School. He is widely recognised for pioneering interpretive research in information systems, studying how ICTs are socially constructed and embedded within organisations and societies. His work often focuses on ICTs, globalisation, and development, including research on ICT use in Africa and Asia, and on cross-cultural aspects of IS implementation.",
+    "keyContributions": [],
+    "keyArticles": [
+      {
+        "citation": "Walsham, G. (1995). Interpretive case studies in IS research: Nature and method. European Journal of Information Systems, 4(2), 74–81.",
+        "doi": "",
+        "description": "Seminal methodological paper outlining the interpretive case study approach in information systems research."
+      },
+      {
+        "citation": "Walsham, G. (2017). ICT4D research: Reflections on history and future agenda. Information Technology for Development, 23(1), 18–41.",
+        "doi": "",
+        "description": "Reflects on the evolution of ICT4D research and proposes future directions, with a focus on power, inequality, and context."
+      }
+    ],
+    "constructs": []
   }
 ]

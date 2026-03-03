@@ -1,0 +1,62 @@
+[
+  {
+    "id": "information-systems",
+    "name": "Information Systems (IS)",
+    "category": "primary",
+    "description": "This is your primary disciplinary home. TTF, ECM, TAM, continuance intention are all core IS theories. Most of your citations will likely come from here."
+  },
+  {
+    "id": "ict4d",
+    "name": "ICT4D",
+    "category": "primary",
+    "description": "As discussed — your broader contextual umbrella. Positions your work in the developing country / Global South discourse."
+  },
+  {
+    "id": "agricultural-economics",
+    "name": "Agricultural Economics / Agricultural Science",
+    "category": "secondary",
+    "description": "Agritech is inherently about agricultural productivity and decision-making. Journals in this space increasingly publish on digital tool adoption."
+  },
+  {
+    "id": "development-studies",
+    "name": "Development Studies / Development Economics",
+    "category": "secondary",
+    "description": "Concerned with poverty, smallholder farming, rural livelihoods. Your SSA context plugs directly into this literature."
+  },
+  {
+    "id": "innovation-entrepreneurship",
+    "name": "Innovation & Entrepreneurship",
+    "category": "secondary",
+    "description": "Agritech is a growing startup ecosystem in SSA. Product discovery connects to innovation diffusion (Rogers' Diffusion of Innovations theory is relevant here)."
+  },
+  {
+    "id": "marketing-consumer-behavior",
+    "name": "Marketing & Consumer Behavior",
+    "category": "secondary",
+    "description": "Continuance intention has strong parallels with customer retention, loyalty, and repeat purchase behavior. Product discovery overlaps with consumer search behavior and decision journeys."
+  },
+  {
+    "id": "hci",
+    "name": "Human-Computer Interaction (HCI)",
+    "category": "secondary",
+    "description": "Concerned with usability, user experience, and interface design. Closely related to why tools fit or don't fit user tasks."
+  },
+  {
+    "id": "sociology",
+    "name": "Sociology / Rural Sociology",
+    "category": "peripheral",
+    "description": "Social dynamics, community influence, gender dimensions of technology adoption in SSA."
+  },
+  {
+    "id": "behavioral-science",
+    "name": "Behavioral Science / Psychology",
+    "category": "peripheral",
+    "description": "Underpins most IS models — TAM, ECM draw heavily on psychology of behavior and motivation."
+  },
+  {
+    "id": "public-policy",
+    "name": "Public Policy / e-Government",
+    "category": "peripheral",
+    "description": "If your agritech tools involve government or NGO-driven initiatives, this field becomes relevant."
+  }
+]
