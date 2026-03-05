@@ -9,6 +9,7 @@ interface SavedPaper {
   title: string | null;
   authors: string | null;
   year: string | null;
+  path: string | null;
   created_at: string;
 }
 
@@ -82,6 +83,13 @@ async function fetchMetadataFromUrl(url: string): Promise<{ title: string; autho
   return null;
 }
 
+/** Build file:// URL from local path (for opening file on click) */
+function pathToFileUrl(path: string): string {
+  const normalized = path.trim().replace(/\\/g, '/');
+  if (normalized.startsWith('file://')) return normalized;
+  return 'file://' + (normalized.startsWith('/') ? normalized : '/' + normalized);
+}
+
 const TAG_OPTIONS = [
   'method',
   'theory',
@@ -103,6 +111,7 @@ function mapRow(row: {
   title?: string | null;
   authors?: string | null;
   year?: string | null;
+  path?: string | null;
   created_at: string;
 }): SavedPaper {
   return {
@@ -113,6 +122,7 @@ function mapRow(row: {
     title: row.title ?? null,
     authors: row.authors ?? null,
     year: row.year ?? null,
+    path: row.path ?? null,
     created_at: row.created_at,
   };
 }
@@ -129,6 +139,7 @@ export default function PapersPage() {
     title: '',
     authors: '',
     year: '',
+    path: '',
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -142,6 +153,7 @@ export default function PapersPage() {
     year: '',
     motivation: '',
     tags: [] as string[],
+    path: '',
   });
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -219,6 +231,7 @@ export default function PapersPage() {
       year: paper.year ?? '',
       motivation: paper.motivation ?? '',
       tags: paper.tags ?? [],
+      path: paper.path ?? '',
     });
     setError(null);
   };
@@ -248,9 +261,10 @@ export default function PapersPage() {
         year: editForm.year.trim() || null,
         motivation: editForm.motivation.trim() || null,
         tags: editForm.tags,
+        path: editForm.path.trim() || null,
       })
       .eq('id', editingId)
-      .select('id, url, motivation, tags, title, authors, year, created_at')
+      .select('id, url, motivation, tags, title, authors, year, path, created_at')
       .single();
     setSaving(false);
     if (updateError) {
@@ -291,14 +305,15 @@ export default function PapersPage() {
         title: formData.title.trim() || null,
         authors: formData.authors.trim() || null,
         year: formData.year.trim() || null,
+        path: formData.path.trim() || null,
       })
-      .select('id, url, motivation, tags, title, authors, year, created_at')
+      .select('id, url, motivation, tags, title, authors, year, path, created_at')
       .single();
     if (insertError) {
       setError(insertError.message);
     } else if (insertData) {
       setPapers((prev) => [mapRow({ ...insertData, id: insertData.id }), ...prev]);
-      setFormData({ url: '', motivation: '', tags: [], title: '', authors: '', year: '' });
+      setFormData({ url: '', motivation: '', tags: [], title: '', authors: '', year: '', path: '' });
       setShowForm(false);
     }
     setSaving(false);
@@ -408,6 +423,19 @@ export default function PapersPage() {
                 placeholder="Fetched automatically or enter manually"
                 className="papers-input"
               />
+            </div>
+
+            <div className="papers-form-field">
+              <label htmlFor="paper-path">Local file path (optional)</label>
+              <input
+                id="paper-path"
+                type="text"
+                value={formData.path}
+                onChange={(e) => setFormData((d) => ({ ...d, path: e.target.value }))}
+                placeholder="e.g. /Users/you/Documents/papers/paper.pdf"
+                className="papers-input"
+              />
+              <span className="papers-field-hint">Path on your machine; click it later to open the file.</span>
             </div>
 
             <div className="papers-form-field papers-form-field-motivation">
@@ -523,6 +551,16 @@ export default function PapersPage() {
                     />
                   </div>
                   <div className="papers-form-field">
+                    <label>Local file path (optional)</label>
+                    <input
+                      type="text"
+                      value={editForm.path}
+                      onChange={(e) => setEditForm((f) => ({ ...f, path: e.target.value }))}
+                      placeholder="e.g. /Users/you/Documents/papers/paper.pdf"
+                      className="papers-input"
+                    />
+                  </div>
+                  <div className="papers-form-field">
                     <label>Why I’m saving this</label>
                     <textarea
                       value={editForm.motivation}
@@ -604,6 +642,20 @@ export default function PapersPage() {
                   )}
                   {paper.motivation && (
                     <p className="papers-entry-motivation">{paper.motivation}</p>
+                  )}
+                  {paper.path && (
+                    <p className="papers-entry-path">
+                      Local file:{' '}
+                      <a
+                        href={pathToFileUrl(paper.path)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="papers-path-link"
+                        title="Open local file (works when app is run locally)"
+                      >
+                        {paper.path}
+                      </a>
+                    </p>
                   )}
                 </>
               )}

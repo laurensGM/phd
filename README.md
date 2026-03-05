@@ -83,6 +83,7 @@ The diary uses **Supabase** for persistent storage. No login—just add entries.
    - **Construct notes (interactive notes per construct):** copy/paste the contents of `supabase/migrations/004_construct_notes.sql` and click **Run**.
    - **Golden nuggets (FAQs and quotes):** copy/paste the contents of `supabase/migrations/005_golden_nuggets.sql` and click **Run**.
    - **Model notes (interactive notes per model):** copy/paste the contents of `supabase/migrations/006_model_notes.sql` and click **Run**.
+   - **Saved papers local path:** copy/paste the contents of `supabase/migrations/007_saved_papers_path.sql` and click **Run**.
 
 3. Add env vars locally. Create `.env`:
    ```

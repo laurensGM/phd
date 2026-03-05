@@ -39,6 +39,7 @@ export interface Database {
           title: string | null;
           authors: string | null;
           year: string | null;
+          path: string | null;
           created_at: string;
         };
         Insert: {
@@ -49,6 +50,7 @@ export interface Database {
           title?: string | null;
           authors?: string | null;
           year?: string | null;
+          path?: string | null;
           created_at?: string;
         };
         Update: {
@@ -58,6 +60,7 @@ export interface Database {
           title?: string | null;
           authors?: string | null;
           year?: string | null;
+          path?: string | null;
           created_at?: string;
         };
       };
