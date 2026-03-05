@@ -59,7 +59,6 @@ function EcmIsDiagram({ base = '', constructToSlug = {} }: { base: string; const
 
       <div className="ecm-diagram">
         <div className="ecm-box prior" onClick={() => setInfoKey('prior')} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && setInfoKey('prior')}>
-          <div className="ecm-box-label">CONSTRUCT 1</div>
           <div className="ecm-box-name">Prior Expectations</div>
           <div className="ecm-box-desc">What users expected before use</div>
         </div>
@@ -79,12 +78,10 @@ function EcmIsDiagram({ base = '', constructToSlug = {} }: { base: string; const
 
         <div className="ecm-box-stack">
           <a href={slug('Perceived Usefulness') ? `${base}constructs/${slug('Perceived Usefulness')}/` : '#'} className="ecm-box confirm" onClick={(e) => { e.preventDefault(); setInfoKey('useful'); }}>
-            <div className="ecm-box-label">CONSTRUCT 2a</div>
             <div className="ecm-box-name">Perceived Usefulness</div>
             <div className="ecm-box-desc">Belief that using the system improves performance</div>
           </a>
           <a href={slug('Confirmation') ? `${base}constructs/${slug('Confirmation')}/` : '#'} className="ecm-box confirm" onClick={(e) => { e.preventDefault(); setInfoKey('confirm'); }}>
-            <div className="ecm-box-label">CONSTRUCT 2b</div>
             <div className="ecm-box-name">Confirmation</div>
             <div className="ecm-box-desc">Extent expectations were met by actual experience</div>
           </a>
@@ -104,7 +101,6 @@ function EcmIsDiagram({ base = '', constructToSlug = {} }: { base: string; const
         </div>
 
         <a href={slug('Satisfaction') ? `${base}constructs/${slug('Satisfaction')}/` : '#'} className="ecm-box satisfy" onClick={(e) => { e.preventDefault(); setInfoKey('satisfy'); }}>
-          <div className="ecm-box-label">CONSTRUCT 3</div>
           <div className="ecm-box-name">Satisfaction</div>
           <div className="ecm-box-desc">Overall feeling after using the product</div>
         </a>
@@ -117,7 +113,6 @@ function EcmIsDiagram({ base = '', constructToSlug = {} }: { base: string; const
         </div>
 
         <a href={slug('Continuance Intention') ? `${base}constructs/${slug('Continuance Intention')}/` : '#'} className="ecm-box intention" onClick={(e) => { e.preventDefault(); setInfoKey('intention'); }}>
-          <div className="ecm-box-label">CONSTRUCT 4</div>
           <div className="ecm-box-name">Continuance Intention</div>
           <div className="ecm-box-desc">Intention to keep using the technology</div>
         </a>
@@ -130,7 +125,6 @@ function EcmIsDiagram({ base = '', constructToSlug = {} }: { base: string; const
         </div>
 
         <a href={slug('Continued Use') ? `${base}constructs/${slug('Continued Use')}/` : '#'} className="ecm-box behavior" onClick={(e) => { e.preventDefault(); setInfoKey('behavior'); }}>
-          <div className="ecm-box-label">CONSTRUCT 5</div>
           <div className="ecm-box-name">Continued Use</div>
           <div className="ecm-box-desc">Actual sustained usage behaviour</div>
         </a>
@@ -226,7 +220,7 @@ function GenericFlowDiagram({ model, base = '', constructToSlug = {} }: ModelDia
   const levels = React.useMemo(() => getLayeredLevels(model), [model]);
 
   return (
-    <div className="ecm-diagram-wrap">
+    <div className="ecm-diagram-wrap generic-flow-diagram">
       <p className="ecm-diagram-subtitle">Constructs and relationships (left to right).</p>
       <div className="ecm-diagram">
         {levels.map((levelNodes, levelIndex) => (
@@ -251,19 +245,12 @@ function GenericFlowDiagram({ model, base = '', constructToSlug = {} }: ModelDia
               <div className="ecm-arrow-group">
                 <div className="ecm-arrow">
                   <div className="ecm-arrow-line" />
-                  <span className="ecm-arrow-label">→</span>
                 </div>
               </div>
             )}
           </React.Fragment>
         ))}
       </div>
-      {(model.constructCategories && Object.keys(model.constructCategories).length > 0) && (
-        <div className="ecm-legend" style={{ marginTop: '1rem' }}>
-          <div className="ecm-legend-item"><span className="ecm-legend-dot ecm-legend-dot--social" /> Social influencing</div>
-          <div className="ecm-legend-item"><span className="ecm-legend-dot ecm-legend-dot--cognitive" /> Cognitive instrumental</div>
-        </div>
-      )}
     </div>
   );
 }

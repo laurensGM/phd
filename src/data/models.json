@@ -407,8 +407,8 @@
     "notes": "Theoretical logic: Fit drives satisfaction and continued engagement. Utilization (TTF) ≠ Continuance Intention (ECM): utilization is actual behavior; CI is forward-looking intention. TTF was designed for adoption/usage phase; ECM for post-adoption. CI predicts sustained adoption — critical in agritech where tool abandonment is a real problem. Potential mediators: Satisfaction (bridging TTF and ECM). Potential moderators: Digital literacy, infrastructure quality, Trust. SSA boundary conditions: data costs, connectivity, social norms, low literacy may disrupt fit-continuance link. Defensible framing: The TTF → CI relationship is theoretically logical but empirically unverified in agritech in SSA, where unique contextual factors may strengthen, weaken, or disrupt this relationship.",
     "constructs": [
       "Task-Technology Fit",
-      "Confirmation",
       "Perceived Usefulness",
+      "Confirmation",
       "Satisfaction",
       "Continuance Intention",
       "Continued Use"
@@ -421,17 +421,9 @@
       "Continuance Intention": "CI",
       "Continued Use": "Use"
     },
-    "constructCategories": {
-      "TTF": "neutral",
-      "Confirm": "cognitive",
-      "PU": "cognitive",
-      "Sat": "cognitive",
-      "CI": "neutral",
-      "Use": "neutral"
-    },
     "relationships": [
-      { "from": "TTF", "to": "Sat" },
-      { "from": "TTF", "to": "CI" },
+      { "from": "TTF", "to": "PU" },
+      { "from": "TTF", "to": "Confirm" },
       { "from": "Confirm", "to": "PU" },
       { "from": "Confirm", "to": "Sat" },
       { "from": "PU", "to": "Sat" },

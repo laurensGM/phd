@@ -28,15 +28,11 @@ const CONSTRUCT_INFO: Record<string, { title: string; text: string }> = {
 };
 
 function Box({
-  id,
-  label,
   name,
   desc,
   variant,
   onClick,
 }: {
-  id: string;
-  label: string;
   name: string;
   desc: string;
   variant: 'prior' | 'confirm' | 'satisfy' | 'intention' | 'behavior';
@@ -49,7 +45,6 @@ function Box({
       onClick={onClick}
       aria-label={`Show details for ${name}`}
     >
-      <div className="ecm-box-label">{label}</div>
       <div className="ecm-box-name">{name}</div>
       <div className="ecm-box-desc">{desc}</div>
     </button>
@@ -73,8 +68,6 @@ export default function EcmIsDiagram() {
     <div className="ecm-is-diagram">
       <div className="ecm-flow">
         <Box
-          id="prior"
-          label="CONSTRUCT 1"
           name="Prior Expectations"
           desc="What users expected before use"
           variant="prior"
@@ -86,16 +79,12 @@ export default function EcmIsDiagram() {
         </div>
         <div className="ecm-stack">
           <Box
-            id="useful"
-            label="CONSTRUCT 2a"
             name="Perceived Usefulness"
             desc="Belief that using the system improves performance"
             variant="confirm"
             onClick={() => setSelected('useful')}
           />
           <Box
-            id="confirm"
-            label="CONSTRUCT 2b"
             name="Confirmation"
             desc="Extent expectations were met by actual experience"
             variant="confirm"
@@ -107,8 +96,6 @@ export default function EcmIsDiagram() {
           <Arrow label="drives" />
         </div>
         <Box
-          id="satisfy"
-          label="CONSTRUCT 3"
           name="Satisfaction"
           desc="Overall feeling after using the product"
           variant="satisfy"
@@ -116,8 +103,6 @@ export default function EcmIsDiagram() {
         />
         <Arrow label="predicts" />
         <Box
-          id="intention"
-          label="CONSTRUCT 4"
           name="Continuance Intention"
           desc="Intention to keep using the technology"
           variant="intention"
@@ -125,8 +110,6 @@ export default function EcmIsDiagram() {
         />
         <Arrow label="leads to" />
         <Box
-          id="behavior"
-          label="CONSTRUCT 5"
           name="Continued Use"
           desc="Actual sustained usage behaviour"
           variant="behavior"
