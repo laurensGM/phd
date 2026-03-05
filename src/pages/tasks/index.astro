@@ -1,0 +1,231 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import KanbanBoard from '../../components/KanbanBoard';
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout title="Tasks" description="Kanban board for PhD tasks - to do, in progress, done">
+  <p class="back-link"><a href={`${base}outline/`}>← PhD Outline</a></p>
+  <h1>Tasks</h1>
+  <p class="page-desc">Drag tasks between columns to update their status. Add, edit, or delete tasks below (saved in Supabase).</p>
+
+  <KanbanBoard client:load />
+</BaseLayout>
+
+<style>
+  .back-link {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  .back-link a {
+    color: var(--color-maroon);
+  }
+  .page-desc {
+    color: var(--color-ink-muted);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  /* Kanban board (React) */
+  :global(.kanban-setup),
+  :global(.kanban-loading) {
+    color: var(--color-ink-muted);
+    padding: 2rem;
+  }
+  :global(.kanban-error) {
+    color: var(--color-maroon);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: rgba(113, 32, 56, 0.08);
+    border-radius: 6px;
+  }
+  :global(.kanban-board) {
+    margin-bottom: 3rem;
+  }
+  :global(.kanban-actions) {
+    margin-bottom: 1.5rem;
+  }
+  :global(.kanban-add-btn) {
+    padding: 0.5rem 1rem;
+    background: var(--color-maroon);
+    color: #fff;
+    border: 2px solid var(--color-gold);
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+  }
+  :global(.kanban-add-btn:hover) {
+    background: var(--color-maroon-dark);
+  }
+  :global(.kanban-add-form) {
+    margin-top: 1rem;
+    padding: 1.25rem;
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    max-width: 480px;
+  }
+  :global(.kanban-form-row) {
+    margin-bottom: 0.75rem;
+  }
+  :global(.kanban-form-row label) {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--color-ink);
+  }
+  :global(.kanban-input),
+  :global(.kanban-textarea),
+  :global(.kanban-select) {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 2px solid var(--color-border);
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    background: #fff;
+    box-sizing: border-box;
+  }
+  :global(.kanban-textarea) {
+    resize: vertical;
+    min-height: 60px;
+  }
+  :global(.kanban-select) {
+    cursor: pointer;
+    max-width: 200px;
+  }
+  :global(.kanban-submit) {
+    margin-top: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--color-maroon);
+    color: #fff;
+    border: 2px solid var(--color-gold);
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  :global(.kanban-submit:hover:not(:disabled)) {
+    background: var(--color-maroon-dark);
+  }
+  :global(.kanban-submit:disabled) {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  :global(.kanban-columns) {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    align-items: start;
+  }
+  @media (max-width: 900px) {
+    :global(.kanban-columns) {
+      grid-template-columns: 1fr;
+    }
+  }
+  :global(.kanban-column) {
+    background: var(--color-bg-alt);
+    border: 2px solid var(--color-border);
+    border-radius: 10px;
+    padding: 1rem;
+    min-height: 200px;
+  }
+  :global(.kanban-column-droppable) {
+    border-color: var(--color-maroon-muted);
+    background: rgba(92, 29, 42, 0.04);
+  }
+  :global(.kanban-column-title) {
+    font-size: 1.1rem;
+    color: var(--color-maroon);
+    margin: 0 0 0.75rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--color-border);
+  }
+  :global(.kanban-cards) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  :global(.kanban-card) {
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    cursor: grab;
+    box-shadow: var(--shadow-sm);
+  }
+  :global(.kanban-card:active) {
+    cursor: grabbing;
+  }
+  :global(.kanban-card-dragging) {
+    opacity: 0.6;
+    box-shadow: var(--shadow-md);
+  }
+  :global(.kanban-card-title) {
+    font-size: 1rem;
+    margin: 0 0 0.35rem 0;
+    color: var(--color-ink);
+  }
+  :global(.kanban-card-desc) {
+    font-size: 0.875rem;
+    color: var(--color-ink-muted);
+    margin: 0 0 0.5rem 0;
+    line-height: 1.4;
+    white-space: pre-wrap;
+  }
+  :global(.kanban-card-actions) {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+  }
+  :global(.kanban-card-action) {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 1px solid var(--color-border);
+    background: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--color-ink);
+  }
+  :global(.kanban-card-action:hover) {
+    border-color: var(--color-maroon-muted);
+    background: rgba(92, 29, 42, 0.06);
+  }
+  :global(.kanban-card-delete:hover) {
+    border-color: var(--color-maroon);
+    color: var(--color-maroon);
+  }
+  :global(.kanban-card-edit) {
+    cursor: default;
+  }
+  :global(.kanban-card-edit .kanban-input),
+  :global(.kanban-card-edit .kanban-textarea) {
+    margin-bottom: 0.5rem;
+  }
+  :global(.kanban-btn) {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 1px solid var(--color-border);
+    background: #fff;
+  }
+  :global(.kanban-btn-primary) {
+    background: var(--color-maroon);
+    color: #fff;
+    border-color: var(--color-maroon);
+  }
+  :global(.kanban-btn-primary:hover:not(:disabled)) {
+    background: var(--color-maroon-dark);
+  }
+  :global(.kanban-btn-secondary:hover) {
+    border-color: var(--color-ink-muted);
+  }
+</style>

@@ -130,6 +130,33 @@ export interface Database {
           updated_at?: string;
         };
       };
+      tasks: {
+        Row: {
+          id: string;
+          title: string;
+          description: string | null;
+          status: string;
+          sort_order: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          description?: string | null;
+          status?: string;
+          sort_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          title?: string;
+          description?: string | null;
+          status?: string;
+          sort_order?: number;
+          updated_at?: string;
+        };
+      };
     };
   };
 }
