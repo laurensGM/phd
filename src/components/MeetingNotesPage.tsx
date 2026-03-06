@@ -37,6 +37,8 @@ function mapRow(row: {
 export default function MeetingNotesPage() {
   const [notes, setNotes] = useState<MeetingNote[]>([]);
   const [search, setSearch] = useState('');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
   const [showForm, setShowForm] = useState(true);
   const [formData, setFormData] = useState({
     date: new Date().toISOString().slice(0, 10),
@@ -84,16 +86,22 @@ export default function MeetingNotesPage() {
   }, [fetchNotes]);
 
   const filteredNotes = useMemo(() => {
-    if (!search) return notes;
-    const q = search.toLowerCase();
-    return notes.filter(
-      (n) =>
-        n.title.toLowerCase().includes(q) ||
-        (n.content?.toLowerCase().includes(q)) ||
-        (n.participants?.toLowerCase().includes(q)) ||
-        (n.location?.toLowerCase().includes(q))
-    );
-  }, [notes, search]);
+    return notes.filter((n) => {
+      if (search) {
+        const q = search.toLowerCase();
+        if (
+          !n.title.toLowerCase().includes(q) &&
+          !n.content?.toLowerCase().includes(q) &&
+          !n.participants?.toLowerCase().includes(q) &&
+          !n.location?.toLowerCase().includes(q)
+        )
+          return false;
+      }
+      if (dateFrom && n.date < dateFrom) return false;
+      if (dateTo && n.date > dateTo) return false;
+      return true;
+    });
+  }, [notes, search, dateFrom, dateTo]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -194,21 +202,22 @@ export default function MeetingNotesPage() {
     }
   };
 
-  if (!isSupabaseConfigured()) {
-    return (
-      <div className="meeting-notes-setup">
-        <h3>Meeting notes require Supabase</h3>
-        <p>Add your Supabase credentials to add, edit, and delete meeting notes. See the README for setup.</p>
-      </div>
-    );
-  }
-
-  if (loading) {
-    return <div className="meeting-notes-loading">Loading meeting notes…</div>;
-  }
-
   return (
     <div className="meeting-notes-page">
+      {!isSupabaseConfigured() && (
+        <div className="meeting-notes-setup">
+          <h3>Meeting notes require Supabase</h3>
+          <p>Add your Supabase credentials to add, edit, and delete meeting notes. See the README for setup.</p>
+          <p className="meeting-notes-setup-hint">
+            Set <code>PUBLIC_SUPABASE_URL</code> and <code>PUBLIC_SUPABASE_ANON_KEY</code> in your environment or <code>.env</code> file.
+          </p>
+        </div>
+      )}
+      {isSupabaseConfigured() && loading && (
+        <div className="meeting-notes-loading">Loading meeting notes…</div>
+      )}
+      {isSupabaseConfigured() && !loading && (
+    <>
       {error && <p className="meeting-notes-error">{error}</p>}
 
       <section className="meeting-notes-add-section">
@@ -293,22 +302,38 @@ export default function MeetingNotesPage() {
         )}
       </section>
 
-      <section className="meeting-notes-list-section">
-        <h3 className="meeting-notes-list-title">
-          Your meeting notes
+      <section className="meeting-notes-history-section">
+        <h3 className="meeting-notes-history-title">
+          Meeting notes
           {notes.length > 0 && (
-            <span className="meeting-notes-count">
+            <span className="meeting-notes-entry-count">
               {' '}({filteredNotes.length} {filteredNotes.length === 1 ? 'note' : 'notes'})
             </span>
           )}
         </h3>
-        <input
-          type="search"
-          placeholder="Search by title, content, participants, location..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="meeting-notes-search"
-        />
+        <div className="meeting-notes-filters">
+          <input
+            type="search"
+            placeholder="Search by title, content, participants, location..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="meeting-notes-search"
+          />
+          <input
+            type="date"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+            placeholder="From"
+            className="meeting-notes-date"
+          />
+          <input
+            type="date"
+            value={dateTo}
+            onChange={(e) => setDateTo(e.target.value)}
+            placeholder="To"
+            className="meeting-notes-date"
+          />
+        </div>
         <div className="meeting-notes-entries">
           {filteredNotes.map((note) => (
             <article key={note.id} className="meeting-notes-entry">
@@ -378,7 +403,6 @@ export default function MeetingNotesPage() {
                 <>
                   <div className="meeting-notes-entry-header">
                     <time dateTime={note.date}>{formatDate(note.date)}</time>
-                    <h4 className="meeting-notes-entry-title">{note.title}</h4>
                     <div className="meeting-notes-entry-actions">
                       <button
                         type="button"
@@ -389,7 +413,7 @@ export default function MeetingNotesPage() {
                       </button>
                       <button
                         type="button"
-                        className="meeting-notes-entry-action meeting-notes-entry-delete"
+                        className="meeting-notes-entry-action meeting-notes-entry-action-delete"
                         onClick={() => handleDelete(note.id)}
                         disabled={deletingId === note.id}
                       >
@@ -397,6 +421,7 @@ export default function MeetingNotesPage() {
                       </button>
                     </div>
                   </div>
+                  <h4 className="meeting-notes-entry-title">{note.title}</h4>
                   {(note.participants || note.location) && (
                     <p className="meeting-notes-entry-meta">
                       {note.participants && <span>Participants: {note.participants}</span>}
@@ -405,7 +430,7 @@ export default function MeetingNotesPage() {
                     </p>
                   )}
                   {note.content && (
-                    <div className="meeting-notes-entry-content">{note.content}</div>
+                    <p className="meeting-notes-entry-reflection">{note.content}</p>
                   )}
                 </>
               )}
@@ -416,6 +441,8 @@ export default function MeetingNotesPage() {
           )}
         </div>
       </section>
+    </>
+      )}
     </div>
   );
 }
