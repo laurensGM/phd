@@ -160,6 +160,146 @@ function EcmIsDiagram({ base = '', constructToSlug = {} }: { base: string; const
   );
 }
 
+const MY_THESIS_2_CONSTRUCT_INFO: Record<string, { title: string; text: string }> = {
+  ttf: {
+    title: 'Task-Technology Fit (TTF)',
+    text: "The degree to which the technology supports the tasks the user needs to perform. Goodhue & Thompson (1995). When fit is high, the tool is more likely to be used and to improve performance. In your thesis, TTF is the functional fit dimension that feeds into perceived usefulness and continuance intention in agritech contexts.",
+  },
+  confirm: {
+    title: 'Confirmation',
+    text: "The degree to which a user's initial expectations were met after actual use. From ECM-IS (Bhattacherjee 2001). Together with TTF it influences perceived usefulness and satisfaction.",
+  },
+  useful: {
+    title: 'Perceived Usefulness',
+    text: "After using the product, how useful does the user believe it to be? Shaped by TTF and Confirmation. In agritech, when the tool fits the task and meets expectations, perceived usefulness increases.",
+  },
+  satisfy: {
+    title: 'Satisfaction',
+    text: "Overall affective response to using the technology. Shaped by Confirmation and Perceived Usefulness. The bridge between cognitive assessment and continuance intention.",
+  },
+  intention: {
+    title: 'Continuance Intention',
+    text: "The user's intention to keep using the technology. Your main dependent variable. Driven by Satisfaction and Perceived Usefulness.",
+  },
+  behavior: {
+    title: 'Continued Use (Actual Behaviour)',
+    text: "Actual sustained usage over time. In agritech in SSA, measuring this may require longitudinal data or usage logs.",
+  },
+};
+
+function MyThesis2Diagram({ base = '', constructToSlug = {} }: { base: string; constructToSlug: Record<string, string> }) {
+  const [infoKey, setInfoKey] = useState<string | null>(null);
+  const info = infoKey ? MY_THESIS_2_CONSTRUCT_INFO[infoKey] : null;
+  const slug = (name: string) => constructToSlug[name];
+
+  return (
+    <div className="ecm-diagram-wrap">
+      <h2 className="ecm-diagram-title">My Thesis 2: TTF + ECM-IS</h2>
+      <p className="ecm-diagram-subtitle">Click any construct to learn more</p>
+
+      <div className="ecm-diagram">
+        <div className="ecm-box prior" onClick={() => setInfoKey('ttf')} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && setInfoKey('ttf')}>
+          <div className="ecm-box-name">TTF</div>
+          <div className="ecm-box-desc">Task-Technology Fit — fit between task and technology</div>
+        </div>
+
+        <div className="ecm-arrow-group">
+          <div className="ecm-multi-arrow">
+            <div className="ecm-arrow">
+              <div className="ecm-arrow-line" />
+              <div className="ecm-arrow-label">shapes</div>
+            </div>
+            <div className="ecm-arrow">
+              <div className="ecm-arrow-line" />
+              <div className="ecm-arrow-label">compared with</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="ecm-box-stack">
+          <a href={slug('Perceived Usefulness') ? `${base}constructs/${slug('Perceived Usefulness')}/` : '#'} className="ecm-box confirm" onClick={(e) => { e.preventDefault(); setInfoKey('useful'); }}>
+            <div className="ecm-box-name">Perceived Usefulness</div>
+            <div className="ecm-box-desc">Belief that using the system improves performance</div>
+          </a>
+          <a href={slug('Confirmation') ? `${base}constructs/${slug('Confirmation')}/` : '#'} className="ecm-box confirm" onClick={(e) => { e.preventDefault(); setInfoKey('confirm'); }}>
+            <div className="ecm-box-name">Confirmation</div>
+            <div className="ecm-box-desc">Extent expectations were met by actual experience</div>
+          </a>
+        </div>
+
+        <div className="ecm-arrow-group">
+          <div className="ecm-multi-arrow">
+            <div className="ecm-arrow">
+              <div className="ecm-arrow-line" />
+              <div className="ecm-arrow-label">influences</div>
+            </div>
+            <div className="ecm-arrow">
+              <div className="ecm-arrow-line" />
+              <div className="ecm-arrow-label">drives</div>
+            </div>
+          </div>
+        </div>
+
+        <a href={slug('Satisfaction') ? `${base}constructs/${slug('Satisfaction')}/` : '#'} className="ecm-box satisfy" onClick={(e) => { e.preventDefault(); setInfoKey('satisfy'); }}>
+          <div className="ecm-box-name">Satisfaction</div>
+          <div className="ecm-box-desc">Overall feeling after using the product</div>
+        </a>
+
+        <div className="ecm-arrow-group">
+          <div className="ecm-arrow">
+            <div className="ecm-arrow-line" />
+            <div className="ecm-arrow-label">predicts</div>
+          </div>
+        </div>
+
+        <a href={slug('Continuance Intention') ? `${base}constructs/${slug('Continuance Intention')}/` : '#'} className="ecm-box intention" onClick={(e) => { e.preventDefault(); setInfoKey('intention'); }}>
+          <div className="ecm-box-name">Continuance Intention</div>
+          <div className="ecm-box-desc">Intention to keep using the technology</div>
+        </a>
+
+        <div className="ecm-arrow-group">
+          <div className="ecm-arrow">
+            <div className="ecm-arrow-line" />
+            <div className="ecm-arrow-label">leads to</div>
+          </div>
+        </div>
+
+        <a href={slug('Continued Use') ? `${base}constructs/${slug('Continued Use')}/` : '#'} className="ecm-box behavior" onClick={(e) => { e.preventDefault(); setInfoKey('behavior'); }}>
+          <div className="ecm-box-name">Continued Use</div>
+          <div className="ecm-box-desc">Actual sustained usage behaviour</div>
+        </a>
+      </div>
+
+      <div className="ecm-note-line">
+        ↳ Note: <strong>Perceived Usefulness</strong> also has a direct path to <strong>Continuance Intention</strong> (bypassing satisfaction)
+      </div>
+
+      <div className="ecm-tooltip-area" id="ecm-infoBox">
+        {info ? (
+          <>
+            <h3>{info.title}</h3>
+            <p>{info.text}</p>
+          </>
+        ) : (
+          <p className="ecm-tooltip-default">👆 Click a construct above to see details and its role in the model.</p>
+        )}
+      </div>
+
+      <div className="ecm-legend">
+        <div className="ecm-legend-item"><span className="ecm-legend-dot prior" /> TTF / Fit</div>
+        <div className="ecm-legend-item"><span className="ecm-legend-dot confirm" /> Post-use cognition</div>
+        <div className="ecm-legend-item"><span className="ecm-legend-dot satisfy" /> Affective response</div>
+        <div className="ecm-legend-item"><span className="ecm-legend-dot intention" /> Behavioural intention</div>
+        <div className="ecm-legend-item"><span className="ecm-legend-dot behavior" /> Actual behaviour</div>
+      </div>
+
+      <p className="ecm-source-note">
+        Sources: Goodhue, D. L., & Thompson, R. L. (1995). Task-technology fit and individual performance. <em>MIS Quarterly, 19</em>(2), 213–236. Bhattacherjee, A. (2001). Understanding information systems continuance. <em>MIS Quarterly, 25</em>(3), 351–370.
+      </p>
+    </div>
+  );
+}
+
 interface LevelNode {
   abbrev: string;
   name: string;
@@ -281,6 +421,9 @@ function GenericStatic({ model, base = '', constructToSlug = {} }: ModelDiagramS
 export default function ModelDiagramStatic({ model, constructToSlug = {}, base = '' }: ModelDiagramStaticProps) {
   if (model.diagramType === 'ecm-is') {
     return <EcmIsDiagram base={base} constructToSlug={constructToSlug} />;
+  }
+  if (model.diagramType === 'my-thesis-2') {
+    return <MyThesis2Diagram base={base} constructToSlug={constructToSlug} />;
   }
   if (model.relationships && model.relationships.length > 0) {
     return <GenericFlowDiagram model={model} base={base} constructToSlug={constructToSlug} />;
