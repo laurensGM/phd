@@ -202,7 +202,8 @@ function MyThesis2Diagram({ base = '', constructToSlug = {} }: { base: string; c
       <p className="ecm-diagram-subtitle">Click any construct to learn more</p>
 
       <div className="ecm-diagram">
-        <div className="ecm-box prior" onClick={() => setInfoKey('ttf')} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && setInfoKey('ttf')}>
+        <div className="ecm-diagram-main-flow">
+        <div className="ecm-box prior ecm-box-novel" onClick={() => setInfoKey('ttf')} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && setInfoKey('ttf')}>
           <div className="ecm-box-name">TTF</div>
           <div className="ecm-box-desc">Task-Technology Fit — fit between task and technology</div>
         </div>
@@ -249,17 +250,10 @@ function MyThesis2Diagram({ base = '', constructToSlug = {} }: { base: string; c
           <div className="ecm-box-desc">Overall feeling after using the product</div>
         </a>
 
-        <div className="ecm-arrow-group ecm-arrow-group-with-fc">
+        <div className="ecm-arrow-group">
           <div className="ecm-arrow">
             <div className="ecm-arrow-line" />
             <div className="ecm-arrow-label">predicts</div>
-          </div>
-          <div className="ecm-fc-wrap">
-            <div className="ecm-fc-arrow-to-line" aria-hidden="true" />
-            <div className="ecm-box ecm-box-fc" onClick={() => setInfoKey('fc')} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && setInfoKey('fc')}>
-              <div className="ecm-box-name">FC</div>
-              <div className="ecm-box-desc">Facilitating conditions</div>
-            </div>
           </div>
         </div>
 
@@ -279,6 +273,17 @@ function MyThesis2Diagram({ base = '', constructToSlug = {} }: { base: string; c
           <div className="ecm-box-name">Continued Use</div>
           <div className="ecm-box-desc">Actual sustained usage behaviour</div>
         </a>
+        </div>
+
+        <div className="ecm-fc-row">
+          <div className="ecm-fc-wrap">
+            <div className="ecm-fc-arrow-to-line" aria-hidden="true" />
+            <div className="ecm-box ecm-box-fc ecm-box-novel" onClick={() => setInfoKey('fc')} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && setInfoKey('fc')}>
+              <div className="ecm-box-name">FC</div>
+              <div className="ecm-box-desc">Facilitating conditions</div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="ecm-note-line">

@@ -381,6 +381,11 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
     width: 100%;
     max-width: 1100px;
     overflow-x: auto;
+  }
+  .ecm-diagram:has(.ecm-diagram-main-flow) {
+    flex-direction: column;
+    flex-wrap: wrap;
+    overflow-x: visible;
     padding: 0.5rem 0;
   }
   .ecm-box {
@@ -474,20 +479,29 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
     line-height: 1.2;
     margin-top: 2px;
   }
-  .ecm-arrow-group-with-fc {
-    flex-direction: column;
+  .ecm-diagram-main-flow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
     gap: 0;
+  }
+  .ecm-fc-row {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+    padding-top: 0.5rem;
   }
   .ecm-fc-wrap {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 8px;
     gap: 4px;
   }
   .ecm-fc-arrow-to-line {
     width: 2px;
-    height: 18px;
+    height: 22px;
     background: var(--color-ink-muted);
     position: relative;
   }
@@ -502,9 +516,18 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
   }
   .ecm-box-fc {
     max-width: 140px;
-    border-color: var(--color-ink-muted);
   }
   .ecm-box-fc .ecm-box-name { color: var(--color-ink); }
+  .ecm-box-novel {
+    border-width: 2px;
+    border-style: solid;
+    border-color: #2c5f7a;
+    background: rgba(44, 95, 122, 0.06);
+  }
+  .ecm-box-novel .ecm-box-name {
+    color: #1e4557;
+    font-weight: 700;
+  }
   .ecm-multi-arrow {
     display: flex;
     flex-direction: column;
