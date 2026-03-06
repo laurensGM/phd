@@ -185,6 +185,10 @@ const MY_THESIS_2_CONSTRUCT_INFO: Record<string, { title: string; text: string }
     title: 'Continued Use (Actual Behaviour)',
     text: "Actual sustained usage over time. In agritech in SSA, measuring this may require longitudinal data or usage logs.",
   },
+  fc: {
+    title: 'FC (Facilitating Conditions)',
+    text: "External factors that support or enable the behaviour. In UTAUT and related models, facilitating conditions can moderate the path from intention to behaviour or influence continuance. In agritech in SSA: connectivity, cost, support, training, or infrastructure that help or hinder the Satisfaction → Continuance Intention relationship.",
+  },
 };
 
 function MyThesis2Diagram({ base = '', constructToSlug = {} }: { base: string; constructToSlug: Record<string, string> }) {
@@ -245,10 +249,17 @@ function MyThesis2Diagram({ base = '', constructToSlug = {} }: { base: string; c
           <div className="ecm-box-desc">Overall feeling after using the product</div>
         </a>
 
-        <div className="ecm-arrow-group">
+        <div className="ecm-arrow-group ecm-arrow-group-with-fc">
           <div className="ecm-arrow">
             <div className="ecm-arrow-line" />
             <div className="ecm-arrow-label">predicts</div>
+          </div>
+          <div className="ecm-fc-wrap">
+            <div className="ecm-fc-arrow-to-line" aria-hidden="true" />
+            <div className="ecm-box ecm-box-fc" onClick={() => setInfoKey('fc')} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && setInfoKey('fc')}>
+              <div className="ecm-box-name">FC</div>
+              <div className="ecm-box-desc">Facilitating conditions</div>
+            </div>
           </div>
         </div>
 

@@ -474,6 +474,37 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
     line-height: 1.2;
     margin-top: 2px;
   }
+  .ecm-arrow-group-with-fc {
+    flex-direction: column;
+    gap: 0;
+  }
+  .ecm-fc-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 8px;
+    gap: 4px;
+  }
+  .ecm-fc-arrow-to-line {
+    width: 2px;
+    height: 18px;
+    background: var(--color-ink-muted);
+    position: relative;
+  }
+  .ecm-fc-arrow-to-line::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: -5px;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-bottom-color: var(--color-ink-muted);
+  }
+  .ecm-box-fc {
+    max-width: 140px;
+    border-color: var(--color-ink-muted);
+  }
+  .ecm-box-fc .ecm-box-name { color: var(--color-ink); }
   .ecm-multi-arrow {
     display: flex;
     flex-direction: column;
