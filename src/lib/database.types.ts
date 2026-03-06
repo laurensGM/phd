@@ -157,6 +157,36 @@ export interface Database {
           updated_at?: string;
         };
       };
+      meeting_notes: {
+        Row: {
+          id: string;
+          date: string;
+          title: string;
+          content: string | null;
+          participants: string | null;
+          location: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          date: string;
+          title: string;
+          content?: string | null;
+          participants?: string | null;
+          location?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          date?: string;
+          title?: string;
+          content?: string | null;
+          participants?: string | null;
+          location?: string | null;
+          updated_at?: string;
+        };
+      };
     };
   };
 }

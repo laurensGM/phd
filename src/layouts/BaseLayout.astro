@@ -59,10 +59,11 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
           <li><a href={`${base}methods/`}>Methods</a></li>
           <li><a href={`${base}theory-map/`}>Theory Map</a></li>
           <li class="nav-dropdown-wrap">
-            <span class="nav-dropdown-trigger" tabindex="0" aria-haspopup="true" aria-expanded="false" id="phd-outline-trigger">PhD outline</span>
-            <ul class="nav-dropdown" aria-labelledby="phd-outline-trigger">
+            <span class="nav-dropdown-trigger" tabindex="0" aria-haspopup="true" aria-expanded="false" id="phd-manager-trigger">PhD manager</span>
+            <ul class="nav-dropdown" aria-labelledby="phd-manager-trigger">
               <li><a href={`${base}outline/`}>Outline</a></li>
               <li><a href={`${base}tasks/`}>Tasks</a></li>
+              <li><a href={`${base}meeting-notes/`}>Meeting notes</a></li>
               <li><a href={`${base}supervisor/`}>Supervisor</a></li>
             </ul>
           </li>

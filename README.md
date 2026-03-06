@@ -85,6 +85,7 @@ The diary uses **Supabase** for persistent storage. No login—just add entries.
    - **Model notes (interactive notes per model):** copy/paste the contents of `supabase/migrations/006_model_notes.sql` and click **Run**.
    - **Saved papers local path:** copy/paste the contents of `supabase/migrations/007_saved_papers_path.sql` and click **Run**.
    - **Tasks (Kanban board):** copy/paste the contents of `supabase/migrations/008_tasks.sql` and click **Run**.
+   - **Meeting notes:** copy/paste the contents of `supabase/migrations/009_meeting_notes.sql` and click **Run**.
 
 3. Add env vars locally. Create `.env`:
    ```

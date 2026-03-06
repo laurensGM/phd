@@ -1,0 +1,221 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import MeetingNotesPage from '../../components/MeetingNotesPage';
+
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout title="Meeting notes" description="Official meeting notes - date, title, content, participants, location">
+  <p class="back-link"><a href={`${base}outline/`}>← PhD manager</a></p>
+  <h1>Meeting notes</h1>
+  <p class="page-desc">Record official meetings with date, title, content, participants, and location. Add, edit, or delete notes below (saved in Supabase).</p>
+
+  <MeetingNotesPage client:load />
+</BaseLayout>
+
+<style>
+  .back-link {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  .back-link a {
+    color: var(--color-maroon);
+  }
+  .page-desc {
+    color: var(--color-ink-muted);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  /* Meeting notes (React) */
+  :global(.meeting-notes-page .meeting-add-section) {
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+  }
+  :global(.meeting-notes-page .meeting-add-btn) {
+    margin-bottom: 2rem;
+    padding: 0.65rem 1.25rem;
+    background: var(--color-maroon);
+    color: #fff;
+    border: 2px solid var(--color-gold);
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  :global(.meeting-notes-page .meeting-add-btn:hover) {
+    background: var(--color-maroon-dark);
+    border-color: var(--color-gold-light);
+  }
+  :global(.meeting-notes-page .meeting-form) {
+    max-width: 960px;
+    padding: 2.5rem 3rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    border-left: 4px solid var(--color-maroon);
+    box-shadow: var(--shadow-sm);
+  }
+  :global(.meeting-notes-page .meeting-form-title) {
+    font-family: var(--font-serif);
+    font-size: 1.35rem;
+    color: var(--color-ink);
+    margin: 0 0 1.5rem 0;
+  }
+  :global(.meeting-notes-page .meeting-form-field) {
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  :global(.meeting-notes-page .meeting-form-field label) {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+  :global(.meeting-notes-page .meeting-input),
+  :global(.meeting-notes-page .meeting-textarea) {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--color-border);
+    border-radius: 8px;
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    color: var(--color-ink);
+    background: #fff;
+    box-sizing: border-box;
+  }
+  :global(.meeting-notes-page .meeting-input:focus),
+  :global(.meeting-notes-page .meeting-textarea:focus) {
+    outline: none;
+    border-color: var(--color-maroon);
+  }
+  :global(.meeting-notes-page .meeting-textarea) {
+    min-height: 180px;
+    resize: vertical;
+    line-height: 1.6;
+  }
+  :global(.meeting-notes-page .meeting-submit) {
+    margin-top: 1rem;
+    padding: 0.65rem 1.5rem;
+    background: var(--color-maroon);
+    color: #fff;
+    border: 2px solid var(--color-gold);
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  :global(.meeting-notes-page .meeting-submit:hover:not(:disabled)) {
+    background: var(--color-maroon-dark);
+  }
+  :global(.meeting-notes-page .meeting-submit:disabled) {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  :global(.meeting-notes-page .meeting-error) {
+    color: var(--color-maroon);
+    padding: 0.75rem;
+    background: rgba(113, 32, 56, 0.08);
+    border-radius: 6px;
+    margin-bottom: 1rem;
+  }
+  :global(.meeting-notes-page .meeting-search) {
+    width: 100%;
+    max-width: 400px;
+    padding: 0.5rem 0.75rem;
+    border: 2px solid var(--color-border);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+  :global(.meeting-notes-page .meeting-list) {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  :global(.meeting-notes-page .meeting-item) {
+    margin-bottom: 1.5rem;
+    padding: 1.25rem 1.5rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    box-shadow: var(--shadow-sm);
+  }
+  :global(.meeting-notes-page .meeting-item-header) {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+  :global(.meeting-notes-page .meeting-item-title) {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-ink);
+    margin: 0;
+  }
+  :global(.meeting-notes-page .meeting-item-meta) {
+    font-size: 0.85rem;
+    color: var(--color-ink-muted);
+    margin: 0.25rem 0;
+  }
+  :global(.meeting-notes-page .meeting-item-content) {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--color-ink);
+    white-space: pre-wrap;
+    margin: 0.75rem 0 0 0;
+  }
+  :global(.meeting-notes-page .meeting-item-actions) {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  :global(.meeting-notes-page .meeting-action) {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid var(--color-border);
+    background: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--color-ink);
+  }
+  :global(.meeting-notes-page .meeting-action:hover:not(:disabled)) {
+    border-color: var(--color-maroon-muted);
+    background: rgba(113, 32, 56, 0.06);
+  }
+  :global(.meeting-notes-page .meeting-action-delete:hover:not(:disabled)) {
+    border-color: var(--color-maroon);
+    color: var(--color-maroon);
+  }
+  :global(.meeting-notes-page .meeting-edit-form) {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  :global(.meeting-notes-page .meeting-edit-actions) {
+    display: flex;
+    gap: 0.5rem;
+  }
+  :global(.meeting-notes-page .meeting-empty) {
+    color: var(--color-ink-muted);
+    padding: 2rem;
+    text-align: center;
+  }
+  :global(.meeting-notes-page .meeting-setup) {
+    max-width: 480px;
+    padding: 2rem;
+    background: var(--color-bg-alt);
+    border-radius: 12px;
+    color: var(--color-ink-muted);
+  }
+  :global(.meeting-notes-page .meeting-loading) {
+    color: var(--color-ink-muted);
+    padding: 2rem;
+  }
+</style>
