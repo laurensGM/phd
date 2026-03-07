@@ -2,6 +2,7 @@
   {
     "id": "bhattacherjee",
     "name": "Anol Bhattacherjee",
+    "image": "bhattacherjee.jpg",
     "bio": "Anol Bhattacherjee is a Professor of Information Systems at the University of South Florida. He is best known for developing the Expectation-Confirmation Model of IS Continuance (ECM), which explains why users continue or discontinue using information systems after initial adoption. His work bridges consumer behaviour (Oliver's Expectation-Confirmation Theory) with information systems research, focusing on post-adoption behaviour.",
     "keyContributions": [
       {
@@ -27,6 +28,7 @@
   {
     "id": "davis",
     "name": "Fred Davis",
+    "image": "davis.jpg",
     "bio": "Fred D. Davis is a Distinguished Professor Emeritus at the University of Arkansas. He proposed the Technology Acceptance Model (TAM) in his 1986 PhD dissertation at MIT, which was formally published in MIS Quarterly in 1989. TAM has become one of the most widely cited and applied models in information systems and technology adoption research. Davis adapted Fishbein and Ajzen's Theory of Reasoned Action to focus specifically on system acceptance.",
     "keyContributions": [
       {
@@ -47,6 +49,7 @@
   {
     "id": "venkatesh",
     "name": "Viswanath Venkatesh",
+    "image": "venkatesh.jpg",
     "bio": "Viswanath Venkatesh is a Distinguished Professor at the University of Arkansas. He is a leading researcher in technology adoption and use, best known for the Unified Theory of Acceptance and Use of Technology (UTAUT, 2003) and UTAUT2 (2012). Venkatesh and colleagues consolidated eight competing models of technology acceptance into UTAUT, significantly advancing the field. He has also contributed to TAM2 (with Davis) and various extensions for consumer and voluntary contexts.",
     "keyContributions": [
       {
@@ -87,6 +90,7 @@
   {
     "id": "marlize-terblanche-smit",
     "name": "Marlize Terblanche-Smit",
+    "image": "marlize-terblanche-smit.jpg",
     "bio": "Marlize Terblanche-Smit is a Professor of Marketing at Stellenbosch Business School (USB), where she has been based since 2019. She previously served as Associate Professor at Stellenbosch University (2013–2018) and was head of the MBA programme at USB from 2014. Her research focuses on marketing strategy, branding, digital marketing, consumer behaviour, and non-profit marketing. Her institutional profile is tagged with Responsible Leadership. Stellenbosch Business School holds AACSB, EQUIS and AMBA accreditation.",
     "keyContributions": [],
     "keyArticles": [],
@@ -96,6 +100,7 @@
   {
     "id": "nicky-terblanche",
     "name": "Nicky Terblanche",
+    "image": "nicky-terblanche.jpg",
     "bio": "Nicky Terblanche is an Associate Professor of Leadership Coaching at Stellenbosch Business School and Head of the MPhil Leadership Coaching and PhD programmes. He holds a PhD in Business Management and an MSc in Electronic Engineering. His research focuses on transition coaching, transformative learning, social network analysis, complexity theory, and the application of AI and machine learning in coaching. He has developed an AI Bot Coach called Vici and researches how newly appointed senior leaders can be supported during career transitions.",
     "keyContributions": [],
     "keyArticles": [
@@ -110,6 +115,7 @@
   {
     "id": "charlene-gerber",
     "name": "Charlene Gerber",
+    "image": "charlene-gerber.jpg",
     "bio": "Charlene Gerber is a researcher in the Department of Business Management at Stellenbosch University. Her work spans social media in recruitment, behavioral finance, and student engagement. Her highly cited paper on social media and recruitment (SA Journal of Human Resource Management, 2018) has received hundreds of citations. She has also published on familiarity bias amongst individual investors and longitudinal studies of academic performance.",
     "keyContributions": [],
     "keyArticles": [
@@ -124,6 +130,7 @@
   {
     "id": "richard-heeks",
     "name": "Richard Heeks",
+    "image": "richard-heeks.jpg",
     "bio": "Richard Heeks is Professor of Development Informatics at the University of Manchester and a leading scholar in ICT4D (Information and Communication Technology for Development). His work focuses on how digital technologies shape development outcomes in low- and middle-income countries, including issues of digital exclusion, e-government, and development failures and success factors. He founded the Centre for Digital Development (formerly Centre for Development Informatics) and has written extensively on how context and institutions shape ICT projects in the Global South.",
     "keyContributions": [],
     "keyArticles": [
@@ -143,6 +150,7 @@
   {
     "id": "geoff-walsham",
     "name": "Geoff Walsham",
+    "image": "geoff-walsham.jpg",
     "bio": "Geoff Walsham is Emeritus Professor of Management Studies at the University of Cambridge Judge Business School. He is widely recognised for pioneering interpretive research in information systems, studying how ICTs are socially constructed and embedded within organisations and societies. His work often focuses on ICTs, globalisation, and development, including research on ICT use in Africa and Asia, and on cross-cultural aspects of IS implementation.",
     "keyContributions": [],
     "keyArticles": [
