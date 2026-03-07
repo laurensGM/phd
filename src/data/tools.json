@@ -42,6 +42,13 @@
     "url": "https://notebooklm.google.com"
   },
   {
+    "id": "mybib-apa",
+    "name": "MyBib APA Citation Generator",
+    "category": "ai",
+    "description": "Free APA 7 citation generator. Search for sources, auto-fill details, and export formatted reference lists for Word or Google Docs.",
+    "url": "https://www.mybib.com/tools/apa-citation-generator"
+  },
+  {
     "id": "webofscience",
     "name": "Web of Science",
     "category": "databases",

@@ -4,12 +4,21 @@ import outline from '../../data/outline.json';
 
 const base = import.meta.env.BASE_URL;
 const STORAGE_KEY = 'phd-outline-completed';
+
+type OutlineItem = { id: string; title: string; date: string; dateLabel: string; notes: string };
+const byYear = (outline as OutlineItem[]).reduce<Record<string, OutlineItem[]>>((acc, item) => {
+  const y = item.date.slice(0, 4);
+  if (!acc[y]) acc[y] = [];
+  acc[y].push(item);
+  return acc;
+}, {});
+const years = Object.keys(byYear).sort();
 ---
 
-<BaseLayout title="PhD Outline" description="PhD program stages and timeline – concept note, literature review, proposal, defence">
+<BaseLayout title="PhD milestones" description="PhD program stages and timeline – concept note, literature review, proposal, defence">
   <article class="outline-page">
     <header class="outline-header">
-      <h1>PhD Outline</h1>
+      <h1>PhD milestones</h1>
       <p class="outline-intro">Stages and milestones of the PhD program. Mark items complete as you go; progress is saved in your browser.</p>
     </header>
 
@@ -20,23 +29,28 @@ const STORAGE_KEY = 'phd-outline-completed';
       <p class="outline-progress-text" id="outline-progress-text">0 of {outline.length} completed</p>
     </div>
 
-    <ol class="outline-list">
-      {outline.map((item: { id: string; title: string; dateLabel: string; notes: string }) => (
-        <li class="outline-item" data-id={item.id} id={`outline-${item.id}`}>
-          <div class="outline-item-head">
-            <button type="button" class="outline-check" aria-label={`Mark "${item.title}" complete`} title="Mark complete"></button>
-            <div class="outline-item-main">
-              <span class="outline-item-title">{item.title}</span>
-              <time class="outline-item-date" datetime={item.date}>{item.dateLabel}</time>
-            </div>
-            <span class="outline-item-toggle" aria-hidden="true">▼</span>
-          </div>
-          <div class="outline-item-detail" hidden>
-            <p class="outline-item-notes">{item.notes}</p>
-          </div>
-        </li>
-      ))}
-    </ol>
+    {years.map((year) => (
+      <section class="outline-year-section" aria-label={`Milestones ${year}`}>
+        <h2 class="outline-year-title">{year}</h2>
+        <ol class="outline-list">
+          {byYear[year].map((item: OutlineItem) => (
+            <li class="outline-item" data-id={item.id} id={`outline-${item.id}`}>
+              <div class="outline-item-head">
+                <button type="button" class="outline-check" aria-label={`Mark "${item.title}" complete`} title="Mark complete"></button>
+                <div class="outline-item-main">
+                  <span class="outline-item-title">{item.title}</span>
+                  <time class="outline-item-date" datetime={item.date}>{item.dateLabel}</time>
+                </div>
+                <span class="outline-item-toggle" aria-hidden="true">▼</span>
+              </div>
+              <div class="outline-item-detail" hidden>
+                <p class="outline-item-notes">{item.notes}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+    ))}
   </article>
 
   <script define:vars={{ storageKey: STORAGE_KEY, total: outline.length }}>
@@ -131,6 +145,21 @@ const STORAGE_KEY = 'phd-outline-completed';
     color: var(--color-ink-muted);
     margin: 0.5rem 0 0 0;
     line-height: 1.6;
+  }
+
+  .outline-year-section {
+    margin-bottom: 2.5rem;
+  }
+  .outline-year-section:last-child {
+    margin-bottom: 0;
+  }
+  .outline-year-title {
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    color: var(--color-maroon);
+    margin: 0 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--color-border);
   }
 
   .outline-progress-wrap {

@@ -1,0 +1,212 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout title="PhD outline" description="PhD dissertation structures – monograph vs article-based, 7 chapters comparison">
+  <p class="back-link"><a href={`${base}outline/`}>← PhD milestones</a></p>
+  <h1>PhD outline</h1>
+  <p class="page-desc">There are 2 possible PhD dissertation structures. One is the monograph, the other is the article structure. In either case, there are 7 chapters.</p>
+
+  <div class="comparison-wrap">
+    <section class="comparison-column comparison-column--monograph" aria-label="Monograph structure">
+      <h2 class="comparison-title">Monograph</h2>
+      <ol class="chapter-list">
+        <li class="chapter-item">
+          <strong>Chapter 1 – Introduction</strong>
+          <p>Your proposal becomes an introductory chapter. Change future tense (proposal) into past tense (what was done).</p>
+        </li>
+        <li class="chapter-item">
+          <strong>Chapters 2, 3 & 4 – Theoretical chapters</strong>
+          <p>One on your outcome variable, one on your main input variable, and one on a potentially mediating variable or other.</p>
+        </li>
+        <li class="chapter-item">
+          <strong>Chapter 5 – Method</strong>
+        </li>
+        <li class="chapter-item">
+          <strong>Chapter 6 – Results</strong>
+          <p>Results and explanation by literature.</p>
+        </li>
+        <li class="chapter-item">
+          <strong>Chapter 7 – Conclusion</strong>
+          <p>Ties back to Chapter 1. It is a mirror of Chapter 1.</p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="comparison-column comparison-column--articles" aria-label="Article structure">
+      <h2 class="comparison-title">Article structure</h2>
+      <ol class="chapter-list">
+        <li class="chapter-item">
+          <strong>Chapter 1 – Introduction</strong>
+          <p>Same as with monograph.</p>
+        </li>
+        <li class="chapter-item">
+          <strong>Chapter 2 – Systematic Literature Review</strong>
+          <p>For the income variable X.</p>
+        </li>
+        <li class="chapter-item">
+          <strong>Chapter 3 – Systematic Literature Review</strong>
+          <p>Of the outcome variable Y.</p>
+        </li>
+        <li class="chapter-item">
+          <strong>Chapter 4 – First article</strong>
+          <p>Secondary objectives.</p>
+        </li>
+        <li class="chapter-item">
+          <strong>Chapter 5 – Second article</strong>
+        </li>
+        <li class="chapter-item">
+          <strong>Chapter 6 – Third article</strong>
+        </li>
+        <li class="chapter-item">
+          <strong>Chapter 7 – Conclusion</strong>
+        </li>
+      </ol>
+    </section>
+  </div>
+
+  <section class="chapter7-section" aria-label="Chapter 7 – Conclusion (both structures)">
+    <h2>Chapter 7 – Conclusion (both monograph and article structure)</h2>
+    <ol class="chapter7-list">
+      <li class="chapter7-item"><strong>7.1 Introduction</strong></li>
+      <li class="chapter7-item">
+        <strong>7.2 Conclusion</strong>
+        <p>Guided by the objectives. Secondary objectives feed into the main objective.</p>
+      </li>
+      <li class="chapter7-item">
+        <strong>7.3 Recommendation</strong>
+        <p>Guided by objectives. E.g. what can policy makers or practitioners do with this.</p>
+      </li>
+      <li class="chapter7-item"><strong>7.4 Contribution</strong></li>
+      <li class="chapter7-item">
+        <strong>7.5 Limitations and future research</strong>
+        <p>Copy ideas here from good examples.</p>
+      </li>
+      <li class="chapter7-item"><strong>7.6 Reconciliation of the research objective</strong></li>
+    </ol>
+  </section>
+</BaseLayout>
+
+<style>
+  .back-link { margin-bottom: 1rem; font-size: 0.9rem; }
+  .back-link a { color: var(--color-maroon); }
+  .page-desc {
+    color: var(--color-ink-muted);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  .comparison-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+  @media (max-width: 768px) {
+    .comparison-wrap {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .comparison-column {
+    padding: 1.75rem 2rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+  }
+  .comparison-column--monograph {
+    border-left: 4px solid var(--color-maroon);
+  }
+  .comparison-column--articles {
+    border-left: 4px solid var(--color-gold-dark);
+  }
+
+  .comparison-title {
+    font-family: var(--font-serif);
+    font-size: 1.35rem;
+    margin: 0 0 1.25rem 0;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--color-border);
+    color: var(--color-ink);
+  }
+
+  .chapter-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    counter-reset: ch;
+  }
+  .chapter-item {
+    counter-increment: ch;
+    margin-bottom: 1.5rem;
+    padding-left: 0;
+  }
+  .chapter-item::before {
+    content: counter(ch);
+    display: inline-block;
+    min-width: 1.75rem;
+    height: 1.75rem;
+    line-height: 1.75rem;
+    text-align: center;
+    background: var(--color-bg-alt);
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--color-maroon);
+    margin-right: 0.75rem;
+    vertical-align: middle;
+  }
+  .comparison-column--articles .chapter-item::before {
+    color: var(--color-gold-dark);
+  }
+  .chapter-item strong {
+    font-size: 1rem;
+    color: var(--color-ink);
+  }
+  .chapter-item p {
+    margin: 0.4rem 0 0 2.5rem;
+    font-size: 0.9rem;
+    color: var(--color-ink-muted);
+    line-height: 1.55;
+  }
+
+  .chapter7-section {
+    padding: 2rem 2.5rem;
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    border-left: 4px solid var(--color-gold);
+  }
+  .chapter7-section h2 {
+    font-family: var(--font-serif);
+    font-size: 1.35rem;
+    margin: 0 0 1.25rem 0;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--color-border);
+    color: var(--color-ink);
+  }
+  .chapter7-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .chapter7-item {
+    margin-bottom: 1.25rem;
+  }
+  .chapter7-item:last-child {
+    margin-bottom: 0;
+  }
+  .chapter7-item strong {
+    font-size: 1rem;
+    color: var(--color-ink);
+  }
+  .chapter7-item p {
+    margin: 0.35rem 0 0 0;
+    font-size: 0.9rem;
+    color: var(--color-ink-muted);
+    line-height: 1.55;
+  }
+</style>

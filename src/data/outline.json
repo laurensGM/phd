@@ -60,6 +60,41 @@
     "title": "PhD proposal defence",
     "date": "2026-11-24",
     "dateLabel": "24 to 26 November 2026",
-    "notes": "Timeslots to be confirmed by PhD Manager."
+    "notes": "Timeslots to be confirmed by PhD Manager. Final milestone of 2026 and first big chapter; then follows the actual PhD work."
+  },
+  {
+    "id": "apply-ethics-2027",
+    "title": "Apply for ethics",
+    "date": "2027-03-01",
+    "dateLabel": "March 2027",
+    "notes": "Application takes about 3 months to process."
+  },
+  {
+    "id": "yearly-project-plan-2027",
+    "title": "Submit yearly project plan",
+    "date": "2027-03-31",
+    "dateLabel": "March 2027",
+    "notes": "Holds you accountable. Include feedback from the supervisor (holds the supervisor accountable). Include dates of expected feedback and meetings with supervisor."
+  },
+  {
+    "id": "winterschool-2027",
+    "title": "Winterschool at Stellenbosch University",
+    "date": "2027-07-15",
+    "dateLabel": "July 2027",
+    "notes": "Winterschool at Stellenbosch University."
+  },
+  {
+    "id": "submit-dissertation",
+    "title": "Submit dissertation",
+    "date": "2029-08-31",
+    "dateLabel": "August 2029",
+    "notes": "Final submission of the dissertation."
+  },
+  {
+    "id": "graduate",
+    "title": "Graduate",
+    "date": "2030-03-31",
+    "dateLabel": "March 2030",
+    "notes": "Graduation. It's only possible to graduate in March."
   }
 ]
