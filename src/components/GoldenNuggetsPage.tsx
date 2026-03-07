@@ -54,6 +54,7 @@ export default function GoldenNuggetsPage({ staticFaq, staticQuotes }: GoldenNug
   const [editAuthor, setEditAuthor] = useState('');
   const [editType, setEditType] = useState<NuggetType | null>(null);
   const [importing, setImporting] = useState(false);
+  const [activeTab, setActiveTab] = useState<'faq' | 'quotes'>('faq');
 
   const fetchNuggets = useCallback(async () => {
     if (!supabase) return;
@@ -62,7 +63,7 @@ export default function GoldenNuggetsPage({ staticFaq, staticQuotes }: GoldenNug
     const { data, error: fetchError } = await supabase
       .from('golden_nuggets')
       .select('*')
-      .order('created_at', { ascending: true });
+      .order('created_at', { ascending: false });
     if (fetchError) {
       setError(fetchError.message);
       setFaq([]);
@@ -99,7 +100,7 @@ export default function GoldenNuggetsPage({ staticFaq, staticQuotes }: GoldenNug
       return;
     }
     if (data) {
-      setFaq((prev) => [...prev, mapRow(data)]);
+      setFaq((prev) => [mapRow(data), ...prev]);
       setFaqForm({ question: '', author: '' });
     }
   };
@@ -120,7 +121,7 @@ export default function GoldenNuggetsPage({ staticFaq, staticQuotes }: GoldenNug
       return;
     }
     if (data) {
-      setQuotes((prev) => [...prev, mapRow(data)]);
+      setQuotes((prev) => [mapRow(data), ...prev]);
       setQuoteForm({ text: '', author: '' });
     }
   };
@@ -204,14 +205,34 @@ export default function GoldenNuggetsPage({ staticFaq, staticQuotes }: GoldenNug
     setImporting(false);
   };
 
+  const staticFaqOrdered = [...staticFaq].reverse();
+  const staticQuotesOrdered = [...staticQuotes].reverse();
+
   if (!isSupabaseConfigured()) {
     return (
       <div className="golden-nuggets-page">
         <p className="nuggets-setup">Add your Supabase credentials to add, edit, and delete FAQs and quotes.</p>
+        <nav className="nuggets-tabs" aria-label="FAQs and Quotes">
+          <button
+            type="button"
+            className={`nuggets-tab ${activeTab === 'faq' ? 'nuggets-tab-active' : ''}`}
+            onClick={() => setActiveTab('faq')}
+          >
+            FAQs
+          </button>
+          <button
+            type="button"
+            className={`nuggets-tab ${activeTab === 'quotes' ? 'nuggets-tab-active' : ''}`}
+            onClick={() => setActiveTab('quotes')}
+          >
+            Quotes &amp; insights
+          </button>
+        </nav>
+        {activeTab === 'faq' && (
         <section className="nuggets-section">
           <h2 className="section-title">FAQ</h2>
           <ul className="nuggets-list faq-list">
-            {staticFaq.map((item, i) => (
+            {staticFaqOrdered.map((item, i) => (
               <li key={i} className="nugget-item faq-item">
                 <span className="nugget-text">&quot;{item.question}&quot;</span>
                 {item.author && <cite className="nugget-author">— {item.author}</cite>}
@@ -219,10 +240,12 @@ export default function GoldenNuggetsPage({ staticFaq, staticQuotes }: GoldenNug
             ))}
           </ul>
         </section>
+        )}
+        {activeTab === 'quotes' && (
         <section className="nuggets-section">
           <h2 className="section-title">Quotes &amp; insights</h2>
           <ul className="nuggets-list quotes-list">
-            {staticQuotes.map((item, i) => (
+            {staticQuotesOrdered.map((item, i) => (
               <li key={i} className="nugget-item quote-item">
                 <blockquote className="nugget-quote">
                   <p className="nugget-text">{item.text}</p>
@@ -236,6 +259,7 @@ export default function GoldenNuggetsPage({ staticFaq, staticQuotes }: GoldenNug
             ))}
           </ul>
         </section>
+        )}
       </div>
     );
   }
@@ -264,6 +288,24 @@ export default function GoldenNuggetsPage({ staticFaq, staticQuotes }: GoldenNug
         </div>
       )}
 
+      <nav className="nuggets-tabs" aria-label="FAQs and Quotes">
+        <button
+          type="button"
+          className={`nuggets-tab ${activeTab === 'faq' ? 'nuggets-tab-active' : ''}`}
+          onClick={() => setActiveTab('faq')}
+        >
+          FAQs
+        </button>
+        <button
+          type="button"
+          className={`nuggets-tab ${activeTab === 'quotes' ? 'nuggets-tab-active' : ''}`}
+          onClick={() => setActiveTab('quotes')}
+        >
+          Quotes &amp; insights
+        </button>
+      </nav>
+
+      {activeTab === 'faq' && (
       <section className="nuggets-section">
         <h2 className="section-title">FAQ</h2>
         <form className="nuggets-add-form" onSubmit={handleAddFaq}>
@@ -340,7 +382,9 @@ export default function GoldenNuggetsPage({ staticFaq, staticQuotes }: GoldenNug
         </ul>
         {faq.length === 0 && !loading && <p className="nuggets-empty">No FAQs yet. Add one above.</p>}
       </section>
+      )}
 
+      {activeTab === 'quotes' && (
       <section className="nuggets-section">
         <h2 className="section-title">Quotes &amp; insights</h2>
         <form className="nuggets-add-form nuggets-add-form-quote" onSubmit={handleAddQuote}>
@@ -423,6 +467,7 @@ export default function GoldenNuggetsPage({ staticFaq, staticQuotes }: GoldenNug
         </ul>
         {quotes.length === 0 && !loading && <p className="nuggets-empty">No quotes yet. Add one above.</p>}
       </section>
+      )}
     </div>
   );
 }

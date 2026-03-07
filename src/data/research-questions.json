@@ -1,18 +1,29 @@
 [
   {
-    "id": "rq1-v1",
-    "version": "v1",
-    "question": "What factors influence users' initial adoption of the system?",
-    "status": "superseded",
-    "whyChanged": "Too broad; needed to separate adoption from continuance",
-    "supervisoryFeedback": "Consider distinguishing pre-adoption (TAM) from post-adoption (ECM) factors."
+    "id": "rq-v3",
+    "version": "v3",
+    "question": "The relationship between task technology fit and the continuance intention to use Agritech information systems in Sub-Saharan Africa",
+    "comments": "Using academic constructs also for input variable and information systems.",
+    "date": "2026-03-04",
+    "dateLabel": "4 March 2026",
+    "status": "current"
   },
   {
-    "id": "rq1-v2",
+    "id": "rq-v2",
     "version": "v2",
-    "question": "How do confirmation and perceived usefulness jointly influence continuance intention in voluntary IS contexts?",
-    "status": "current",
-    "whyChanged": "Focused on post-adoption based on ECM framework",
-    "supervisoryFeedback": "Good focus. Add consideration of boundary conditions."
+    "question": "The relationship between digital product discovery practices and the continuance use of Agritech digital products in Sub-Saharan Africa",
+    "comments": "Using academic construct for outcome variable.",
+    "date": "2026-02-25",
+    "dateLabel": "25 February 2026",
+    "status": "superseded"
+  },
+  {
+    "id": "rq-v1",
+    "version": "v1",
+    "question": "Optimizing Digital Product Management Discovery-Phase Frameworks for Agritech Solutions in Sub-Saharan Africa: A Mixed-Methods Study",
+    "comments": "Original title of research proposal when applying for the PhD program.",
+    "date": "2025-08-01",
+    "dateLabel": "August 2025",
+    "status": "superseded"
   }
 ]

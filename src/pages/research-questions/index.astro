@@ -1,6 +1,10 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import researchQuestions from '../../data/research-questions.json';
+
+type RQ = { id: string; version: string; question: string; comments?: string; date: string; dateLabel: string; status: string };
+const sorted = ([...researchQuestions] as RQ[]).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+const latestRq = sorted[0];
 ---
 
 <BaseLayout title="Research Questions" description="RQ evolution - versions, changes, supervisory feedback">
@@ -8,13 +12,20 @@ import researchQuestions from '../../data/research-questions.json';
   <p class="page-desc">Track the evolution of your research questions, why they changed, and supervisory feedback.</p>
 
   <div class="rq-timeline">
-    {researchQuestions.map((rq: any) => (
+    {sorted.map((rq: RQ) => (
       <article class={`rq-card ${rq.status}`}>
         <div class="rq-header">
           <span class="rq-version">RQ {rq.version}</span>
+          {rq.dateLabel && <time class="rq-date" datetime={rq.date}>{rq.dateLabel}</time>}
           <span class="rq-status-badge">{rq.status}</span>
         </div>
         <h2>{rq.question}</h2>
+        {rq.comments && (
+          <section>
+            <h3>Comments</h3>
+            <p>{rq.comments}</p>
+          </section>
+        )}
         {rq.whyChanged && (
           <section>
             <h3>Why changed</h3>
@@ -47,8 +58,9 @@ import researchQuestions from '../../data/research-questions.json';
 
   .rq-card.current { border-left-color: var(--color-accent); }
 
-  .rq-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
+  .rq-header { display: flex; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.5rem; }
   .rq-version { font-weight: 600; color: var(--color-accent); }
+  .rq-date { font-size: 0.875rem; color: var(--color-ink-muted); }
   .rq-status-badge {
     padding: 0.2rem 0.5rem;
     font-size: 0.75rem;
