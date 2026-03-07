@@ -1,0 +1,115 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout title="SLR" description="Systematic Literature Review – process, scope, and guidance for PhD literature work">
+  <p class="back-link"><a href={`${base}models/`}>← Literature</a></p>
+  <h1>SLR — Systematic Literature Review</h1>
+  <p class="page-desc">Notes and guidance on conducting a systematic literature review. Need to go through this process at least once before June.</p>
+
+  <article class="slr-content">
+    <section>
+      <h2>What is an SLR?</h2>
+      <p>SLR = Systematic Literature Review. It requires both analytical and creative skills. Answering the &ldquo;why?&rdquo; questions helps you find better search terms. Literature is revealing.</p>
+      <p><strong>How do you find the literature that will reveal the insights you&rsquo;re after?</strong> Google Scholar is a good start.</p>
+    </section>
+
+    <section>
+      <h2>Scope for your PhD</h2>
+      <p>I will execute an SLR on my main input variable X and one on my outcome variable Y. Later on, I will also execute one for SSA context. Start with the SLR you feel strongest in.</p>
+      <p>The SLR is not the same as the first chapter of the PhD. The latter makes the case for the entire study. The SLR enables you to write the argument. It will be an annex at the back.</p>
+    </section>
+
+    <section>
+      <h2>Writing the literature review</h2>
+      <p>In a literature review, an art is to explain 3 pages of definitions in one sentence. It&rsquo;s a piece of discursive prose. A good literature review is critical of what&rsquo;s been written, identifies ideas of controversy, raises questions, identifies areas which need further research. Don&rsquo;t list all that&rsquo;s been published — you synthesize and evaluate it according to the guiding concept of your scientific research question.</p>
+      <p><strong>What do YOU think?</strong> You decide what to read. Clarify what you think and then find references to back it up. You&rsquo;re the puppet master. You think through references.</p>
+      <p>When you include a diagram in your SLR, reference it as &ldquo;adapted from REF&rdquo;. That REF may not have any diagram at all. Highly recommended to include a diagram. You show gradually your understanding of the literature. Talk the reader through your understanding; take the audience with you and show how you put everything together. Don&rsquo;t tell the reader they don&rsquo;t know and you will teach them. Instead, tell them you don&rsquo;t know and guide them on a journey to understanding. Don&rsquo;t regurgitate!</p>
+      <p>A diagram is helpful to digest the literature. Write something YOU would want to read. The most common critique is when you repeat your literature. Your best SLR could be an article. It becomes an annex in case of the monograph.</p>
+      <p>If you read 100 articles, you end up using 10 and maybe 2 or 3 are golden. A total of 300 articles is normal. Show your journey.</p>
+    </section>
+
+    <section>
+      <h2>SLR and the proposal</h2>
+      <p>The SLR is getting you ready for the literature review of your proposal (where you bring X and Y together). But the SLR is on Y and X separately.</p>
+      <p>SLR is the highest level of evidence because a well-designed systematic design will summarize good-quality randomized observations of literature data. — Gorman.</p>
+      <p>In an SLR, you take literature and turn it into data. The SLR is a mini-process on its own and has its own research question. This question should be related to the overarching research question — e.g. X related to context or Y related to context. NOT X related to Y, because that would be the PhD.</p>
+      <p>SLR can be an article on its own. It enables you to do your big study (PhD). SLR is always qualitative first.</p>
+    </section>
+
+    <section>
+      <h2>Process</h2>
+      <p>SLR starts with the research question and problem definition. Search for evidence. What do I include/exclude? What is the unit of analysis? Data extraction. Quality appraisal. It&rsquo;s appropriate to do a meta-analysis.</p>
+      <p><strong>How to know which articles to find?</strong> It&rsquo;s possible to do an SLR on measurement. I should have 2–4 objectives. Measurement will be one for sure. Something contextual (countries). An agenda for future research can also be an objective.</p>
+      <p>Start with: do I extend, refine, or challenge the theory? Pick one, start somewhere. An SLR is around 20 pages.</p>
+    </section>
+
+    <section>
+      <h2>Selecting articles</h2>
+      <p>How to know which articles to include or exclude? The process of including vs excluding is based on rules. Which articles do I include for data collection, data analysis and data synthesis (results and findings)?</p>
+      <ol>
+        <li><strong>Identify the search terms.</strong> Use &ldquo;both title and abstract&rdquo;. Then use &ldquo;both abstract and keyword&rdquo;. Also use &ldquo;NOT&rdquo;.</li>
+        <li><strong>Set temporal boundaries</strong> (e.g. 2005 to 2018).</li>
+        <li><strong>Assess quality of papers.</strong> Only peer-reviewed articles.</li>
+        <li>Then filter on papers with certain grading from ABDC list or from Business school list.</li>
+      </ol>
+      <p>If you end up with e.g. 15 articles, someone will need to verify your output. This is usually your supervisor. Introduction of the SLR is important to deliver first, then the method.</p>
+    </section>
+
+    <section>
+      <h2>Databases and tools</h2>
+      <p><strong>Databases:</strong> Scopus, EBSCO, WoS, maybe Proquest. Some top journals can only be found here. Google Scholar is not ok because everyone has access to it. Move to timeframe filters only later.</p>
+      <p>I can also export from WoS to Excel (instead of raw text file), then filter in Excel on rating from ABDC or other. Then load it in Biblio Shiny. Use AND and OR and NOT. Export raw text file, copy-paste all into one (if more than 500), then load in Biblio Shiny.</p>
+      <p>In Biblio Shiny, look at word evolution chart — it tells you which search terms to use. Most relevant sources also good. Psychology is not a category I need; Industrial psychology I do need. Biblio Shiny is a quick way of narrowing scope.</p>
+      <p>Print out the writing manual! Use the phrases listed there.</p>
+    </section>
+
+    <section>
+      <h2>Mindset</h2>
+      <p>The literature review is a conversation. You are the moderator; you are in charge. Invite the people you like to the table.</p>
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .back-link { margin-bottom: 1rem; font-size: 0.9rem; }
+  .back-link a { color: var(--color-maroon); }
+  .page-desc {
+    color: var(--color-ink-muted);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+  .slr-content {
+    max-width: 720px;
+  }
+  .slr-content section {
+    margin-bottom: 2.5rem;
+  }
+  .slr-content section:last-child {
+    margin-bottom: 0;
+  }
+  .slr-content h2 {
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    color: var(--color-maroon);
+    margin: 0 0 0.75rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .slr-content p {
+    margin: 0 0 1rem 0;
+    line-height: 1.65;
+  }
+  .slr-content p:last-child {
+    margin-bottom: 0;
+  }
+  .slr-content ol {
+    margin: 0 0 1rem 0;
+    padding-left: 1.5rem;
+    line-height: 1.65;
+  }
+  .slr-content li {
+    margin-bottom: 0.5rem;
+  }
+</style>
