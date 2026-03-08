@@ -10,6 +10,7 @@ interface SavedPaper {
   authors: string | null;
   year: string | null;
   path: string | null;
+  citations: number | null;
   created_at: string;
 }
 
@@ -112,6 +113,7 @@ function mapRow(row: {
   authors?: string | null;
   year?: string | null;
   path?: string | null;
+  citations?: number | null;
   created_at: string;
 }): SavedPaper {
   return {
@@ -123,6 +125,7 @@ function mapRow(row: {
     authors: row.authors ?? null,
     year: row.year ?? null,
     path: row.path ?? null,
+    citations: row.citations ?? null,
     created_at: row.created_at,
   };
 }
@@ -140,6 +143,7 @@ export default function PapersPage() {
     authors: '',
     year: '',
     path: '',
+    citations: '' as string,
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -154,6 +158,7 @@ export default function PapersPage() {
     motivation: '',
     tags: [] as string[],
     path: '',
+    citations: '' as string,
   });
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -232,6 +237,7 @@ export default function PapersPage() {
       motivation: paper.motivation ?? '',
       tags: paper.tags ?? [],
       path: paper.path ?? '',
+      citations: paper.citations != null ? String(paper.citations) : '',
     });
     setError(null);
   };
@@ -252,6 +258,7 @@ export default function PapersPage() {
     if (!supabase || !editingId) return;
     setSaving(true);
     setError(null);
+    const citationsNum = editForm.citations.trim() ? parseInt(editForm.citations.trim(), 10) : null;
     const { data, error: updateError } = await supabase
       .from('saved_papers')
       .update({
@@ -262,9 +269,10 @@ export default function PapersPage() {
         motivation: editForm.motivation.trim() || null,
         tags: editForm.tags,
         path: editForm.path.trim() || null,
+        citations: Number.isNaN(citationsNum) ? null : citationsNum,
       })
       .eq('id', editingId)
-      .select('id, url, motivation, tags, title, authors, year, path, created_at')
+      .select('id, url, motivation, tags, title, authors, year, path, citations, created_at')
       .single();
     setSaving(false);
     if (updateError) {
@@ -296,6 +304,7 @@ export default function PapersPage() {
     if (!supabase) return;
     setSaving(true);
     setError(null);
+    const citationsNum = formData.citations.trim() ? parseInt(formData.citations.trim(), 10) : null;
     const { data: insertData, error: insertError } = await supabase
       .from('saved_papers')
       .insert({
@@ -306,14 +315,15 @@ export default function PapersPage() {
         authors: formData.authors.trim() || null,
         year: formData.year.trim() || null,
         path: formData.path.trim() || null,
+        citations: Number.isNaN(citationsNum) ? null : citationsNum,
       })
-      .select('id, url, motivation, tags, title, authors, year, path, created_at')
+      .select('id, url, motivation, tags, title, authors, year, path, citations, created_at')
       .single();
     if (insertError) {
       setError(insertError.message);
     } else if (insertData) {
       setPapers((prev) => [mapRow({ ...insertData, id: insertData.id }), ...prev]);
-      setFormData({ url: '', motivation: '', tags: [], title: '', authors: '', year: '', path: '' });
+      setFormData({ url: '', motivation: '', tags: [], title: '', authors: '', year: '', path: '', citations: '' });
       setShowForm(false);
     }
     setSaving(false);
@@ -408,6 +418,18 @@ export default function PapersPage() {
                   value={formData.year}
                   onChange={(e) => setFormData((d) => ({ ...d, year: e.target.value }))}
                   placeholder="e.g. 2023"
+                  className="papers-input papers-input-short"
+                />
+              </div>
+              <div>
+                <label htmlFor="paper-citations">Citations</label>
+                <input
+                  id="paper-citations"
+                  type="number"
+                  min={0}
+                  value={formData.citations}
+                  onChange={(e) => setFormData((d) => ({ ...d, citations: e.target.value }))}
+                  placeholder="e.g. 150"
                   className="papers-input papers-input-short"
                 />
               </div>
@@ -540,6 +562,17 @@ export default function PapersPage() {
                         className="papers-input papers-input-short"
                       />
                     </div>
+                    <div>
+                      <label>Citations</label>
+                      <input
+                        type="number"
+                        min={0}
+                        value={editForm.citations}
+                        onChange={(e) => setEditForm((f) => ({ ...f, citations: e.target.value }))}
+                        placeholder="e.g. 150"
+                        className="papers-input papers-input-short"
+                      />
+                    </div>
                   </div>
                   <div className="papers-form-field">
                     <label>Authors</label>
@@ -599,6 +632,11 @@ export default function PapersPage() {
                     <div className="papers-entry-header-left">
                       <time dateTime={paper.created_at}>{formatDate(paper.created_at)}</time>
                       {paper.year && <span className="papers-entry-year">{paper.year}</span>}
+                      {paper.citations != null && (
+                        <span className="papers-entry-citations" title="Citation count">
+                          {paper.citations} citation{paper.citations !== 1 ? 's' : ''}
+                        </span>
+                      )}
                       <div className="papers-entry-tags">
                         {paper.tags.map((t) => (
                           <span key={t} className="papers-tag-badge">
