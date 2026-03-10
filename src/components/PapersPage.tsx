@@ -125,7 +125,12 @@ function mapRow(row: {
     authors: row.authors ?? null,
     year: row.year ?? null,
     path: row.path ?? null,
-    citations: row.citations ?? null,
+    citations: (() => {
+      const c = row.citations;
+      if (c === null || c === undefined) return null;
+      const n = typeof c === 'number' ? c : parseInt(String(c), 10);
+      return Number.isNaN(n) ? null : n;
+    })(),
     created_at: row.created_at,
   };
 }
@@ -280,7 +285,10 @@ export default function PapersPage() {
       return;
     }
     if (data) {
-      setPapers((prev) => prev.map((p) => (p.id === editingId ? mapRow({ ...data, id: data.id }) : p)));
+      const updated = mapRow({ ...data, id: data.id });
+      const citationsVal = editForm.citations.trim() ? parseInt(editForm.citations.trim(), 10) : null;
+      if (citationsVal !== null && !Number.isNaN(citationsVal)) updated.citations = citationsVal;
+      setPapers((prev) => prev.map((p) => (p.id === editingId ? updated : p)));
       setEditingId(null);
     }
   };
@@ -632,9 +640,9 @@ export default function PapersPage() {
                     <div className="papers-entry-header-left">
                       <time dateTime={paper.created_at}>{formatDate(paper.created_at)}</time>
                       {paper.year && <span className="papers-entry-year">{paper.year}</span>}
-                      {paper.citations != null && (
+                      {(paper.citations !== null && paper.citations !== undefined) && (
                         <span className="papers-entry-citations" title="Citation count">
-                          {paper.citations} citation{paper.citations !== 1 ? 's' : ''}
+                          {Number(paper.citations)} citation{Number(paper.citations) !== 1 ? 's' : ''}
                         </span>
                       )}
                       <div className="papers-entry-tags">

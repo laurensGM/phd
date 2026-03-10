@@ -4,7 +4,7 @@ interface Props {
   description?: string;
 }
 
-const { title, description = "PhD Operating System - Organizing research, models, constructs, and literature" } = Astro.props;
+const { title, description = "PhD Manager - Organizing research, models, constructs, and literature" } = Astro.props;
 const base = import.meta.env.BASE_URL;
 // Home link: use path-relative URL so it always resolves to this app's root (avoids going to portfolio when base is wrong)
 const pathname = (Astro.url.pathname || '/').replace(/\/$/, '') || '/';
@@ -22,7 +22,7 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
     <meta name="description" content={description} />
-    <title>{title} | PhD Operating System</title>
+    <title>{title} | PhD Manager</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=DM+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet" />
@@ -30,9 +30,8 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
   <body>
     <header class="site-header">
       <nav class="nav-container">
-        <a href={homeHref} class="logo" rel="home" aria-label="Home – PhD Operating System">
-          <img src={`${base}logo-pos.png`} alt="PhD Operating System" class="logo-img" width="40" height="40" />
-          <span class="logo-text">PhD Operating System</span>
+        <a href={homeHref} class="logo logo-img-only" rel="home" aria-label="Home">
+          <img src={`${base}logo-pos.png`} alt="PhD Manager" class="logo-img" width="40" height="40" />
         </a>
         <ul class="nav-links">
           <li class="nav-dropdown-wrap">
@@ -77,9 +76,9 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
     </main>
     <footer class="site-footer">
       <div class="footer-brand">
-        <img src={`${base}logo-pos.png`} alt="PhD Operating System" class="footer-logo" width="32" height="32" />
+        <img src={`${base}logo-pos.png`} alt="PhD Manager" class="footer-logo" width="32" height="32" />
         <div>
-          <p class="footer-title">PhD Operating System</p>
+          <p class="footer-title">PhD Manager</p>
         </div>
       </div>
       <p class="footer-tagline">Organizing research one note at a time</p>
