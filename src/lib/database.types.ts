@@ -42,6 +42,7 @@ export interface Database {
           path: string | null;
           citations: number | null;
           status: string;
+          golden: boolean;
           created_at: string;
         };
         Insert: {
@@ -55,6 +56,7 @@ export interface Database {
           path?: string | null;
           citations?: number | null;
           status?: string;
+          golden?: boolean;
           created_at?: string;
         };
         Update: {
@@ -67,6 +69,7 @@ export interface Database {
           path?: string | null;
           citations?: number | null;
           status?: string;
+          golden?: boolean;
           created_at?: string;
         };
       };

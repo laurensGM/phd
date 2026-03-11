@@ -23,6 +23,7 @@ interface SavedPaper {
   path: string | null;
   citations: number | null;
   status: string;
+  golden: boolean;
   created_at: string;
 }
 
@@ -127,6 +128,7 @@ function mapRow(row: {
   path?: string | null;
   citations?: number | null;
   status?: string | null;
+  golden?: boolean | null;
   created_at: string;
 }): SavedPaper {
   const status = row.status?.trim() && PAPER_STATUSES.some((s) => s.id === row.status) ? row.status! : 'Not read';
@@ -146,6 +148,7 @@ function mapRow(row: {
       return Number.isNaN(n) ? null : n;
     })(),
     status,
+    golden: !!row.golden,
     created_at: row.created_at,
   };
 }
@@ -165,6 +168,7 @@ export default function PapersPage() {
     path: '',
     citations: '' as string,
     status: 'Not read' as PaperStatusId,
+    golden: false,
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -181,11 +185,15 @@ export default function PapersPage() {
     path: '',
     citations: '' as string,
     status: 'Not read' as PaperStatusId,
+    golden: false,
   });
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'table' | 'board'>('table');
   const [draggedPaperId, setDraggedPaperId] = useState<string | null>(null);
   const [statusGuideOpen, setStatusGuideOpen] = useState(false);
+  const [sortField, setSortField] = useState<'created_at' | 'year'>('created_at');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [showSort, setShowSort] = useState(false);
 
   const fetchPapers = useCallback(async () => {
     if (!supabase) return;
@@ -213,7 +221,7 @@ export default function PapersPage() {
   }, [fetchPapers]);
 
   const filteredPapers = useMemo(() => {
-    return papers.filter((p) => {
+    const filtered = papers.filter((p) => {
       if (search) {
         const q = search.toLowerCase();
         const urlMatch = p.url.toLowerCase().includes(q);
@@ -226,7 +234,23 @@ export default function PapersPage() {
       if (tagFilter && !p.tags.includes(tagFilter)) return false;
       return true;
     });
-  }, [papers, search, tagFilter]);
+
+    const sorted = [...filtered].sort((a, b) => {
+      if (sortField === 'created_at') {
+        const da = new Date(a.created_at).getTime();
+        const db = new Date(b.created_at).getTime();
+        return sortDirection === 'asc' ? da - db : db - da;
+      }
+      // sortField === 'year'
+      const ya = a.year ? parseInt(a.year, 10) : NaN;
+      const yb = b.year ? parseInt(b.year, 10) : NaN;
+      const aVal = Number.isNaN(ya) ? (sortDirection === 'asc' ? Number.POSITIVE_INFINITY : Number.NEGATIVE_INFINITY) : ya;
+      const bVal = Number.isNaN(yb) ? (sortDirection === 'asc' ? Number.POSITIVE_INFINITY : Number.NEGATIVE_INFINITY) : yb;
+      return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+    });
+
+    return sorted;
+  }, [papers, search, tagFilter, sortField, sortDirection]);
 
   const handleFetchMetadata = async () => {
     const url = formData.url.trim();
@@ -265,6 +289,7 @@ export default function PapersPage() {
       path: paper.path ?? '',
       citations: paper.citations != null ? String(paper.citations) : '',
       status,
+      golden: paper.golden ?? false,
     });
     setError(null);
   };
@@ -298,9 +323,10 @@ export default function PapersPage() {
         path: editForm.path.trim() || null,
         citations: Number.isNaN(citationsNum) ? null : citationsNum,
         status: editForm.status,
+        golden: editForm.golden,
       })
       .eq('id', editingId)
-      .select('id, url, motivation, tags, title, authors, year, path, citations, status, created_at')
+      .select('id, url, motivation, tags, title, authors, year, path, citations, status, golden, created_at')
       .single();
     setSaving(false);
     if (updateError) {
@@ -373,6 +399,10 @@ export default function PapersPage() {
     return s?.color ?? 'status-not-read';
   };
 
+  const toggleSortDirection = () => {
+    setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!supabase) return;
@@ -391,14 +421,15 @@ export default function PapersPage() {
         path: formData.path.trim() || null,
         citations: Number.isNaN(citationsNum) ? null : citationsNum,
         status: formData.status,
+        golden: formData.golden,
       })
-      .select('id, url, motivation, tags, title, authors, year, path, citations, status, created_at')
+      .select('id, url, motivation, tags, title, authors, year, path, citations, status, golden, created_at')
       .single();
     if (insertError) {
       setError(insertError.message);
     } else if (insertData) {
       setPapers((prev) => [mapRow({ ...insertData, id: insertData.id }), ...prev]);
-      setFormData({ url: '', motivation: '', tags: [], title: '', authors: '', year: '', path: '', citations: '', status: 'Not read' });
+      setFormData({ url: '', motivation: '', tags: [], title: '', authors: '', year: '', path: '', citations: '', status: 'Not read', golden: false });
       setShowForm(false);
     }
     setSaving(false);
@@ -581,6 +612,17 @@ export default function PapersPage() {
               </select>
             </div>
 
+            <div className="papers-form-field papers-form-field-inline">
+              <label className="papers-checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={formData.golden}
+                  onChange={(e) => setFormData((d) => ({ ...d, golden: e.target.checked }))}
+                />
+                <span>Golden paper</span>
+              </label>
+            </div>
+
             <button type="submit" className="papers-submit" disabled={saving}>
               {saving ? 'Saving...' : 'Save paper'}
             </button>
@@ -659,11 +701,45 @@ export default function PapersPage() {
               </option>
             ))}
           </select>
+          <button
+            type="button"
+            className="papers-sort-toggle"
+            onClick={() => setShowSort(!showSort)}
+            title="Order by"
+          >
+            ⬍
+          </button>
         </div>
+
+        {showSort && (
+          <div className="papers-sort-panel">
+            <label>
+              <span className="papers-sort-label">Order by</span>
+              <select
+                value={sortField}
+                onChange={(e) => setSortField(e.target.value as 'created_at' | 'year')}
+                className="papers-select"
+              >
+                <option value="created_at">Date added</option>
+                <option value="year">Publication year</option>
+              </select>
+            </label>
+            <button
+              type="button"
+              className="papers-sort-direction-btn"
+              onClick={toggleSortDirection}
+            >
+              {sortDirection === 'desc' ? 'Newest ↓' : 'Oldest ↑'}
+            </button>
+          </div>
+        )}
 
         <div className="papers-entries">
           {filteredPapers.map((paper) => (
-            <article key={paper.id} className="papers-entry">
+            <article
+              key={paper.id}
+              className={`papers-entry ${paper.golden ? 'papers-entry-golden' : ''}`}
+            >
               {editingId === paper.id ? (
                 <form className="papers-entry-edit-form" onSubmit={handleSaveEdit}>
                   <div className="papers-form-field">
@@ -763,6 +839,16 @@ export default function PapersPage() {
                         </option>
                       ))}
                     </select>
+                  </div>
+                  <div className="papers-form-field papers-form-field-inline">
+                    <label className="papers-checkbox-label">
+                      <input
+                        type="checkbox"
+                        checked={editForm.golden}
+                        onChange={(e) => setEditForm((f) => ({ ...f, golden: e.target.checked }))}
+                      />
+                      <span>Golden paper</span>
+                    </label>
                   </div>
                   <div className="papers-entry-edit-actions">
                     <button type="submit" className="papers-btn papers-btn-primary" disabled={saving}>
@@ -875,7 +961,7 @@ export default function PapersPage() {
                       .map((paper) => (
                         <div
                           key={paper.id}
-                          className={`papers-board-card ${draggedPaperId === paper.id ? 'papers-board-card-dragging' : ''}`}
+                          className={`papers-board-card ${draggedPaperId === paper.id ? 'papers-board-card-dragging' : ''} ${paper.golden ? 'papers-board-card-golden' : ''}`}
                           draggable
                           onDragStart={(e) => handleBoardDragStart(e, paper.id)}
                         >
