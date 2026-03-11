@@ -196,6 +196,40 @@ export interface Database {
           updated_at?: string;
         };
       };
+      snippets: {
+        Row: {
+          id: string;
+          paper_id: string;
+          construct_id: string | null;
+          model_id: string | null;
+          content: string;
+          notes: string | null;
+          tags: string[];
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          paper_id: string;
+          construct_id?: string | null;
+          model_id?: string | null;
+          content: string;
+          notes?: string | null;
+          tags?: string[];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          paper_id?: string;
+          construct_id?: string | null;
+          model_id?: string | null;
+          content?: string;
+          notes?: string | null;
+          tags?: string[];
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
     };
   };
 }

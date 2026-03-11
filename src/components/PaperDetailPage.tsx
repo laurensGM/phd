@@ -16,6 +16,17 @@ interface SavedPaper {
   created_at: string;
 }
 
+interface Snippet {
+  id: string;
+  paper_id: string;
+  construct_id: string | null;
+  model_id: string | null;
+  content: string;
+  notes: string | null;
+  tags: string[];
+  created_at: string;
+}
+
 const PAPER_STATUSES = [
   { id: 'Not read', label: 'Not read' },
   { id: '1st reading', label: '1st reading' },
@@ -110,6 +121,12 @@ export default function PaperDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [copyFeedback, setCopyFeedback] = useState(false);
+   const [snippets, setSnippets] = useState<Snippet[]>([]);
+   const [snippetsLoading, setSnippetsLoading] = useState(false);
+   const [snippetError, setSnippetError] = useState<string | null>(null);
+   const [newSnippetContent, setNewSnippetContent] = useState('');
+   const [newSnippetConstructId, setNewSnippetConstructId] = useState('');
+   const [newSnippetModelId, setNewSnippetModelId] = useState('');
 
   const getIdFromUrl = useCallback((): string | null => {
     if (typeof window === 'undefined') return null;
@@ -144,6 +161,26 @@ export default function PaperDetailPage() {
         setPaper(null);
       } else if (data) {
         setPaper(mapRow(data as Parameters<typeof mapRow>[0]));
+        // Load snippets once the paper is known
+        const row = data as Parameters<typeof mapRow>[0];
+        const paperId = row.id;
+        setSnippetsLoading(true);
+        const loadSnippets = async () => {
+          const { data: snippetData, error: snippetErr } = await supabase!
+            .from('snippets')
+            .select('*')
+            .eq('paper_id', paperId)
+            .order('created_at', { ascending: false });
+          if (snippetErr) {
+            setSnippetError(snippetErr.message);
+            setSnippets([]);
+          } else {
+            setSnippetError(null);
+            setSnippets((snippetData ?? []) as Snippet[]);
+          }
+          setSnippetsLoading(false);
+        };
+        loadSnippets();
       } else {
         setError('Paper not found.');
         setPaper(null);
@@ -166,6 +203,53 @@ export default function PaperDetailPage() {
       () => {}
     );
   }, [citation]);
+
+  const handleAddSnippet = useCallback(async () => {
+    if (!paper || !newSnippetContent.trim()) return;
+    if (!supabase || !isSupabaseConfigured()) return;
+    setSnippetsLoading(true);
+    setSnippetError(null);
+    const payload: Omit<Snippet, 'id' | 'created_at'> & { id?: string; created_at?: string } = {
+      paper_id: paper.id,
+      construct_id: newSnippetConstructId.trim() || null,
+      model_id: newSnippetModelId.trim() || null,
+      content: newSnippetContent.trim(),
+      notes: null,
+      tags: [],
+    };
+    const { data, error: insertError } = await supabase
+      .from('snippets')
+      .insert(payload)
+      .select('*')
+      .single();
+    if (insertError) {
+      setSnippetError(insertError.message);
+    } else if (data) {
+      setSnippets((prev) => [data as Snippet, ...prev]);
+      setNewSnippetContent('');
+      setNewSnippetConstructId('');
+      setNewSnippetModelId('');
+    }
+    setSnippetsLoading(false);
+  }, [paper, newSnippetContent, newSnippetConstructId, newSnippetModelId]);
+
+  const handleDeleteSnippet = useCallback(
+    async (id: string) => {
+      if (!supabase || !isSupabaseConfigured()) return;
+      const confirmed = window.confirm('Delete this snippet?');
+      if (!confirmed) return;
+      setSnippetsLoading(true);
+      setSnippetError(null);
+      const { error: deleteError } = await supabase.from('snippets').delete().eq('id', id);
+      if (deleteError) {
+        setSnippetError(deleteError.message);
+      } else {
+        setSnippets((prev) => prev.filter((s) => s.id !== id));
+      }
+      setSnippetsLoading(false);
+    },
+    []
+  );
 
   if (loading) {
     return (
@@ -245,6 +329,102 @@ export default function PaperDetailPage() {
           <p className="paper-detail-citations">{paper.citations}</p>
         </section>
       )}
+
+      <section className="paper-detail-section paper-detail-snippets">
+        <h2 className="paper-detail-section-title">Snippets from this paper</h2>
+        <p className="paper-detail-snippets-hint">
+          Capture key ideas or quotes here and optionally link them to constructs or models so you can reuse them later.
+        </p>
+        <div className="paper-detail-snippet-form">
+          <label className="paper-detail-snippet-label">
+            Snippet text
+            <textarea
+              className="paper-detail-snippet-input"
+              value={newSnippetContent}
+              onChange={(e) => setNewSnippetContent(e.target.value)}
+              rows={3}
+              placeholder="Paste or type the key idea, quote, or conceptual snippet from this paper…"
+            />
+          </label>
+          <div className="paper-detail-snippet-meta-row">
+            <label className="paper-detail-snippet-label-inline">
+              Construct ID (optional)
+              <input
+                type="text"
+                className="paper-detail-snippet-input-inline"
+                value={newSnippetConstructId}
+                onChange={(e) => setNewSnippetConstructId(e.target.value)}
+                placeholder="e.g. perceived-usefulness"
+              />
+            </label>
+            <label className="paper-detail-snippet-label-inline">
+              Model ID (optional)
+              <input
+                type="text"
+                className="paper-detail-snippet-input-inline"
+                value={newSnippetModelId}
+                onChange={(e) => setNewSnippetModelId(e.target.value)}
+                placeholder="e.g. tam"
+              />
+            </label>
+          </div>
+          <button
+            type="button"
+            className="paper-detail-snippet-add"
+            onClick={handleAddSnippet}
+            disabled={!newSnippetContent.trim() || snippetsLoading}
+          >
+            {snippetsLoading ? 'Saving snippet…' : 'Add snippet'}
+          </button>
+          {snippetError && <p className="paper-detail-snippet-error">{snippetError}</p>}
+        </div>
+
+        <div className="paper-detail-snippet-list">
+          {snippetsLoading && snippets.length === 0 && (
+            <p className="paper-detail-snippet-empty">Loading snippets…</p>
+          )}
+          {!snippetsLoading && snippets.length === 0 && !snippetError && (
+            <p className="paper-detail-snippet-empty">No snippets yet. Add your first snippet from this paper above.</p>
+          )}
+          {snippets.map((s) => (
+            <article key={s.id} className="paper-detail-snippet-card">
+              <p className="paper-detail-snippet-content">{s.content}</p>
+              {(s.construct_id || s.model_id) && (
+                <div className="paper-detail-snippet-links">
+                  {s.construct_id && (
+                    <a
+                      href={`${base}constructs/${s.construct_id}/`}
+                      className="paper-detail-snippet-chip"
+                    >
+                      Construct: {s.construct_id}
+                    </a>
+                  )}
+                  {s.model_id && (
+                    <a
+                      href={`${base}models/${s.model_id}/`}
+                      className="paper-detail-snippet-chip"
+                    >
+                      Model: {s.model_id}
+                    </a>
+                  )}
+                </div>
+              )}
+              <div className="paper-detail-snippet-footer">
+                <span className="paper-detail-snippet-date">
+                  {new Date(s.created_at).toLocaleDateString()}
+                </span>
+                <button
+                  type="button"
+                  className="paper-detail-snippet-delete"
+                  onClick={() => handleDeleteSnippet(s.id)}
+                >
+                  Delete
+                </button>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
 
       <section className="paper-detail-section paper-detail-apa-section">
         <h2 className="paper-detail-section-title">APA 7 reference</h2>
