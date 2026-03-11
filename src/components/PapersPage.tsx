@@ -1,6 +1,16 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
+const PAPER_STATUSES = [
+  { id: 'Not read', label: 'Not read', description: "Haven't read the paper at all.", color: 'status-not-read' },
+  { id: '1st reading', label: '1st reading', description: 'Read abstract, introduction and conclusion.', color: 'status-1st' },
+  { id: '2nd reading', label: '2nd reading', description: 'Also dove deeper into method, results and discussion.', color: 'status-2nd' },
+  { id: 'Read', label: 'Read', description: 'Read all relevant sections.', color: 'status-read' },
+  { id: 'Completed', label: 'Completed', description: 'Copied snippets from the article and attached them for later review.', color: 'status-completed' },
+] as const;
+
+type PaperStatusId = (typeof PAPER_STATUSES)[number]['id'];
+
 interface SavedPaper {
   id: string;
   url: string;
@@ -11,6 +21,7 @@ interface SavedPaper {
   year: string | null;
   path: string | null;
   citations: number | null;
+  status: string;
   created_at: string;
 }
 
@@ -114,8 +125,10 @@ function mapRow(row: {
   year?: string | null;
   path?: string | null;
   citations?: number | null;
+  status?: string | null;
   created_at: string;
 }): SavedPaper {
+  const status = row.status?.trim() && PAPER_STATUSES.some((s) => s.id === row.status) ? row.status! : 'Not read';
   return {
     id: row.id,
     url: row.url,
@@ -131,6 +144,7 @@ function mapRow(row: {
       const n = typeof c === 'number' ? c : parseInt(String(c), 10);
       return Number.isNaN(n) ? null : n;
     })(),
+    status,
     created_at: row.created_at,
   };
 }
@@ -149,6 +163,7 @@ export default function PapersPage() {
     year: '',
     path: '',
     citations: '' as string,
+    status: 'Not read' as PaperStatusId,
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -164,8 +179,12 @@ export default function PapersPage() {
     tags: [] as string[],
     path: '',
     citations: '' as string,
+    status: 'Not read' as PaperStatusId,
   });
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'table' | 'board'>('table');
+  const [draggedPaperId, setDraggedPaperId] = useState<string | null>(null);
+  const [statusGuideOpen, setStatusGuideOpen] = useState(false);
 
   const fetchPapers = useCallback(async () => {
     if (!supabase) return;
@@ -234,6 +253,7 @@ export default function PapersPage() {
 
   const startEdit = (paper: SavedPaper) => {
     setEditingId(paper.id);
+    const status = PAPER_STATUSES.some((s) => s.id === paper.status) ? (paper.status as PaperStatusId) : 'Not read';
     setEditForm({
       url: paper.url,
       title: paper.title ?? '',
@@ -243,6 +263,7 @@ export default function PapersPage() {
       tags: paper.tags ?? [],
       path: paper.path ?? '',
       citations: paper.citations != null ? String(paper.citations) : '',
+      status,
     });
     setError(null);
   };
@@ -275,9 +296,10 @@ export default function PapersPage() {
         tags: editForm.tags,
         path: editForm.path.trim() || null,
         citations: Number.isNaN(citationsNum) ? null : citationsNum,
+        status: editForm.status,
       })
       .eq('id', editingId)
-      .select('id, url, motivation, tags, title, authors, year, path, citations, created_at')
+      .select('id, url, motivation, tags, title, authors, year, path, citations, status, created_at')
       .single();
     setSaving(false);
     if (updateError) {
@@ -307,6 +329,49 @@ export default function PapersPage() {
     setPapers((prev) => prev.filter((p) => p.id !== id));
   };
 
+  const handleBoardDragStart = (e: React.DragEvent, paperId: string) => {
+    setDraggedPaperId(paperId);
+    e.dataTransfer.setData('application/json', JSON.stringify({ paperId }));
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleBoardDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleBoardDrop = async (e: React.DragEvent, newStatus: string) => {
+    e.preventDefault();
+    setDraggedPaperId(null);
+    const raw = e.dataTransfer.getData('application/json');
+    if (!raw) return;
+    try {
+      const { paperId } = JSON.parse(raw);
+      const paper = papers.find((p) => p.id === paperId);
+      if (!paper || paper.status === newStatus) return;
+      if (!supabase) return;
+      setError(null);
+      const { error: updateError } = await supabase
+        .from('saved_papers')
+        .update({ status: newStatus })
+        .eq('id', paperId);
+      if (updateError) {
+        setError(updateError.message);
+        return;
+      }
+      setPapers((prev) =>
+        prev.map((p) => (p.id === paperId ? { ...p, status: newStatus } : p))
+      );
+    } catch {
+      setDraggedPaperId(null);
+    }
+  };
+
+  const getStatusColorClass = (status: string) => {
+    const s = PAPER_STATUSES.find((x) => x.id === status);
+    return s?.color ?? 'status-not-read';
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!supabase) return;
@@ -324,14 +389,15 @@ export default function PapersPage() {
         year: formData.year.trim() || null,
         path: formData.path.trim() || null,
         citations: Number.isNaN(citationsNum) ? null : citationsNum,
+        status: formData.status,
       })
-      .select('id, url, motivation, tags, title, authors, year, path, citations, created_at')
+      .select('id, url, motivation, tags, title, authors, year, path, citations, status, created_at')
       .single();
     if (insertError) {
       setError(insertError.message);
     } else if (insertData) {
       setPapers((prev) => [mapRow({ ...insertData, id: insertData.id }), ...prev]);
-      setFormData({ url: '', motivation: '', tags: [], title: '', authors: '', year: '', path: '', citations: '' });
+      setFormData({ url: '', motivation: '', tags: [], title: '', authors: '', year: '', path: '', citations: '', status: 'Not read' });
       setShowForm(false);
     }
     setSaving(false);
@@ -498,6 +564,22 @@ export default function PapersPage() {
               </div>
             </div>
 
+            <div className="papers-form-field">
+              <label htmlFor="paper-status">Status</label>
+              <select
+                id="paper-status"
+                value={formData.status}
+                onChange={(e) => setFormData((d) => ({ ...d, status: e.target.value as PaperStatusId }))}
+                className="papers-input papers-select-status"
+              >
+                {PAPER_STATUSES.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <button type="submit" className="papers-submit" disabled={saving}>
               {saving ? 'Saving...' : 'Save paper'}
             </button>
@@ -505,7 +587,47 @@ export default function PapersPage() {
         )}
       </section>
 
+      <section className="papers-status-guide-section">
+        <button
+          type="button"
+          className="papers-status-guide-toggle"
+          onClick={() => setStatusGuideOpen(!statusGuideOpen)}
+          aria-expanded={statusGuideOpen}
+        >
+          {statusGuideOpen ? '−' : '+'} Reading status guide
+        </button>
+        {statusGuideOpen && (
+          <div className="papers-status-guide">
+            <p className="papers-status-guide-intro">What each status means:</p>
+            <ul className="papers-status-guide-list">
+              {PAPER_STATUSES.map((s) => (
+                <li key={s.id} className="papers-status-guide-item">
+                  <span className={`papers-status-tag ${s.color}`}>{s.label}</span>
+                  <span className="papers-status-guide-desc">{s.description}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </section>
+
       <section className="papers-history-section">
+        <div className="papers-view-tabs">
+          <button
+            type="button"
+            className={`papers-view-tab ${viewMode === 'table' ? 'papers-view-tab-active' : ''}`}
+            onClick={() => setViewMode('table')}
+          >
+            Table view
+          </button>
+          <button
+            type="button"
+            className={`papers-view-tab ${viewMode === 'board' ? 'papers-view-tab-active' : ''}`}
+            onClick={() => setViewMode('board')}
+          >
+            Board view
+          </button>
+        </div>
         <h3 className="papers-history-title">
           Your saved papers
           {papers.length > 0 && (
@@ -514,6 +636,7 @@ export default function PapersPage() {
             </span>
           )}
         </h3>
+        {viewMode === 'table' && (
         <div className="papers-filters">
           <input
             type="search"
@@ -625,6 +748,20 @@ export default function PapersPage() {
                       ))}
                     </div>
                   </div>
+                  <div className="papers-form-field">
+                    <label>Status</label>
+                    <select
+                      value={editForm.status}
+                      onChange={(e) => setEditForm((f) => ({ ...f, status: e.target.value as PaperStatusId }))}
+                      className="papers-input papers-select-status"
+                    >
+                      {PAPER_STATUSES.map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                   <div className="papers-entry-edit-actions">
                     <button type="submit" className="papers-btn papers-btn-primary" disabled={saving}>
                       {saving ? 'Saving…' : 'Save'}
@@ -638,6 +775,9 @@ export default function PapersPage() {
                 <>
                   <div className="papers-entry-header">
                     <div className="papers-entry-header-left">
+                      <span className={`papers-status-tag ${getStatusColorClass(paper.status)}`} title={PAPER_STATUSES.find((s) => s.id === paper.status)?.description}>
+                        {paper.status}
+                      </span>
                       <time dateTime={paper.created_at}>{formatDate(paper.created_at)}</time>
                       {paper.year && <span className="papers-entry-year">{paper.year}</span>}
                       {(paper.citations !== null && paper.citations !== undefined) && (
@@ -713,6 +853,57 @@ export default function PapersPage() {
             </p>
           )}
         </div>
+        )}
+
+        {viewMode === 'board' && (
+          <div className="papers-board">
+            <div className="papers-board-columns">
+              {PAPER_STATUSES.map((col) => (
+                <div
+                  key={col.id}
+                  className={`papers-board-column ${draggedPaperId ? 'papers-board-column-droppable' : ''}`}
+                  onDragOver={handleBoardDragOver}
+                  onDrop={(e) => handleBoardDrop(e, col.id)}
+                >
+                  <h3 className="papers-board-column-title">{col.label}</h3>
+                  <div className="papers-board-cards">
+                    {filteredPapers
+                      .filter((p) => (p.status || 'Not read') === col.id)
+                      .map((paper) => (
+                        <div
+                          key={paper.id}
+                          className={`papers-board-card ${draggedPaperId === paper.id ? 'papers-board-card-dragging' : ''}`}
+                          draggable
+                          onDragStart={(e) => handleBoardDragStart(e, paper.id)}
+                        >
+                          <h4 className="papers-board-card-title">
+                            <a href={paper.url} target="_blank" rel="noopener noreferrer">
+                              {paper.title || paper.url}
+                            </a>
+                          </h4>
+                          {paper.authors && <p className="papers-board-card-authors">{paper.authors}</p>}
+                          <span className={`papers-status-tag ${getStatusColorClass(paper.status)}`}>{paper.status}</span>
+                          <div className="papers-board-card-actions">
+                            <button type="button" className="papers-board-card-action" onClick={() => startEdit(paper)}>
+                              Edit
+                            </button>
+                            <button
+                              type="button"
+                              className="papers-board-card-action papers-board-card-delete"
+                              onClick={() => handleDelete(paper.id)}
+                              disabled={deletingId === paper.id}
+                            >
+                              {deletingId === paper.id ? '…' : 'Delete'}
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </section>
     </div>
   );

@@ -41,6 +41,7 @@ export interface Database {
           year: string | null;
           path: string | null;
           citations: number | null;
+          status: string;
           created_at: string;
         };
         Insert: {
@@ -53,6 +54,7 @@ export interface Database {
           year?: string | null;
           path?: string | null;
           citations?: number | null;
+          status?: string;
           created_at?: string;
         };
         Update: {
@@ -64,6 +66,7 @@ export interface Database {
           year?: string | null;
           path?: string | null;
           citations?: number | null;
+          status?: string;
           created_at?: string;
         };
       };
