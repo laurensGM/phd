@@ -156,6 +156,7 @@ function mapRow(row: {
 export default function PapersPage() {
   const [papers, setPapers] = useState<SavedPaper[]>([]);
   const [search, setSearch] = useState('');
+  const [searchInput, setSearchInput] = useState('');
   const [tagFilter, setTagFilter] = useState<string>('');
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
@@ -220,6 +221,13 @@ export default function PapersPage() {
     }
     fetchPapers();
   }, [fetchPapers]);
+
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      setSearch(searchInput);
+    }, 250);
+    return () => window.clearTimeout(id);
+  }, [searchInput]);
 
   const filteredPapers = useMemo(() => {
     const filtered = papers.filter((p) => {
@@ -687,8 +695,8 @@ export default function PapersPage() {
           <input
             type="search"
             placeholder="Search by title, authors, URL or motivation..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
             className="papers-search"
           />
           <select
