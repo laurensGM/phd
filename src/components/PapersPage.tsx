@@ -791,7 +791,19 @@ export default function PapersPage() {
           {papersOnPage.map((paper) => (
             <article
               key={paper.id}
-              className={`papers-entry ${paper.golden ? 'papers-entry-golden' : ''}`}
+              className={`papers-entry ${paper.golden ? 'papers-entry-golden' : ''} ${editingId !== paper.id ? 'papers-entry-clickable' : ''}`}
+              onClick={editingId !== paper.id ? (e) => {
+                if ((e.target as HTMLElement).closest('a, button')) return;
+                window.location.href = `${base}papers/detail/?id=${paper.id}`;
+              } : undefined}
+              role={editingId !== paper.id ? 'button' : undefined}
+              tabIndex={editingId !== paper.id ? 0 : undefined}
+              onKeyDown={editingId !== paper.id ? (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  if (!(e.target as HTMLElement).closest('a, button')) window.location.href = `${base}papers/detail/?id=${paper.id}`;
+                }
+              } : undefined}
             >
               {editingId === paper.id ? (
                 <form className="papers-entry-edit-form" onSubmit={handleSaveEdit}>
@@ -954,14 +966,9 @@ export default function PapersPage() {
                     </div>
                   </div>
                   <h4 className="papers-entry-title">
-                    <a href={`${base}papers/detail/?id=${paper.id}`}>
+                    <a href={paper.url} target="_blank" rel="noopener noreferrer">
                       {paper.title || paper.url}
                     </a>
-                    <span className="papers-entry-title-actions">
-                      <a href={paper.url} target="_blank" rel="noopener noreferrer" className="papers-entry-open-link" title="Open paper">
-                        Open paper
-                      </a>
-                    </span>
                   </h4>
                   {paper.secondary_url && (
                     <p className="papers-entry-secondary-link">
@@ -1019,15 +1026,24 @@ export default function PapersPage() {
                           className={`papers-board-card ${draggedPaperId === paper.id ? 'papers-board-card-dragging' : ''} ${paper.golden ? 'papers-board-card-golden' : ''}`}
                           draggable
                           onDragStart={(e) => handleBoardDragStart(e, paper.id)}
+                          onClick={(e) => {
+                            if ((e.target as HTMLElement).closest('a, button')) return;
+                            window.location.href = `${base}papers/detail/?id=${paper.id}`;
+                          }}
+                          role="button"
+                          tabIndex={0}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              if (!(e.target as HTMLElement).closest('a, button')) window.location.href = `${base}papers/detail/?id=${paper.id}`;
+                            }
+                          }}
                         >
                           <h4 className="papers-board-card-title">
-                            <a href={`${base}papers/detail/?id=${paper.id}`}>
+                            <a href={paper.url} target="_blank" rel="noopener noreferrer">
                               {(paper.title || paper.url).length > 30
                                 ? `${(paper.title || paper.url).slice(0, 30)}…`
                                 : (paper.title || paper.url)}
-                            </a>
-                            <a href={paper.url} target="_blank" rel="noopener noreferrer" className="papers-board-card-open" title="Open paper">
-                              Open
                             </a>
                           </h4>
                           {paper.secondary_url && (

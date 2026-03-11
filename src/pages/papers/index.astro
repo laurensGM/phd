@@ -481,16 +481,8 @@ import PapersPage from '../../components/PapersPage';
   :global(.papers-page .papers-entry-title a:first-of-type:hover) {
     text-decoration: underline;
   }
-  :global(.papers-page .papers-entry-title-actions) {
-    font-size: 0.85rem;
-    font-weight: normal;
-  }
-  :global(.papers-page .papers-entry-open-link) {
-    color: var(--color-ink-muted);
-    text-decoration: none;
-  }
-  :global(.papers-page .papers-entry-open-link:hover) {
-    text-decoration: underline;
+  :global(.papers-page .papers-entry-clickable) {
+    cursor: pointer;
   }
   :global(.papers-page .papers-entry-secondary-link) {
     margin: 0.1rem 0 0.4rem 0;
@@ -814,14 +806,8 @@ import PapersPage from '../../components/PapersPage';
   :global(.papers-page .papers-board-card-title a:first-of-type:hover) {
     text-decoration: underline;
   }
-  :global(.papers-page .papers-board-card-open) {
-    font-size: 0.8rem;
-    color: var(--color-ink-muted);
-    text-decoration: none;
-    flex-shrink: 0;
-  }
-  :global(.papers-page .papers-board-card-open:hover) {
-    text-decoration: underline;
+  :global(.papers-page .papers-board-card) {
+    cursor: pointer;
   }
   :global(.papers-page .papers-board-card-secondary) {
     margin: 0.1rem 0 0.4rem 0;
