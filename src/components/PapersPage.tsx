@@ -194,6 +194,7 @@ export default function PapersPage() {
   const [sortField, setSortField] = useState<'created_at' | 'year'>('created_at');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [showSort, setShowSort] = useState(false);
+  const [goldenOnly, setGoldenOnly] = useState(false);
 
   const fetchPapers = useCallback(async () => {
     if (!supabase) return;
@@ -232,6 +233,7 @@ export default function PapersPage() {
         if (!urlMatch && !motivationMatch && !tagMatch && !titleMatch && !authorsMatch) return false;
       }
       if (tagFilter && !p.tags.includes(tagFilter)) return false;
+      if (goldenOnly && !p.golden) return false;
       return true;
     });
 
@@ -701,6 +703,14 @@ export default function PapersPage() {
               </option>
             ))}
           </select>
+          <label className="papers-checkbox-label">
+            <input
+              type="checkbox"
+              checked={goldenOnly}
+              onChange={(e) => setGoldenOnly(e.target.checked)}
+            />
+            <span>Only golden</span>
+          </label>
           <button
             type="button"
             className="papers-sort-toggle"
@@ -974,7 +984,6 @@ export default function PapersPage() {
                           </h4>
                           {paper.authors && <p className="papers-board-card-authors">{paper.authors}</p>}
                           <div className="papers-board-card-meta-row">
-                            <span className={`papers-status-tag ${getStatusColorClass(paper.status)}`}>{paper.status}</span>
                             {paper.year && (
                               <span className="papers-board-card-year">{paper.year}</span>
                             )}
