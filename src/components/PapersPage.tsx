@@ -1020,6 +1020,13 @@ export default function PapersPage() {
                                 : (paper.title || paper.url)}
                             </a>
                           </h4>
+                          {paper.secondary_url && (
+                            <p className="papers-board-card-secondary">
+                              <a href={paper.secondary_url} target="_blank" rel="noopener noreferrer">
+                                Secondary link
+                              </a>
+                            </p>
+                          )}
                           {paper.authors && <p className="papers-board-card-authors">{paper.authors}</p>}
                           <div className="papers-board-card-meta-row">
                             {paper.year && (
@@ -1050,6 +1057,140 @@ export default function PapersPage() {
                 </div>
                 );
               })}
+            </div>
+          </div>
+        )}
+        {viewMode === 'board' && editingId && (
+          <div className="papers-edit-drawer">
+            <div className="papers-edit-drawer-inner">
+              <div className="papers-edit-drawer-header">
+                <h3>Edit paper</h3>
+                <button
+                  type="button"
+                  className="papers-edit-drawer-close"
+                  onClick={cancelEdit}
+                  aria-label="Close edit panel"
+                >
+                  ×
+                </button>
+              </div>
+              <form className="papers-entry-edit-form" onSubmit={handleSaveEdit}>
+                <div className="papers-form-field">
+                  <label>Link</label>
+                  <input
+                    type="url"
+                    value={editForm.url}
+                    onChange={(e) => setEditForm((f) => ({ ...f, url: e.target.value }))}
+                    required
+                    className="papers-input"
+                  />
+                </div>
+                <div className="papers-form-field">
+                  <label>Secondary link (optional)</label>
+                  <input
+                    type="url"
+                    value={editForm.secondary_url}
+                    onChange={(e) => setEditForm((f) => ({ ...f, secondary_url: e.target.value }))}
+                    className="papers-input"
+                  />
+                </div>
+                <div className="papers-form-field papers-form-field-row">
+                  <div>
+                    <label>Title</label>
+                    <input
+                      type="text"
+                      value={editForm.title}
+                      onChange={(e) => setEditForm((f) => ({ ...f, title: e.target.value }))}
+                      className="papers-input"
+                    />
+                  </div>
+                  <div>
+                    <label>Year</label>
+                    <input
+                      type="text"
+                      value={editForm.year}
+                      onChange={(e) => setEditForm((f) => ({ ...f, year: e.target.value }))}
+                      className="papers-input papers-input-short"
+                    />
+                  </div>
+                  <div>
+                    <label>Citations</label>
+                    <input
+                      type="number"
+                      min={0}
+                      value={editForm.citations}
+                      onChange={(e) => setEditForm((f) => ({ ...f, citations: e.target.value }))}
+                      placeholder="e.g. 150"
+                      className="papers-input papers-input-short"
+                    />
+                  </div>
+                </div>
+                <div className="papers-form-field">
+                  <label>Authors</label>
+                  <input
+                    type="text"
+                    value={editForm.authors}
+                    onChange={(e) => setEditForm((f) => ({ ...f, authors: e.target.value }))}
+                    className="papers-input"
+                  />
+                </div>
+                <div className="papers-form-field">
+                  <label>Why I’m saving this</label>
+                  <textarea
+                    value={editForm.motivation}
+                    onChange={(e) => setEditForm((f) => ({ ...f, motivation: e.target.value }))}
+                    rows={3}
+                    className="papers-textarea"
+                  />
+                </div>
+                <div className="papers-form-field">
+                  <span className="papers-form-label">Tags</span>
+                  <div className="papers-tag-chips">
+                    {TAG_OPTIONS.map((t) => (
+                      <button
+                        key={t}
+                        type="button"
+                        className={`papers-tag-chip ${editForm.tags.includes(t) ? 'selected' : ''}`}
+                        onClick={() => toggleEditTag(t)}
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="papers-form-field">
+                  <label>Status</label>
+                  <select
+                    value={editForm.status}
+                    onChange={(e) => setEditForm((f) => ({ ...f, status: e.target.value as PaperStatusId }))}
+                    className="papers-input papers-select-status"
+                  >
+                    {PAPER_STATUSES.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="papers-form-field papers-form-field-inline">
+                  <label className="papers-checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={editForm.golden}
+                      onChange={(e) => setEditForm((f) => ({ ...f, golden: e.target.checked }))}
+                    />
+                    <span>Golden paper</span>
+                  </label>
+                </div>
+                <div className="papers-entry-edit-actions">
+                  <button type="submit" className="papers-btn papers-btn-primary" disabled={saving}>
+                    {saving ? 'Saving…' : 'Save'}
+                  </button>
+                  <button type="button" className="papers-btn papers-btn-secondary" onClick={cancelEdit}>
+                    Cancel
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         )}
