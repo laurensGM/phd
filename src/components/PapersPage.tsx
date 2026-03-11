@@ -252,7 +252,7 @@ export default function PapersPage() {
     });
 
     return sorted;
-  }, [papers, search, tagFilter, sortField, sortDirection]);
+  }, [papers, search, tagFilter, goldenOnly, sortField, sortDirection]);
 
   const handleFetchMetadata = async () => {
     const url = formData.url.trim();
@@ -957,17 +957,22 @@ export default function PapersPage() {
         {viewMode === 'board' && (
           <div className="papers-board">
             <div className="papers-board-columns">
-              {PAPER_STATUSES.map((col) => (
+              {PAPER_STATUSES.map((col) => {
+                const columnPapers = filteredPapers.filter((p) => (p.status || 'Not read') === col.id);
+                const colKey = col.id.replace(/\s+/g, '-').toLowerCase();
+                return (
                 <div
                   key={col.id}
-                  className={`papers-board-column ${draggedPaperId ? 'papers-board-column-droppable' : ''}`}
+                  className={`papers-board-column papers-board-column-${colKey} ${draggedPaperId ? 'papers-board-column-droppable' : ''}`}
                   onDragOver={handleBoardDragOver}
                   onDrop={(e) => handleBoardDrop(e, col.id)}
                 >
-                  <h3 className="papers-board-column-title">{col.label}</h3>
+                  <h3 className={`papers-board-column-title papers-board-column-title-${colKey}`}>
+                    {col.label}
+                    <span className="papers-board-column-count">{columnPapers.length}</span>
+                  </h3>
                   <div className="papers-board-cards">
-                    {filteredPapers
-                      .filter((p) => (p.status || 'Not read') === col.id)
+                    {columnPapers
                       .map((paper) => (
                         <div
                           key={paper.id}
@@ -987,6 +992,11 @@ export default function PapersPage() {
                             {paper.year && (
                               <span className="papers-board-card-year">{paper.year}</span>
                             )}
+                            {(paper.citations !== null && paper.citations !== undefined) && (
+                              <span className="papers-board-card-citations">
+                                {Number(paper.citations)}
+                              </span>
+                            )}
                           </div>
                           <div className="papers-board-card-actions">
                             <button type="button" className="papers-board-card-action" onClick={() => startEdit(paper)}>
@@ -1005,7 +1015,8 @@ export default function PapersPage() {
                       ))}
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
