@@ -1,66 +1,13 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PapersPage from '../../components/PapersPage';
-import literature from '../../data/literature.json';
 ---
 
-<BaseLayout title="Papers" description="Save paper links with motivation and tags; key literature reference">
+<BaseLayout title="Papers" description="Save paper links with motivation and tags">
   <h1>Papers</h1>
-  <p class="page-desc">Save interesting papers with a link and why you kept them. Tag them for later. Below, your saved list and key literature.</p>
+  <p class="page-desc">Save interesting papers with a link and why you kept them. Tag them for later.</p>
 
   <PapersPage client:load />
-
-  {literature.length > 0 && (
-    <section class="literature-ref-section">
-      <h2 class="literature-ref-title">Key papers (reference)</h2>
-      <p class="literature-ref-desc">Curated literature with citations, constructs, methods and findings.</p>
-      <div class="literature-list">
-        {literature.map((paper: any) => (
-          <article class="paper-card">
-            <h3>{paper.citation}</h3>
-            <div class="paper-meta">
-              {paper.doi && (
-                <a href={`https://doi.org/${paper.doi}`} target="_blank" rel="noopener">DOI: {paper.doi}</a>
-              )}
-              {paper.pdfLink && (
-                <a href={paper.pdfLink} target="_blank" rel="noopener">PDF</a>
-              )}
-            </div>
-            {paper.keyConstructs?.length > 0 && (
-              <section class="paper-section">
-                <h4>Key Constructs</h4>
-                <p>{paper.keyConstructs.join(', ')}</p>
-              </section>
-            )}
-            {paper.method && (
-              <section class="paper-section">
-                <h4>Method</h4>
-                <p>{paper.method}</p>
-              </section>
-            )}
-            {paper.findings && (
-              <section class="paper-section">
-                <h4>Findings</h4>
-                <p>{paper.findings}</p>
-              </section>
-            )}
-            {paper.summary && (
-              <section class="paper-section highlight">
-                <h4>Your Summary</h4>
-                <p>{paper.summary}</p>
-              </section>
-            )}
-            {paper.replicationNotes && (
-              <section class="paper-section">
-                <h4>Replication Notes</h4>
-                <p>{paper.replicationNotes}</p>
-              </section>
-            )}
-          </article>
-        ))}
-      </div>
-    </section>
-  )}
 </BaseLayout>
 
 <style>
@@ -626,25 +573,17 @@ import literature from '../../data/literature.json';
     border-color: var(--color-maroon);
   }
 
-  /* Board view (6 columns including Archive) */
+  /* Board view (6 columns including Archive, horizontal scroll) */
   :global(.papers-page .papers-board) {
     margin-top: 1rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
   }
   :global(.papers-page .papers-board-columns) {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    display: flex;
     gap: 1rem;
-    align-items: start;
-  }
-  @media (max-width: 1200px) {
-    :global(.papers-page .papers-board-columns) {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-  @media (max-width: 768px) {
-    :global(.papers-page .papers-board-columns) {
-      grid-template-columns: 1fr;
-    }
+    align-items: flex-start;
+    min-width: max-content;
   }
   :global(.papers-page .papers-board-column) {
     background: var(--color-bg-alt);
@@ -652,6 +591,8 @@ import literature from '../../data/literature.json';
     border-radius: 10px;
     padding: 1rem;
     min-height: 280px;
+    min-width: 260px;
+    max-width: 320px;
   }
   :global(.papers-page .papers-board-column-droppable) {
     border-color: var(--color-maroon-muted);
@@ -742,58 +683,4 @@ import literature from '../../data/literature.json';
   :global(.papers-page .papers-board-card-delete:hover) {
     border-color: var(--color-maroon);
     color: var(--color-maroon);
-  }
-
-  /* Key papers (static literature) */
-  .literature-ref-section {
-    margin-top: 3rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--color-border);
-  }
-  .literature-ref-title {
-    font-family: var(--font-serif);
-    font-size: 1.35rem;
-    color: var(--color-maroon);
-    margin: 0 0 0.5rem 0;
-  }
-  .literature-ref-desc {
-    color: var(--color-ink-muted);
-    margin-bottom: 1.5rem;
-    font-size: 0.95rem;
-  }
-  .literature-list {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-  }
-  .paper-card {
-    padding: 2rem;
-    background: white;
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-  }
-  .paper-card h3 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-top: 0;
-  }
-  .paper-meta {
-    margin: 0.5rem 0;
-    font-size: 0.9rem;
-  }
-  .paper-meta a {
-    margin-right: 1rem;
-  }
-  .paper-section {
-    margin-top: 1rem;
-  }
-  .paper-section h4 {
-    font-size: 1rem;
-    margin-bottom: 0.35rem;
-  }
-  .paper-section.highlight {
-    padding: 1rem;
-    background: var(--color-bg-alt);
-    border-radius: 6px;
-  }
 </style>

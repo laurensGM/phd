@@ -154,7 +154,7 @@ export default function PapersPage() {
   const [papers, setPapers] = useState<SavedPaper[]>([]);
   const [search, setSearch] = useState('');
   const [tagFilter, setTagFilter] = useState<string>('');
-  const [showForm, setShowForm] = useState(true);
+  const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     url: '',
     motivation: '',
