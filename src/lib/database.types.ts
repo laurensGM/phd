@@ -34,12 +34,12 @@ export interface Database {
         Row: {
           id: string;
           url: string;
+          secondary_url: string | null;
           motivation: string | null;
           tags: string[];
           title: string | null;
           authors: string | null;
           year: string | null;
-          path: string | null;
           citations: number | null;
           status: string;
           golden: boolean;
@@ -48,12 +48,12 @@ export interface Database {
         Insert: {
           id?: string;
           url: string;
+          secondary_url?: string | null;
           motivation?: string | null;
           tags?: string[];
           title?: string | null;
           authors?: string | null;
           year?: string | null;
-          path?: string | null;
           citations?: number | null;
           status?: string;
           golden?: boolean;
@@ -61,12 +61,12 @@ export interface Database {
         };
         Update: {
           url?: string;
+          secondary_url?: string | null;
           motivation?: string | null;
           tags?: string[];
           title?: string | null;
           authors?: string | null;
           year?: string | null;
-          path?: string | null;
           citations?: number | null;
           status?: string;
           golden?: boolean;

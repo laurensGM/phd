@@ -15,12 +15,12 @@ type PaperStatusId = (typeof PAPER_STATUSES)[number]['id'];
 interface SavedPaper {
   id: string;
   url: string;
+  secondary_url: string | null;
   motivation: string | null;
   tags: string[];
   title: string | null;
   authors: string | null;
   year: string | null;
-  path: string | null;
   citations: number | null;
   status: string;
   golden: boolean;
@@ -97,13 +97,6 @@ async function fetchMetadataFromUrl(url: string): Promise<{ title: string; autho
   return null;
 }
 
-/** Build file:// URL from local path (for opening file on click) */
-function pathToFileUrl(path: string): string {
-  const normalized = path.trim().replace(/\\/g, '/');
-  if (normalized.startsWith('file://')) return normalized;
-  return 'file://' + (normalized.startsWith('/') ? normalized : '/' + normalized);
-}
-
 const TAG_OPTIONS = [
   'method',
   'theory',
@@ -117,15 +110,20 @@ const TAG_OPTIONS = [
   'ICT4D',
 ];
 
+/** Max papers to fetch from DB; keeps initial load fast with large libraries */
+const FETCH_LIMIT = 100;
+/** Papers per page in table view; fewer DOM nodes = snappier scrolling */
+const TABLE_PAGE_SIZE = 25;
+
 function mapRow(row: {
   id: string;
   url: string;
+  secondary_url?: string | null;
   motivation: string | null;
   tags: string[] | null;
   title?: string | null;
   authors?: string | null;
   year?: string | null;
-  path?: string | null;
   citations?: number | null;
   status?: string | null;
   golden?: boolean | null;
@@ -135,12 +133,12 @@ function mapRow(row: {
   return {
     id: row.id,
     url: row.url,
+    secondary_url: row.secondary_url ?? null,
     motivation: row.motivation ?? null,
     tags: row.tags ?? [],
     title: row.title ?? null,
     authors: row.authors ?? null,
     year: row.year ?? null,
-    path: row.path ?? null,
     citations: (() => {
       const c = row.citations;
       if (c === null || c === undefined) return null;
@@ -161,12 +159,12 @@ export default function PapersPage() {
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     url: '',
+    secondary_url: '',
     motivation: '',
     tags: [] as string[],
     title: '',
     authors: '',
     year: '',
-    path: '',
     citations: '' as string,
     status: 'Not read' as PaperStatusId,
     golden: false,
@@ -178,12 +176,12 @@ export default function PapersPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState({
     url: '',
+    secondary_url: '',
     title: '',
     authors: '',
     year: '',
     motivation: '',
     tags: [] as string[],
-    path: '',
     citations: '' as string,
     status: 'Not read' as PaperStatusId,
     golden: false,
@@ -196,6 +194,7 @@ export default function PapersPage() {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [showSort, setShowSort] = useState(false);
   const [goldenOnly, setGoldenOnly] = useState(false);
+  const [tablePage, setTablePage] = useState(1);
 
   const fetchPapers = useCallback(async () => {
     if (!supabase) return;
@@ -204,7 +203,8 @@ export default function PapersPage() {
     const { data, error: fetchError } = await supabase
       .from('saved_papers')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .limit(FETCH_LIMIT);
     if (fetchError) {
       setError(fetchError.message);
       setPapers([]);
@@ -262,6 +262,15 @@ export default function PapersPage() {
     return sorted;
   }, [papers, search, tagFilter, goldenOnly, sortField, sortDirection]);
 
+  const totalFiltered = filteredPapers.length;
+  const totalPages = Math.max(1, Math.ceil(totalFiltered / TABLE_PAGE_SIZE));
+  const pageStart = (tablePage - 1) * TABLE_PAGE_SIZE;
+  const papersOnPage = filteredPapers.slice(pageStart, pageStart + TABLE_PAGE_SIZE);
+
+  useEffect(() => {
+    if (tablePage > totalPages) setTablePage(1);
+  }, [tablePage, totalPages]);
+
   const handleFetchMetadata = async () => {
     const url = formData.url.trim();
     if (!url) {
@@ -291,12 +300,12 @@ export default function PapersPage() {
     const status = PAPER_STATUSES.some((s) => s.id === paper.status) ? (paper.status as PaperStatusId) : 'Not read';
     setEditForm({
       url: paper.url,
+      secondary_url: paper.secondary_url ?? '',
       title: paper.title ?? '',
       authors: paper.authors ?? '',
       year: paper.year ?? '',
       motivation: paper.motivation ?? '',
       tags: paper.tags ?? [],
-      path: paper.path ?? '',
       citations: paper.citations != null ? String(paper.citations) : '',
       status,
       golden: paper.golden ?? false,
@@ -325,18 +334,18 @@ export default function PapersPage() {
       .from('saved_papers')
       .update({
         url: editForm.url.trim(),
+        secondary_url: editForm.secondary_url.trim() || null,
         title: editForm.title.trim() || null,
         authors: editForm.authors.trim() || null,
         year: editForm.year.trim() || null,
         motivation: editForm.motivation.trim() || null,
         tags: editForm.tags,
-        path: editForm.path.trim() || null,
         citations: Number.isNaN(citationsNum) ? null : citationsNum,
         status: editForm.status,
         golden: editForm.golden,
       })
       .eq('id', editingId)
-      .select('id, url, motivation, tags, title, authors, year, path, citations, status, golden, created_at')
+      .select('id, url, motivation, tags, title, authors, year, citations, status, golden, created_at')
       .single();
     setSaving(false);
     if (updateError) {
@@ -423,23 +432,23 @@ export default function PapersPage() {
       .from('saved_papers')
       .insert({
         url: formData.url.trim(),
+        secondary_url: formData.secondary_url.trim() || null,
         motivation: formData.motivation.trim() || null,
         tags: formData.tags,
         title: formData.title.trim() || null,
         authors: formData.authors.trim() || null,
         year: formData.year.trim() || null,
-        path: formData.path.trim() || null,
         citations: Number.isNaN(citationsNum) ? null : citationsNum,
         status: formData.status,
         golden: formData.golden,
       })
-      .select('id, url, motivation, tags, title, authors, year, path, citations, status, golden, created_at')
+      .select('id, url, motivation, tags, title, authors, year, citations, status, golden, created_at')
       .single();
     if (insertError) {
       setError(insertError.message);
     } else if (insertData) {
       setPapers((prev) => [mapRow({ ...insertData, id: insertData.id }), ...prev]);
-      setFormData({ url: '', motivation: '', tags: [], title: '', authors: '', year: '', path: '', citations: '', status: 'Not read', golden: false });
+      setFormData({ url: '', motivation: '', tags: [], title: '', authors: '', year: '', citations: '', status: 'Not read', golden: false });
       setShowForm(false);
     }
     setSaving(false);
@@ -514,6 +523,18 @@ export default function PapersPage() {
               <span className="papers-field-hint">Paste a DOI or arXiv URL, then click to auto-fill metadata.</span>
             </div>
 
+            <div className="papers-form-field">
+              <label htmlFor="paper-secondary-url">Secondary link (optional)</label>
+              <input
+                id="paper-secondary-url"
+                type="url"
+                value={formData.secondary_url}
+                onChange={(e) => setFormData((d) => ({ ...d, secondary_url: e.target.value }))}
+                placeholder="Backup link where the article is accessible"
+                className="papers-input"
+              />
+            </div>
+
             <div className="papers-form-field papers-form-field-row">
               <div>
                 <label htmlFor="paper-title">Title</label>
@@ -561,19 +582,6 @@ export default function PapersPage() {
                 placeholder="Fetched automatically or enter manually"
                 className="papers-input"
               />
-            </div>
-
-            <div className="papers-form-field">
-              <label htmlFor="paper-path">Local file path (optional)</label>
-              <input
-                id="paper-path"
-                type="text"
-                value={formData.path}
-                onChange={(e) => setFormData((d) => ({ ...d, path: e.target.value }))}
-                placeholder="e.g. /Users/you/Documents/papers/paper.pdf"
-                className="papers-input"
-              />
-              <span className="papers-field-hint">Path on your machine; click it later to open the file.</span>
             </div>
 
             <div className="papers-form-field papers-form-field-motivation">
@@ -752,8 +760,33 @@ export default function PapersPage() {
           </div>
         )}
 
+        {totalFiltered > TABLE_PAGE_SIZE && (
+          <div className="papers-pagination">
+            <span className="papers-pagination-info">
+              Page {tablePage} of {totalPages} ({totalFiltered} papers)
+            </span>
+            <div className="papers-pagination-buttons">
+              <button
+                type="button"
+                className="papers-pagination-btn"
+                onClick={() => setTablePage((p) => Math.max(1, p - 1))}
+                disabled={tablePage <= 1}
+              >
+                Previous
+              </button>
+              <button
+                type="button"
+                className="papers-pagination-btn"
+                onClick={() => setTablePage((p) => Math.min(totalPages, p + 1))}
+                disabled={tablePage >= totalPages}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
         <div className="papers-entries">
-          {filteredPapers.map((paper) => (
+          {papersOnPage.map((paper) => (
             <article
               key={paper.id}
               className={`papers-entry ${paper.golden ? 'papers-entry-golden' : ''}`}
@@ -767,6 +800,15 @@ export default function PapersPage() {
                       value={editForm.url}
                       onChange={(e) => setEditForm((f) => ({ ...f, url: e.target.value }))}
                       required
+                      className="papers-input"
+                    />
+                  </div>
+                  <div className="papers-form-field">
+                    <label>Secondary link (optional)</label>
+                    <input
+                      type="url"
+                      value={editForm.secondary_url}
+                      onChange={(e) => setEditForm((f) => ({ ...f, secondary_url: e.target.value }))}
                       className="papers-input"
                     />
                   </div>
@@ -807,16 +849,6 @@ export default function PapersPage() {
                       type="text"
                       value={editForm.authors}
                       onChange={(e) => setEditForm((f) => ({ ...f, authors: e.target.value }))}
-                      className="papers-input"
-                    />
-                  </div>
-                  <div className="papers-form-field">
-                    <label>Local file path (optional)</label>
-                    <input
-                      type="text"
-                      value={editForm.path}
-                      onChange={(e) => setEditForm((f) => ({ ...f, path: e.target.value }))}
-                      placeholder="e.g. /Users/you/Documents/papers/paper.pdf"
                       className="papers-input"
                     />
                   </div>
@@ -924,6 +956,13 @@ export default function PapersPage() {
                       {paper.title || paper.url}
                     </a>
                   </h4>
+                  {paper.secondary_url && (
+                    <p className="papers-entry-secondary-link">
+                      <a href={paper.secondary_url} target="_blank" rel="noopener noreferrer">
+                        Secondary link
+                      </a>
+                    </p>
+                  )}
                   {paper.authors && (
                     <p className="papers-entry-authors">{paper.authors}</p>
                   )}
@@ -934,20 +973,6 @@ export default function PapersPage() {
                   )}
                   {paper.motivation && (
                     <p className="papers-entry-motivation">{paper.motivation}</p>
-                  )}
-                  {paper.path && (
-                    <p className="papers-entry-path">
-                      Local file:{' '}
-                      <a
-                        href={pathToFileUrl(paper.path)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="papers-path-link"
-                        title="Open local file (works when app is run locally)"
-                      >
-                        {paper.path}
-                      </a>
-                    </p>
                   )}
                 </>
               )}
