@@ -7,6 +7,7 @@ const PAPER_STATUSES = [
   { id: '2nd reading', label: '2nd reading', description: 'Also dove deeper into method, results and discussion.', color: 'status-2nd' },
   { id: 'Read', label: 'Read', description: 'Read all relevant sections.', color: 'status-read' },
   { id: 'Completed', label: 'Completed', description: 'Copied snippets from the article and attached them for later review.', color: 'status-completed' },
+  { id: 'Archive', label: 'Archive', description: 'Paper is archived but still kept for reference.', color: 'status-archive' },
 ] as const;
 
 type PaperStatusId = (typeof PAPER_STATUSES)[number]['id'];
@@ -880,11 +881,18 @@ export default function PapersPage() {
                         >
                           <h4 className="papers-board-card-title">
                             <a href={paper.url} target="_blank" rel="noopener noreferrer">
-                              {paper.title || paper.url}
+                              {(paper.title || paper.url).length > 30
+                                ? `${(paper.title || paper.url).slice(0, 30)}…`
+                                : (paper.title || paper.url)}
                             </a>
                           </h4>
                           {paper.authors && <p className="papers-board-card-authors">{paper.authors}</p>}
-                          <span className={`papers-status-tag ${getStatusColorClass(paper.status)}`}>{paper.status}</span>
+                          <div className="papers-board-card-meta-row">
+                            <span className={`papers-status-tag ${getStatusColorClass(paper.status)}`}>{paper.status}</span>
+                            {paper.year && (
+                              <span className="papers-board-card-year">{paper.year}</span>
+                            )}
+                          </div>
                           <div className="papers-board-card-actions">
                             <button type="button" className="papers-board-card-action" onClick={() => startEdit(paper)}>
                               Edit
