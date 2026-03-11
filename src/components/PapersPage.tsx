@@ -637,6 +637,7 @@ export default function PapersPage() {
           )}
         </h3>
         {viewMode === 'table' && (
+          <>
         <div className="papers-filters">
           <input
             type="search"
@@ -853,6 +854,7 @@ export default function PapersPage() {
             </p>
           )}
         </div>
+          </>
         )}
 
         {viewMode === 'board' && (
