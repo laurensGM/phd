@@ -151,6 +151,8 @@ function mapRow(row: {
   };
 }
 
+const base = (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) || '';
+
 export default function PapersPage() {
   const [papers, setPapers] = useState<SavedPaper[]>([]);
   const [search, setSearch] = useState('');
@@ -952,9 +954,14 @@ export default function PapersPage() {
                     </div>
                   </div>
                   <h4 className="papers-entry-title">
-                    <a href={paper.url} target="_blank" rel="noopener noreferrer">
+                    <a href={`${base}papers/detail/?id=${paper.id}`}>
                       {paper.title || paper.url}
                     </a>
+                    <span className="papers-entry-title-actions">
+                      <a href={paper.url} target="_blank" rel="noopener noreferrer" className="papers-entry-open-link" title="Open paper">
+                        Open paper
+                      </a>
+                    </span>
                   </h4>
                   {paper.secondary_url && (
                     <p className="papers-entry-secondary-link">
@@ -1014,10 +1021,13 @@ export default function PapersPage() {
                           onDragStart={(e) => handleBoardDragStart(e, paper.id)}
                         >
                           <h4 className="papers-board-card-title">
-                            <a href={paper.url} target="_blank" rel="noopener noreferrer">
+                            <a href={`${base}papers/detail/?id=${paper.id}`}>
                               {(paper.title || paper.url).length > 30
                                 ? `${(paper.title || paper.url).slice(0, 30)}…`
                                 : (paper.title || paper.url)}
+                            </a>
+                            <a href={paper.url} target="_blank" rel="noopener noreferrer" className="papers-board-card-open" title="Open paper">
+                              Open
                             </a>
                           </h4>
                           {paper.secondary_url && (

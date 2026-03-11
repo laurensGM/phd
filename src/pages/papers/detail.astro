@@ -1,0 +1,165 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PaperDetailPage from '../../components/PaperDetailPage';
+---
+
+<BaseLayout title="Paper details" description="View paper metadata and generate APA 7 reference">
+  <PaperDetailPage client:load />
+</BaseLayout>
+
+<style>
+  :global(.paper-detail-page) {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 1rem 3rem;
+  }
+  :global(.paper-detail-back) {
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    color: var(--color-maroon);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  :global(.paper-detail-back:hover) {
+    text-decoration: underline;
+  }
+  :global(.paper-detail-loading),
+  :global(.paper-detail-error) {
+    color: var(--color-ink-muted);
+    margin: 2rem 0;
+  }
+  :global(.paper-detail-error) {
+    color: var(--color-error, #b91c1c);
+  }
+  :global(.paper-detail-header) {
+    margin-bottom: 2rem;
+  }
+  :global(.paper-detail-title) {
+    font-family: var(--font-serif);
+    font-size: 1.75rem;
+    line-height: 1.3;
+    margin: 0 0 0.5rem 0;
+    color: var(--color-ink);
+  }
+  :global(.paper-detail-authors) {
+    margin: 0 0 0.75rem 0;
+    color: var(--color-ink-muted);
+    font-size: 1rem;
+  }
+  :global(.paper-detail-meta-row) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    align-items: center;
+  }
+  :global(.paper-detail-year) {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    background: var(--color-bg-alt);
+    border-radius: 6px;
+    font-size: 0.9rem;
+  }
+  :global(.paper-detail-status) {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+  }
+  :global(.paper-detail-status-not-read) { background: #e2e8f0; color: #475569; }
+  :global(.paper-detail-status-1st-reading) { background: #dbeafe; color: #1e40af; }
+  :global(.paper-detail-status-2nd-reading) { background: #e0e7ff; color: #3730a3; }
+  :global(.paper-detail-status-read) { background: #fef9c3; color: #854d0e; }
+  :global(.paper-detail-status-completed) { background: #dcfce7; color: #166534; }
+  :global(.paper-detail-status-archive) { background: #f3e8ff; color: #6b21a8; }
+  :global(.paper-detail-golden) {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    color: #92400e;
+    border-radius: 6px;
+    font-size: 0.85rem;
+  }
+  :global(.paper-detail-section) {
+    margin-bottom: 1.75rem;
+  }
+  :global(.paper-detail-section-title) {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-ink);
+    margin: 0 0 0.5rem 0;
+  }
+  :global(.paper-detail-link) {
+    color: var(--color-maroon);
+    text-decoration: none;
+  }
+  :global(.paper-detail-link:hover) {
+    text-decoration: underline;
+  }
+  :global(.paper-detail-motivation) {
+    margin: 0;
+    color: var(--color-ink-muted);
+    line-height: 1.6;
+  }
+  :global(.paper-detail-tags) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  :global(.paper-detail-tag) {
+    padding: 0.25rem 0.6rem;
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    font-size: 0.875rem;
+  }
+  :global(.paper-detail-citations) {
+    margin: 0;
+    font-size: 1rem;
+  }
+  :global(.paper-detail-apa-section) {
+    margin-top: 2rem;
+    padding: 1.25rem;
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+  }
+  :global(.paper-detail-apa-hint) {
+    margin: 0 0 0.75rem 0;
+    font-size: 0.9rem;
+    color: var(--color-ink-muted);
+  }
+  :global(.paper-detail-apa-box) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  :global(.paper-detail-apa-output) {
+    font-family: var(--font-serif);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    padding: 1rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  :global(.paper-detail-apa-copy) {
+    align-self: flex-start;
+    padding: 0.5rem 1rem;
+    background: var(--color-maroon);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  :global(.paper-detail-apa-copy:hover) {
+    background: var(--color-maroon-dark);
+  }
+  :global(.paper-detail-created) {
+    margin-top: 2rem;
+    font-size: 0.875rem;
+    color: var(--color-ink-muted);
+  }
+</style>
