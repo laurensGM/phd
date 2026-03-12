@@ -24,6 +24,7 @@ interface Snippet {
   content: string;
   notes: string | null;
   tags: string[];
+  page_number: number | null;
   created_at: string;
 }
 
@@ -127,6 +128,7 @@ export default function PaperDetailPage() {
    const [newSnippetContent, setNewSnippetContent] = useState('');
    const [newSnippetConstructId, setNewSnippetConstructId] = useState('');
    const [newSnippetModelId, setNewSnippetModelId] = useState('');
+   const [newSnippetPageNumber, setNewSnippetPageNumber] = useState<string>('');
 
   const getIdFromUrl = useCallback((): string | null => {
     if (typeof window === 'undefined') return null;
@@ -209,6 +211,7 @@ export default function PaperDetailPage() {
     if (!supabase || !isSupabaseConfigured()) return;
     setSnippetsLoading(true);
     setSnippetError(null);
+    const pageNum = newSnippetPageNumber.trim() ? parseInt(newSnippetPageNumber, 10) : null;
     const payload: Omit<Snippet, 'id' | 'created_at'> & { id?: string; created_at?: string } = {
       paper_id: paper.id,
       construct_id: newSnippetConstructId.trim() || null,
@@ -216,6 +219,7 @@ export default function PaperDetailPage() {
       content: newSnippetContent.trim(),
       notes: null,
       tags: [],
+      page_number: pageNum != null && !Number.isNaN(pageNum) ? pageNum : null,
     };
     const { data, error: insertError } = await supabase
       .from('snippets')
@@ -229,9 +233,10 @@ export default function PaperDetailPage() {
       setNewSnippetContent('');
       setNewSnippetConstructId('');
       setNewSnippetModelId('');
+      setNewSnippetPageNumber('');
     }
     setSnippetsLoading(false);
-  }, [paper, newSnippetContent, newSnippetConstructId, newSnippetModelId]);
+  }, [paper, newSnippetContent, newSnippetConstructId, newSnippetModelId, newSnippetPageNumber]);
 
   const handleDeleteSnippet = useCallback(
     async (id: string) => {
@@ -367,6 +372,17 @@ export default function PaperDetailPage() {
                 placeholder="e.g. tam"
               />
             </label>
+            <label className="paper-detail-snippet-label-inline">
+              Page number (optional)
+              <input
+                type="number"
+                min={1}
+                className="paper-detail-snippet-input-inline paper-detail-snippet-page-input"
+                value={newSnippetPageNumber}
+                onChange={(e) => setNewSnippetPageNumber(e.target.value)}
+                placeholder="e.g. 12"
+              />
+            </label>
           </div>
           <button
             type="button"
@@ -389,7 +405,12 @@ export default function PaperDetailPage() {
           {snippets.map((s) => (
             <article key={s.id} className="paper-detail-snippet-card">
               <p className="paper-detail-snippet-content">{s.content}</p>
-              {(s.construct_id || s.model_id) && (
+              {(s.page_number != null || s.construct_id || s.model_id) && (
+                <div className="paper-detail-snippet-meta">
+                  {s.page_number != null && (
+                    <span className="paper-detail-snippet-page">Page {s.page_number}</span>
+                  )}
+                  {(s.construct_id || s.model_id) && (
                 <div className="paper-detail-snippet-links">
                   {s.construct_id && (
                     <a
@@ -406,6 +427,8 @@ export default function PaperDetailPage() {
                     >
                       Model: {s.model_id}
                     </a>
+                  )}
+                </div>
                   )}
                 </div>
               )}
