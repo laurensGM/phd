@@ -74,6 +74,14 @@ import SnippetsPage from '../../components/SnippetsPage';
   :global(.snippets-search-label .snippets-input) {
     width: 100%;
   }
+  :global(.snippets-input.snippets-construct-select) {
+    border-color: #38bdf8;
+    background: #f0f9ff;
+  }
+  :global(.snippets-input.snippets-model-select) {
+    border-color: #4ade80;
+    background: #ecfdf3;
+  }
   :global(.snippets-clear-btn) {
     align-self: flex-end;
     padding: 0.4rem 0.9rem;
@@ -257,6 +265,16 @@ import SnippetsPage from '../../components/SnippetsPage';
   }
   :global(.snippets-chip:hover) {
     text-decoration: underline;
+  }
+  :global(.snippets-chip-construct) {
+    background: #e0f2fe;
+    border-color: #38bdf8;
+    color: #0369a1;
+  }
+  :global(.snippets-chip-model) {
+    background: #e5f9e7;
+    border-color: #4ade80;
+    color: #166534;
   }
   :global(.snippets-card-content) {
     font-size: 0.9rem;

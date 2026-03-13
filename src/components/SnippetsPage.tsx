@@ -363,32 +363,11 @@ export default function SnippetsPage() {
           </div>
           <div className="snippets-filter-row">
             <label>
-              Construct(s)
-              <select
-                multiple
-                className="snippets-input"
-                value={filterConstructIds}
-                onChange={(e) =>
-                  setFilterConstructIds(
-                    Array.from(e.target.selectedOptions).map((opt) => opt.value)
-                  )
-                }
-              >
-                {constructOptions.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-          <div className="snippets-filter-row">
-            <label>
               Model(s)
               <select
                 multiple
                 size={modelOptions.length}
-                className="snippets-input"
+                className="snippets-input snippets-model-select"
                 value={filterModelIds}
                 onChange={(e) =>
                   setFilterModelIds(
@@ -399,6 +378,28 @@ export default function SnippetsPage() {
                 {modelOptions.map((m) => (
                   <option key={m.id} value={m.id}>
                     {m.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <div className="snippets-filter-row">
+            <label>
+              Construct(s)
+              <select
+                multiple
+                size={Math.max(4, Math.min(8, constructOptions.length))}
+                className="snippets-input snippets-construct-select"
+                value={filterConstructIds}
+                onChange={(e) =>
+                  setFilterConstructIds(
+                    Array.from(e.target.selectedOptions).map((opt) => opt.value)
+                  )
+                }
+              >
+                {constructOptions.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
                   </option>
                 ))}
               </select>
@@ -600,17 +601,18 @@ export default function SnippetsPage() {
                     {s.construct_id && (
                       <a
                         href={`${base}constructs/${s.construct_id}/`}
-                        className="snippets-chip"
+                        className="snippets-chip snippets-chip-construct"
                       >
-                        Construct: {s.construct_id}
+                        {constructOptions.find((c) => c.id === s.construct_id)?.name ||
+                          s.construct_id}
                       </a>
                     )}
                     {s.model_id && (
                       <a
                         href={`${base}models/${s.model_id}/`}
-                        className="snippets-chip"
+                        className="snippets-chip snippets-chip-model"
                       >
-                        Model: {s.model_id}
+                        {modelOptions.find((m) => m.id === s.model_id)?.name || s.model_id}
                       </a>
                     )}
                   </div>
