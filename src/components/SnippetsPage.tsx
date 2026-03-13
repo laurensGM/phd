@@ -598,23 +598,52 @@ export default function SnippetsPage() {
                     </h3>
                   </div>
                   <div className="snippets-card-links">
-                    {s.construct_id && (
-                      <a
-                        href={`${base}constructs/${s.construct_id}/`}
-                        className="snippets-chip snippets-chip-construct"
-                      >
-                        {constructOptions.find((c) => c.id === s.construct_id)?.name ||
-                          s.construct_id}
-                      </a>
-                    )}
-                    {s.model_id && (
-                      <a
-                        href={`${base}models/${s.model_id}/`}
-                        className="snippets-chip snippets-chip-model"
-                      >
-                        {modelOptions.find((m) => m.id === s.model_id)?.name || s.model_id}
-                      </a>
-                    )}
+                    {(() => {
+                      const rawConstruct = (s as any).construct_ids ?? (s as any).construct_id;
+                      const constructIds: string[] = Array.isArray(rawConstruct)
+                        ? rawConstruct
+                        : rawConstruct
+                        ? String(rawConstruct)
+                            .split(',')
+                            .map((id: string) => id.trim())
+                            .filter(Boolean)
+                        : [];
+                      return constructIds.map((id) => {
+                        const c = constructOptions.find((opt) => opt.id === id);
+                        return (
+                          <a
+                            key={id}
+                            href={`${base}constructs/${id}/`}
+                            className="snippets-chip snippets-chip-construct"
+                          >
+                            {c?.name || id}
+                          </a>
+                        );
+                      });
+                    })()}
+                    {(() => {
+                      const rawModel = (s as any).model_ids ?? (s as any).model_id;
+                      const modelIds: string[] = Array.isArray(rawModel)
+                        ? rawModel
+                        : rawModel
+                        ? String(rawModel)
+                            .split(',')
+                            .map((id: string) => id.trim())
+                            .filter(Boolean)
+                        : [];
+                      return modelIds.map((id) => {
+                        const m = modelOptions.find((opt) => opt.id === id);
+                        return (
+                          <a
+                            key={id}
+                            href={`${base}models/${id}/`}
+                            className="snippets-chip snippets-chip-model"
+                          >
+                            {m?.name || id}
+                          </a>
+                        );
+                      });
+                    })()}
                   </div>
                 </header>
                 {editingId === s.id ? (
