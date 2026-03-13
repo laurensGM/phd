@@ -53,6 +53,12 @@ export default function SnippetsPage() {
   const [newTagsInput, setNewTagsInput] = useState('');
 
   const [allTags, setAllTags] = useState<string[]>([]);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editContent, setEditContent] = useState('');
+  const [editConstructId, setEditConstructId] = useState('');
+  const [editModelId, setEditModelId] = useState('');
+  const [editPageNumber, setEditPageNumber] = useState<string>('');
+  const [editTagsInput, setEditTagsInput] = useState('');
 
   useEffect(() => {
     if (!isSupabaseConfigured()) {
@@ -213,6 +219,77 @@ export default function SnippetsPage() {
       setSnippets((prev) => prev.filter((s) => s.id !== id));
     }
   }, []);
+
+  const startEdit = useCallback((snippet: Snippet) => {
+    setEditingId(snippet.id);
+    setEditContent(snippet.content);
+    setEditConstructId(snippet.construct_id ?? '');
+    setEditModelId(snippet.model_id ?? '');
+    setEditPageNumber(snippet.page_number != null ? String(snippet.page_number) : '');
+    setEditTagsInput(Array.isArray(snippet.tags) ? snippet.tags.join(', ') : '');
+  }, []);
+
+  const cancelEdit = useCallback(() => {
+    setEditingId(null);
+    setEditContent('');
+    setEditConstructId('');
+    setEditModelId('');
+    setEditPageNumber('');
+    setEditTagsInput('');
+  }, []);
+
+  const handleSaveEdit = useCallback(
+    async (snippet: Snippet) => {
+      if (!supabase || !isSupabaseConfigured()) return;
+      if (!editContent.trim()) return;
+      const pageNum = editPageNumber.trim() ? parseInt(editPageNumber, 10) : null;
+      const rawTags = editTagsInput
+        .split(',')
+        .map((t) => t.trim())
+        .filter((t) => t.length > 0);
+      const existingByLower = allTags.reduce<Record<string, string>>((acc, t) => {
+        acc[t.toLowerCase()] = t;
+        return acc;
+      }, {});
+      const tags: string[] = [];
+      for (const t of rawTags) {
+        const key = t.toLowerCase();
+        const canonical = existingByLower[key] ?? t;
+        if (!tags.some((x) => x.toLowerCase() === canonical.toLowerCase())) {
+          tags.push(canonical);
+        }
+      }
+      const { data, error: updateErr } = await supabase
+        .from('snippets')
+        .update({
+          content: editContent.trim(),
+          construct_id: editConstructId || null,
+          model_id: editModelId || null,
+          page_number: pageNum != null && !Number.isNaN(pageNum) ? pageNum : null,
+          tags,
+        })
+        .eq('id', snippet.id)
+        .select('*')
+        .single();
+      if (updateErr) {
+        setError(updateErr.message);
+      } else if (data) {
+        const updated = data as Snippet;
+        setSnippets((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
+        if (Array.isArray(updated.tags)) {
+          setAllTags((prev) => {
+            const set = new Set(prev);
+            for (const t of updated.tags) {
+              if (t && typeof t === 'string') set.add(t);
+            }
+            return Array.from(set);
+          });
+        }
+        cancelEdit();
+      }
+    },
+    [editContent, editConstructId, editModelId, editPageNumber, editTagsInput, allTags, cancelEdit]
+  );
 
   if (loading) {
     return (
@@ -440,7 +517,7 @@ export default function SnippetsPage() {
                     ) : (
                       <span className="snippets-card-paper">Unknown paper</span>
                     )}
-                    {s.page_number != null && (
+                    {s.page_number != null && editingId !== s.id && (
                       <span className="snippets-card-page">Page {s.page_number}</span>
                     )}
                   </div>
@@ -463,28 +540,128 @@ export default function SnippetsPage() {
                     )}
                   </div>
                 </header>
-                <p className="snippets-card-content">{s.content}</p>
-                {Array.isArray(s.tags) && s.tags.length > 0 && (
-                  <div className="snippets-card-tags">
-                    {s.tags.map((tag) => (
-                      <span key={tag} className="snippets-tag">
-                        {tag}
+                {editingId === s.id ? (
+                  <div className="snippets-edit-form">
+                    <label className="snippets-label">
+                      Snippet text
+                      <textarea
+                        className="snippets-textarea"
+                        value={editContent}
+                        onChange={(e) => setEditContent(e.target.value)}
+                        rows={3}
+                      />
+                    </label>
+                    <div className="snippets-form-row">
+                      <label className="snippets-label-inline">
+                        Construct
+                        <select
+                          className="snippets-input-inline"
+                          value={editConstructId}
+                          onChange={(e) => setEditConstructId(e.target.value)}
+                        >
+                          <option value="">None</option>
+                          {constructOptions.map((c) => (
+                            <option key={c.id} value={c.id}>
+                              {c.name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label className="snippets-label-inline">
+                        Model
+                        <select
+                          className="snippets-input-inline"
+                          value={editModelId}
+                          onChange={(e) => setEditModelId(e.target.value)}
+                        >
+                          <option value="">None</option>
+                          {modelOptions.map((m) => (
+                            <option key={m.id} value={m.id}>
+                              {m.name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label className="snippets-label-inline">
+                        Page
+                        <input
+                          type="number"
+                          min={1}
+                          className="snippets-input-inline snippets-input-page"
+                          value={editPageNumber}
+                          onChange={(e) => setEditPageNumber(e.target.value)}
+                          placeholder="e.g. 12"
+                        />
+                      </label>
+                      <label className="snippets-label-inline">
+                        Tags
+                        <input
+                          type="text"
+                          list="snippets-tags-list"
+                          className="snippets-input-inline"
+                          value={editTagsInput}
+                          onChange={(e) => setEditTagsInput(e.target.value)}
+                          placeholder="e.g. method, theory"
+                        />
+                      </label>
+                    </div>
+                    <div className="snippets-card-footer">
+                      <span className="snippets-card-date">
+                        {new Date(s.created_at).toLocaleDateString()}
                       </span>
-                    ))}
+                      <div className="snippets-card-actions">
+                        <button
+                          type="button"
+                          className="snippets-edit-save-btn"
+                          onClick={() => handleSaveEdit(s)}
+                        >
+                          Save
+                        </button>
+                        <button
+                          type="button"
+                          className="snippets-edit-cancel-btn"
+                          onClick={cancelEdit}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
                   </div>
+                ) : (
+                  <>
+                    <p className="snippets-card-content">{s.content}</p>
+                    {Array.isArray(s.tags) && s.tags.length > 0 && (
+                      <div className="snippets-card-tags">
+                        {s.tags.map((tag) => (
+                          <span key={tag} className="snippets-tag">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    <footer className="snippets-card-footer">
+                      <span className="snippets-card-date">
+                        {new Date(s.created_at).toLocaleDateString()}
+                      </span>
+                      <div className="snippets-card-actions">
+                        <button
+                          type="button"
+                          className="snippets-edit-btn"
+                          onClick={() => startEdit(s)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          className="snippets-delete-btn"
+                          onClick={() => handleDelete(s.id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </footer>
+                  </>
                 )}
-                <footer className="snippets-card-footer">
-                  <span className="snippets-card-date">
-                    {new Date(s.created_at).toLocaleDateString()}
-                  </span>
-                  <button
-                    type="button"
-                    className="snippets-delete-btn"
-                    onClick={() => handleDelete(s.id)}
-                  >
-                    Delete
-                  </button>
-                </footer>
               </article>
             );
           })}
