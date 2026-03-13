@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import constructsData from '../data/constructs.json';
+import modelsData from '../data/models.json';
 
 interface SavedPaper {
   id: string;
@@ -116,19 +118,31 @@ function buildAPA7Citation(paper: SavedPaper): string {
   return (authorPart + yearPart + titlePart + (end ? end : '')).trim().replace(/\s+\.$/, '.');
 }
 
+const constructOptions = (constructsData as any[]).map((c) => ({
+  id: c.id as string,
+  name: (c.name as string) || (c.id as string),
+}));
+
+const modelOptions = (modelsData as any[]).map((m) => ({
+  id: m.id as string,
+  name: (m.name as string) || (m.id as string),
+}));
+
 export default function PaperDetailPage() {
   const base = (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) || '';
   const [paper, setPaper] = useState<SavedPaper | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [copyFeedback, setCopyFeedback] = useState(false);
-   const [snippets, setSnippets] = useState<Snippet[]>([]);
-   const [snippetsLoading, setSnippetsLoading] = useState(false);
-   const [snippetError, setSnippetError] = useState<string | null>(null);
-   const [newSnippetContent, setNewSnippetContent] = useState('');
-   const [newSnippetConstructId, setNewSnippetConstructId] = useState('');
-   const [newSnippetModelId, setNewSnippetModelId] = useState('');
-   const [newSnippetPageNumber, setNewSnippetPageNumber] = useState<string>('');
+  const [snippets, setSnippets] = useState<Snippet[]>([]);
+  const [snippetsLoading, setSnippetsLoading] = useState(false);
+  const [snippetError, setSnippetError] = useState<string | null>(null);
+  const [newSnippetContent, setNewSnippetContent] = useState('');
+  const [newSnippetConstructId, setNewSnippetConstructId] = useState('');
+  const [newSnippetModelId, setNewSnippetModelId] = useState('');
+  const [newSnippetPageNumber, setNewSnippetPageNumber] = useState<string>('');
+  const [newSnippetTagsInput, setNewSnippetTagsInput] = useState('');
+  const [allSnippetTags, setAllSnippetTags] = useState<string[]>([]);
 
   const getIdFromUrl = useCallback((): string | null => {
     if (typeof window === 'undefined') return null;
@@ -178,7 +192,17 @@ export default function PaperDetailPage() {
             setSnippets([]);
           } else {
             setSnippetError(null);
-            setSnippets((snippetData ?? []) as Snippet[]);
+            const list = (snippetData ?? []) as Snippet[];
+            setSnippets(list);
+            const tagSet = new Set<string>();
+            for (const s of list) {
+              if (Array.isArray(s.tags)) {
+                for (const t of s.tags) {
+                  if (t && typeof t === 'string') tagSet.add(t);
+                }
+              }
+            }
+            setAllSnippetTags(Array.from(tagSet));
           }
           setSnippetsLoading(false);
         };
@@ -212,13 +236,29 @@ export default function PaperDetailPage() {
     setSnippetsLoading(true);
     setSnippetError(null);
     const pageNum = newSnippetPageNumber.trim() ? parseInt(newSnippetPageNumber, 10) : null;
+    const rawTags = newSnippetTagsInput
+      .split(',')
+      .map((t) => t.trim())
+      .filter((t) => t.length > 0);
+    const existingByLower = allSnippetTags.reduce<Record<string, string>>((acc, t) => {
+      acc[t.toLowerCase()] = t;
+      return acc;
+    }, {});
+    const snippetTags: string[] = [];
+    for (const t of rawTags) {
+      const key = t.toLowerCase();
+      const canonical = existingByLower[key] ?? t;
+      if (!snippetTags.some((x) => x.toLowerCase() === canonical.toLowerCase())) {
+        snippetTags.push(canonical);
+      }
+    }
     const payload: Omit<Snippet, 'id' | 'created_at'> & { id?: string; created_at?: string } = {
       paper_id: paper.id,
       construct_id: newSnippetConstructId.trim() || null,
       model_id: newSnippetModelId.trim() || null,
       content: newSnippetContent.trim(),
       notes: null,
-      tags: [],
+      tags: snippetTags,
       page_number: pageNum != null && !Number.isNaN(pageNum) ? pageNum : null,
     };
     const { data, error: insertError } = await supabase
@@ -229,14 +269,25 @@ export default function PaperDetailPage() {
     if (insertError) {
       setSnippetError(insertError.message);
     } else if (data) {
-      setSnippets((prev) => [data as Snippet, ...prev]);
+      const inserted = data as Snippet;
+      setSnippets((prev) => [inserted, ...prev]);
+      if (Array.isArray(inserted.tags)) {
+        setAllSnippetTags((prev) => {
+          const set = new Set(prev);
+          for (const t of inserted.tags) {
+            if (t && typeof t === 'string') set.add(t);
+          }
+          return Array.from(set);
+        });
+      }
       setNewSnippetContent('');
       setNewSnippetConstructId('');
       setNewSnippetModelId('');
       setNewSnippetPageNumber('');
+      setNewSnippetTagsInput('');
     }
     setSnippetsLoading(false);
-  }, [paper, newSnippetContent, newSnippetConstructId, newSnippetModelId, newSnippetPageNumber]);
+  }, [paper, newSnippetContent, newSnippetConstructId, newSnippetModelId, newSnippetPageNumber, newSnippetTagsInput, allSnippetTags]);
 
   const handleDeleteSnippet = useCallback(
     async (id: string) => {
@@ -353,24 +404,34 @@ export default function PaperDetailPage() {
           </label>
           <div className="paper-detail-snippet-meta-row">
             <label className="paper-detail-snippet-label-inline">
-              Construct ID (optional)
-              <input
-                type="text"
+              Construct (optional)
+              <select
                 className="paper-detail-snippet-input-inline"
                 value={newSnippetConstructId}
                 onChange={(e) => setNewSnippetConstructId(e.target.value)}
-                placeholder="e.g. perceived-usefulness"
-              />
+              >
+                <option value="">None</option>
+                {constructOptions.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
             </label>
             <label className="paper-detail-snippet-label-inline">
-              Model ID (optional)
-              <input
-                type="text"
+              Model (optional)
+              <select
                 className="paper-detail-snippet-input-inline"
                 value={newSnippetModelId}
                 onChange={(e) => setNewSnippetModelId(e.target.value)}
-                placeholder="e.g. tam"
-              />
+              >
+                <option value="">None</option>
+                {modelOptions.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.name}
+                  </option>
+                ))}
+              </select>
             </label>
             <label className="paper-detail-snippet-label-inline">
               Page number (optional)
@@ -383,7 +444,23 @@ export default function PaperDetailPage() {
                 placeholder="e.g. 12"
               />
             </label>
+            <label className="paper-detail-snippet-label-inline">
+              Tags (optional)
+              <input
+                type="text"
+                list="snippet-tags-list"
+                className="paper-detail-snippet-input-inline paper-detail-snippet-tags-input"
+                value={newSnippetTagsInput}
+                onChange={(e) => setNewSnippetTagsInput(e.target.value)}
+                placeholder="e.g. method, theory"
+              />
+            </label>
           </div>
+          <datalist id="snippet-tags-list">
+            {allSnippetTags.map((t) => (
+              <option key={t} value={t} />
+            ))}
+          </datalist>
           <button
             type="button"
             className="paper-detail-snippet-add"
@@ -430,6 +507,15 @@ export default function PaperDetailPage() {
                   )}
                 </div>
                   )}
+                </div>
+              )}
+              {Array.isArray(s.tags) && s.tags.length > 0 && (
+                <div className="paper-detail-snippet-tags">
+                  {s.tags.map((tag) => (
+                    <span key={tag} className="paper-detail-snippet-tag">
+                      {tag}
+                    </span>
+                  ))}
                 </div>
               )}
               <div className="paper-detail-snippet-footer">

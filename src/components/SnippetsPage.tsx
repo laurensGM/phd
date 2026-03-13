@@ -1,0 +1,496 @@
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import constructsData from '../data/constructs.json';
+import modelsData from '../data/models.json';
+
+interface Snippet {
+  id: string;
+  paper_id: string;
+  construct_id: string | null;
+  model_id: string | null;
+  content: string;
+  notes: string | null;
+  tags: string[];
+  page_number: number | null;
+  created_at: string;
+}
+
+interface PaperSummary {
+  id: string;
+  title: string | null;
+  url: string;
+}
+
+const constructOptions = (constructsData as any[]).map((c) => ({
+  id: c.id as string,
+  name: (c.name as string) || (c.id as string),
+}));
+
+const modelOptions = (modelsData as any[]).map((m) => ({
+  id: m.id as string,
+  name: (m.name as string) || (m.id as string),
+}));
+
+export default function SnippetsPage() {
+  const base = (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) || '';
+  const [snippets, setSnippets] = useState<Snippet[]>([]);
+  const [papers, setPapers] = useState<PaperSummary[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const [filterPaperId, setFilterPaperId] = useState('');
+  const [filterConstructId, setFilterConstructId] = useState('');
+  const [filterModelId, setFilterModelId] = useState('');
+  const [filterTag, setFilterTag] = useState('');
+  const [search, setSearch] = useState('');
+
+  const [newContent, setNewContent] = useState('');
+  const [newPaperId, setNewPaperId] = useState('');
+  const [newConstructId, setNewConstructId] = useState('');
+  const [newModelId, setNewModelId] = useState('');
+  const [newPageNumber, setNewPageNumber] = useState<string>('');
+  const [newTagsInput, setNewTagsInput] = useState('');
+
+  const [allTags, setAllTags] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!isSupabaseConfigured()) {
+      setLoading(false);
+      setError('Supabase is not configured. Set PUBLIC_SUPABASE_URL and PUBLIC_SUPABASE_ANON_KEY.');
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      setError(null);
+      const [{ data: snippetData, error: snippetErr }, { data: papersData, error: papersErr }] =
+        await Promise.all([
+          supabase!
+            .from('snippets')
+            .select('*')
+            .order('created_at', { ascending: false }),
+          supabase!.from('saved_papers').select('id,title,url'),
+        ]);
+      if (cancelled) return;
+      if (snippetErr) {
+        setError(snippetErr.message);
+        setSnippets([]);
+      } else {
+        const list = (snippetData ?? []) as Snippet[];
+        setSnippets(list);
+        const tagSet = new Set<string>();
+        for (const s of list) {
+          if (Array.isArray(s.tags)) {
+            for (const t of s.tags) {
+              if (t && typeof t === 'string') tagSet.add(t);
+            }
+          }
+        }
+        setAllTags(Array.from(tagSet));
+      }
+      if (papersErr) {
+        // keep error but still show snippets
+        setError((prev) => prev ?? papersErr.message);
+        setPapers([]);
+      } else {
+        setPapers(
+          (papersData ?? []).map((p: any) => ({
+            id: p.id as string,
+            title: (p.title as string | null) ?? null,
+            url: p.url as string,
+          }))
+        );
+      }
+      setLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const paperById = useMemo(() => {
+    const map = new Map<string, PaperSummary>();
+    for (const p of papers) map.set(p.id, p);
+    return map;
+  }, [papers]);
+
+  const filteredSnippets = useMemo(() => {
+    return snippets.filter((s) => {
+      if (filterPaperId && s.paper_id !== filterPaperId) return false;
+      if (filterConstructId && s.construct_id !== filterConstructId) return false;
+      if (filterModelId && s.model_id !== filterModelId) return false;
+      if (filterTag) {
+        const tags = Array.isArray(s.tags) ? s.tags : [];
+        if (!tags.some((t) => t.toLowerCase() === filterTag.toLowerCase())) return false;
+      }
+      if (search) {
+        const q = search.toLowerCase();
+        const inContent = s.content.toLowerCase().includes(q);
+        const tags = Array.isArray(s.tags) ? s.tags.join(' ').toLowerCase() : '';
+        const constructName =
+          constructOptions.find((c) => c.id === s.construct_id)?.name.toLowerCase() ?? '';
+        const modelName =
+          modelOptions.find((m) => m.id === s.model_id)?.name.toLowerCase() ?? '';
+        if (!inContent && !tags.includes(q) && !constructName.includes(q) && !modelName.includes(q))
+          return false;
+      }
+      return true;
+    });
+  }, [snippets, filterPaperId, filterConstructId, filterModelId, filterTag, search]);
+
+  const handleAddSnippet = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!newContent.trim() || !newPaperId) return;
+      if (!supabase || !isSupabaseConfigured()) return;
+      setSaving(true);
+      setError(null);
+      const pageNum = newPageNumber.trim() ? parseInt(newPageNumber, 10) : null;
+      const rawTags = newTagsInput
+        .split(',')
+        .map((t) => t.trim())
+        .filter((t) => t.length > 0);
+      const existingByLower = allTags.reduce<Record<string, string>>((acc, t) => {
+        acc[t.toLowerCase()] = t;
+        return acc;
+      }, {});
+      const tags: string[] = [];
+      for (const t of rawTags) {
+        const key = t.toLowerCase();
+        const canonical = existingByLower[key] ?? t;
+        if (!tags.some((x) => x.toLowerCase() === canonical.toLowerCase())) {
+          tags.push(canonical);
+        }
+      }
+      const { data, error: insertErr } = await supabase
+        .from('snippets')
+        .insert({
+          paper_id: newPaperId,
+          construct_id: newConstructId || null,
+          model_id: newModelId || null,
+          content: newContent.trim(),
+          notes: null,
+          tags,
+          page_number: pageNum != null && !Number.isNaN(pageNum) ? pageNum : null,
+        })
+        .select('*')
+        .single();
+      if (insertErr) {
+        setError(insertErr.message);
+      } else if (data) {
+        const inserted = data as Snippet;
+        setSnippets((prev) => [inserted, ...prev]);
+        if (Array.isArray(inserted.tags)) {
+          setAllTags((prev) => {
+            const set = new Set(prev);
+            for (const t of inserted.tags) {
+              if (t && typeof t === 'string') set.add(t);
+            }
+            return Array.from(set);
+          });
+        }
+        setNewContent('');
+        setNewPaperId('');
+        setNewConstructId('');
+        setNewModelId('');
+        setNewPageNumber('');
+        setNewTagsInput('');
+      }
+      setSaving(false);
+    },
+    [newContent, newPaperId, newConstructId, newModelId, newPageNumber, newTagsInput, allTags]
+  );
+
+  const handleDelete = useCallback(async (id: string) => {
+    if (!supabase || !isSupabaseConfigured()) return;
+    const confirmed = window.confirm('Delete this snippet?');
+    if (!confirmed) return;
+    const { error: deleteErr } = await supabase.from('snippets').delete().eq('id', id);
+    if (deleteErr) {
+      setError(deleteErr.message);
+    } else {
+      setSnippets((prev) => prev.filter((s) => s.id !== id));
+    }
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="snippets-page">
+        <p className="snippets-loading">Loading snippets…</p>
+      </div>
+    );
+  }
+
+  if (!isSupabaseConfigured()) {
+    return (
+      <div className="snippets-page">
+        <p className="snippets-error">
+          Supabase is not configured. Set <code>PUBLIC_SUPABASE_URL</code> and{' '}
+          <code>PUBLIC_SUPABASE_ANON_KEY</code> in your environment or <code>.env</code> file.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="snippets-page">
+      <header className="snippets-header">
+        <h1>Snippets</h1>
+        <p className="snippets-intro">
+          Conceptual snippets extracted from papers. Filter by paper, construct, model, or tags.
+        </p>
+      </header>
+
+      {error && <p className="snippets-error">{error}</p>}
+
+      <section className="snippets-filters">
+        <div className="snippets-filter-row">
+          <label>
+            Paper
+            <select
+              className="snippets-input"
+              value={filterPaperId}
+              onChange={(e) => setFilterPaperId(e.target.value)}
+            >
+              <option value="">All</option>
+              {papers.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.title || p.url}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Construct
+            <select
+              className="snippets-input"
+              value={filterConstructId}
+              onChange={(e) => setFilterConstructId(e.target.value)}
+            >
+              <option value="">All</option>
+              {constructOptions.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Model
+            <select
+              className="snippets-input"
+              value={filterModelId}
+              onChange={(e) => setFilterModelId(e.target.value)}
+            >
+              <option value="">All</option>
+              {modelOptions.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Tag
+            <select
+              className="snippets-input"
+              value={filterTag}
+              onChange={(e) => setFilterTag(e.target.value)}
+            >
+              <option value="">All</option>
+              {allTags.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+        <div className="snippets-filter-row">
+          <label className="snippets-search-label">
+            Search
+            <input
+              type="search"
+              className="snippets-input"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search in snippet text, tags, constructs, models…"
+            />
+          </label>
+        </div>
+      </section>
+
+      <section className="snippets-add-section">
+        <h2 className="snippets-section-title">Add snippet</h2>
+        <form className="snippets-form" onSubmit={handleAddSnippet}>
+          <label className="snippets-label">
+            Paper
+            <select
+              className="snippets-input"
+              value={newPaperId}
+              onChange={(e) => setNewPaperId(e.target.value)}
+              required
+            >
+              <option value="">Select a paper…</option>
+              {papers.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.title || p.url}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="snippets-label">
+            Snippet text
+            <textarea
+              className="snippets-textarea"
+              value={newContent}
+              onChange={(e) => setNewContent(e.target.value)}
+              rows={3}
+              placeholder="Paste or type the key idea, quote, or conceptual snippet…"
+              required
+            />
+          </label>
+          <div className="snippets-form-row">
+            <label className="snippets-label-inline">
+              Construct (optional)
+              <select
+                className="snippets-input-inline"
+                value={newConstructId}
+                onChange={(e) => setNewConstructId(e.target.value)}
+              >
+                <option value="">None</option>
+                {constructOptions.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="snippets-label-inline">
+              Model (optional)
+              <select
+                className="snippets-input-inline"
+                value={newModelId}
+                onChange={(e) => setNewModelId(e.target.value)}
+              >
+                <option value="">None</option>
+                {modelOptions.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="snippets-label-inline">
+              Page (optional)
+              <input
+                type="number"
+                min={1}
+                className="snippets-input-inline snippets-input-page"
+                value={newPageNumber}
+                onChange={(e) => setNewPageNumber(e.target.value)}
+                placeholder="e.g. 12"
+              />
+            </label>
+            <label className="snippets-label-inline">
+              Tags (optional)
+              <input
+                type="text"
+                list="snippets-tags-list"
+                className="snippets-input-inline"
+                value={newTagsInput}
+                onChange={(e) => setNewTagsInput(e.target.value)}
+                placeholder="e.g. method, theory"
+              />
+            </label>
+          </div>
+          <datalist id="snippets-tags-list">
+            {allTags.map((t) => (
+              <option key={t} value={t} />
+            ))}
+          </datalist>
+          <button type="submit" className="snippets-add-btn" disabled={saving}>
+            {saving ? 'Saving…' : 'Add snippet'}
+          </button>
+        </form>
+      </section>
+
+      <section className="snippets-list-section">
+        <h2 className="snippets-section-title">
+          Snippets ({filteredSnippets.length})
+        </h2>
+        {filteredSnippets.length === 0 && (
+          <p className="snippets-empty">No snippets match the current filters.</p>
+        )}
+        <div className="snippets-list">
+          {filteredSnippets.map((s) => {
+            const paper = paperById.get(s.paper_id);
+            return (
+              <article key={s.id} className="snippets-card">
+                <header className="snippets-card-header">
+                  <div className="snippets-card-title-row">
+                    {paper ? (
+                      <a
+                        href={`${base}papers/detail/?id=${paper.id}`}
+                        className="snippets-card-paper"
+                      >
+                        {paper.title || paper.url}
+                      </a>
+                    ) : (
+                      <span className="snippets-card-paper">Unknown paper</span>
+                    )}
+                    {s.page_number != null && (
+                      <span className="snippets-card-page">Page {s.page_number}</span>
+                    )}
+                  </div>
+                  <div className="snippets-card-links">
+                    {s.construct_id && (
+                      <a
+                        href={`${base}constructs/${s.construct_id}/`}
+                        className="snippets-chip"
+                      >
+                        Construct: {s.construct_id}
+                      </a>
+                    )}
+                    {s.model_id && (
+                      <a
+                        href={`${base}models/${s.model_id}/`}
+                        className="snippets-chip"
+                      >
+                        Model: {s.model_id}
+                      </a>
+                    )}
+                  </div>
+                </header>
+                <p className="snippets-card-content">{s.content}</p>
+                {Array.isArray(s.tags) && s.tags.length > 0 && (
+                  <div className="snippets-card-tags">
+                    {s.tags.map((tag) => (
+                      <span key={tag} className="snippets-tag">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <footer className="snippets-card-footer">
+                  <span className="snippets-card-date">
+                    {new Date(s.created_at).toLocaleDateString()}
+                  </span>
+                  <button
+                    type="button"
+                    className="snippets-delete-btn"
+                    onClick={() => handleDelete(s.id)}
+                  >
+                    Delete
+                  </button>
+                </footer>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+    </div>
+  );
+}
+
