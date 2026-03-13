@@ -360,6 +360,8 @@ export default function SnippetsPage() {
                 ))}
               </select>
             </label>
+          </div>
+          <div className="snippets-filter-row">
             <label>
               Construct(s)
               <select
@@ -379,10 +381,13 @@ export default function SnippetsPage() {
                 ))}
               </select>
             </label>
+          </div>
+          <div className="snippets-filter-row">
             <label>
               Model(s)
               <select
                 multiple
+                size={modelOptions.length}
                 className="snippets-input"
                 value={filterModelIds}
                 onChange={(e) =>
@@ -398,6 +403,8 @@ export default function SnippetsPage() {
                 ))}
               </select>
             </label>
+          </div>
+          <div className="snippets-filter-row">
             <label>
               Tag
               <select
