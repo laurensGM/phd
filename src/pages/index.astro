@@ -1,14 +1,14 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import researchQuestions from '../data/research-questions.json';
+import HomeDashboard from '../components/HomeDashboard';
 
-const base = import.meta.env.BASE_URL;
 type RQ = { date?: string; question: string };
 const latestRq = ([...researchQuestions] as RQ[]).sort((a, b) => (b.date || '').localeCompare(a.date || ''))[0];
 const researchTopic = latestRq?.question ?? 'Your research question';
 ---
 
-<BaseLayout title="Home" description="PhD Operating System - Your research topic and quick links">
+<BaseLayout title="Home" description="PhD Operating System - Your research topic and stats">
   <div class="homepage">
     <h1>PhD Manager</h1>
     <p class="tagline">Organizing theory, constructs, and literature for doctoral research</p>
@@ -23,55 +23,8 @@ const researchTopic = latestRq?.question ?? 'Your research question';
       </p>
     </section>
 
-    <section class="quick-links">
-      <h2>Quick Links</h2>
-      <div class="link-grid">
-        <a href={`${base}models/`} class="link-card">
-          <span class="link-icon">📚</span>
-          <span class="link-title">Models</span>
-          <span class="link-desc">TAM, ECT, ECM — theories and relationships</span>
-        </a>
-        <a href={`${base}snippets/`} class="link-card">
-          <span class="link-icon">🧩</span>
-          <span class="link-title">Snippets</span>
-          <span class="link-desc">Conceptual snippets linked to papers, constructs, and models</span>
-        </a>
-        <a href={`${base}constructs/`} class="link-card">
-          <span class="link-icon">🧠</span>
-          <span class="link-title">Constructs</span>
-          <span class="link-desc">Definitions, measurement scales, sources</span>
-        </a>
-        <a href={`${base}diary/`} class="link-card">
-          <span class="link-icon">📓</span>
-          <span class="link-title">Diary</span>
-          <span class="link-desc">Daily reflections, tags, linked constructs</span>
-        </a>
-        <a href={`${base}papers/`} class="link-card">
-          <span class="link-icon">📖</span>
-          <span class="link-title">Papers</span>
-          <span class="link-desc">Papers, citations, findings, summaries</span>
-        </a>
-        <a href={`${base}research-questions/`} class="link-card">
-          <span class="link-icon">🧩</span>
-          <span class="link-title">Research Questions</span>
-          <span class="link-desc">RQ evolution and supervisory feedback</span>
-        </a>
-        <a href={`${base}methods/`} class="link-card">
-          <span class="link-icon">🧪</span>
-          <span class="link-title">Methods</span>
-          <span class="link-desc">Operationalization, hypotheses, instruments</span>
-        </a>
-        <a href={`${base}theory-map/`} class="link-card">
-          <span class="link-icon">🗺️</span>
-          <span class="link-title">Theory Map</span>
-          <span class="link-desc">Visual map of model connections and gaps</span>
-        </a>
-        <a href={`${base}supervisor/`} class="link-card">
-          <span class="link-icon">👤</span>
-          <span class="link-title">Supervisor</span>
-          <span class="link-desc">Prof Marlize Terblanche-Smit — profile, expertise, publications</span>
-        </a>
-      </div>
+    <section class="home-dashboard-section">
+      <HomeDashboard client:load />
     </section>
   </div>
 </BaseLayout>
@@ -102,25 +55,48 @@ const researchTopic = latestRq?.question ?? 'Your research question';
     color: var(--color-ink-muted);
   }
 
-  .link-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 1rem;
+  .home-dashboard-section {
+    margin-top: 2rem;
   }
 
-  .link-card {
+  :global(.home-dashboard) {
+    margin-bottom: 2rem;
+  }
+
+  :global(.home-dashboard-loading),
+  :global(.home-dashboard-error) {
+    padding: 1rem;
+    color: var(--color-ink-muted);
+  }
+
+  :global(.home-dashboard-error) {
+    color: var(--color-error, #b91c1c);
+    background: #fef2f2;
+    border-radius: 8px;
+  }
+
+  :global(.home-stats-grid) {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  :global(.home-stat-card) {
     display: flex;
     flex-direction: column;
-    padding: 1.25rem;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem 1rem;
     background: white;
     border: 1px solid var(--color-border);
-    border-radius: 8px;
+    border-radius: 12px;
     text-decoration: none;
     color: inherit;
-    transition: box-shadow 0.2s, transform 0.2s;
+    transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
   }
 
-  .link-card:hover {
+  :global(.home-stat-card:hover) {
     box-shadow: var(--shadow-md);
     transform: translateY(-2px);
     text-decoration: none;
@@ -128,18 +104,199 @@ const researchTopic = latestRq?.question ?? 'Your research question';
     border-color: var(--color-gold);
   }
 
-  .link-icon {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
+  :global(.home-stat-value) {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--color-ink);
   }
 
-  .link-title {
-    font-weight: 600;
-    margin-bottom: 0.25rem;
-  }
-
-  .link-desc {
+  :global(.home-stat-label) {
     font-size: 0.875rem;
     color: var(--color-ink-muted);
+    margin-top: 0.25rem;
+    text-align: center;
+  }
+
+  :global(.home-papers-chart) {
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 1.5rem;
+  }
+
+  :global(.home-section-title) {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+  }
+
+  :global(.home-pie-legend) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  :global(.home-pie-chart) {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  :global(.home-pie-legend-list) {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  :global(.home-pie-legend-item) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  :global(.home-pie-legend-swatch) {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  :global(.home-pie-legend-label) {
+    color: var(--color-ink);
+  }
+
+  :global(.home-pie-legend-count) {
+    margin-left: auto;
+    font-weight: 600;
+    color: var(--color-ink-muted);
+  }
+
+  /* Milestones timeline */
+  :global(.home-timeline-section) {
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  :global(.home-timeline-header) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  :global(.home-timeline-link) {
+    font-size: 0.875rem;
+    color: var(--color-maroon);
+    text-decoration: none;
+  }
+
+  :global(.home-timeline-link:hover) {
+    text-decoration: underline;
+  }
+
+  :global(.home-timeline) {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    padding-left: 0;
+  }
+
+  :global(.home-timeline-item) {
+    display: grid;
+    grid-template-columns: auto 12px 1fr;
+    gap: 0 0.75rem;
+    padding-bottom: 1rem;
+    position: relative;
+    align-items: center;
+  }
+
+  :global(.home-timeline-item:last-child) {
+    padding-bottom: 0;
+  }
+
+  :global(.home-timeline-item)::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 22px;
+    bottom: 0;
+    width: 2px;
+    background: var(--color-border);
+  }
+
+  :global(.home-timeline-item:last-child)::before {
+    display: none;
+  }
+
+  :global(.home-timeline-date) {
+    grid-column: 1;
+    font-size: 0.8rem;
+    color: var(--color-ink-muted);
+    white-space: nowrap;
+  }
+
+  :global(.home-timeline-dot) {
+    grid-column: 2;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--color-border);
+    position: relative;
+    z-index: 1;
+  }
+
+  :global(.home-timeline-content) {
+    grid-column: 3;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  :global(.home-timeline-title) {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+
+  :global(.home-timeline-past .home-timeline-title) {
+    color: var(--color-ink-muted);
+  }
+
+  :global(.home-timeline-past .home-timeline-dot) {
+    background: var(--color-ink-muted);
+    opacity: 0.6;
+  }
+
+  :global(.home-timeline-next .home-timeline-dot) {
+    background: var(--color-maroon);
+    box-shadow: 0 0 0 3px rgba(128, 0, 0, 0.2);
+  }
+
+  :global(.home-timeline-next .home-timeline-title) {
+    font-weight: 600;
+    color: var(--color-maroon);
+  }
+
+  :global(.home-timeline-badge) {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: white;
+    background: var(--color-maroon);
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
   }
 </style>
