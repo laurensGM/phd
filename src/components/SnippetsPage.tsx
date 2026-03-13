@@ -588,9 +588,6 @@ export default function SnippetsPage() {
                     <h3 className="snippets-card-title">
                       {s.content.length > 140 ? `${s.content.slice(0, 140)}…` : s.content}
                     </h3>
-                    {s.page_number != null && editingId !== s.id && (
-                      <span className="snippets-card-page">Page {s.page_number}</span>
-                    )}
                   </div>
                   <div className="snippets-card-links">
                     {s.construct_id && (
@@ -702,17 +699,18 @@ export default function SnippetsPage() {
                   <>
                     <p className="snippets-card-content">
                       {paper ? (
-                        <>
-                          <a
-                            href={`${base}papers/detail/?id=${paper.id}`}
-                            className="snippets-card-paper"
-                          >
-                            {paper.title || paper.url}
-                          </a>
-                          {' — '}
-                        </>
-                      ) : null}
-                      {s.content}
+                        <a
+                          href={`${base}papers/detail/?id=${paper.id}`}
+                          className="snippets-card-paper"
+                        >
+                          {paper.title || paper.url}
+                        </a>
+                      ) : (
+                        <span className="snippets-card-paper">Unknown paper</span>
+                      )}
+                      {s.page_number != null && editingId !== s.id && (
+                        <span className="snippets-card-page-inline"> · Page {s.page_number}</span>
+                      )}
                     </p>
                     {Array.isArray(s.tags) && s.tags.length > 0 && (
                       <div className="snippets-card-tags">
