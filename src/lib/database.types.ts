@@ -200,8 +200,8 @@ export interface Database {
         Row: {
           id: string;
           paper_id: string;
-          construct_id: string | null;
-          model_id: string | null;
+          construct_ids: string[];
+          model_ids: string[];
           content: string;
           notes: string | null;
           tags: string[];
@@ -212,8 +212,8 @@ export interface Database {
         Insert: {
           id?: string;
           paper_id: string;
-          construct_id?: string | null;
-          model_id?: string | null;
+          construct_ids?: string[];
+          model_ids?: string[];
           content: string;
           notes?: string | null;
           tags?: string[];
@@ -223,8 +223,8 @@ export interface Database {
         };
         Update: {
           paper_id?: string;
-          construct_id?: string | null;
-          model_id?: string | null;
+          construct_ids?: string[];
+          model_ids?: string[];
           content?: string;
           notes?: string | null;
           tags?: string[];

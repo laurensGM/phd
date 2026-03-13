@@ -20,13 +20,31 @@ import SnippetsPage from '../../components/SnippetsPage';
     color: var(--color-ink-muted);
     margin: 0 0 1.5rem 0;
   }
+  :global(.snippets-open-add-btn) {
+    margin-bottom: 1.25rem;
+    padding: 0.55rem 1.2rem;
+    background: var(--color-maroon);
+    color: #fff;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+  }
 
+  :global(.snippets-layout) {
+    display: grid;
+    grid-template-columns: minmax(220px, 260px) minmax(0, 1fr);
+    gap: 1.5rem;
+    align-items: flex-start;
+  }
   :global(.snippets-filters) {
-    margin-bottom: 1.75rem;
     padding: 1rem 1.25rem;
     background: var(--color-bg-alt);
     border-radius: 10px;
     border: 1px solid var(--color-border);
+    position: sticky;
+    top: 1rem;
   }
   :global(.snippets-filter-row) {
     display: flex;
@@ -125,6 +143,43 @@ import SnippetsPage from '../../components/SnippetsPage';
   :global(.snippets-add-btn:disabled) {
     opacity: 0.6;
     cursor: default;
+  }
+
+  :global(.snippets-modal-overlay) {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 1rem;
+  }
+  :global(.snippets-modal) {
+    max-width: 720px;
+    width: 100%;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--color-border);
+  }
+  :global(.snippets-modal-header) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem 0.5rem 1.5rem;
+  }
+  :global(.snippets-modal-close) {
+    border: none;
+    background: transparent;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  :global(.snippets-modal-actions) {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
   }
 
   :global(.snippets-list-section) {

@@ -40,8 +40,8 @@ export default function SnippetsPage() {
   const [error, setError] = useState<string | null>(null);
 
   const [filterPaperId, setFilterPaperId] = useState('');
-  const [filterConstructId, setFilterConstructId] = useState('');
-  const [filterModelId, setFilterModelId] = useState('');
+  const [filterConstructIds, setFilterConstructIds] = useState<string[]>([]);
+  const [filterModelIds, setFilterModelIds] = useState<string[]>([]);
   const [filterTag, setFilterTag] = useState('');
   const [search, setSearch] = useState('');
 
@@ -59,6 +59,7 @@ export default function SnippetsPage() {
   const [editModelId, setEditModelId] = useState('');
   const [editPageNumber, setEditPageNumber] = useState<string>('');
   const [editTagsInput, setEditTagsInput] = useState('');
+  const [showAddModal, setShowAddModal] = useState(false);
 
   useEffect(() => {
     if (!isSupabaseConfigured()) {
@@ -124,8 +125,16 @@ export default function SnippetsPage() {
   const filteredSnippets = useMemo(() => {
     return snippets.filter((s) => {
       if (filterPaperId && s.paper_id !== filterPaperId) return false;
-      if (filterConstructId && s.construct_id !== filterConstructId) return false;
-      if (filterModelId && s.model_id !== filterModelId) return false;
+      if (filterConstructIds.length > 0) {
+        const c = (s as any).construct_ids ?? (s as any).construct_id;
+        const snippetConstructs = Array.isArray(c) ? (c as string[]) : c ? [c as string] : [];
+        if (!snippetConstructs.some((id) => filterConstructIds.includes(id))) return false;
+      }
+      if (filterModelIds.length > 0) {
+        const m = (s as any).model_ids ?? (s as any).model_id;
+        const snippetModels = Array.isArray(m) ? (m as string[]) : m ? [m as string] : [];
+        if (!snippetModels.some((id) => filterModelIds.includes(id))) return false;
+      }
       if (filterTag) {
         const tags = Array.isArray(s.tags) ? s.tags : [];
         if (!tags.some((t) => t.toLowerCase() === filterTag.toLowerCase())) return false;
@@ -135,15 +144,19 @@ export default function SnippetsPage() {
         const inContent = s.content.toLowerCase().includes(q);
         const tags = Array.isArray(s.tags) ? s.tags.join(' ').toLowerCase() : '';
         const constructName =
-          constructOptions.find((c) => c.id === s.construct_id)?.name.toLowerCase() ?? '';
+          constructOptions.find((c) =>
+            ((s as any).construct_ids ?? [(s as any).construct_id]).includes(c.id)
+          )?.name.toLowerCase() ?? '';
         const modelName =
-          modelOptions.find((m) => m.id === s.model_id)?.name.toLowerCase() ?? '';
+          modelOptions.find((m) =>
+            ((s as any).model_ids ?? [(s as any).model_id]).includes(m.id)
+          )?.name.toLowerCase() ?? '';
         if (!inContent && !tags.includes(q) && !constructName.includes(q) && !modelName.includes(q))
           return false;
       }
       return true;
     });
-  }, [snippets, filterPaperId, filterConstructId, filterModelId, filterTag, search]);
+  }, [snippets, filterPaperId, filterConstructIds, filterModelIds, filterTag, search]);
 
   const handleAddSnippet = useCallback(
     async (e: React.FormEvent) => {
@@ -202,6 +215,7 @@ export default function SnippetsPage() {
         setNewModelId('');
         setNewPageNumber('');
         setNewTagsInput('');
+        setShowAddModal(false);
       }
       setSaving(false);
     },
@@ -317,126 +331,47 @@ export default function SnippetsPage() {
         <p className="snippets-intro">
           Conceptual snippets extracted from papers. Filter by paper, construct, model, or tags.
         </p>
+        <button
+          type="button"
+          className="snippets-open-add-btn"
+          onClick={() => setShowAddModal(true)}
+        >
+          Add snippet
+        </button>
       </header>
 
       {error && <p className="snippets-error">{error}</p>}
 
-      <section className="snippets-filters">
-        <div className="snippets-filter-row">
-          <label>
-            Paper
-            <select
-              className="snippets-input"
-              value={filterPaperId}
-              onChange={(e) => setFilterPaperId(e.target.value)}
-            >
-              <option value="">All</option>
-              {papers.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.title || p.url}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Construct
-            <select
-              className="snippets-input"
-              value={filterConstructId}
-              onChange={(e) => setFilterConstructId(e.target.value)}
-            >
-              <option value="">All</option>
-              {constructOptions.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Model
-            <select
-              className="snippets-input"
-              value={filterModelId}
-              onChange={(e) => setFilterModelId(e.target.value)}
-            >
-              <option value="">All</option>
-              {modelOptions.map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Tag
-            <select
-              className="snippets-input"
-              value={filterTag}
-              onChange={(e) => setFilterTag(e.target.value)}
-            >
-              <option value="">All</option>
-              {allTags.map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-        <div className="snippets-filter-row">
-          <label className="snippets-search-label">
-            Search
-            <input
-              type="search"
-              className="snippets-input"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search in snippet text, tags, constructs, models…"
-            />
-          </label>
-        </div>
-      </section>
-
-      <section className="snippets-add-section">
-        <h2 className="snippets-section-title">Add snippet</h2>
-        <form className="snippets-form" onSubmit={handleAddSnippet}>
-          <label className="snippets-label">
-            Paper
-            <select
-              className="snippets-input"
-              value={newPaperId}
-              onChange={(e) => setNewPaperId(e.target.value)}
-              required
-            >
-              <option value="">Select a paper…</option>
-              {papers.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.title || p.url}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="snippets-label">
-            Snippet text
-            <textarea
-              className="snippets-textarea"
-              value={newContent}
-              onChange={(e) => setNewContent(e.target.value)}
-              rows={3}
-              placeholder="Paste or type the key idea, quote, or conceptual snippet…"
-              required
-            />
-          </label>
-          <div className="snippets-form-row">
-            <label className="snippets-label-inline">
-              Construct (optional)
+      <div className="snippets-layout">
+        <section className="snippets-filters">
+          <div className="snippets-filter-row">
+            <label>
+              Paper
               <select
-                className="snippets-input-inline"
-                value={newConstructId}
-                onChange={(e) => setNewConstructId(e.target.value)}
+                className="snippets-input"
+                value={filterPaperId}
+                onChange={(e) => setFilterPaperId(e.target.value)}
               >
-                <option value="">None</option>
+                <option value="">All</option>
+                {papers.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.title || p.url}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Construct(s)
+              <select
+                multiple
+                className="snippets-input"
+                value={filterConstructIds}
+                onChange={(e) =>
+                  setFilterConstructIds(
+                    Array.from(e.target.selectedOptions).map((opt) => opt.value)
+                  )
+                }
+              >
                 {constructOptions.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.name}
@@ -444,14 +379,18 @@ export default function SnippetsPage() {
                 ))}
               </select>
             </label>
-            <label className="snippets-label-inline">
-              Model (optional)
+            <label>
+              Model(s)
               <select
-                className="snippets-input-inline"
-                value={newModelId}
-                onChange={(e) => setNewModelId(e.target.value)}
+                multiple
+                className="snippets-input"
+                value={filterModelIds}
+                onChange={(e) =>
+                  setFilterModelIds(
+                    Array.from(e.target.selectedOptions).map((opt) => opt.value)
+                  )
+                }
               >
-                <option value="">None</option>
                 {modelOptions.map((m) => (
                   <option key={m.id} value={m.id}>
                     {m.name}
@@ -459,41 +398,167 @@ export default function SnippetsPage() {
                 ))}
               </select>
             </label>
-            <label className="snippets-label-inline">
-              Page (optional)
-              <input
-                type="number"
-                min={1}
-                className="snippets-input-inline snippets-input-page"
-                value={newPageNumber}
-                onChange={(e) => setNewPageNumber(e.target.value)}
-                placeholder="e.g. 12"
-              />
+            <label>
+              Tag
+              <select
+                className="snippets-input"
+                value={filterTag}
+                onChange={(e) => setFilterTag(e.target.value)}
+              >
+                <option value="">All</option>
+                {allTags.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </select>
             </label>
-            <label className="snippets-label-inline">
-              Tags (optional)
+          </div>
+          <div className="snippets-filter-row">
+            <label className="snippets-search-label">
+              Search
               <input
-                type="text"
-                list="snippets-tags-list"
-                className="snippets-input-inline"
-                value={newTagsInput}
-                onChange={(e) => setNewTagsInput(e.target.value)}
-                placeholder="e.g. method, theory"
+                type="search"
+                className="snippets-input"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search in snippet text, tags, constructs, models…"
               />
             </label>
           </div>
-          <datalist id="snippets-tags-list">
-            {allTags.map((t) => (
-              <option key={t} value={t} />
-            ))}
-          </datalist>
-          <button type="submit" className="snippets-add-btn" disabled={saving}>
-            {saving ? 'Saving…' : 'Add snippet'}
-          </button>
-        </form>
-      </section>
+        </section>
 
-      <section className="snippets-list-section">
+      {showAddModal && (
+        <div className="snippets-modal-overlay" role="dialog" aria-modal="true">
+          <div className="snippets-modal">
+            <header className="snippets-modal-header">
+              <h2 className="snippets-section-title">Add snippet</h2>
+              <button
+                type="button"
+                className="snippets-modal-close"
+                onClick={() => setShowAddModal(false)}
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </header>
+            <form className="snippets-form" onSubmit={handleAddSnippet}>
+              <label className="snippets-label">
+                Paper
+                <select
+                  className="snippets-input"
+                  value={newPaperId}
+                  onChange={(e) => setNewPaperId(e.target.value)}
+                  required
+                >
+                  <option value="">Select a paper…</option>
+                  {papers.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.title || p.url}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="snippets-label">
+                Snippet text
+                <textarea
+                  className="snippets-textarea"
+                  value={newContent}
+                  onChange={(e) => setNewContent(e.target.value)}
+                  rows={3}
+                  placeholder="Paste or type the key idea, quote, or conceptual snippet…"
+                  required
+                />
+              </label>
+              <div className="snippets-form-row">
+                <label className="snippets-label-inline">
+                  Construct(s)
+                  <select
+                    multiple
+                    className="snippets-input-inline"
+                    value={newConstructId ? newConstructId.split(',') : []}
+                    onChange={(e) =>
+                      setNewConstructId(
+                        Array.from(e.target.selectedOptions)
+                          .map((opt) => opt.value)
+                          .join(',')
+                      )
+                    }
+                  >
+                    {constructOptions.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="snippets-label-inline">
+                  Model(s)
+                  <select
+                    multiple
+                    className="snippets-input-inline"
+                    value={newModelId ? newModelId.split(',') : []}
+                    onChange={(e) =>
+                      setNewModelId(
+                        Array.from(e.target.selectedOptions)
+                          .map((opt) => opt.value)
+                          .join(',')
+                      )
+                    }
+                  >
+                    {modelOptions.map((m) => (
+                      <option key={m.id} value={m.id}>
+                        {m.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="snippets-label-inline">
+                  Page (optional)
+                  <input
+                    type="number"
+                    min={1}
+                    className="snippets-input-inline snippets-input-page"
+                    value={newPageNumber}
+                    onChange={(e) => setNewPageNumber(e.target.value)}
+                    placeholder="e.g. 12"
+                  />
+                </label>
+                <label className="snippets-label-inline">
+                  Tags (optional)
+                  <input
+                    type="text"
+                    list="snippets-tags-list"
+                    className="snippets-input-inline"
+                    value={newTagsInput}
+                    onChange={(e) => setNewTagsInput(e.target.value)}
+                    placeholder="e.g. method, theory"
+                  />
+                </label>
+              </div>
+              <datalist id="snippets-tags-list">
+                {allTags.map((t) => (
+                  <option key={t} value={t} />
+                ))}
+              </datalist>
+              <div className="snippets-modal-actions">
+                <button type="submit" className="snippets-add-btn" disabled={saving}>
+                  {saving ? 'Saving…' : 'Add snippet'}
+                </button>
+                <button
+                  type="button"
+                  className="snippets-edit-cancel-btn"
+                  onClick={() => setShowAddModal(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+        <section className="snippets-list-section">
         <h2 className="snippets-section-title">
           Snippets ({filteredSnippets.length})
         </h2>
@@ -667,6 +732,7 @@ export default function SnippetsPage() {
           })}
         </div>
       </section>
+      </div>
     </div>
   );
 }
