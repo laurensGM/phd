@@ -7,3 +7,236 @@ import SnippetsPage from '../../components/SnippetsPage';
   <SnippetsPage client:visible />
 </BaseLayout>
 
+<style>
+  :global(.snippets-page) {
+    margin-top: 1rem;
+  }
+  :global(.snippets-page h1) {
+    font-family: var(--font-serif);
+    font-size: 1.75rem;
+    margin-bottom: 0.25rem;
+  }
+  :global(.snippets-intro) {
+    color: var(--color-ink-muted);
+    margin: 0 0 1.5rem 0;
+  }
+
+  :global(.snippets-filters) {
+    margin-bottom: 1.75rem;
+    padding: 1rem 1.25rem;
+    background: var(--color-bg-alt);
+    border-radius: 10px;
+    border: 1px solid var(--color-border);
+  }
+  :global(.snippets-filter-row) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+    margin-bottom: 0.75rem;
+  }
+  :global(.snippets-filter-row:last-of-type) {
+    margin-bottom: 0;
+  }
+  :global(.snippets-filter-row label) {
+    font-size: 0.85rem;
+    color: var(--color-ink-muted);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  :global(.snippets-input) {
+    min-width: 180px;
+    padding: 0.45rem 0.6rem;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    background: #fff;
+    font-size: 0.9rem;
+  }
+  :global(.snippets-search-label .snippets-input) {
+    min-width: 260px;
+  }
+
+  :global(.snippets-add-section) {
+    margin-bottom: 2rem;
+  }
+  :global(.snippets-section-title) {
+    font-size: 1.1rem;
+    margin: 0 0 0.75rem 0;
+  }
+  :global(.snippets-form) {
+    padding: 1.5rem 1.75rem;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+  :global(.snippets-label) {
+    font-size: 0.9rem;
+    color: var(--color-ink);
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  :global(.snippets-textarea) {
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    padding: 0.6rem 0.7rem;
+    font-size: 0.9rem;
+    resize: vertical;
+  }
+  :global(.snippets-form-row) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1rem;
+  }
+  :global(.snippets-label-inline) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.85rem;
+    color: var(--color-ink-muted);
+  }
+  :global(.snippets-input-inline) {
+    min-width: 160px;
+    padding: 0.45rem 0.6rem;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    background: #fff;
+    font-size: 0.85rem;
+  }
+  :global(.snippets-input-page) {
+    max-width: 80px;
+  }
+  :global(.snippets-add-btn) {
+    align-self: flex-start;
+    margin-top: 0.25rem;
+    padding: 0.55rem 1.2rem;
+    background: var(--color-maroon);
+    color: #fff;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  :global(.snippets-add-btn:disabled) {
+    opacity: 0.6;
+    cursor: default;
+  }
+
+  :global(.snippets-list-section) {
+    margin-bottom: 2rem;
+  }
+  :global(.snippets-list) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+  :global(.snippets-card) {
+    padding: 1rem 1.15rem;
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+  }
+  :global(.snippets-card-header) {
+    margin-bottom: 0.4rem;
+  }
+  :global(.snippets-card-title-row) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+  :global(.snippets-card-paper) {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--color-maroon);
+    text-decoration: none;
+  }
+  :global(.snippets-card-paper:hover) {
+    text-decoration: underline;
+  }
+  :global(.snippets-card-page) {
+    font-size: 0.8rem;
+    color: var(--color-ink-muted);
+  }
+  :global(.snippets-card-links) {
+    margin-top: 0.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+  :global(.snippets-chip) {
+    font-size: 0.8rem;
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-alt);
+    color: var(--color-maroon);
+    text-decoration: none;
+  }
+  :global(.snippets-chip:hover) {
+    text-decoration: underline;
+  }
+  :global(.snippets-card-content) {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0.3rem 0 0.4rem 0;
+  }
+  :global(.snippets-card-tags) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-bottom: 0.3rem;
+  }
+  :global(.snippets-tag) {
+    font-size: 0.8rem;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+  }
+  :global(.snippets-card-footer) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.2rem;
+  }
+  :global(.snippets-card-date) {
+    font-size: 0.8rem;
+    color: var(--color-ink-muted);
+  }
+  :global(.snippets-delete-btn) {
+    font-size: 0.8rem;
+    border: none;
+    background: transparent;
+    color: var(--color-error, #b91c1c);
+    cursor: pointer;
+  }
+  :global(.snippets-loading),
+  :global(.snippets-empty),
+  :global(.snippets-error) {
+    font-size: 0.9rem;
+    color: var(--color-ink-muted);
+    margin-top: 1rem;
+  }
+  :global(.snippets-error) {
+    color: var(--color-error, #b91c1c);
+  }
+
+  @media (max-width: 640px) {
+    :global(.snippets-form) {
+      padding: 1.25rem 1.1rem;
+    }
+    :global(.snippets-input),
+    :global(.snippets-search-label .snippets-input) {
+      min-width: 140px;
+    }
+  }
+</style>
+
