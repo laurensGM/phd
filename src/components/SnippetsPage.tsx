@@ -425,6 +425,19 @@ export default function SnippetsPage() {
                 placeholder="Search in snippet text, tags, constructs, models…"
               />
             </label>
+            <button
+              type="button"
+              className="snippets-clear-btn"
+              onClick={() => {
+                setFilterPaperId('');
+                setFilterConstructIds([]);
+                setFilterModelIds([]);
+                setFilterTag('');
+                setSearch('');
+              }}
+            >
+              Clear filters
+            </button>
           </div>
         </section>
 

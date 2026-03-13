@@ -63,7 +63,8 @@ import SnippetsPage from '../../components/SnippetsPage';
     gap: 0.25rem;
   }
   :global(.snippets-input) {
-    min-width: 180px;
+    width: 100%;
+    max-width: 100%;
     padding: 0.45rem 0.6rem;
     border-radius: 8px;
     border: 1px solid var(--color-border);
@@ -71,7 +72,17 @@ import SnippetsPage from '../../components/SnippetsPage';
     font-size: 0.9rem;
   }
   :global(.snippets-search-label .snippets-input) {
-    min-width: 260px;
+    width: 100%;
+  }
+  :global(.snippets-clear-btn) {
+    align-self: flex-end;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.8rem;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    background: #fff;
+    cursor: pointer;
+    white-space: nowrap;
   }
 
   :global(.snippets-add-section) {
