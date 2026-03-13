@@ -127,7 +127,37 @@ export default function SnippetsPage() {
       if (filterPaperId && s.paper_id !== filterPaperId) return false;
       if (filterConstructIds.length > 0) {
         const c = (s as any).construct_ids ?? (s as any).construct_id;
-        const snippetConstructs = Array.isArray(c) ? (c as string[]) : c ? [c as string] : [];
+        const snippetConstructs = Array.isArray(c)
+          ? (c as string[])
+          : typeof c === 'string'
+          ? c
+              .split(',')
+              .map((id: string) => id.trim())
+              .filter(Boolean)
+          : [];
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/02fd28e7-3222-47e0-bfbf-09aec767430a', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Debug-Session-Id': '1c5708',
+          },
+          body: JSON.stringify({
+            sessionId: '1c5708',
+            runId: 'pre-fix',
+            hypothesisId: 'H-construct-mismatch',
+            location: 'SnippetsPage.tsx:constructFilter',
+            message: 'Evaluating construct filter for snippet',
+            data: {
+              snippetId: s.id,
+              filterConstructIds,
+              rawConstruct: c,
+              snippetConstructs,
+            },
+            timestamp: Date.now(),
+          }),
+        }).catch(() => {});
+        // #endregion agent log
         if (!snippetConstructs.some((id) => filterConstructIds.includes(id))) return false;
       }
       if (filterModelIds.length > 0) {
