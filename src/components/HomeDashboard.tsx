@@ -13,12 +13,12 @@ interface OutlineItem {
 }
 
 const PAPER_STATUSES = [
-  { id: 'Not read', label: 'Not read', color: '#e5e7eb' },
-  { id: '1st reading', label: '1st reading', color: '#dbeafe' },
-  { id: '2nd reading', label: '2nd reading', color: '#ccfbf1' },
-  { id: 'Read', label: 'Read', color: '#d1fae5' },
-  { id: 'Completed', label: 'Completed', color: '#fef3c7' },
-  { id: 'Archive', label: 'Archive', color: '#f3e8ff' },
+  { id: 'Not read', label: 'Not read', color: '#4b5563' }, // slate-700
+  { id: '1st reading', label: '1st reading', color: '#2563eb' }, // blue-600
+  { id: '2nd reading', label: '2nd reading', color: '#0f766e' }, // teal-700
+  { id: 'Read', label: 'Read', color: '#059669' }, // emerald-600
+  { id: 'Completed', label: 'Completed', color: '#d97706' }, // amber-600
+  { id: 'Archive', label: 'Archive', color: '#7c3aed' }, // violet-600
 ] as const;
 
 interface StatusCount {
@@ -38,16 +38,21 @@ export default function HomeDashboard() {
   const modelsCount = Array.isArray(modelsData) ? modelsData.length : 0;
 
   const timelineMilestones = useMemo(() => {
-    const list = (outlineData as OutlineItem[]).slice().sort((a, b) => a.date.localeCompare(b.date));
+    const all = (outlineData as OutlineItem[]).slice().sort((a, b) => a.date.localeCompare(b.date));
+    // Prefer milestones from the current year (2026); if none, fall back to all
+    const year = '2026';
+    const list = all.filter((m) => m.date.startsWith(year + '-'));
+    const effective = list.length > 0 ? list : all;
+
     const today = new Date().toISOString().slice(0, 10);
     let nextId: string | null = null;
-    for (const m of list) {
+    for (const m of effective) {
       if (m.date >= today) {
         nextId = m.id;
         break;
       }
     }
-    return list.map((item) => ({
+    return effective.map((item) => ({
       ...item,
       isPast: item.date < today,
       isNext: item.id === nextId,
