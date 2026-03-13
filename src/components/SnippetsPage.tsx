@@ -24,6 +24,7 @@ interface PaperSummary {
 const constructOptions = (constructsData as any[]).map((c) => ({
   id: c.id as string,
   name: (c.name as string) || (c.id as string),
+  abbreviation: (c.abbreviation as string | undefined) ?? undefined,
 }));
 
 const modelOptions = (modelsData as any[]).map((m) => ({
@@ -127,7 +128,7 @@ export default function SnippetsPage() {
       if (filterPaperId && s.paper_id !== filterPaperId) return false;
       if (filterConstructIds.length > 0) {
         const c = (s as any).construct_ids ?? (s as any).construct_id;
-        const snippetConstructs = Array.isArray(c)
+        const rawSnippetConstructs: string[] = Array.isArray(c)
           ? (c as string[])
           : typeof c === 'string'
           ? c
@@ -135,6 +136,19 @@ export default function SnippetsPage() {
               .map((id: string) => id.trim())
               .filter(Boolean)
           : [];
+
+        const normalisedConstructIds = rawSnippetConstructs
+          .map((val) => {
+            const match = constructOptions.find(
+              (opt) =>
+                opt.id === val ||
+                opt.name.toLowerCase() === val.toLowerCase() ||
+                opt.abbreviation?.toLowerCase() === val.toLowerCase()
+            );
+            return match ? match.id : val;
+          })
+          .filter(Boolean);
+
         // #region agent log
         fetch('http://127.0.0.1:7242/ingest/02fd28e7-3222-47e0-bfbf-09aec767430a', {
           method: 'POST',
@@ -152,13 +166,15 @@ export default function SnippetsPage() {
               snippetId: s.id,
               filterConstructIds,
               rawConstruct: c,
-              snippetConstructs,
+              rawSnippetConstructs,
+              normalisedConstructIds,
             },
             timestamp: Date.now(),
           }),
         }).catch(() => {});
         // #endregion agent log
-        if (!snippetConstructs.some((id) => filterConstructIds.includes(id))) return false;
+
+        if (!normalisedConstructIds.some((id) => filterConstructIds.includes(id))) return false;
       }
       if (filterModelIds.length > 0) {
         const m = (s as any).model_ids ?? (s as any).model_id;
@@ -212,12 +228,23 @@ export default function SnippetsPage() {
           tags.push(canonical);
         }
       }
+      const constructIds = newConstructId
+        .split(',')
+        .map((id) => id.trim())
+        .filter((id) => id.length > 0);
+      const modelIds = newModelId
+        .split(',')
+        .map((id) => id.trim())
+        .filter((id) => id.length > 0);
+
       const { data, error: insertErr } = await supabase
         .from('snippets')
         .insert({
           paper_id: newPaperId,
-          construct_id: newConstructId || null,
-          model_id: newModelId || null,
+          construct_id: constructIds[0] ?? null,
+          model_id: modelIds[0] ?? null,
+          construct_ids: constructIds,
+          model_ids: modelIds,
           content: newContent.trim(),
           notes: null,
           tags,
@@ -267,8 +294,31 @@ export default function SnippetsPage() {
   const startEdit = useCallback((snippet: Snippet) => {
     setEditingId(snippet.id);
     setEditContent(snippet.content);
-    setEditConstructId(snippet.construct_id ?? '');
-    setEditModelId(snippet.model_id ?? '');
+
+    const rawConstruct = (snippet as any).construct_ids ?? (snippet as any).construct_id;
+    const constructIds =
+      Array.isArray(rawConstruct)
+        ? (rawConstruct as string[])
+        : typeof rawConstruct === 'string' && rawConstruct.length
+        ? rawConstruct
+            .split(',')
+            .map((id: string) => id.trim())
+            .filter(Boolean)
+        : [];
+    setEditConstructId(constructIds.join(','));
+
+    const rawModel = (snippet as any).model_ids ?? (snippet as any).model_id;
+    const modelIds =
+      Array.isArray(rawModel)
+        ? (rawModel as string[])
+        : typeof rawModel === 'string' && rawModel.length
+        ? rawModel
+            .split(',')
+            .map((id: string) => id.trim())
+            .filter(Boolean)
+        : [];
+    setEditModelId(modelIds.join(','));
+
     setEditPageNumber(snippet.page_number != null ? String(snippet.page_number) : '');
     setEditTagsInput(Array.isArray(snippet.tags) ? snippet.tags.join(', ') : '');
   }, []);
@@ -287,6 +337,15 @@ export default function SnippetsPage() {
       if (!supabase || !isSupabaseConfigured()) return;
       if (!editContent.trim()) return;
       const pageNum = editPageNumber.trim() ? parseInt(editPageNumber, 10) : null;
+
+      const constructIds = editConstructId
+        .split(',')
+        .map((id) => id.trim())
+        .filter((id) => id.length > 0);
+      const modelIds = editModelId
+        .split(',')
+        .map((id) => id.trim())
+        .filter((id) => id.length > 0);
       const rawTags = editTagsInput
         .split(',')
         .map((t) => t.trim())
@@ -307,8 +366,10 @@ export default function SnippetsPage() {
         .from('snippets')
         .update({
           content: editContent.trim(),
-          construct_id: editConstructId || null,
-          model_id: editModelId || null,
+          construct_id: constructIds[0] ?? null,
+          model_id: modelIds[0] ?? null,
+          construct_ids: constructIds,
+          model_ids: modelIds,
           page_number: pageNum != null && !Number.isNaN(pageNum) ? pageNum : null,
           tags,
         })
@@ -688,36 +749,48 @@ export default function SnippetsPage() {
                       />
                     </label>
                     <div className="snippets-form-row">
-                      <label className="snippets-label-inline">
-                        Construct
-                        <select
-                          className="snippets-input-inline"
-                          value={editConstructId}
-                          onChange={(e) => setEditConstructId(e.target.value)}
-                        >
-                          <option value="">None</option>
-                          {constructOptions.map((c) => (
-                            <option key={c.id} value={c.id}>
-                              {c.name}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
-                      <label className="snippets-label-inline">
-                        Model
-                        <select
-                          className="snippets-input-inline"
-                          value={editModelId}
-                          onChange={(e) => setEditModelId(e.target.value)}
-                        >
-                          <option value="">None</option>
-                          {modelOptions.map((m) => (
-                            <option key={m.id} value={m.id}>
-                              {m.name}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
+                    <label className="snippets-label-inline">
+                      Construct(s)
+                      <select
+                        multiple
+                        className="snippets-input-inline"
+                        value={editConstructId ? editConstructId.split(',') : []}
+                        onChange={(e) =>
+                          setEditConstructId(
+                            Array.from(e.target.selectedOptions)
+                              .map((opt) => opt.value)
+                              .join(',')
+                          )
+                        }
+                      >
+                        {constructOptions.map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {c.name}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="snippets-label-inline">
+                      Model(s)
+                      <select
+                        multiple
+                        className="snippets-input-inline"
+                        value={editModelId ? editModelId.split(',') : []}
+                        onChange={(e) =>
+                          setEditModelId(
+                            Array.from(e.target.selectedOptions)
+                              .map((opt) => opt.value)
+                              .join(',')
+                          )
+                        }
+                      >
+                        {modelOptions.map((m) => (
+                          <option key={m.id} value={m.id}>
+                            {m.name}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
                       <label className="snippets-label-inline">
                         Page
                         <input
