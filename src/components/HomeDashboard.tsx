@@ -13,12 +13,12 @@ interface OutlineItem {
 }
 
 const PAPER_STATUSES = [
-  { id: 'Not read', label: 'Not read', color: '#4b5563' }, // slate-700
-  { id: '1st reading', label: '1st reading', color: '#2563eb' }, // blue-600
-  { id: '2nd reading', label: '2nd reading', color: '#0f766e' }, // teal-700
-  { id: 'Read', label: 'Read', color: '#059669' }, // emerald-600
-  { id: 'Completed', label: 'Completed', color: '#d97706' }, // amber-600
-  { id: 'Archive', label: 'Archive', color: '#7c3aed' }, // violet-600
+  { id: 'Not read', label: 'Not read', color: '#9ca3af' }, // slate-400
+  { id: '1st reading', label: '1st reading', color: '#60a5fa' }, // blue-400
+  { id: '2nd reading', label: '2nd reading', color: '#2dd4bf' }, // teal-400
+  { id: 'Read', label: 'Read', color: '#34d399' }, // emerald-400
+  { id: 'Completed', label: 'Completed', color: '#fbbf24' }, // amber-400
+  { id: 'Archive', label: 'Archive', color: '#a855f7' }, // violet-500
 ] as const;
 
 interface StatusCount {
@@ -57,6 +57,19 @@ export default function HomeDashboard() {
       isPast: item.date < today,
       isNext: item.id === nextId,
     }));
+  }, []);
+
+  const daysUntilPrelim = useMemo(() => {
+    const items = outlineData as OutlineItem[];
+    const prelim =
+      items.find((m) => m.id === 'preliminary-literature-review') ??
+      items.find((m) => m.title.toLowerCase().includes('preliminary literature review'));
+    if (!prelim) return null;
+    const today = new Date();
+    const target = new Date(prelim.date + 'T00:00:00');
+    const diffMs = target.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    return diffDays < 0 ? 0 : diffDays;
   }, []);
 
   useEffect(() => {
@@ -142,6 +155,12 @@ export default function HomeDashboard() {
     <div className="home-dashboard">
       {error && <p className="home-dashboard-error">{error}</p>}
       <div className="home-stats-grid">
+        {daysUntilPrelim !== null && (
+          <div className="home-stat-card home-stat-deadline">
+            <span className="home-stat-value">{daysUntilPrelim}</span>
+            <span className="home-stat-label">days before literature review</span>
+          </div>
+        )}
         <a href={`${base}papers/`} className="home-stat-card home-stat-papers">
           <span className="home-stat-value">{papersCount}</span>
           <span className="home-stat-label">papers saved</span>

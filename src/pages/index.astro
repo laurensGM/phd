@@ -207,53 +207,58 @@ const researchTopic = latestRq?.question ?? 'Your research question';
   :global(.home-timeline) {
     list-style: none;
     margin: 0;
-    padding: 0.75rem 0 0 0;
+    padding: 0;
     position: relative;
-    display: flex;
-    gap: 2.5rem;
-    overflow-x: auto;
-  }
-
-  :global(.home-timeline)::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 1.7rem;
-    height: 2px;
-    background: var(--color-border);
   }
 
   :global(.home-timeline-item) {
+    display: grid;
+    grid-template-columns: auto 12px 1fr;
+    gap: 0 0.75rem;
+    padding-bottom: 1rem;
     position: relative;
-    padding-top: 0.5rem;
-    flex: 0 0 auto;
-    min-width: 160px;
+    align-items: center;
+  }
+
+  :global(.home-timeline-item:last-child) {
+    padding-bottom: 0;
+  }
+
+  :global(.home-timeline-item)::before) {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 22px;
+    bottom: 0;
+    width: 2px;
+    background: var(--color-border);
+  }
+
+  :global(.home-timeline-item:last-child::before) {
+    display: none;
   }
 
   :global(.home-timeline-date) {
+    grid-column: 1;
     font-size: 0.8rem;
     color: var(--color-ink-muted);
-    text-align: center;
-    margin-bottom: 0.25rem;
+    white-space: nowrap;
   }
 
   :global(.home-timeline-dot) {
-    width: 14px;
-    height: 14px;
+    grid-column: 2;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     background: var(--color-border);
-    margin: 0 auto;
     position: relative;
     z-index: 1;
   }
 
   :global(.home-timeline-content) {
-    margin-top: 0.5rem;
-    text-align: center;
+    grid-column: 3;
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 0.5rem;
     flex-wrap: wrap;
   }
