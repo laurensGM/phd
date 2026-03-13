@@ -488,12 +488,37 @@ export default function PapersPage() {
       {error && <p className="papers-error">{error}</p>}
 
       <section className="papers-add-section">
-        <button
-          className="papers-add-btn"
-          onClick={() => setShowForm(!showForm)}
-        >
-          {showForm ? '− Hide form' : '+ Save a paper'}
-        </button>
+        <div className="papers-add-header">
+          <button
+            type="button"
+            className="papers-add-btn"
+            onClick={() => setShowForm(!showForm)}
+          >
+            {showForm ? 'Close “Save a paper”' : 'Save a paper'}
+          </button>
+          <button
+            type="button"
+            className="papers-status-guide-toggle"
+            onClick={() => setStatusGuideOpen(!statusGuideOpen)}
+            aria-expanded={statusGuideOpen}
+          >
+            {statusGuideOpen ? 'Hide reading status guide' : 'Show reading status guide'}
+          </button>
+        </div>
+
+        {statusGuideOpen && (
+          <div className="papers-status-guide">
+            <p className="papers-status-guide-intro">What each status means:</p>
+            <ul className="papers-status-guide-list">
+              {PAPER_STATUSES.map((s) => (
+                <li key={s.id} className="papers-status-guide-item">
+                  <span className={`papers-status-tag ${s.color}`}>{s.label}</span>
+                  <span className="papers-status-guide-desc">{s.description}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {showForm && (
           <form className="papers-form" onSubmit={handleSubmit}>
@@ -647,30 +672,6 @@ export default function PapersPage() {
               {saving ? 'Saving...' : 'Save paper'}
             </button>
           </form>
-        )}
-      </section>
-
-      <section className="papers-status-guide-section">
-        <button
-          type="button"
-          className="papers-status-guide-toggle"
-          onClick={() => setStatusGuideOpen(!statusGuideOpen)}
-          aria-expanded={statusGuideOpen}
-        >
-          {statusGuideOpen ? '−' : '+'} Reading status guide
-        </button>
-        {statusGuideOpen && (
-          <div className="papers-status-guide">
-            <p className="papers-status-guide-intro">What each status means:</p>
-            <ul className="papers-status-guide-list">
-              {PAPER_STATUSES.map((s) => (
-                <li key={s.id} className="papers-status-guide-item">
-                  <span className={`papers-status-tag ${s.color}`}>{s.label}</span>
-                  <span className="papers-status-guide-desc">{s.description}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
         )}
       </section>
 

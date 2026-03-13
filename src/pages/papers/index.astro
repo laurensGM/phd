@@ -19,28 +19,27 @@ import PapersPage from '../../components/PapersPage';
 
   /* Papers form & list (React) – use :global so styles apply */
   :global(.papers-page .papers-add-section) {
-    margin-bottom: 3rem;
-    padding: 2rem;
-    background: var(--color-bg-alt);
-    border: 1px solid var(--color-border);
-    border-radius: 12px;
-    box-shadow: var(--shadow-sm);
+    margin-bottom: 2.5rem;
+  }
+  :global(.papers-page .papers-add-header) {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
   }
   :global(.papers-page .papers-add-btn) {
-    margin-bottom: 2rem;
-    padding: 0.65rem 1.25rem;
+    padding: 0.55rem 1.2rem;
     background: var(--color-maroon);
     color: #fff;
-    border: 2px solid var(--color-gold);
+    border: none;
     border-radius: 8px;
     cursor: pointer;
     font-weight: 600;
-    font-size: 0.95rem;
-    transition: background 0.2s, border-color 0.2s;
+    font-size: 0.9rem;
+    transition: background 0.2s;
   }
   :global(.papers-page .papers-add-btn:hover) {
     background: var(--color-maroon-dark);
-    border-color: var(--color-gold-light);
   }
   :global(.papers-page .papers-form) {
     max-width: 960px;
