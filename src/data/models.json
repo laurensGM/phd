@@ -1,7 +1,7 @@
 [
   {
     "id": "tam",
-    "name": "Technology Acceptance Model",
+    "name": "TAM",
     "abbreviation": "TAM",
     "year": 1989,
     "authors": ["Davis"],
@@ -31,7 +31,7 @@
   },
   {
     "id": "ect",
-    "name": "Expectation-Confirmation Theory",
+    "name": "ECT",
     "abbreviation": "ECT",
     "year": 1980,
     "authors": ["Oliver"],
@@ -64,7 +64,7 @@
   },
   {
     "id": "ecm",
-    "name": "Expectation-Confirmation Model of IS Continuance",
+    "name": "ECM",
     "abbreviation": "ECM",
     "year": 2001,
     "authors": ["Bhattacherjee"],
@@ -95,7 +95,7 @@
   },
   {
     "id": "ecm-is",
-    "name": "Expectation-Confirmation Model of IS Continuance (Extended)",
+    "name": "ECM-IS",
     "abbreviation": "ECM-IS",
     "year": 2001,
     "authors": ["Bhattacherjee"],
@@ -133,7 +133,7 @@
   },
   {
     "id": "tra",
-    "name": "Theory of Reasoned Action",
+    "name": "TRA",
     "abbreviation": "TRA",
     "year": 1975,
     "authors": ["Fishbein", "Ajzen"],
@@ -152,7 +152,7 @@
   },
   {
     "id": "tpb",
-    "name": "Theory of Planned Behavior",
+    "name": "TPB",
     "abbreviation": "TPB",
     "year": 1991,
     "authors": ["Ajzen"],
@@ -227,7 +227,7 @@
   },
   {
     "id": "utaut",
-    "name": "Unified Theory of Acceptance and Use of Technology",
+    "name": "UTAUT",
     "abbreviation": "UTAUT",
     "year": 2003,
     "authors": ["Venkatesh", "Morris", "Davis", "Davis"],
@@ -248,7 +248,7 @@
   },
   {
     "id": "utaut2",
-    "name": "UTAUT 2",
+    "name": "UTAUT2",
     "abbreviation": "UTAUT2",
     "year": 2012,
     "authors": ["Venkatesh", "Thong", "Xu"],
@@ -273,7 +273,7 @@
   },
   {
     "id": "ttf",
-    "name": "Task-Technology Fit",
+    "name": "TTF",
     "abbreviation": "TTF",
     "year": 1995,
     "authors": ["Goodhue", "Thompson"],
@@ -306,7 +306,7 @@
   },
   {
     "id": "doi",
-    "name": "Diffusion of Innovations",
+    "name": "DOI",
     "abbreviation": "DOI",
     "year": 1962,
     "authors": ["Rogers"],
@@ -327,7 +327,7 @@
   },
   {
     "id": "cjm",
-    "name": "Customer Journey Map",
+    "name": "CJM",
     "abbreviation": "CJM",
     "year": 2007,
     "authors": ["Meyer", "Schwager"],
@@ -343,7 +343,7 @@
   },
   {
     "id": "tajm",
-    "name": "Technology Adoption Journey Map",
+    "name": "TAJM",
     "abbreviation": "TAJM",
     "year": 2020,
     "authors": [],
