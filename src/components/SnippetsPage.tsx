@@ -80,6 +80,7 @@ export default function SnippetsPage() {
   const [filterConstructIds, setFilterConstructIds] = useState<string[]>([]);
   const [filterModelIds, setFilterModelIds] = useState<string[]>([]);
   const [filterTag, setFilterTag] = useState('');
+  const [filterSnippetType, setFilterSnippetType] = useState('');
   const [search, setSearch] = useState('');
 
   const [newContent, setNewContent] = useState('');
@@ -245,6 +246,10 @@ export default function SnippetsPage() {
         const snippetModels = getSnippetModelIds(s);
         if (!snippetModels.some((id) => filterModelIds.includes(id))) return false;
       }
+      if (filterSnippetType) {
+        const st = (s as any).snippet_type?.trim();
+        if (st !== filterSnippetType) return false;
+      }
       if (filterTag) {
         const tags = Array.isArray(s.tags) ? s.tags : [];
         if (!tags.some((t) => t.toLowerCase() === filterTag.toLowerCase())) return false;
@@ -262,7 +267,7 @@ export default function SnippetsPage() {
       }
       return true;
     });
-  }, [snippets, filterPaperId, filterJournalNames, filterConstructIds, filterModelIds, filterTag, search, paperById]);
+  }, [snippets, filterPaperId, filterJournalNames, filterConstructIds, filterModelIds, filterSnippetType, filterTag, search, paperById]);
 
   const handleAddSnippet = useCallback(
     async (e: React.FormEvent) => {
@@ -496,6 +501,7 @@ export default function SnippetsPage() {
                 setFilterJournalNames([]);
                 setFilterConstructIds([]);
                 setFilterModelIds([]);
+                setFilterSnippetType('');
                 setFilterTag('');
                 setSearch('');
               }}
@@ -583,6 +589,23 @@ export default function SnippetsPage() {
                 {allJournals.map((j) => (
                   <option key={j} value={j}>
                     {j}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <div className="snippets-filter-row">
+            <label>
+              Snippet type
+              <select
+                className="snippets-input"
+                value={filterSnippetType}
+                onChange={(e) => setFilterSnippetType(e.target.value)}
+              >
+                <option value="">All</option>
+                {SNIPPET_TYPE_OPTIONS.filter((o) => o.value).map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
                   </option>
                 ))}
               </select>
