@@ -45,7 +45,14 @@ function nameToConstructId(name: string, constructs: Construct[]): string | null
   return c ? c.id : null;
 }
 
-export default function TheoryMapGraph({ constructs, models }: TheoryMapGraphProps) {
+export default function TheoryMapGraph({ constructs: constructsProp, models: modelsProp }: TheoryMapGraphProps) {
+  const [staticData, setStaticData] = useState<{ constructs: Construct[]; models: Model[] } | null>(null);
+  const constructs = Array.isArray(constructsProp) && constructsProp.length > 0
+    ? constructsProp
+    : (staticData?.constructs ?? []);
+  const models = Array.isArray(modelsProp) && modelsProp.length > 0
+    ? modelsProp
+    : (staticData?.models ?? []);
   const containerRef = useRef<HTMLDivElement>(null);
   const cyRef = useRef<ReturnType<typeof cytoscape> | null>(null);
   const [showPapers, setShowPapers] = useState(true);
@@ -53,6 +60,18 @@ export default function TheoryMapGraph({ constructs, models }: TheoryMapGraphPro
   const [snippetLinks, setSnippetLinks] = useState<{ paperId: string; constructIds: string[]; modelIds: string[] }[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if ((Array.isArray(constructsProp) && constructsProp.length > 0) && (Array.isArray(modelsProp) && modelsProp.length > 0)) return;
+    let cancelled = false;
+    Promise.all([
+      import('../data/constructs.json').then((m) => m.default),
+      import('../data/models.json').then((m) => m.default),
+    ]).then(([c, m]) => {
+      if (!cancelled) setStaticData({ constructs: c as Construct[], models: m as Model[] });
+    });
+    return () => { cancelled = true; };
+  }, [constructsProp, modelsProp]);
 
   const constructById = useMemo(() => {
     const m = new Map<string, Construct>();
@@ -229,18 +248,19 @@ export default function TheoryMapGraph({ constructs, models }: TheoryMapGraphPro
   }, [constructs, models, papers, snippetLinks]);
 
   const initCy = useCallback(() => {
-    if (!containerRef.current || elements.length === 0) return;
+    const container = containerRef.current;
+    if (!container || elements.length === 0) return;
+
+    const nodeCount = elements.filter((e) => e.group === 'nodes').length;
+    if (nodeCount === 0) return;
 
     if (cyRef.current) {
       cyRef.current.destroy();
       cyRef.current = null;
     }
 
-    const nodeCount = elements.filter((e) => e.group === 'nodes').length;
-    if (nodeCount === 0) return;
-
     const cy = cytoscape({
-      container: containerRef.current,
+      container,
       elements: showPapers ? elements : elements.filter((el) => {
         if (el.group === 'edges') {
           const d = el.data as { source?: string; target?: string; type?: string };
@@ -337,11 +357,12 @@ export default function TheoryMapGraph({ constructs, models }: TheoryMapGraphPro
           style: { opacity: 0.2 },
         },
       ],
-      layout: { name: 'cose', padding: 40, animate: false, nodeRepulsion: 8000 },
       minZoom: 0.2,
       maxZoom: 3,
       wheelSensitivity: 0.3,
     });
+
+    cy.layout({ name: 'cose', padding: 40, animate: false, nodeRepulsion: 8000 }).run();
 
     cy.on('tap', 'node', (evt) => {
       const node = evt.target;
@@ -370,8 +391,12 @@ export default function TheoryMapGraph({ constructs, models }: TheoryMapGraphPro
   }, [elements, showPapers]);
 
   useEffect(() => {
-    if (!loading) initCy();
+    if (loading) return;
+    const raf = requestAnimationFrame(() => {
+      initCy();
+    });
     return () => {
+      cancelAnimationFrame(raf);
       if (cyRef.current) {
         cyRef.current.destroy();
         cyRef.current = null;
@@ -401,7 +426,7 @@ export default function TheoryMapGraph({ constructs, models }: TheoryMapGraphPro
         </span>
       </div>
       {error && <p className="theory-map-error">{error}</p>}
-      <div ref={containerRef} className="theory-map-cy" />
+      <div ref={containerRef} className="theory-map-cy" style={{ height: '500px', minHeight: '500px' }} />
       <p className="theory-map-hint">Click a node to highlight its connections. Drag to pan, scroll to zoom.</p>
     </div>
   );
