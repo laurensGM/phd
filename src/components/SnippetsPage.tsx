@@ -33,20 +33,27 @@ const modelOptions = (modelsData as any[]).map((m) => ({
   name: (m.name as string) || (m.id as string),
 }));
 
+/** Flatten ids so comma-separated values in any element become separate ids (fixes legacy "id1,id2" in one cell). */
+function flattenIds(ids: string[]): string[] {
+  return ids.flatMap((id) =>
+    id.includes(',') ? id.split(',').map((x) => x.trim()).filter(Boolean) : [id]
+  );
+}
+
 /** Normalize snippet construct ids: use construct_id when construct_ids is empty (e.g. extension-only payload). */
 function getSnippetConstructIds(s: any): string[] {
   const raw = s.construct_ids ?? s.construct_id;
-  if (Array.isArray(raw) && raw.length > 0) return raw as string[];
-  if (typeof raw === 'string' && raw) return raw.split(',').map((x: string) => x.trim()).filter(Boolean);
-  return s.construct_id ? [s.construct_id] : [];
+  if (Array.isArray(raw) && raw.length > 0) return flattenIds(raw as string[]);
+  if (typeof raw === 'string' && raw) return flattenIds(raw.split(',').map((x: string) => x.trim()).filter(Boolean));
+  return s.construct_id ? flattenIds([s.construct_id]) : [];
 }
 
 /** Normalize snippet model ids: use model_id when model_ids is empty (e.g. extension-only payload). */
 function getSnippetModelIds(s: any): string[] {
   const raw = s.model_ids ?? s.model_id;
-  if (Array.isArray(raw) && raw.length > 0) return raw as string[];
-  if (typeof raw === 'string' && raw) return raw.split(',').map((x: string) => x.trim()).filter(Boolean);
-  return s.model_id ? [s.model_id] : [];
+  if (Array.isArray(raw) && raw.length > 0) return flattenIds(raw as string[]);
+  if (typeof raw === 'string' && raw) return flattenIds(raw.split(',').map((x: string) => x.trim()).filter(Boolean));
+  return s.model_id ? flattenIds([s.model_id]) : [];
 }
 
 export default function SnippetsPage() {
