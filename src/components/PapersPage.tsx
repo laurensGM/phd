@@ -205,6 +205,14 @@ export default function PapersPage() {
   const [goldenOnly, setGoldenOnly] = useState(false);
   const [tablePage, setTablePage] = useState(1);
 
+  const existingJournals = useMemo(() => {
+    const set = new Set<string>();
+    papers.forEach((p) => {
+      if (p.journal && p.journal.trim()) set.add(p.journal.trim());
+    });
+    return Array.from(set).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+  }, [papers]);
+
   const fetchPapers = useCallback(async () => {
     if (!supabase) return;
     setLoading(true);
@@ -495,6 +503,11 @@ export default function PapersPage() {
 
   return (
     <div className="papers-page">
+      <datalist id="papers-journal-list">
+        {existingJournals.map((j) => (
+          <option key={j} value={j} />
+        ))}
+      </datalist>
       {error && <p className="papers-error">{error}</p>}
 
       <section className="papers-add-section">
@@ -626,9 +639,10 @@ export default function PapersPage() {
               <input
                 id="paper-journal"
                 type="text"
+                list="papers-journal-list"
                 value={formData.journal}
                 onChange={(e) => setFormData((d) => ({ ...d, journal: e.target.value }))}
-                placeholder="Fetched from DOI or enter manually"
+                placeholder="Fetched from DOI or type to see existing journals"
                 className="papers-input"
               />
             </div>
@@ -893,9 +907,10 @@ export default function PapersPage() {
                     <label>Journal</label>
                     <input
                       type="text"
+                      list="papers-journal-list"
                       value={editForm.journal}
                       onChange={(e) => setEditForm((f) => ({ ...f, journal: e.target.value }))}
-                      placeholder="e.g. MIS Quarterly"
+                      placeholder="e.g. MIS Quarterly or type to see existing"
                       className="papers-input"
                     />
                   </div>
@@ -1203,9 +1218,10 @@ export default function PapersPage() {
                   <label>Journal</label>
                   <input
                     type="text"
+                    list="papers-journal-list"
                     value={editForm.journal}
                     onChange={(e) => setEditForm((f) => ({ ...f, journal: e.target.value }))}
-                    placeholder="e.g. MIS Quarterly"
+                    placeholder="e.g. MIS Quarterly or type to see existing"
                     className="papers-input"
                   />
                 </div>

@@ -42,6 +42,7 @@ export default function SnippetsPage() {
   const [error, setError] = useState<string | null>(null);
 
   const [filterPaperId, setFilterPaperId] = useState('');
+  const [filterJournalNames, setFilterJournalNames] = useState<string[]>([]);
   const [filterConstructIds, setFilterConstructIds] = useState<string[]>([]);
   const [filterModelIds, setFilterModelIds] = useState<string[]>([]);
   const [filterTag, setFilterTag] = useState('');
@@ -125,9 +126,71 @@ export default function SnippetsPage() {
     return map;
   }, [papers]);
 
+  const allJournals = useMemo(() => {
+    const set = new Set<string>();
+    papers.forEach((p) => {
+      if (p.journal && p.journal.trim()) set.add(p.journal.trim());
+    });
+    return Array.from(set).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+  }, [papers]);
+
+  const paperSnippetCounts = useMemo(() => {
+    const map = new Map<string, number>();
+    snippets.forEach((s) => map.set(s.paper_id, (map.get(s.paper_id) ?? 0) + 1));
+    return map;
+  }, [snippets]);
+
+  const papersSortedByCount = useMemo(() => {
+    return [...papers].sort((a, b) => (paperSnippetCounts.get(b.id) ?? 0) - (paperSnippetCounts.get(a.id) ?? 0));
+  }, [papers, paperSnippetCounts]);
+
+  const constructSnippetCounts = useMemo(() => {
+    const map = new Map<string, number>();
+    snippets.forEach((s) => {
+      const c = (s as any).construct_ids ?? (s as any).construct_id;
+      const raw: string[] = Array.isArray(c) ? (c as string[]) : typeof c === 'string' && c ? c.split(',').map((x: string) => x.trim()).filter(Boolean) : [];
+      const ids = raw
+        .map((val) => {
+          const match = constructOptions.find(
+            (opt) =>
+              opt.id === val ||
+              opt.name.toLowerCase() === val.toLowerCase() ||
+              (opt.abbreviation && opt.abbreviation.toLowerCase() === val.toLowerCase())
+          );
+          return match ? match.id : val;
+        })
+        .filter(Boolean);
+      ids.forEach((id) => map.set(id, (map.get(id) ?? 0) + 1));
+    });
+    return map;
+  }, [snippets]);
+
+  const constructOptionsSortedByCount = useMemo(() => {
+    return [...constructOptions].sort((a, b) => (constructSnippetCounts.get(b.id) ?? 0) - (constructSnippetCounts.get(a.id) ?? 0));
+  }, [constructSnippetCounts]);
+
+  const modelSnippetCounts = useMemo(() => {
+    const map = new Map<string, number>();
+    snippets.forEach((s) => {
+      const m = (s as any).model_ids ?? (s as any).model_id;
+      const ids: string[] = Array.isArray(m) ? (m as string[]) : typeof m === 'string' && m ? m.split(',').map((x: string) => x.trim()).filter(Boolean) : [];
+      ids.forEach((id) => map.set(id, (map.get(id) ?? 0) + 1));
+    });
+    return map;
+  }, [snippets]);
+
+  const modelOptionsSortedByCount = useMemo(() => {
+    return [...modelOptions].sort((a, b) => (modelSnippetCounts.get(b.id) ?? 0) - (modelSnippetCounts.get(a.id) ?? 0));
+  }, [modelOptions, modelSnippetCounts]);
+
   const filteredSnippets = useMemo(() => {
     return snippets.filter((s) => {
       if (filterPaperId && s.paper_id !== filterPaperId) return false;
+      if (filterJournalNames.length > 0) {
+        const paper = paperById.get(s.paper_id);
+        const journal = paper?.journal?.trim();
+        if (!journal || !filterJournalNames.some((j) => j === journal)) return false;
+      }
       if (filterConstructIds.length > 0) {
         const c = (s as any).construct_ids ?? (s as any).construct_id;
         const rawSnippetConstructs: string[] = Array.isArray(c)
@@ -204,7 +267,7 @@ export default function SnippetsPage() {
       }
       return true;
     });
-  }, [snippets, filterPaperId, filterConstructIds, filterModelIds, filterTag, search]);
+  }, [snippets, filterPaperId, filterJournalNames, filterConstructIds, filterModelIds, filterTag, search, paperById]);
 
   const handleAddSnippet = useCallback(
     async (e: React.FormEvent) => {
@@ -453,6 +516,7 @@ export default function SnippetsPage() {
               className="snippets-clear-btn"
               onClick={() => {
                 setFilterPaperId('');
+                setFilterJournalNames([]);
                 setFilterConstructIds([]);
                 setFilterModelIds([]);
                 setFilterTag('');
@@ -473,9 +537,31 @@ export default function SnippetsPage() {
                 onChange={(e) => setFilterPaperId(e.target.value)}
               >
                 <option value="">All</option>
-                {papers.map((p) => (
+                {papersSortedByCount.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.title || p.url}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <div className="snippets-filter-row">
+            <label>
+              Journal(s)
+              <select
+                multiple
+                size={Math.max(4, Math.min(8, allJournals.length || 1))}
+                className="snippets-input snippets-journal-select"
+                value={filterJournalNames}
+                onChange={(e) =>
+                  setFilterJournalNames(
+                    Array.from(e.target.selectedOptions).map((opt) => opt.value)
+                  )
+                }
+              >
+                {allJournals.map((j) => (
+                  <option key={j} value={j}>
+                    {j}
                   </option>
                 ))}
               </select>
@@ -495,7 +581,7 @@ export default function SnippetsPage() {
                   )
                 }
               >
-                {modelOptions.map((m) => (
+                {modelOptionsSortedByCount.map((m) => (
                   <option key={m.id} value={m.id}>
                     {m.name}
                   </option>
@@ -508,7 +594,7 @@ export default function SnippetsPage() {
               Construct(s)
               <select
                 multiple
-                size={Math.max(4, Math.min(8, constructOptions.length))}
+                size={Math.max(4, Math.min(15, constructOptions.length))}
                 className="snippets-input snippets-construct-select"
                 value={filterConstructIds}
                 onChange={(e) =>
@@ -517,7 +603,7 @@ export default function SnippetsPage() {
                   )
                 }
               >
-                {constructOptions.map((c) => (
+                {constructOptionsSortedByCount.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.name}
                   </option>
