@@ -17,10 +17,12 @@ function setStatus(msg, isError = false) {
   status.style.color = isError ? '#b91c1c' : '';
 }
 
+/** Extract DOI from URL: doi.org, or anywhere in path (e.g. tandfonline.com/doi/full/10.1080/...) */
 function extractDoi(url) {
   if (!url || typeof url !== 'string') return null;
-  const m = url.trim().match(/doi\.org\/(10\.\S+)/i) || url.trim().match(/^(10\.\d+\/\S+)/);
-  return m ? m[1].replace(/#.*$/, '').trim() : null;
+  const u = url.trim();
+  const m = u.match(/doi\.org\/(10\.\S+)/i) || u.match(/^(10\.\d+\/\S+)/) || u.match(/\/(10\.\d{4,}\/[^\s#?]+)/);
+  return m ? m[1].replace(/#.*$/, '').replace(/\?.*$/, '').trim() : null;
 }
 function extractArxivId(url) {
   if (!url || typeof url !== 'string') return null;
@@ -108,20 +110,22 @@ function supabaseHeaders() {
 
 async function findPaperByUrl(url, doiUrl, doi) {
   const base = config.supabaseUrl.replace(/\/$/, '') + '/rest/v1';
-  const urls = [url];
-  if (doiUrl && doiUrl !== url) urls.push(doiUrl);
-  for (const u of urls) {
-    const res = await fetch(`${base}/saved_papers?url=eq.${encodeURIComponent(u)}&select=id`, {
+  // Prefer DOI-based match first: finds paper even if URL was saved with trailing space or different host (e.g. doi.org vs tandfonline.com)
+  // PostgREST uses * for wildcards in ilike, not %
+  if (doi && doi.length > 5) {
+    const pattern = '*' + doi + '*';
+    const res = await fetch(`${base}/saved_papers?url=ilike.${encodeURIComponent(pattern)}&select=id`, {
       headers: supabaseHeaders(),
     });
     if (!res.ok) throw new Error('Failed to check paper');
     const data = await res.json();
     if (data && data[0]) return data[0].id;
   }
-  // Match by DOI in URL so we find the paper even if it was saved with a different URL (e.g. publisher vs doi.org)
-  if (doi && doi.length > 5) {
-    const pattern = '%' + doi + '%';
-    const res = await fetch(`${base}/saved_papers?url=ilike.${encodeURIComponent(pattern)}&select=id`, {
+  const urls = [url.trim()];
+  if (doiUrl && doiUrl !== url) urls.push(doiUrl.trim());
+  for (const u of urls) {
+    if (!u) continue;
+    const res = await fetch(`${base}/saved_papers?url=eq.${encodeURIComponent(u)}&select=id`, {
       headers: supabaseHeaders(),
     });
     if (!res.ok) throw new Error('Failed to check paper');

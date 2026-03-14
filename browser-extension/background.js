@@ -21,8 +21,9 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
         doi: (() => {
           const meta = document.querySelector('meta[name="citation_doi"], meta[name="dc.identifier"]');
           if (meta && meta.getAttribute('content')) return meta.getAttribute('content').trim();
-          const m = window.location.href.match(/doi\.org\/(10\.\S+)/i);
-          return m ? m[1].replace(/#.*$/, '').trim() : null;
+          const href = window.location.href;
+          const m = href.match(/doi\.org\/(10\.\S+)/i) || href.match(/\/(10\.\d{4,}\/[^\s#?]+)/);
+          return m ? m[1].replace(/#.*$/, '').replace(/\?.*$/, '').trim() : null;
         })(),
       }),
     },
