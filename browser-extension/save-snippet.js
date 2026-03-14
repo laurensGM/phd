@@ -164,7 +164,7 @@ async function createPaper(url, meta, doiUrl) {
   return id;
 }
 
-async function createSnippet(paperId, content, constructIds, modelIds, notes) {
+async function createSnippet(paperId, content, constructIds, modelIds, notes, snippetType) {
   const base = config.supabaseUrl.replace(/\/$/, '') + '/rest/v1';
   const body = {
     paper_id: paperId,
@@ -174,6 +174,7 @@ async function createSnippet(paperId, content, constructIds, modelIds, notes) {
     construct_ids: constructIds,
     model_ids: modelIds,
     notes: notes?.trim() || null,
+    snippet_type: snippetType && snippetType.trim() ? snippetType.trim() : null,
     tags: [],
   };
   const res = await fetch(`${base}/snippets`, {
@@ -267,9 +268,11 @@ document.getElementById('form').addEventListener('submit', async (e) => {
 
   const constructSelect = document.getElementById('construct-select');
   const modelSelect = document.getElementById('model-select');
+  const snippetTypeSelect = document.getElementById('snippet-type');
   const constructIds = Array.from(constructSelect.selectedOptions).map((o) => o.value);
   const modelIds = Array.from(modelSelect.selectedOptions).map((o) => o.value);
   const notes = document.getElementById('notes').value.trim() || null;
+  const snippetType = snippetTypeSelect ? snippetTypeSelect.value : '';
 
   saveBtn.disabled = true;
   setStatus('Saving…');
@@ -283,7 +286,7 @@ document.getElementById('form').addEventListener('submit', async (e) => {
       paperId = await createPaper(pending.url, meta, doiUrl);
     }
     setStatus('Creating snippet…');
-    await createSnippet(paperId, content, constructIds, modelIds, notes);
+    await createSnippet(paperId, content, constructIds, modelIds, notes, snippetType);
     await chrome.storage.local.remove(STORAGE_KEY);
     show(successEl, true);
     successEl.textContent = 'Snippet saved. You can close this tab.';

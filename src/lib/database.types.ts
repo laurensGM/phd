@@ -209,6 +209,7 @@ export interface Database {
           notes: string | null;
           tags: string[];
           page_number: number | null;
+          snippet_type: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -221,6 +222,7 @@ export interface Database {
           notes?: string | null;
           tags?: string[];
           page_number?: number | null;
+          snippet_type?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -232,6 +234,7 @@ export interface Database {
           notes?: string | null;
           tags?: string[];
           page_number?: number | null;
+          snippet_type?: string | null;
           created_at?: string;
           updated_at?: string;
         };

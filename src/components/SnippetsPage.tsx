@@ -3,6 +3,16 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import constructsData from '../data/constructs.json';
 import modelsData from '../data/models.json';
 
+const SNIPPET_TYPE_OPTIONS = [
+  { value: '', label: '—' },
+  { value: 'definition', label: 'Definition' },
+  { value: 'theory', label: 'Theory' },
+  { value: 'empirical finding', label: 'Empirical finding' },
+  { value: 'method', label: 'Method' },
+  { value: 'limitation', label: 'Limitation' },
+  { value: 'future research', label: 'Future research' },
+] as const;
+
 interface Snippet {
   id: string;
   paper_id: string;
@@ -12,6 +22,7 @@ interface Snippet {
   notes: string | null;
   tags: string[];
   page_number: number | null;
+  snippet_type: string | null;
   created_at: string;
 }
 
@@ -77,6 +88,7 @@ export default function SnippetsPage() {
   const [newModelId, setNewModelId] = useState('');
   const [newPageNumber, setNewPageNumber] = useState<string>('');
   const [newTagsInput, setNewTagsInput] = useState('');
+  const [newSnippetType, setNewSnippetType] = useState('');
 
   const [allTags, setAllTags] = useState<string[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -85,6 +97,7 @@ export default function SnippetsPage() {
   const [editModelId, setEditModelId] = useState('');
   const [editPageNumber, setEditPageNumber] = useState<string>('');
   const [editTagsInput, setEditTagsInput] = useState('');
+  const [editSnippetType, setEditSnippetType] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
 
   useEffect(() => {
@@ -296,6 +309,7 @@ export default function SnippetsPage() {
           notes: null,
           tags,
           page_number: pageNum != null && !Number.isNaN(pageNum) ? pageNum : null,
+          snippet_type: newSnippetType.trim() || null,
         })
         .select('*')
         .single();
@@ -319,11 +333,12 @@ export default function SnippetsPage() {
         setNewModelId('');
         setNewPageNumber('');
         setNewTagsInput('');
+        setNewSnippetType('');
         setShowAddModal(false);
       }
       setSaving(false);
     },
-    [newContent, newPaperId, newConstructId, newModelId, newPageNumber, newTagsInput, allTags]
+    [newContent, newPaperId, newConstructId, newModelId, newPageNumber, newTagsInput, newSnippetType, allTags]
   );
 
   const handleDelete = useCallback(async (id: string) => {
@@ -343,9 +358,9 @@ export default function SnippetsPage() {
     setEditContent(snippet.content);
     setEditConstructId(getSnippetConstructIds(snippet).join(','));
     setEditModelId(getSnippetModelIds(snippet).join(','));
-
     setEditPageNumber(snippet.page_number != null ? String(snippet.page_number) : '');
     setEditTagsInput(Array.isArray(snippet.tags) ? snippet.tags.join(', ') : '');
+    setEditSnippetType((snippet as any).snippet_type ?? '');
   }, []);
 
   const cancelEdit = useCallback(() => {
@@ -355,6 +370,7 @@ export default function SnippetsPage() {
     setEditModelId('');
     setEditPageNumber('');
     setEditTagsInput('');
+    setEditSnippetType('');
   }, []);
 
   const handleSaveEdit = useCallback(
@@ -396,6 +412,7 @@ export default function SnippetsPage() {
           construct_ids: constructIds,
           model_ids: modelIds,
           page_number: pageNum != null && !Number.isNaN(pageNum) ? pageNum : null,
+          snippet_type: editSnippetType.trim() || null,
           tags,
         })
         .eq('id', snippet.id)
@@ -418,7 +435,7 @@ export default function SnippetsPage() {
         cancelEdit();
       }
     },
-    [editContent, editConstructId, editModelId, editPageNumber, editTagsInput, allTags, cancelEdit]
+    [editContent, editConstructId, editModelId, editPageNumber, editTagsInput, editSnippetType, allTags, cancelEdit]
   );
 
   if (loading) {
@@ -697,6 +714,20 @@ export default function SnippetsPage() {
                     placeholder="e.g. method, theory"
                   />
                 </label>
+                <label className="snippets-label-inline">
+                  Snippet type
+                  <select
+                    className="snippets-input-inline"
+                    value={newSnippetType}
+                    onChange={(e) => setNewSnippetType(e.target.value)}
+                  >
+                    {SNIPPET_TYPE_OPTIONS.map((opt) => (
+                      <option key={opt.value || 'none'} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
               </div>
               <datalist id="snippets-tags-list">
                 {allTags.map((t) => (
@@ -738,6 +769,9 @@ export default function SnippetsPage() {
                       {s.content.length > 140 ? `${s.content.slice(0, 140)}…` : s.content}
                     </h3>
                   </div>
+                  {(s as any).snippet_type && (
+                    <span className="snippets-card-type">{(s as any).snippet_type}</span>
+                  )}
                   <div className="snippets-card-links">
                     {(() => {
                       const constructIds = getSnippetConstructIds(s);
@@ -846,6 +880,20 @@ export default function SnippetsPage() {
                           onChange={(e) => setEditTagsInput(e.target.value)}
                           placeholder="e.g. method, theory"
                         />
+                      </label>
+                      <label className="snippets-label-inline">
+                        Snippet type
+                        <select
+                          className="snippets-input-inline"
+                          value={editSnippetType}
+                          onChange={(e) => setEditSnippetType(e.target.value)}
+                        >
+                          {SNIPPET_TYPE_OPTIONS.map((opt) => (
+                            <option key={opt.value || 'none'} value={opt.value}>
+                              {opt.label}
+                            </option>
+                          ))}
+                        </select>
                       </label>
                     </div>
                     <div className="snippets-card-footer">
