@@ -33,6 +33,22 @@ const modelOptions = (modelsData as any[]).map((m) => ({
   name: (m.name as string) || (m.id as string),
 }));
 
+/** Normalize snippet construct ids: use construct_id when construct_ids is empty (e.g. extension-only payload). */
+function getSnippetConstructIds(s: any): string[] {
+  const raw = s.construct_ids ?? s.construct_id;
+  if (Array.isArray(raw) && raw.length > 0) return raw as string[];
+  if (typeof raw === 'string' && raw) return raw.split(',').map((x: string) => x.trim()).filter(Boolean);
+  return s.construct_id ? [s.construct_id] : [];
+}
+
+/** Normalize snippet model ids: use model_id when model_ids is empty (e.g. extension-only payload). */
+function getSnippetModelIds(s: any): string[] {
+  const raw = s.model_ids ?? s.model_id;
+  if (Array.isArray(raw) && raw.length > 0) return raw as string[];
+  if (typeof raw === 'string' && raw) return raw.split(',').map((x: string) => x.trim()).filter(Boolean);
+  return s.model_id ? [s.model_id] : [];
+}
+
 export default function SnippetsPage() {
   const base = (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) || '';
   const [snippets, setSnippets] = useState<Snippet[]>([]);
@@ -147,8 +163,7 @@ export default function SnippetsPage() {
   const constructSnippetCounts = useMemo(() => {
     const map = new Map<string, number>();
     snippets.forEach((s) => {
-      const c = (s as any).construct_ids ?? (s as any).construct_id;
-      const raw: string[] = Array.isArray(c) ? (c as string[]) : typeof c === 'string' && c ? c.split(',').map((x: string) => x.trim()).filter(Boolean) : [];
+      const raw: string[] = getSnippetConstructIds(s);
       const ids = raw
         .map((val) => {
           const match = constructOptions.find(
@@ -172,8 +187,7 @@ export default function SnippetsPage() {
   const modelSnippetCounts = useMemo(() => {
     const map = new Map<string, number>();
     snippets.forEach((s) => {
-      const m = (s as any).model_ids ?? (s as any).model_id;
-      const ids: string[] = Array.isArray(m) ? (m as string[]) : typeof m === 'string' && m ? m.split(',').map((x: string) => x.trim()).filter(Boolean) : [];
+      const ids = getSnippetModelIds(s);
       ids.forEach((id) => map.set(id, (map.get(id) ?? 0) + 1));
     });
     return map;
@@ -192,16 +206,7 @@ export default function SnippetsPage() {
         if (!journal || !filterJournalNames.some((j) => j === journal)) return false;
       }
       if (filterConstructIds.length > 0) {
-        const c = (s as any).construct_ids ?? (s as any).construct_id;
-        const rawSnippetConstructs: string[] = Array.isArray(c)
-          ? (c as string[])
-          : typeof c === 'string'
-          ? c
-              .split(',')
-              .map((id: string) => id.trim())
-              .filter(Boolean)
-          : [];
-
+        const rawSnippetConstructs = getSnippetConstructIds(s);
         const normalisedConstructIds = rawSnippetConstructs
           .map((val) => {
             const match = constructOptions.find(
@@ -214,36 +219,10 @@ export default function SnippetsPage() {
           })
           .filter(Boolean);
 
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/02fd28e7-3222-47e0-bfbf-09aec767430a', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Debug-Session-Id': '1c5708',
-          },
-          body: JSON.stringify({
-            sessionId: '1c5708',
-            runId: 'pre-fix',
-            hypothesisId: 'H-construct-mismatch',
-            location: 'SnippetsPage.tsx:constructFilter',
-            message: 'Evaluating construct filter for snippet',
-            data: {
-              snippetId: s.id,
-              filterConstructIds,
-              rawConstruct: c,
-              rawSnippetConstructs,
-              normalisedConstructIds,
-            },
-            timestamp: Date.now(),
-          }),
-        }).catch(() => {});
-        // #endregion agent log
-
         if (!normalisedConstructIds.some((id) => filterConstructIds.includes(id))) return false;
       }
       if (filterModelIds.length > 0) {
-        const m = (s as any).model_ids ?? (s as any).model_id;
-        const snippetModels = Array.isArray(m) ? (m as string[]) : m ? [m as string] : [];
+        const snippetModels = getSnippetModelIds(s);
         if (!snippetModels.some((id) => filterModelIds.includes(id))) return false;
       }
       if (filterTag) {
@@ -255,13 +234,9 @@ export default function SnippetsPage() {
         const inContent = s.content.toLowerCase().includes(q);
         const tags = Array.isArray(s.tags) ? s.tags.join(' ').toLowerCase() : '';
         const constructName =
-          constructOptions.find((c) =>
-            ((s as any).construct_ids ?? [(s as any).construct_id]).includes(c.id)
-          )?.name.toLowerCase() ?? '';
+          constructOptions.find((c) => getSnippetConstructIds(s).includes(c.id))?.name.toLowerCase() ?? '';
         const modelName =
-          modelOptions.find((m) =>
-            ((s as any).model_ids ?? [(s as any).model_id]).includes(m.id)
-          )?.name.toLowerCase() ?? '';
+          modelOptions.find((m) => getSnippetModelIds(s).includes(m.id))?.name.toLowerCase() ?? '';
         if (!inContent && !tags.includes(q) && !constructName.includes(q) && !modelName.includes(q))
           return false;
       }
@@ -359,30 +334,8 @@ export default function SnippetsPage() {
   const startEdit = useCallback((snippet: Snippet) => {
     setEditingId(snippet.id);
     setEditContent(snippet.content);
-
-    const rawConstruct = (snippet as any).construct_ids ?? (snippet as any).construct_id;
-    const constructIds =
-      Array.isArray(rawConstruct)
-        ? (rawConstruct as string[])
-        : typeof rawConstruct === 'string' && rawConstruct.length
-        ? rawConstruct
-            .split(',')
-            .map((id: string) => id.trim())
-            .filter(Boolean)
-        : [];
-    setEditConstructId(constructIds.join(','));
-
-    const rawModel = (snippet as any).model_ids ?? (snippet as any).model_id;
-    const modelIds =
-      Array.isArray(rawModel)
-        ? (rawModel as string[])
-        : typeof rawModel === 'string' && rawModel.length
-        ? rawModel
-            .split(',')
-            .map((id: string) => id.trim())
-            .filter(Boolean)
-        : [];
-    setEditModelId(modelIds.join(','));
+    setEditConstructId(getSnippetConstructIds(snippet).join(','));
+    setEditModelId(getSnippetModelIds(snippet).join(','));
 
     setEditPageNumber(snippet.page_number != null ? String(snippet.page_number) : '');
     setEditTagsInput(Array.isArray(snippet.tags) ? snippet.tags.join(', ') : '');
@@ -780,15 +733,7 @@ export default function SnippetsPage() {
                   </div>
                   <div className="snippets-card-links">
                     {(() => {
-                      const rawConstruct = (s as any).construct_ids ?? (s as any).construct_id;
-                      const constructIds: string[] = Array.isArray(rawConstruct)
-                        ? rawConstruct
-                        : rawConstruct
-                        ? String(rawConstruct)
-                            .split(',')
-                            .map((id: string) => id.trim())
-                            .filter(Boolean)
-                        : [];
+                      const constructIds = getSnippetConstructIds(s);
                       return constructIds.map((id) => {
                         const c = constructOptions.find((opt) => opt.id === id);
                         return (
@@ -803,15 +748,7 @@ export default function SnippetsPage() {
                       });
                     })()}
                     {(() => {
-                      const rawModel = (s as any).model_ids ?? (s as any).model_id;
-                      const modelIds: string[] = Array.isArray(rawModel)
-                        ? rawModel
-                        : rawModel
-                        ? String(rawModel)
-                            .split(',')
-                            .map((id: string) => id.trim())
-                            .filter(Boolean)
-                        : [];
+                      const modelIds = getSnippetModelIds(s);
                       return modelIds.map((id) => {
                         const m = modelOptions.find((opt) => opt.id === id);
                         return (
