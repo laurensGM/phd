@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Save snippet – PhD Manager</title>
+  <link rel="stylesheet" href="save-snippet.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Save to PhD Manager</h1>
+    <p class="subtitle">Snippet will be linked to the paper below. If the paper is not in your library, it will be created first.</p>
+
+    <div id="config-warning" class="warning hidden">
+      <strong>Configure extension:</strong> Open extension options and set your Supabase URL and anon key.
+    </div>
+    <div id="error" class="error hidden"></div>
+    <div id="success" class="success hidden"></div>
+
+    <form id="form">
+      <div class="field">
+        <label for="paper-display">Paper</label>
+        <div id="paper-display" class="paper-display"></div>
+        <input type="hidden" id="paper-id" />
+      </div>
+      <div class="field">
+        <label for="snippet-content">Snippet</label>
+        <textarea id="snippet-content" rows="5" required placeholder="Selected text…"></textarea>
+      </div>
+      <div class="field">
+        <label for="construct-select">Construct(s)</label>
+        <select id="construct-select" multiple size="8"></select>
+      </div>
+      <div class="field">
+        <label for="model-select">Model(s)</label>
+        <select id="model-select" multiple size="6"></select>
+      </div>
+      <div class="field">
+        <label for="notes">Note (optional)</label>
+        <textarea id="notes" rows="2" placeholder="Optional note…"></textarea>
+      </div>
+      <div class="actions">
+        <button type="submit" id="save-btn">Save snippet</button>
+        <span id="status" class="status"></span>
+      </div>
+    </form>
+  </div>
+  <script src="save-snippet.js"></script>
+</body>
+</html>

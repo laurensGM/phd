@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "PhD Manager – Save Snippet",
+  "version": "1.0.0",
+  "description": "Save selected text as a snippet to PhD Manager. Creates the paper if needed.",
+  "permissions": [
+    "contextMenus",
+    "scripting",
+    "activeTab",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://*.supabase.co/*",
+    "https://api.crossref.org/*",
+    "https://export.arxiv.org/*",
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "options_ui": {
+    "page": "options.html"
+  }
+}

@@ -547,28 +547,6 @@ export default function SnippetsPage() {
           </div>
           <div className="snippets-filter-row">
             <label>
-              Journal(s)
-              <select
-                multiple
-                size={Math.max(4, Math.min(8, allJournals.length || 1))}
-                className="snippets-input snippets-journal-select"
-                value={filterJournalNames}
-                onChange={(e) =>
-                  setFilterJournalNames(
-                    Array.from(e.target.selectedOptions).map((opt) => opt.value)
-                  )
-                }
-              >
-                {allJournals.map((j) => (
-                  <option key={j} value={j}>
-                    {j}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-          <div className="snippets-filter-row">
-            <label>
               Model(s)
               <select
                 multiple
@@ -606,6 +584,28 @@ export default function SnippetsPage() {
                 {constructOptionsSortedByCount.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <div className="snippets-filter-row">
+            <label>
+              Journal(s)
+              <select
+                multiple
+                size={Math.max(4, Math.min(8, allJournals.length || 1))}
+                className="snippets-input snippets-journal-select"
+                value={filterJournalNames}
+                onChange={(e) =>
+                  setFilterJournalNames(
+                    Array.from(e.target.selectedOptions).map((opt) => opt.value)
+                  )
+                }
+              >
+                {allJournals.map((j) => (
+                  <option key={j} value={j}>
+                    {j}
                   </option>
                 ))}
               </select>

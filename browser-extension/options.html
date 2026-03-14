@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PhD Manager extension – Options</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 1.5rem; max-width: 520px; margin: 0 auto; }
+    h1 { font-size: 1.25rem; color: #712038; margin-bottom: 0.5rem; }
+    p { color: #5C4A4F; font-size: 0.9rem; margin-bottom: 1rem; }
+    .field { margin-bottom: 1rem; }
+    .field label { display: block; font-weight: 600; margin-bottom: 0.35rem; }
+    input[type="url"], input[type="password"] { width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 8px; font: inherit; }
+    button { padding: 0.5rem 1rem; background: #712038; color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
+    button:hover { background: #4A1925; }
+    .saved { color: #047857; font-size: 0.9rem; margin-left: 0.75rem; }
+  </style>
+</head>
+<body>
+  <h1>PhD Manager – Save Snippet</h1>
+  <p>Set your Supabase project URL and anon (public) key so the extension can save papers and snippets. Find these in your Supabase project → Settings → API.</p>
+  <form id="form">
+    <div class="field">
+      <label for="supabase-url">Supabase URL</label>
+      <input type="url" id="supabase-url" placeholder="https://xxxxx.supabase.co" required />
+    </div>
+    <div class="field">
+      <label for="anon-key">Anon / public key</label>
+      <input type="password" id="anon-key" placeholder="eyJhbGc..." required />
+    </div>
+    <div>
+      <button type="submit">Save</button>
+      <span id="saved" class="saved" style="display:none;">Saved.</span>
+    </div>
+  </form>
+  <script src="options.js"></script>
+</body>
+</html>

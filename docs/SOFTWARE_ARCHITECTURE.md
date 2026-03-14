@@ -181,6 +181,16 @@ Types for Supabase are centralised in `src/lib/database.types.ts` (Row, Insert, 
 
 Both are called from the browser; no server-side proxy. CORS permits these public APIs.
 
+### 9.1 Browser extension (Save Snippet)
+
+A Chrome extension in **`browser-extension/`** lets users save selected text from any article page as a snippet in PhD Manager. Flow:
+
+1. User selects text on a page → right‑click → **Save to PhD Manager**.
+2. Extension opens a tab with: detected **paper** (URL/DOI/title), **snippet** (selected text), **Construct(s)** and **Model(s)** dropdowns (from bundled `constructs.json` / `models.json`), optional **Note**.
+3. On **Save**: the extension checks if a paper with that URL (or canonical DOI URL) exists in `saved_papers`; if not, it creates the paper (using CrossRef/arXiv metadata when DOI/arXiv ID is present), then inserts the snippet into `snippets` with `paper_id`, `content`, `construct_ids`, `model_ids`, `notes`, `tags`.
+
+So the hierarchy is always **Paper → Snippet**. The extension uses the same Supabase REST API (URL + anon key configured in the extension options). Construct and model lists are minimal copies of `src/data/constructs.json` and `models.json` (id + name only) and should be regenerated when those files change. See `browser-extension/README.md` for setup and sync instructions.
+
 ---
 
 ## 10. Security & Environment
