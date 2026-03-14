@@ -1013,6 +1013,9 @@ export default function PapersPage() {
                   {paper.authors && (
                     <p className="papers-entry-authors">{paper.authors}</p>
                   )}
+                  {paper.journal && (
+                    <p className="papers-entry-journal">{paper.journal}</p>
+                  )}
                   {!paper.title && (
                     <p className="papers-entry-url-fallback">
                       <a href={paper.url} target="_blank" rel="noopener noreferrer">{paper.url}</a>
@@ -1087,6 +1090,9 @@ export default function PapersPage() {
                             </p>
                           )}
                           {paper.authors && <p className="papers-board-card-authors">{paper.authors}</p>}
+                          {paper.journal && (
+                            <p className="papers-board-card-journal">{paper.journal}</p>
+                          )}
                           <div className="papers-board-card-meta-row">
                             {paper.year && (
                               <span className="papers-board-card-year">{paper.year}</span>
