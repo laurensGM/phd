@@ -137,16 +137,18 @@ async function createPaper(url, meta, doiUrl) {
 
 async function createSnippet(paperId, content, constructIds, modelIds, notes) {
   const base = config.supabaseUrl.replace(/\/$/, '') + '/rest/v1';
+  // Use only construct_id / model_id so extension works when construct_ids/model_ids columns don't exist yet (migration 018).
   const body = {
     paper_id: paperId,
     content: content.trim(),
     construct_id: constructIds[0] || null,
     model_id: modelIds[0] || null,
-    construct_ids: constructIds,
-    model_ids: modelIds,
     notes: notes?.trim() || null,
     tags: [],
   };
+  // If your DB has construct_ids/model_ids (after migration 018), uncomment below to link multiple:
+  // body.construct_ids = constructIds;
+  // body.model_ids = modelIds;
   const res = await fetch(`${base}/snippets`, {
     method: 'POST',
     headers: supabaseHeaders(),
