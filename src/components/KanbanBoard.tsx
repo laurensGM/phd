@@ -50,6 +50,8 @@ export default function KanbanBoard() {
   const [editTitle, setEditTitle] = useState('');
   const [editDescription, setEditDescription] = useState('');
   const [saving, setSaving] = useState(false);
+  const [detailTaskId, setDetailTaskId] = useState<string | null>(null);
+  const [justDraggedId, setJustDraggedId] = useState<string | null>(null);
 
   const fetchTasks = useCallback(async () => {
     if (!supabase) return;
@@ -79,6 +81,7 @@ export default function KanbanBoard() {
 
   const handleDragStart = (e: React.DragEvent, taskId: string) => {
     setDraggedId(taskId);
+    setJustDraggedId(null);
     e.dataTransfer.setData('application/json', JSON.stringify({ taskId }));
     e.dataTransfer.effectAllowed = 'move';
   };
@@ -90,7 +93,9 @@ export default function KanbanBoard() {
 
   const handleDrop = async (e: React.DragEvent, newStatus: string) => {
     e.preventDefault();
+    const prevId = draggedId;
     setDraggedId(null);
+    if (prevId) setJustDraggedId(prevId);
     const raw = e.dataTransfer.getData('application/json');
     if (!raw) return;
     try {
@@ -194,6 +199,13 @@ export default function KanbanBoard() {
     }
     setTasks((prev) => prev.filter((t) => t.id !== id));
     if (editingId === id) setEditingId(null);
+    if (detailTaskId === id) setDetailTaskId(null);
+  };
+
+  const detailTask = detailTaskId ? tasks.find((t) => t.id === detailTaskId) : null;
+  const openEditFromModal = (task: Task) => {
+    setDetailTaskId(null);
+    startEdit(task);
   };
 
   if (!isSupabaseConfigured()) {
@@ -308,16 +320,32 @@ export default function KanbanBoard() {
                       draggable
                       onDragStart={(e) => handleDragStart(e, task.id)}
                     >
-                      <h4 className="kanban-card-title">{task.title}</h4>
-                      {task.description && <p className="kanban-card-desc">{task.description}</p>}
+                      <div
+                        className="kanban-card-content"
+                        onClick={() => {
+                          if (justDraggedId !== task.id) setDetailTaskId(task.id);
+                          setJustDraggedId(null);
+                        }}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => e.key === 'Enter' && setDetailTaskId(task.id)}
+                        aria-label={`View task: ${task.title}`}
+                      >
+                        <h4 className="kanban-card-title">{task.title}</h4>
+                        {task.description ? (
+                          <p className="kanban-card-desc">{task.description}</p>
+                        ) : (
+                          <p className="kanban-card-desc kanban-card-desc-empty">No description</p>
+                        )}
+                      </div>
                       <div className="kanban-card-actions">
-                        <button type="button" className="kanban-card-action" onClick={() => startEdit(task)}>
+                        <button type="button" className="kanban-card-action" onClick={(e) => { e.stopPropagation(); startEdit(task); }}>
                           Edit
                         </button>
                         <button
                           type="button"
                           className="kanban-card-action kanban-card-delete"
-                          onClick={() => handleDelete(task.id)}
+                          onClick={(e) => { e.stopPropagation(); handleDelete(task.id); }}
                         >
                           Delete
                         </button>
@@ -329,6 +357,63 @@ export default function KanbanBoard() {
           </div>
         ))}
       </div>
+
+      {detailTask && (
+        <div
+          className="kanban-detail-overlay"
+          onClick={() => setDetailTaskId(null)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="kanban-detail-title"
+        >
+          <div
+            className="kanban-detail-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 id="kanban-detail-title" className="kanban-detail-title">{detailTask.title}</h2>
+            <div className="kanban-detail-meta">
+              <span className="kanban-detail-status">
+                {COLUMNS.find((c) => c.id === detailTask.status)?.title ?? detailTask.status}
+              </span>
+              <span className="kanban-detail-dates">
+                Created {new Date(detailTask.created_at).toLocaleDateString()}
+                {detailTask.updated_at !== detailTask.created_at &&
+                  ` · Updated ${new Date(detailTask.updated_at).toLocaleDateString()}`}
+              </span>
+            </div>
+            <div className="kanban-detail-description">
+              {detailTask.description ? (
+                <p className="kanban-detail-description-text">{detailTask.description}</p>
+              ) : (
+                <p className="kanban-detail-description-empty">No description.</p>
+              )}
+            </div>
+            <div className="kanban-detail-actions">
+              <button
+                type="button"
+                className="kanban-btn kanban-btn-primary"
+                onClick={() => openEditFromModal(detailTask)}
+              >
+                Edit
+              </button>
+              <button
+                type="button"
+                className="kanban-btn kanban-card-delete"
+                onClick={() => handleDelete(detailTask.id)}
+              >
+                Delete
+              </button>
+              <button
+                type="button"
+                className="kanban-btn kanban-btn-secondary"
+                onClick={() => setDetailTaskId(null)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

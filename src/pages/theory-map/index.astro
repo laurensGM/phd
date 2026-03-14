@@ -3,53 +3,94 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import TheoryMapGraph from '../../components/TheoryMapGraph';
 import models from '../../data/models.json';
 import constructs from '../../data/constructs.json';
-
-const constructToSlug: Record<string, string> = {};
-constructs.forEach((c: { name: string; id: string }) => {
-  constructToSlug[c.name] = c.id;
-});
 ---
 
-<BaseLayout title="Theory Map" description="Visual map of model connections, overlaps, and gaps">
+<BaseLayout title="Theory Map" description="Interactive map of constructs, models, and supporting papers">
   <h1>Theory Map</h1>
-  <p class="page-desc">Connect models, show overlaps through shared constructs, and identify gaps in the literature. Click construct nodes to view details.</p>
+  <p class="page-desc">Constructs (maroon) and how they influence each other; theoretical models (green) that use them; and papers (grey) that support constructs and models. Click a node to highlight its connections; double-click to open the detail page.</p>
 
   <section class="theory-map-viz">
-    <TheoryMapGraph client:load models={models} constructToSlug={constructToSlug} />
-  </section>
-
-  <section class="overlaps-section">
-    <h2>Model Overlaps</h2>
-    <p>Constructs shared across multiple models indicate theoretical convergence. TAM, ECT, and ECM share several constructs (e.g. Perceived Usefulness, Satisfaction), enabling integration and extension.</p>
-  </section>
-
-  <section class="gaps-section">
-    <h2>Identified Gaps</h2>
-    <p>Track gaps you identify over time. Example: <em>Limited research on continuance in [your specific context] — opportunity for contribution.</em></p>
+    <TheoryMapGraph client:load constructs={constructs} models={models} />
   </section>
 </BaseLayout>
 
 <style>
-  .page-desc { color: var(--color-ink-muted); margin-bottom: 1.5rem; }
+  .page-desc { color: var(--color-ink-muted); margin-bottom: 1.5rem; line-height: 1.5; }
 
-  .theory-map-viz { margin-bottom: 2rem; }
-
-  .theory-map-viz :global(.theory-map-link) {
-    color: var(--color-ink);
-    text-decoration: none;
-    padding: 0.5rem;
-  }
-
-  .theory-map-viz :global(.theory-map-link:hover) {
-    color: var(--color-accent);
-    text-decoration: underline;
-  }
-
-  .overlaps-section, .gaps-section {
-    padding: 1.5rem;
-    background: white;
+  .theory-map-viz {
+    margin-bottom: 2rem;
     border: 1px solid var(--color-border);
-    border-radius: 8px;
-    margin-bottom: 1rem;
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--color-bg-alt);
+  }
+
+  .theory-map-viz :global(.theory-map-container) {
+    display: flex;
+    flex-direction: column;
+    height: 600px;
+  }
+
+  .theory-map-viz :global(.theory-map-toolbar) {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.5rem 1rem;
+    background: #fff;
+    border-bottom: 1px solid var(--color-border);
+    flex-wrap: wrap;
+  }
+
+  .theory-map-viz :global(.theory-map-toggle) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+
+  .theory-map-viz :global(.theory-map-legend) {
+    font-size: 0.85rem;
+    color: var(--color-ink-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .theory-map-viz :global(.theory-map-legend-node) {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+  }
+
+  .theory-map-viz :global(.theory-map-legend-construct) { background: #712038; }
+  .theory-map-viz :global(.theory-map-legend-model) { background: #2d5a27; transform: rotate(90deg); }
+  .theory-map-viz :global(.theory-map-legend-paper) { background: #4a5568; border-radius: 50%; }
+
+  .theory-map-viz :global(.theory-map-error) {
+    color: var(--color-maroon);
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    margin: 0;
+  }
+
+  .theory-map-viz :global(.theory-map-cy) {
+    flex: 1;
+    min-height: 400px;
+  }
+
+  .theory-map-viz :global(.theory-map-hint) {
+    font-size: 0.8rem;
+    color: var(--color-ink-muted);
+    padding: 0.35rem 1rem;
+    margin: 0;
+    border-top: 1px solid var(--color-border);
+    background: #fff;
+  }
+
+  .theory-map-viz :global(.theory-map-loading) {
+    padding: 2rem;
+    text-align: center;
+    color: var(--color-ink-muted);
   }
 </style>
