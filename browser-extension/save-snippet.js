@@ -31,6 +31,20 @@ function canonicalDoiUrl(doi) {
   return doi ? `https://doi.org/${doi}` : null;
 }
 
+/** Strip journal/access junk from document.title so we don't store it as paper title */
+function normalizePageTitle(title) {
+  if (!title || typeof title !== 'string') return title || '';
+  let t = title.trim();
+  t = t.replace(/\s*:\s*Journal of [^:]+:\s*Vol \d+,?\s*No\.?\s*\d+.*$/i, '');
+  t = t.replace(/\s*[-–—]\s*Get Access\s*$/i, '');
+  t = t.replace(/\s*[-–—]\s*Taylor & Francis Online\s*$/i, '');
+  t = t.replace(/\s*[-–—]\s*Springer(?:Link)?\s*$/i, '');
+  t = t.replace(/\s*[-–—]\s*ScienceDirect\s*$/i, '');
+  t = t.replace(/\s*[-–—]\s*Wiley Online Library\s*$/i, '');
+  t = t.replace(/\s*[-–—]\s*[A-Z][a-z]+\.?\s*$/i, ''); // generic " - Publisher"
+  return t.trim() || title.trim();
+}
+
 async function fetchMetadata(url) {
   const doi = extractDoi(url) || pending?.doi;
   if (doi) {
@@ -92,7 +106,7 @@ function supabaseHeaders() {
   };
 }
 
-async function findPaperByUrl(url, doiUrl) {
+async function findPaperByUrl(url, doiUrl, doi) {
   const base = config.supabaseUrl.replace(/\/$/, '') + '/rest/v1';
   const urls = [url];
   if (doiUrl && doiUrl !== url) urls.push(doiUrl);
@@ -104,14 +118,25 @@ async function findPaperByUrl(url, doiUrl) {
     const data = await res.json();
     if (data && data[0]) return data[0].id;
   }
+  // Match by DOI in URL so we find the paper even if it was saved with a different URL (e.g. publisher vs doi.org)
+  if (doi && doi.length > 5) {
+    const pattern = '%' + doi + '%';
+    const res = await fetch(`${base}/saved_papers?url=ilike.${encodeURIComponent(pattern)}&select=id`, {
+      headers: supabaseHeaders(),
+    });
+    if (!res.ok) throw new Error('Failed to check paper');
+    const data = await res.json();
+    if (data && data[0]) return data[0].id;
+  }
   return null;
 }
 
 async function createPaper(url, meta, doiUrl) {
   const finalUrl = doiUrl || url;
+  const title = meta?.title || (pending?.title ? normalizePageTitle(pending.title) : null);
   const body = {
     url: finalUrl,
-    title: meta?.title || pending?.title || null,
+    title: title || null,
     authors: meta?.authors || null,
     year: meta?.year || null,
     journal: meta?.journal || null,
@@ -187,8 +212,8 @@ function renderPaperDisplay() {
   }
   const doiUrl = pending.doi ? canonicalDoiUrl(pending.doi) : null;
   const urlToShow = doiUrl || pending.url;
-  let text = urlToShow;
-  if (pending.title) text = pending.title + ' — ' + urlToShow;
+  const displayTitle = normalizePageTitle(pending.title || '');
+  const text = displayTitle ? displayTitle + ' — ' + urlToShow : urlToShow;
   el.textContent = text;
 }
 
@@ -249,7 +274,7 @@ document.getElementById('form').addEventListener('submit', async (e) => {
 
   try {
     const doiUrl = pending.doi ? canonicalDoiUrl(pending.doi) : null;
-    let paperId = await findPaperByUrl(pending.url, doiUrl);
+    let paperId = await findPaperByUrl(pending.url, doiUrl, pending.doi || extractDoi(pending.url));
     if (!paperId) {
       setStatus('Creating paper…');
       const meta = await fetchMetadata(pending.url);
