@@ -12,6 +12,7 @@ interface SavedPaper {
   title: string | null;
   authors: string | null;
   year: string | null;
+  journal: string | null;
   citations: number | null;
   status: string;
   golden: boolean;
@@ -48,6 +49,7 @@ function mapRow(row: {
   title?: string | null;
   authors?: string | null;
   year?: string | null;
+  journal?: string | null;
   citations?: number | null;
   status?: string | null;
   golden?: boolean | null;
@@ -63,6 +65,7 @@ function mapRow(row: {
     title: row.title ?? null,
     authors: row.authors ?? null,
     year: row.year ?? null,
+    journal: row.journal ?? null,
     citations: (() => {
       const c = row.citations;
       if (c === null || c === undefined) return null;
@@ -331,9 +334,10 @@ export default function PaperDetailPage() {
       <header className="paper-detail-header">
         <h1 className="paper-detail-title">{paper.title || 'Untitled'}</h1>
         {paper.authors && <p className="paper-detail-authors">{paper.authors}</p>}
-        {(paper.year || paper.status) && (
+        {(paper.year || paper.journal || paper.status) && (
           <div className="paper-detail-meta-row">
             {paper.year && <span className="paper-detail-year">{paper.year}</span>}
+            {paper.journal && <span className="paper-detail-journal">{paper.journal}</span>}
             {paper.status && (
               <span className={`paper-detail-status paper-detail-status-${paper.status.replace(/\s+/g, '-').toLowerCase()}`}>
                 {paper.status}

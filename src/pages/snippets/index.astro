@@ -83,6 +83,9 @@ import SnippetsPage from '../../components/SnippetsPage';
     background: #ecfdf3;
   }
   :global(.snippets-clear-btn) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
     align-self: flex-end;
     padding: 0.4rem 0.9rem;
     font-size: 0.8rem;
@@ -91,6 +94,12 @@ import SnippetsPage from '../../components/SnippetsPage';
     background: #fff;
     cursor: pointer;
     white-space: nowrap;
+  }
+  :global(.snippets-clear-icon) {
+    font-size: 1.1rem;
+    line-height: 1;
+    font-weight: 700;
+    opacity: 0.85;
   }
 
   :global(.snippets-add-section) {
@@ -247,6 +256,11 @@ import SnippetsPage from '../../components/SnippetsPage';
   :global(.snippets-card-page-inline) {
     font-size: 0.8rem;
     color: var(--color-ink-muted);
+  }
+  :global(.snippets-card-journal) {
+    font-size: 0.8rem;
+    color: var(--color-ink-muted);
+    font-style: italic;
   }
   :global(.snippets-card-links) {
     margin-top: 0.25rem;

@@ -40,6 +40,7 @@ export interface Database {
           title: string | null;
           authors: string | null;
           year: string | null;
+          journal: string | null;
           citations: number | null;
           status: string;
           golden: boolean;
@@ -54,6 +55,7 @@ export interface Database {
           title?: string | null;
           authors?: string | null;
           year?: string | null;
+          journal?: string | null;
           citations?: number | null;
           status?: string;
           golden?: boolean;
@@ -67,6 +69,7 @@ export interface Database {
           title?: string | null;
           authors?: string | null;
           year?: string | null;
+          journal?: string | null;
           citations?: number | null;
           status?: string;
           golden?: boolean;

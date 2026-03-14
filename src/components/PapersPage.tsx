@@ -21,6 +21,7 @@ interface SavedPaper {
   title: string | null;
   authors: string | null;
   year: string | null;
+  journal: string | null;
   citations: number | null;
   status: string;
   golden: boolean;
@@ -44,8 +45,8 @@ function extractArxivId(url: string): string | null {
   return m[1].replace(/v\d+$/, '');
 }
 
-/** Fetch title, authors, year from CrossRef (DOI) or arXiv API */
-async function fetchMetadataFromUrl(url: string): Promise<{ title: string; authors: string; year: string } | null> {
+/** Fetch title, authors, year, journal from CrossRef (DOI) or arXiv API */
+async function fetchMetadataFromUrl(url: string): Promise<{ title: string; authors: string; year: string; journal: string } | null> {
   const doi = extractDoi(url);
   if (doi) {
     try {
@@ -65,7 +66,9 @@ async function fetchMetadataFromUrl(url: string): Promise<{ title: string; autho
         .join('; ');
       const dateParts = msg.published?.['date-parts']?.[0] ?? msg['published-print']?.['date-parts']?.[0] ?? msg['published-online']?.['date-parts']?.[0];
       const year = dateParts?.[0] != null ? String(dateParts[0]) : '';
-      return { title: title || '', authors: authors || '', year };
+      const container = msg['container-title'];
+      const journal = Array.isArray(container) && container[0] ? String(container[0]) : '';
+      return { title: title || '', authors: authors || '', year, journal: journal || '' };
     } catch {
       return null;
     }
@@ -89,7 +92,7 @@ async function fetchMetadataFromUrl(url: string): Promise<{ title: string; autho
       const authors = Array.from(authorEls).map((el) => el.textContent?.trim() ?? '').filter(Boolean).join('; ');
       const published = entry.querySelector('published')?.textContent ?? '';
       const year = published ? String(new Date(published).getFullYear()) : '';
-      return { title, authors, year };
+      return { title, authors, year, journal: '' };
     } catch {
       return null;
     }
@@ -124,6 +127,7 @@ function mapRow(row: {
   title?: string | null;
   authors?: string | null;
   year?: string | null;
+  journal?: string | null;
   citations?: number | null;
   status?: string | null;
   golden?: boolean | null;
@@ -139,6 +143,7 @@ function mapRow(row: {
     title: row.title ?? null,
     authors: row.authors ?? null,
     year: row.year ?? null,
+    journal: row.journal ?? null,
     citations: (() => {
       const c = row.citations;
       if (c === null || c === undefined) return null;
@@ -167,6 +172,7 @@ export default function PapersPage() {
     title: '',
     authors: '',
     year: '',
+    journal: '',
     citations: '' as string,
     status: 'Not read' as PaperStatusId,
     golden: false,
@@ -182,6 +188,7 @@ export default function PapersPage() {
     title: '',
     authors: '',
     year: '',
+    journal: '',
     motivation: '',
     tags: [] as string[],
     citations: '' as string,
@@ -284,7 +291,7 @@ export default function PapersPage() {
     const meta = await fetchMetadataFromUrl(url);
     setFetchingMeta(false);
     if (meta) {
-      setFormData((d) => ({ ...d, title: meta.title, authors: meta.authors, year: meta.year }));
+      setFormData((d) => ({ ...d, title: meta.title, authors: meta.authors, year: meta.year, journal: meta.journal }));
     } else {
       setError('Could not fetch metadata. Try a DOI link (e.g. https://doi.org/10.1234/...) or arXiv link. You can still fill title, authors, and year manually.');
     }
@@ -306,6 +313,7 @@ export default function PapersPage() {
       title: paper.title ?? '',
       authors: paper.authors ?? '',
       year: paper.year ?? '',
+      journal: paper.journal ?? '',
       motivation: paper.motivation ?? '',
       tags: paper.tags ?? [],
       citations: paper.citations != null ? String(paper.citations) : '',
@@ -340,6 +348,7 @@ export default function PapersPage() {
         title: editForm.title.trim() || null,
         authors: editForm.authors.trim() || null,
         year: editForm.year.trim() || null,
+        journal: editForm.journal.trim() || null,
         motivation: editForm.motivation.trim() || null,
         tags: editForm.tags,
         citations: Number.isNaN(citationsNum) ? null : citationsNum,
@@ -347,7 +356,7 @@ export default function PapersPage() {
         golden: editForm.golden,
       })
       .eq('id', editingId)
-      .select('id, url, motivation, tags, title, authors, year, citations, status, golden, created_at')
+      .select('id, url, secondary_url, motivation, tags, title, authors, year, journal, citations, status, golden, created_at')
       .single();
     setSaving(false);
     if (updateError) {
@@ -440,17 +449,18 @@ export default function PapersPage() {
         title: formData.title.trim() || null,
         authors: formData.authors.trim() || null,
         year: formData.year.trim() || null,
+        journal: formData.journal.trim() || null,
         citations: Number.isNaN(citationsNum) ? null : citationsNum,
         status: formData.status,
         golden: formData.golden,
       })
-      .select('id, url, motivation, tags, title, authors, year, citations, status, golden, created_at')
+      .select('id, url, secondary_url, motivation, tags, title, authors, year, journal, citations, status, golden, created_at')
       .single();
     if (insertError) {
       setError(insertError.message);
     } else if (insertData) {
       setPapers((prev) => [mapRow({ ...insertData, id: insertData.id }), ...prev]);
-      setFormData({ url: '', motivation: '', tags: [], title: '', authors: '', year: '', citations: '', status: 'Not read', golden: false });
+      setFormData({ url: '', secondary_url: '', motivation: '', tags: [], title: '', authors: '', year: '', journal: '', citations: '', status: 'Not read', golden: false });
       setShowForm(false);
     }
     setSaving(false);
@@ -607,6 +617,18 @@ export default function PapersPage() {
                 value={formData.authors}
                 onChange={(e) => setFormData((d) => ({ ...d, authors: e.target.value }))}
                 placeholder="Fetched automatically or enter manually"
+                className="papers-input"
+              />
+            </div>
+
+            <div className="papers-form-field">
+              <label htmlFor="paper-journal">Journal</label>
+              <input
+                id="paper-journal"
+                type="text"
+                value={formData.journal}
+                onChange={(e) => setFormData((d) => ({ ...d, journal: e.target.value }))}
+                placeholder="Fetched from DOI or enter manually"
                 className="papers-input"
               />
             </div>
@@ -864,6 +886,16 @@ export default function PapersPage() {
                       type="text"
                       value={editForm.authors}
                       onChange={(e) => setEditForm((f) => ({ ...f, authors: e.target.value }))}
+                      className="papers-input"
+                    />
+                  </div>
+                  <div className="papers-form-field">
+                    <label>Journal</label>
+                    <input
+                      type="text"
+                      value={editForm.journal}
+                      onChange={(e) => setEditForm((f) => ({ ...f, journal: e.target.value }))}
+                      placeholder="e.g. MIS Quarterly"
                       className="papers-input"
                     />
                   </div>
@@ -1158,6 +1190,16 @@ export default function PapersPage() {
                     type="text"
                     value={editForm.authors}
                     onChange={(e) => setEditForm((f) => ({ ...f, authors: e.target.value }))}
+                    className="papers-input"
+                  />
+                </div>
+                <div className="papers-form-field">
+                  <label>Journal</label>
+                  <input
+                    type="text"
+                    value={editForm.journal}
+                    onChange={(e) => setEditForm((f) => ({ ...f, journal: e.target.value }))}
+                    placeholder="e.g. MIS Quarterly"
                     className="papers-input"
                   />
                 </div>

@@ -19,6 +19,7 @@ interface PaperSummary {
   id: string;
   title: string | null;
   url: string;
+  journal: string | null;
 }
 
 const constructOptions = (constructsData as any[]).map((c) => ({
@@ -78,7 +79,7 @@ export default function SnippetsPage() {
             .from('snippets')
             .select('*')
             .order('created_at', { ascending: false }),
-          supabase!.from('saved_papers').select('id,title,url'),
+          supabase!.from('saved_papers').select('id,title,url,journal'),
         ]);
       if (cancelled) return;
       if (snippetErr) {
@@ -107,6 +108,7 @@ export default function SnippetsPage() {
             id: p.id as string,
             title: (p.title as string | null) ?? null,
             url: p.url as string,
+            journal: (p.journal as string | null) ?? null,
           }))
         );
       }
@@ -436,6 +438,33 @@ export default function SnippetsPage() {
       <div className="snippets-layout">
         <section className="snippets-filters">
           <div className="snippets-filter-row">
+            <label className="snippets-search-label">
+              Search
+              <input
+                type="search"
+                className="snippets-input"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search in snippet text, tags, constructs, models…"
+              />
+            </label>
+            <button
+              type="button"
+              className="snippets-clear-btn"
+              onClick={() => {
+                setFilterPaperId('');
+                setFilterConstructIds([]);
+                setFilterModelIds([]);
+                setFilterTag('');
+                setSearch('');
+              }}
+              title="Clear all filters"
+            >
+              <span className="snippets-clear-icon" aria-hidden>×</span>
+              Clear filters
+            </button>
+          </div>
+          <div className="snippets-filter-row">
             <label>
               Paper
               <select
@@ -512,31 +541,6 @@ export default function SnippetsPage() {
                 ))}
               </select>
             </label>
-          </div>
-          <div className="snippets-filter-row">
-            <label className="snippets-search-label">
-              Search
-              <input
-                type="search"
-                className="snippets-input"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search in snippet text, tags, constructs, models…"
-              />
-            </label>
-            <button
-              type="button"
-              className="snippets-clear-btn"
-              onClick={() => {
-                setFilterPaperId('');
-                setFilterConstructIds([]);
-                setFilterModelIds([]);
-                setFilterTag('');
-                setSearch('');
-              }}
-            >
-              Clear filters
-            </button>
           </div>
         </section>
 
@@ -851,6 +855,9 @@ export default function SnippetsPage() {
                       )}
                       {s.page_number != null && editingId !== s.id && (
                         <span className="snippets-card-page-inline"> · Page {s.page_number}</span>
+                      )}
+                      {paper?.journal?.trim() && editingId !== s.id && (
+                        <span className="snippets-card-journal"> · {paper.journal.trim()}</span>
                       )}
                     </p>
                     {Array.isArray(s.tags) && s.tags.length > 0 && (
