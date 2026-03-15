@@ -266,5 +266,113 @@
     "relatedModels": ["TAM", "TAM2", "UTAUT"],
     "relatedConstructs": ["Perceived Usefulness", "Perceived Ease of Use", "Behavioral Intention"],
     "notes": "Often used as a moderator or antecedent in technology acceptance; reflects trait-based openness to trying new IT."
+  },
+  {
+    "id": "privacy-concern",
+    "name": "Privacy Concern",
+    "abbreviation": "PC",
+    "definition": "The degree to which individuals worry about misuse of their personal data.",
+    "sourcePaper": "Various – widely used in privacy and information systems research",
+    "doi": "",
+    "theoreticalDomain": "Information systems, online behavior",
+    "measurementItems": [
+      "I am concerned that my personal information could be misused.",
+      "I worry about how my data is collected and used by online services.",
+      "I am concerned about the privacy of my personal information."
+    ],
+    "measurementScale": "7-point Likert (Strongly disagree - Strongly agree)",
+    "relatedModels": [],
+    "relatedConstructs": ["Trust", "Perceived Vulnerability"],
+    "notes": "Commonly used in research on digital platforms, social media, health apps, and fintech."
+  },
+  {
+    "id": "perceived-vulnerability",
+    "name": "Perceived Vulnerability",
+    "abbreviation": "PV",
+    "definition": "How likely someone believes they are to experience harm (e.g., data breaches).",
+    "sourcePaper": "Risk perception and protection motivation literature",
+    "doi": "",
+    "theoreticalDomain": "Risk perception, security behavior",
+    "measurementItems": [
+      "I believe I am likely to experience a data breach or security incident.",
+      "I feel vulnerable to online threats when using this technology.",
+      "I think my personal information is at risk when I use digital services."
+    ],
+    "measurementScale": "7-point Likert (Strongly disagree - Strongly agree)",
+    "relatedModels": [],
+    "relatedConstructs": ["Privacy Concern", "Trust"],
+    "notes": "Often appears in cybersecurity and privacy research."
+  },
+  {
+    "id": "trust",
+    "name": "Trust",
+    "abbreviation": "Trust",
+    "definition": "The belief that a system or organization will behave reliably and ethically.",
+    "sourcePaper": "Various – foundational in IS, marketing, and organizational behavior",
+    "doi": "",
+    "theoreticalDomain": "Information systems, marketing, organizational behavior",
+    "measurementItems": [
+      "I believe this system/organization is trustworthy.",
+      "I feel confident that my interests will be protected.",
+      "I can rely on this system/organization to act with integrity."
+    ],
+    "measurementScale": "7-point Likert (Strongly disagree - Strongly agree)",
+    "relatedModels": ["UTAUT", "TAM"],
+    "relatedConstructs": ["Privacy Concern", "Perceived Vulnerability"],
+    "notes": "One of the most widely studied constructs in digital adoption research."
+  },
+  {
+    "id": "hedonic-motivation",
+    "name": "Hedonic Motivation",
+    "abbreviation": "HM",
+    "definition": "Using a system because it is fun or pleasurable, not purely functional.",
+    "sourcePaper": "Venkatesh et al. (2012) - UTAUT2",
+    "doi": "",
+    "theoreticalDomain": "Technology adoption",
+    "measurementItems": [
+      "Using the system is fun.",
+      "I find the system enjoyable to use.",
+      "Using the system provides me with a lot of enjoyment."
+    ],
+    "measurementScale": "7-point Likert (Strongly disagree - Strongly agree)",
+    "relatedModels": ["UTAUT2"],
+    "relatedConstructs": ["Perceived Enjoyment", "Behavioral Intention"],
+    "notes": "Very common in technology acceptance research; key in UTAUT2 for consumer contexts."
+  },
+  {
+    "id": "perceived-enjoyment",
+    "name": "Perceived Enjoyment",
+    "abbreviation": "PE",
+    "definition": "The extent to which using a technology is enjoyable in itself.",
+    "sourcePaper": "Davis et al. – extended TAM; consumer and IS research",
+    "doi": "",
+    "theoreticalDomain": "Information systems and consumer behavior",
+    "measurementItems": [
+      "I find using the system enjoyable.",
+      "Using the system is pleasurable.",
+      "I have fun using the system."
+    ],
+    "measurementScale": "7-point Likert (Strongly disagree - Strongly agree)",
+    "relatedModels": ["TAM", "UTAUT2"],
+    "relatedConstructs": ["Hedonic Motivation", "Behavioral Intention"],
+    "notes": "Closely related to hedonic motivation; often used in adoption of entertainment or experiential technologies."
+  },
+  {
+    "id": "self-efficacy",
+    "name": "Self-Efficacy",
+    "abbreviation": "SE",
+    "definition": "A person's belief in their ability to successfully perform a task.",
+    "sourcePaper": "Bandura - Social cognitive theory",
+    "doi": "",
+    "theoreticalDomain": "Psychology and behavioral science",
+    "measurementItems": [
+      "I am confident I can use the system to complete my tasks.",
+      "I have the skills necessary to use the system effectively.",
+      "I am able to use the system even if there is no one to help me."
+    ],
+    "measurementScale": "7-point Likert (Strongly disagree - Strongly agree)",
+    "relatedModels": ["TAM", "UTAUT", "TPB"],
+    "relatedConstructs": ["Perceived Ease of Use", "Behavioral Intention"],
+    "notes": "Originates from Bandura's social cognitive theory; in tech research often measured as \"computer self-efficacy\" or domain-specific self-efficacy."
   }
 ]

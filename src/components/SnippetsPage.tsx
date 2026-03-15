@@ -599,6 +599,7 @@ export default function SnippetsPage() {
               Snippet type
               <select
                 className="snippets-input"
+                size={7}
                 value={filterSnippetType}
                 onChange={(e) => setFilterSnippetType(e.target.value)}
               >
