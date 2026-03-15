@@ -13,7 +13,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 
   chrome.scripting.executeScript(
     {
-      target: { tabId: tab.id },
+      target: { tabId: tab.id, allFrames: true },
       func: () => ({
         url: window.location.href,
         title: document.title || '',
@@ -28,11 +28,26 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
       }),
     },
     (results) => {
-      if (chrome.runtime.lastError || !results?.[0]?.result) {
+      if (chrome.runtime.lastError || !results?.length) {
         chrome.tabs.create({ url: chrome.runtime.getURL('save-snippet.html?error=no-selection') });
         return;
       }
-      const { url, title, selection, doi } = results[0].result;
+      const main = results[0]?.result;
+      if (!main) {
+        chrome.tabs.create({ url: chrome.runtime.getURL('save-snippet.html?error=no-selection') });
+        return;
+      }
+      let url = main.url;
+      let title = main.title;
+      let doi = main.doi;
+      let selection = main.selection || '';
+      for (const r of results) {
+        const s = r?.result?.selection;
+        if (typeof s === 'string' && s.trim().length > 0) {
+          selection = s;
+          break;
+        }
+      }
       chrome.storage.local.set({ phdPendingSnippet: { url, title, selection, doi } }, () => {
         chrome.tabs.create({ url: chrome.runtime.getURL('save-snippet.html') });
       });
