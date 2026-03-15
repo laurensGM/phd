@@ -168,7 +168,7 @@ async function createPaper(url, meta, doiUrl) {
   return id;
 }
 
-async function createSnippet(paperId, content, constructIds, modelIds, notes, snippetType) {
+async function createSnippet(paperId, content, constructIds, modelIds, notes, snippetType, pageNumber) {
   const base = config.supabaseUrl.replace(/\/$/, '') + '/rest/v1';
   const body = {
     paper_id: paperId,
@@ -179,6 +179,7 @@ async function createSnippet(paperId, content, constructIds, modelIds, notes, sn
     model_ids: modelIds,
     notes: notes?.trim() || null,
     snippet_type: snippetType && snippetType.trim() ? snippetType.trim() : null,
+    page_number: pageNumber != null && !Number.isNaN(pageNumber) ? pageNumber : null,
     tags: [],
   };
   const res = await fetch(`${base}/snippets`, {
@@ -318,6 +319,8 @@ document.getElementById('form').addEventListener('submit', async (e) => {
   const modelIds = Array.from(modelSelect.selectedOptions).map((o) => o.value);
   const notes = document.getElementById('notes').value.trim() || null;
   const snippetType = snippetTypeSelect ? snippetTypeSelect.value : '';
+  const pageNumberRaw = document.getElementById('page-number')?.value?.trim();
+  const pageNumber = pageNumberRaw ? parseInt(pageNumberRaw, 10) : null;
 
   saveBtn.disabled = true;
   setStatus('Saving…');
@@ -348,7 +351,7 @@ document.getElementById('form').addEventListener('submit', async (e) => {
       }
     }
     setStatus('Creating snippet…');
-    await createSnippet(paperId, content, constructIds, modelIds, notes, snippetType);
+    await createSnippet(paperId, content, constructIds, modelIds, notes, snippetType, pageNumber);
     await chrome.storage.local.remove(STORAGE_KEY);
     show(successEl, true);
     successEl.textContent = 'Snippet saved. You can close this tab.';
