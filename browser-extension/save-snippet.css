@@ -35,6 +35,8 @@ h1 { font-size: 1.25rem; margin: 0 0 0.25rem 0; color: #712038; }
   font-size: 0.9rem;
 }
 .pdf-notice p { margin: 0 0 0.75rem 0; color: #92400e; }
+.pdf-tip { font-size: 0.85rem; margin-top: 0.5rem !important; }
+.pdf-notice kbd { padding: 0.15rem 0.35rem; background: #fff; border: 1px solid #d1d5db; border-radius: 4px; font-size: 0.8em; }
 .pdf-notice label { margin-top: 0.5rem; }
 .pdf-notice select, .pdf-notice input[type="text"] { margin-top: 0.25rem; }
 textarea, select {

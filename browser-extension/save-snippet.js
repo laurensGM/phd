@@ -265,8 +265,23 @@ async function init() {
       }).join('');
   }
 
-  if (pending?.selection) {
-    document.getElementById('snippet-content').value = pending.selection;
+  const snippetEl = document.getElementById('snippet-content');
+  if (pending?.selection && pending.selection.trim()) {
+    snippetEl.value = pending.selection;
+  } else {
+    try {
+      const clip = await navigator.clipboard.readText();
+      if (clip && typeof clip === 'string' && clip.trim()) {
+        snippetEl.value = clip.trim();
+        const status = document.getElementById('status');
+        if (status) {
+          status.textContent = 'Pasted from clipboard (e.g. from a PDF).';
+          status.style.color = '#047857';
+        }
+      }
+    } catch (_) {
+      /* clipboard read denied or unsupported */
+    }
   }
 }
 
