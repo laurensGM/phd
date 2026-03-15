@@ -248,5 +248,23 @@
     "relatedModels": ["TTF"],
     "relatedConstructs": ["Task-Technology Fit", "Utilization"],
     "notes": "The key outcome in TTF: technology is more likely to improve performance when fit is high and utilization occurs."
+  },
+  {
+    "id": "personal-innovativeness",
+    "name": "Personal Innovativeness",
+    "abbreviation": "PI",
+    "definition": "The willingness of an individual to try out any new information technology.",
+    "sourcePaper": "Agarwal & Prasad (1998) - A Conceptual and Operational Definition of Personal Innovativeness in the Domain of Information Technology",
+    "doi": "10.1287/isre.9.2.100",
+    "theoreticalDomain": "Innovation Adoption",
+    "measurementItems": [
+      "If I heard about a new information technology, I would look for ways to experiment with it.",
+      "Among my peers, I am usually the first to try out new information technologies.",
+      "I like to experiment with new information technologies."
+    ],
+    "measurementScale": "7-point Likert (Strongly disagree - Strongly agree)",
+    "relatedModels": ["TAM", "TAM2", "UTAUT"],
+    "relatedConstructs": ["Perceived Usefulness", "Perceived Ease of Use", "Behavioral Intention"],
+    "notes": "Often used as a moderator or antecedent in technology acceptance; reflects trait-based openness to trying new IT."
   }
 ]
