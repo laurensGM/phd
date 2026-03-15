@@ -633,7 +633,7 @@ export default function SnippetsPage() {
             <label>
               Snippet type
               <select
-                className="snippets-input"
+                className="snippets-input snippets-snippet-type-select"
                 size={7}
                 value={filterSnippetType}
                 onChange={(e) => setFilterSnippetType(e.target.value)}
