@@ -162,6 +162,64 @@ import PaperDetailPage from '../../components/PaperDetailPage';
     font-size: 0.875rem;
     color: var(--color-ink-muted);
   }
+  :global(.paper-detail-summary) {
+    padding: 1.25rem;
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+  }
+  :global(.paper-detail-summary-loading),
+  :global(.paper-detail-summary-empty),
+  :global(.paper-detail-summary-generating) {
+    margin: 0 0 0.75rem 0;
+    font-size: 0.9rem;
+    color: var(--color-ink-muted);
+  }
+  :global(.paper-detail-summary-error) {
+    margin: 0 0 0.75rem 0;
+    font-size: 0.9rem;
+    color: var(--color-error, #b91c1c);
+  }
+  :global(.paper-detail-summary-btn) {
+    padding: 0.5rem 1rem;
+    background: var(--color-maroon);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  :global(.paper-detail-summary-btn:hover:not(:disabled)) {
+    opacity: 0.9;
+  }
+  :global(.paper-detail-summary-btn:disabled) {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  :global(.paper-detail-summary-grid) {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  :global(.paper-detail-summary-block) {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+  :global(.paper-detail-summary-block:last-child) {
+    border-bottom: none;
+  }
+  :global(.paper-detail-summary-heading) {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-maroon);
+    margin: 0 0 0.35rem 0;
+  }
+  :global(.paper-detail-summary-text) {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--color-ink);
+  }
   :global(.paper-detail-snippets) {
     margin-top: 2rem;
   }

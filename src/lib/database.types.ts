@@ -76,6 +76,48 @@ export interface Database {
           created_at?: string;
         };
       };
+      paper_summary: {
+        Row: {
+          id: string;
+          paper_id: string;
+          problem: string | null;
+          claims: string | null;
+          method: string | null;
+          results: string | null;
+          discussion: string | null;
+          limitations: string | null;
+          future_research: string | null;
+          conclusion: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          paper_id: string;
+          problem?: string | null;
+          claims?: string | null;
+          method?: string | null;
+          results?: string | null;
+          discussion?: string | null;
+          limitations?: string | null;
+          future_research?: string | null;
+          conclusion?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          paper_id?: string;
+          problem?: string | null;
+          claims?: string | null;
+          method?: string | null;
+          results?: string | null;
+          discussion?: string | null;
+          limitations?: string | null;
+          future_research?: string | null;
+          conclusion?: string | null;
+          updated_at?: string;
+        };
+      };
       construct_notes: {
         Row: {
           id: string;

@@ -31,6 +31,21 @@ interface Snippet {
   created_at: string;
 }
 
+interface PaperSummary {
+  id: string;
+  paper_id: string;
+  problem: string | null;
+  claims: string | null;
+  method: string | null;
+  results: string | null;
+  discussion: string | null;
+  limitations: string | null;
+  future_research: string | null;
+  conclusion: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 const PAPER_STATUSES = [
   { id: 'Not read', label: 'Not read' },
   { id: '1st reading', label: '1st reading' },
@@ -146,6 +161,10 @@ export default function PaperDetailPage() {
   const [newSnippetPageNumber, setNewSnippetPageNumber] = useState<string>('');
   const [newSnippetTagsInput, setNewSnippetTagsInput] = useState('');
   const [allSnippetTags, setAllSnippetTags] = useState<string[]>([]);
+  const [summary, setSummary] = useState<PaperSummary | null>(null);
+  const [summaryLoading, setSummaryLoading] = useState(false);
+  const [summaryError, setSummaryError] = useState<string | null>(null);
+  const [generatingSummary, setGeneratingSummary] = useState(false);
 
   const getIdFromUrl = useCallback((): string | null => {
     if (typeof window === 'undefined') return null;
@@ -210,6 +229,13 @@ export default function PaperDetailPage() {
           setSnippetsLoading(false);
         };
         loadSnippets();
+        const paperId = (data as { id: string }).id;
+        const { data: summaryData } = await supabase!
+          .from('paper_summary')
+          .select('*')
+          .eq('paper_id', paperId)
+          .maybeSingle();
+        if (!cancelled && summaryData) setSummary(summaryData as PaperSummary);
       } else {
         setError('Paper not found.');
         setPaper(null);
@@ -220,6 +246,48 @@ export default function PaperDetailPage() {
       cancelled = true;
     };
   }, [getIdFromUrl]);
+
+  const loadSummary = useCallback(async (paperId: string) => {
+    if (!supabase) return;
+    setSummaryLoading(true);
+    setSummaryError(null);
+    const { data, error: err } = await supabase
+      .from('paper_summary')
+      .select('*')
+      .eq('paper_id', paperId)
+      .maybeSingle();
+    setSummaryLoading(false);
+    if (err) setSummaryError(err.message);
+    else if (data) setSummary(data as PaperSummary);
+  }, []);
+
+  const handleGenerateSummary = useCallback(async () => {
+    if (!paper || !supabase || !isSupabaseConfigured()) return;
+    setGeneratingSummary(true);
+    setSummaryError(null);
+    try {
+      const { data: fnData, error: fnErr } = await supabase.functions.invoke('generate-paper-summary', {
+        body: { paper_id: paper.id, url: paper.url },
+      });
+      if (fnErr) throw fnErr;
+      const errMsg = fnData?.error;
+      if (errMsg) throw new Error(typeof errMsg === 'string' ? errMsg : fnData?.details ?? 'Summary generation failed.');
+      let attempts = 0;
+      while (attempts < 30) {
+        await new Promise((r) => setTimeout(r, 2000));
+        const { data } = await supabase.from('paper_summary').select('*').eq('paper_id', paper.id).maybeSingle();
+        if (data) {
+          setSummary(data as PaperSummary);
+          break;
+        }
+        attempts++;
+      }
+    } catch (e) {
+      setSummaryError(e?.message ?? 'Failed to generate summary. Set GEMINI_API_KEY in Edge Function secrets.');
+    } finally {
+      setGeneratingSummary(false);
+    }
+  }, [paper]);
 
   const citation = paper ? buildAPA7Citation(paper) : '';
   const handleCopyCitation = useCallback(() => {
@@ -389,6 +457,80 @@ export default function PaperDetailPage() {
           <p className="paper-detail-citations">{paper.citations}</p>
         </section>
       )}
+
+      <section className="paper-detail-section paper-detail-summary">
+        <h2 className="paper-detail-section-title">AI summary</h2>
+        {summaryLoading && !summary && <p className="paper-detail-summary-loading">Loading summary…</p>}
+        {summaryError && <p className="paper-detail-summary-error">{summaryError}</p>}
+        {generatingSummary && (
+          <p className="paper-detail-summary-generating">Generating summary from the paper… This may take a minute.</p>
+        )}
+        {!summary && !summaryLoading && !generatingSummary && (
+          <p className="paper-detail-summary-empty">
+            No AI summary yet. Summaries are generated automatically when you add a paper; you can also generate one now (requires a free Gemini API key in your Supabase Edge Function secrets).
+          </p>
+          <button
+            type="button"
+            className="paper-detail-summary-btn"
+            onClick={handleGenerateSummary}
+            disabled={generatingSummary}
+          >
+            Generate summary
+          </button>
+        )}
+        {summary && (
+          <div className="paper-detail-summary-grid">
+            {summary.problem && (
+              <div className="paper-detail-summary-block">
+                <h3 className="paper-detail-summary-heading">Definition / Research problem</h3>
+                <p className="paper-detail-summary-text">{summary.problem}</p>
+              </div>
+            )}
+            {summary.claims && (
+              <div className="paper-detail-summary-block">
+                <h3 className="paper-detail-summary-heading">Key claims</h3>
+                <p className="paper-detail-summary-text">{summary.claims}</p>
+              </div>
+            )}
+            {summary.method && (
+              <div className="paper-detail-summary-block">
+                <h3 className="paper-detail-summary-heading">Method</h3>
+                <p className="paper-detail-summary-text">{summary.method}</p>
+              </div>
+            )}
+            {summary.results && (
+              <div className="paper-detail-summary-block">
+                <h3 className="paper-detail-summary-heading">Results</h3>
+                <p className="paper-detail-summary-text">{summary.results}</p>
+              </div>
+            )}
+            {summary.discussion && (
+              <div className="paper-detail-summary-block">
+                <h3 className="paper-detail-summary-heading">Discussion</h3>
+                <p className="paper-detail-summary-text">{summary.discussion}</p>
+              </div>
+            )}
+            {summary.limitations && (
+              <div className="paper-detail-summary-block">
+                <h3 className="paper-detail-summary-heading">Limitations</h3>
+                <p className="paper-detail-summary-text">{summary.limitations}</p>
+              </div>
+            )}
+            {summary.future_research && (
+              <div className="paper-detail-summary-block">
+                <h3 className="paper-detail-summary-heading">Future research</h3>
+                <p className="paper-detail-summary-text">{summary.future_research}</p>
+              </div>
+            )}
+            {summary.conclusion && (
+              <div className="paper-detail-summary-block">
+                <h3 className="paper-detail-summary-heading">Conclusion</h3>
+                <p className="paper-detail-summary-text">{summary.conclusion}</p>
+              </div>
+            )}
+          </div>
+        )}
+      </section>
 
       <section className="paper-detail-section paper-detail-snippets">
         <h2 className="paper-detail-section-title">Snippets from this paper</h2>

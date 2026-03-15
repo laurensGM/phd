@@ -470,6 +470,12 @@ export default function PapersPage() {
       setPapers((prev) => [mapRow({ ...insertData, id: insertData.id }), ...prev]);
       setFormData({ url: '', secondary_url: '', motivation: '', tags: [], title: '', authors: '', year: '', journal: '', citations: '', status: 'Not read', golden: false });
       setShowForm(false);
+      const paperUrl = formData.url?.trim();
+      if (paperUrl) {
+        supabase.functions
+          .invoke('generate-paper-summary', { body: { paper_id: insertData.id, url: paperUrl } })
+          .catch(() => {});
+      }
     }
     setSaving(false);
   };
