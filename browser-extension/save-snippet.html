@@ -21,6 +21,15 @@
       <div class="field">
         <label for="paper-display">Paper</label>
         <div id="paper-display" class="paper-display"></div>
+        <div id="pdf-notice" class="pdf-notice hidden">
+          <p>You're viewing a PDF. We couldn't identify this article automatically. <strong>Link to an existing paper</strong> in your library (if you already saved it) or create a new entry below.</p>
+          <label for="existing-paper-select">Link to existing paper</label>
+          <select id="existing-paper-select">
+            <option value="">— Create new paper from this PDF —</option>
+          </select>
+          <label for="pdf-title-input" id="pdf-title-label">Title for new paper (optional)</label>
+          <input type="text" id="pdf-title-input" placeholder="e.g. Understanding Information Systems Continuance..." />
+        </div>
         <input type="hidden" id="paper-id" />
       </div>
       <div class="field">

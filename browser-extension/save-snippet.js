@@ -33,6 +33,10 @@ function canonicalDoiUrl(doi) {
   return doi ? `https://doi.org/${doi}` : null;
 }
 
+function isPdfUrl(url) {
+  return typeof url === 'string' && /\.pdf(\?|#|$)/i.test(url.trim());
+}
+
 /** Strip journal/access junk from document.title so we don't store it as paper title */
 function normalizePageTitle(title) {
   if (!title || typeof title !== 'string') return title || '';
@@ -189,6 +193,17 @@ async function createSnippet(paperId, content, constructIds, modelIds, notes, sn
   return true;
 }
 
+async function loadSavedPapers() {
+  if (!config?.supabaseUrl?.trim() || !config?.anonKey?.trim()) return [];
+  const base = config.supabaseUrl.replace(/\/$/, '') + '/rest/v1';
+  const res = await fetch(`${base}/saved_papers?select=id,title,url,year&order=created_at.desc`, {
+    headers: supabaseHeaders(),
+  });
+  if (!res.ok) return [];
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
+}
+
 async function loadDropdowns() {
   try {
     const [cRes, mRes] = await Promise.all([
@@ -235,6 +250,21 @@ async function init() {
   }
   await loadDropdowns();
   renderPaperDisplay();
+
+  const pdfNotice = document.getElementById('pdf-notice');
+  const existingPaperSelect = document.getElementById('existing-paper-select');
+  if (pdfNotice && existingPaperSelect && pending?.url && isPdfUrl(pending.url) && config?.supabaseUrl?.trim() && config?.anonKey?.trim()) {
+    show(pdfNotice, true);
+    const papers = await loadSavedPapers();
+    existingPaperSelect.innerHTML =
+      '<option value="">— Create new paper from this PDF —</option>' +
+      papers.map((p) => {
+        const label = [p.title || 'Untitled', p.year].filter(Boolean).join(' ');
+        const short = label.length > 60 ? label.slice(0, 57) + '…' : label;
+        return `<option value="${p.id}">${short.replace(/</g, '&lt;')}</option>`;
+      }).join('');
+  }
+
   if (pending?.selection) {
     document.getElementById('snippet-content').value = pending.selection;
   }
@@ -278,12 +308,29 @@ document.getElementById('form').addEventListener('submit', async (e) => {
   setStatus('Saving…');
 
   try {
-    const doiUrl = pending.doi ? canonicalDoiUrl(pending.doi) : null;
-    let paperId = await findPaperByUrl(pending.url, doiUrl, pending.doi || extractDoi(pending.url));
-    if (!paperId) {
-      setStatus('Creating paper…');
-      const meta = await fetchMetadata(pending.url);
-      paperId = await createPaper(pending.url, meta, doiUrl);
+    const existingPaperSelect = document.getElementById('existing-paper-select');
+    const selectedExistingId = existingPaperSelect?.value?.trim();
+    let paperId = null;
+
+    if (selectedExistingId) {
+      paperId = selectedExistingId;
+    } else {
+      const doiUrl = pending.doi ? canonicalDoiUrl(pending.doi) : null;
+      paperId = await findPaperByUrl(pending.url, doiUrl, pending.doi || extractDoi(pending.url));
+      if (!paperId) {
+        setStatus('Creating paper…');
+        const meta = await fetchMetadata(pending.url);
+        if (isPdfUrl(pending.url)) {
+          const manualTitle = document.getElementById('pdf-title-input')?.value?.trim();
+          const fallbackTitle = manualTitle || (() => {
+            const m = pending.url.match(/\/([^/]+)\.pdf(\?|#|$)/i);
+            return m ? decodeURIComponent(m[1]).replace(/\.[^.]+$/, '') : 'Untitled (PDF)';
+          })();
+          paperId = await createPaper(pending.url, meta ? { ...meta, title: meta.title || fallbackTitle } : { title: fallbackTitle }, doiUrl);
+        } else {
+          paperId = await createPaper(pending.url, meta, doiUrl);
+        }
+      }
     }
     setStatus('Creating snippet…');
     await createSnippet(paperId, content, constructIds, modelIds, notes, snippetType);
