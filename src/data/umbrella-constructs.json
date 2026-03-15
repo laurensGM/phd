@@ -1,0 +1,72 @@
+[
+  {
+    "id": "technology-adoption",
+    "name": "Technology Adoption",
+    "constructIds": ["behavioral-intention", "technology-adoption-intention"]
+  },
+  {
+    "id": "post-adoption-behavior",
+    "name": "Post-Adoption Behavior",
+    "constructIds": ["continuance-intention", "continued-use", "actual-usage"]
+  },
+  {
+    "id": "technology-perceptions",
+    "name": "Technology Perceptions",
+    "constructIds": ["perceived-usefulness", "perceived-ease-of-use"]
+  },
+  {
+    "id": "expectation-evaluation",
+    "name": "Expectation Evaluation",
+    "constructIds": ["expectations", "prior-expectations", "confirmation", "perceived-performance"]
+  },
+  {
+    "id": "motivational-factors",
+    "name": "Motivational Factors",
+    "constructIds": ["hedonic-motivation", "perceived-enjoyment"]
+  },
+  {
+    "id": "user-characteristics",
+    "name": "User Characteristics",
+    "constructIds": ["personal-innovativeness", "self-efficacy"]
+  },
+  {
+    "id": "risk-trust-perceptions",
+    "name": "Risk & Trust Perceptions",
+    "constructIds": ["privacy-concern", "perceived-vulnerability", "trust"]
+  },
+  {
+    "id": "task-technology-alignment",
+    "name": "Task–Technology Alignment",
+    "constructIds": ["task-characteristics", "technology-characteristics", "task-technology-fit"]
+  },
+  {
+    "id": "system-use-outcomes",
+    "name": "System Use Outcomes",
+    "constructIds": ["utilization", "performance-impact"]
+  },
+  {
+    "id": "user-participation",
+    "name": "User Participation",
+    "constructIds": ["user-involvement"]
+  },
+  {
+    "id": "innovation-capabilities",
+    "name": "Innovation Capabilities",
+    "constructIds": ["experimentation-capability", "organizational-learning"]
+  },
+  {
+    "id": "innovation-outcomes",
+    "name": "Innovation Outcomes",
+    "constructIds": ["innovation-performance"]
+  },
+  {
+    "id": "environmental-factors",
+    "name": "Environmental Factors",
+    "constructIds": ["market-uncertainty"]
+  },
+  {
+    "id": "information-systems-quality",
+    "name": "Information Systems Quality",
+    "constructIds": ["system-quality", "information-quality"]
+  }
+]

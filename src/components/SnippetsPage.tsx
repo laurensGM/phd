@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import constructsData from '../data/constructs.json';
 import modelsData from '../data/models.json';
+import umbrellaConstructsData from '../data/umbrella-constructs.json';
 
 const SNIPPET_TYPE_OPTIONS = [
   { value: '', label: '—' },
@@ -44,6 +45,13 @@ const modelOptions = (modelsData as any[]).map((m) => ({
   name: (m.name as string) || (m.id as string),
 }));
 
+interface UmbrellaConstructItem {
+  id: string;
+  name: string;
+  constructIds: string[];
+}
+const umbrellaConstructs = umbrellaConstructsData as UmbrellaConstructItem[];
+
 /** Flatten ids so comma-separated values in any element become separate ids (fixes legacy "id1,id2" in one cell). */
 function flattenIds(ids: string[]): string[] {
   return ids.flatMap((id) =>
@@ -78,6 +86,7 @@ export default function SnippetsPage() {
   const [filterPaperId, setFilterPaperId] = useState('');
   const [filterJournalNames, setFilterJournalNames] = useState<string[]>([]);
   const [filterConstructIds, setFilterConstructIds] = useState<string[]>([]);
+  const [filterUmbrellaConstructId, setFilterUmbrellaConstructId] = useState('');
   const [filterModelIds, setFilterModelIds] = useState<string[]>([]);
   const [filterTag, setFilterTag] = useState('');
   const [filterSnippetType, setFilterSnippetType] = useState('');
@@ -242,6 +251,14 @@ export default function SnippetsPage() {
 
         if (!normalisedConstructIds.some((id) => filterConstructIds.includes(id))) return false;
       }
+      if (filterUmbrellaConstructId) {
+        const umbrella = umbrellaConstructs.find((u) => u.id === filterUmbrellaConstructId);
+        if (umbrella) {
+          const snippetConstructIds = getSnippetConstructIds(s);
+          const umbrellaSet = new Set(umbrella.constructIds);
+          if (!snippetConstructIds.some((id) => umbrellaSet.has(id))) return false;
+        }
+      }
       if (filterModelIds.length > 0) {
         const snippetModels = getSnippetModelIds(s);
         if (!snippetModels.some((id) => filterModelIds.includes(id))) return false;
@@ -267,7 +284,7 @@ export default function SnippetsPage() {
       }
       return true;
     });
-  }, [snippets, filterPaperId, filterJournalNames, filterConstructIds, filterModelIds, filterSnippetType, filterTag, search, paperById]);
+  }, [snippets, filterPaperId, filterJournalNames, filterConstructIds, filterUmbrellaConstructId, filterModelIds, filterSnippetType, filterTag, search, paperById]);
 
   const handleAddSnippet = useCallback(
     async (e: React.FormEvent) => {
@@ -500,6 +517,7 @@ export default function SnippetsPage() {
                 setFilterPaperId('');
                 setFilterJournalNames([]);
                 setFilterConstructIds([]);
+                setFilterUmbrellaConstructId('');
                 setFilterModelIds([]);
                 setFilterSnippetType('');
                 setFilterTag('');
@@ -545,6 +563,23 @@ export default function SnippetsPage() {
                 {modelOptionsSortedByCount.map((m) => (
                   <option key={m.id} value={m.id}>
                     {m.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <div className="snippets-filter-row">
+            <label>
+              Umbrella construct
+              <select
+                className="snippets-input"
+                value={filterUmbrellaConstructId}
+                onChange={(e) => setFilterUmbrellaConstructId(e.target.value)}
+              >
+                <option value="">All</option>
+                {umbrellaConstructs.map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.name}
                   </option>
                 ))}
               </select>
