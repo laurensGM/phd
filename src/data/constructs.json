@@ -484,6 +484,24 @@
     "notes": "Appears in many adoption models including UTAUT. Typical relationship: Perceived usefulness → adoption intention."
   },
   {
+    "id": "social-influence",
+    "name": "Social Influence",
+    "abbreviation": "SI",
+    "definition": "The process by which individuals or groups affect the beliefs, attitudes, intentions, or behaviors of others. In research it is often operationalized as perceived social influence or subjective norms and measured using scales or experiments.",
+    "sourcePaper": "Venkatesh et al. (2003) - UTAUT; Ajzen (1991) - Theory of Planned Behavior; Festinger (1954) - Social Comparison Theory; Kelman (1958) - Compliance, Identification, and Internalization",
+    "doi": "",
+    "theoreticalDomain": "Social psychology, technology adoption, marketing and consumer behavior",
+    "measurementItems": [
+      "People who are important to me think I should use this system.",
+      "People who influence my behavior think I should use this system.",
+      "Friends and colleagues encourage me to use this technology."
+    ],
+    "measurementScale": "Likert scale",
+    "relatedModels": ["UTAUT", "UTAUT2", "TPB"],
+    "relatedConstructs": ["Behavioral Intention", "Technology Adoption Intention", "Subjective Norms"],
+    "notes": "Key construct in UTAUT (one of four core determinants of technology acceptance). In TPB operationalized as subjective norms. Explains how peers, superiors, or cultural norms shape adoption decisions. Used in health behavior (e.g. vaccine uptake, smoking cessation) and social media research (e.g. likes, shares, influencer endorsements). Bridges micro-level and macro-level analyses."
+  },
+  {
     "id": "system-quality",
     "name": "System Quality",
     "abbreviation": "SQ",
