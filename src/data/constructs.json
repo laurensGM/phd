@@ -374,5 +374,149 @@
     "relatedModels": ["TAM", "UTAUT", "TPB"],
     "relatedConstructs": ["Perceived Ease of Use", "Behavioral Intention"],
     "notes": "Originates from Bandura's social cognitive theory; in tech research often measured as \"computer self-efficacy\" or domain-specific self-efficacy."
+  },
+  {
+    "id": "user-involvement",
+    "name": "User Involvement",
+    "abbreviation": "UI",
+    "definition": "The degree to which users participate in the development and design of a product.",
+    "sourcePaper": "Various – innovation and information systems research",
+    "doi": "",
+    "theoreticalDomain": "Innovation, information systems",
+    "measurementItems": [
+      "Users were actively involved in the product development process.",
+      "User feedback significantly influenced product decisions.",
+      "We collaborated with users when defining product requirements."
+    ],
+    "measurementScale": "Likert scale",
+    "relatedModels": [],
+    "relatedConstructs": ["Innovation Performance"],
+    "notes": "Central to research on product development, system design, participatory innovation; example areas: co-creation, participatory design, open innovation. Often tested: User involvement → product innovation performance."
+  },
+  {
+    "id": "market-uncertainty",
+    "name": "Market Uncertainty",
+    "abbreviation": "MU",
+    "definition": "The extent to which customer needs, preferences, and market demand are unpredictable.",
+    "sourcePaper": "Innovation and strategic management literature",
+    "doi": "",
+    "theoreticalDomain": "Innovation, strategic management",
+    "measurementItems": [
+      "Customer needs are difficult to predict.",
+      "The market for this product changes rapidly.",
+      "It is difficult to forecast demand."
+    ],
+    "measurementScale": "Likert scale",
+    "relatedModels": [],
+    "relatedConstructs": ["Experimentation Capability", "Innovation Performance"],
+    "notes": "Classic construct in innovation and strategy. Common sources: changing user needs, emerging markets, lack of market data. Typical relationships: Market uncertainty → need for experimentation; Market uncertainty → product development performance."
+  },
+  {
+    "id": "innovation-performance",
+    "name": "Innovation Performance",
+    "abbreviation": "IP",
+    "definition": "The extent to which an organization successfully develops and introduces new products or innovations.",
+    "sourcePaper": "Innovation management research",
+    "doi": "",
+    "theoreticalDomain": "Innovation management",
+    "measurementItems": [
+      "Our new products outperform competitors.",
+      "Our innovation projects achieve their objectives.",
+      "Our organization successfully introduces new products."
+    ],
+    "measurementScale": "Likert scale",
+    "relatedModels": [],
+    "relatedConstructs": ["User Involvement", "Organizational Learning", "Experimentation Capability"],
+    "notes": "Widely used in innovation management. Typical dimensions: success of new products, novelty of innovations, commercial performance. Relationships often studied: Organizational capabilities → innovation performance."
+  },
+  {
+    "id": "organizational-learning",
+    "name": "Organizational Learning",
+    "abbreviation": "OL",
+    "definition": "The process through which organizations acquire, interpret, and apply knowledge to improve performance.",
+    "sourcePaper": "Organizational theory and strategic management",
+    "doi": "",
+    "theoreticalDomain": "Organizational theory, strategic management",
+    "measurementItems": [
+      "Our organization learns from past development projects.",
+      "Lessons from previous projects improve future work.",
+      "Knowledge is systematically shared across teams."
+    ],
+    "measurementScale": "Likert scale",
+    "relatedModels": [],
+    "relatedConstructs": ["Experimentation Capability", "Innovation Performance"],
+    "notes": "Key aspects: learning from experimentation, knowledge acquisition, knowledge sharing. Typical relationships: Experimentation → organizational learning; Organizational learning → innovation performance."
+  },
+  {
+    "id": "experimentation-capability",
+    "name": "Experimentation Capability",
+    "abbreviation": "EC",
+    "definition": "An organization's ability to test ideas, generate evidence, and learn through structured experimentation.",
+    "sourcePaper": "Modern innovation and digital product research",
+    "doi": "",
+    "theoreticalDomain": "Innovation, digital product development",
+    "measurementItems": [
+      "Our organization systematically tests new ideas.",
+      "Experiments are conducted before full implementation.",
+      "We use prototypes to evaluate product concepts."
+    ],
+    "measurementScale": "Likert scale",
+    "relatedModels": [],
+    "relatedConstructs": ["Organizational Learning", "Innovation Performance"],
+    "notes": "Example activities: A/B testing, prototyping, pilot trials. Typical relationship: Experimentation capability → product innovation success."
+  },
+  {
+    "id": "technology-adoption-intention",
+    "name": "Technology Adoption Intention",
+    "abbreviation": "TAI",
+    "definition": "The likelihood that an individual plans to use a specific technology.",
+    "sourcePaper": "Various – UTAUT and adoption models",
+    "doi": "",
+    "theoreticalDomain": "Technology adoption",
+    "measurementItems": [
+      "I intend to use this technology in the future.",
+      "I plan to use this system regularly.",
+      "I expect to continue using this technology."
+    ],
+    "measurementScale": "Likert scale",
+    "relatedModels": ["UTAUT", "UTAUT2", "TAM"],
+    "relatedConstructs": ["Perceived Usefulness", "Perceived Ease of Use", "Behavioral Intention"],
+    "notes": "Appears in many adoption models including UTAUT. Typical relationship: Perceived usefulness → adoption intention."
+  },
+  {
+    "id": "system-quality",
+    "name": "System Quality",
+    "abbreviation": "SQ",
+    "definition": "The quality of the technical performance of a system.",
+    "sourcePaper": "DeLone & McLean IS success model; information systems research",
+    "doi": "",
+    "theoreticalDomain": "Information systems",
+    "measurementItems": [
+      "The system is reliable.",
+      "The system responds quickly.",
+      "The system functions consistently."
+    ],
+    "measurementScale": "Likert scale",
+    "relatedModels": [],
+    "relatedConstructs": ["Information Quality", "Satisfaction"],
+    "notes": "Dimensions often include: reliability, speed, usability. Typical relationship: System quality → user satisfaction."
+  },
+  {
+    "id": "information-quality",
+    "name": "Information Quality",
+    "abbreviation": "IQ",
+    "definition": "The quality of the information produced by a system.",
+    "sourcePaper": "DeLone & McLean IS success model; information systems research",
+    "doi": "",
+    "theoreticalDomain": "Information systems",
+    "measurementItems": [
+      "The system provides accurate information.",
+      "The information is relevant to my tasks.",
+      "The information provided is complete."
+    ],
+    "measurementScale": "Likert scale",
+    "relatedModels": [],
+    "relatedConstructs": ["System Quality", "Perceived Usefulness", "Satisfaction"],
+    "notes": "Common dimensions: accuracy, relevance, completeness. Typical relationships: Information quality → system usefulness; Information quality → user satisfaction."
   }
 ]
