@@ -229,7 +229,6 @@ export default function PaperDetailPage() {
           setSnippetsLoading(false);
         };
         loadSnippets();
-        const paperId = (data as { id: string }).id;
         const { data: summaryData } = await supabase!
           .from('paper_summary')
           .select('*')
@@ -466,17 +465,19 @@ export default function PaperDetailPage() {
           <p className="paper-detail-summary-generating">Generating summary from the paper… This may take a minute.</p>
         )}
         {!summary && !summaryLoading && !generatingSummary && (
-          <p className="paper-detail-summary-empty">
-            No AI summary yet. Summaries are generated automatically when you add a paper; you can also generate one now (requires a free Gemini API key in your Supabase Edge Function secrets).
-          </p>
-          <button
-            type="button"
-            className="paper-detail-summary-btn"
-            onClick={handleGenerateSummary}
-            disabled={generatingSummary}
-          >
-            Generate summary
-          </button>
+          <>
+            <p className="paper-detail-summary-empty">
+              No AI summary yet. Summaries are generated automatically when you add a paper; you can also generate one now — requires a free Gemini API key in your Supabase Edge Function secrets.
+            </p>
+            <button
+              type="button"
+              className="paper-detail-summary-btn"
+              onClick={handleGenerateSummary}
+              disabled={generatingSummary}
+            >
+              Generate summary
+            </button>
+          </>
         )}
         {summary && (
           <div className="paper-detail-summary-grid">
