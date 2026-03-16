@@ -60,14 +60,15 @@ Deno.serve(async (req) => {
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'authorization, content-type',
+        // Allow headers used by supabase-js when calling Edge Functions
+        'Access-Control-Allow-Headers': 'authorization, apikey, x-client-info, content-type',
       },
     });
   }
 
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'authorization, content-type',
+    'Access-Control-Allow-Headers': 'authorization, apikey, x-client-info, content-type',
     'Content-Type': 'application/json',
   };
 
