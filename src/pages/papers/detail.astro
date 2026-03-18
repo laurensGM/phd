@@ -168,6 +168,19 @@ import PaperDetailPage from '../../components/PaperDetailPage';
     border: 1px solid var(--color-border);
     border-radius: 12px;
   }
+  :global(.paper-detail-summary-header) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  :global(.paper-detail-summary-header-actions) {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
   :global(.paper-detail-summary-loading),
   :global(.paper-detail-summary-empty),
   :global(.paper-detail-summary-generating) {
@@ -189,12 +202,53 @@ import PaperDetailPage from '../../components/PaperDetailPage';
     font-weight: 500;
     cursor: pointer;
   }
+  :global(.paper-detail-summary-btn.paper-detail-summary-btn-secondary) {
+    background: #fff;
+    color: var(--color-maroon);
+    border: 1px solid var(--color-border);
+  }
   :global(.paper-detail-summary-btn:hover:not(:disabled)) {
     opacity: 0.9;
   }
   :global(.paper-detail-summary-btn:disabled) {
     opacity: 0.6;
     cursor: not-allowed;
+  }
+  :global(.paper-detail-summary-editor) {
+    padding: 1rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    margin-bottom: 0.75rem;
+  }
+  :global(.paper-detail-summary-label) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+    color: var(--color-ink-muted);
+    margin-bottom: 0.75rem;
+  }
+  :global(.paper-detail-summary-textarea) {
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    padding: 0.6rem 0.7rem;
+    font-size: 0.9rem;
+    resize: vertical;
+    background: #fff;
+    color: var(--color-ink);
+  }
+  :global(.paper-detail-summary-editor-actions) {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.75rem;
+  }
+  :global(.paper-detail-summary-fields) {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
   }
   :global(.paper-detail-summary-grid) {
     display: flex;

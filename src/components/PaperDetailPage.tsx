@@ -42,6 +42,16 @@ interface PaperSummary {
   limitations: string | null;
   future_research: string | null;
   conclusion: string | null;
+  abstract: string | null;
+  key_claims: string | null;
+  academic_constructs: string | null;
+  introduction: string | null;
+  methods: string | null;
+  results_section: string | null;
+  discussion_section: string | null;
+  conclusion_section: string | null;
+  limitations_section: string | null;
+  future_research_section: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -165,6 +175,77 @@ export default function PaperDetailPage() {
   const [summaryLoading, setSummaryLoading] = useState(false);
   const [summaryError, setSummaryError] = useState<string | null>(null);
   const [generatingSummary, setGeneratingSummary] = useState(false);
+  const [editingSummary, setEditingSummary] = useState(false);
+  const [pasteSummary, setPasteSummary] = useState('');
+  const [summaryAbstract, setSummaryAbstract] = useState('');
+  const [summaryKeyClaims, setSummaryKeyClaims] = useState('');
+  const [summaryAcademicConstructs, setSummaryAcademicConstructs] = useState('');
+  const [summaryIntroduction, setSummaryIntroduction] = useState('');
+  const [summaryMethods, setSummaryMethods] = useState('');
+  const [summaryResults, setSummaryResults] = useState('');
+  const [summaryDiscussion, setSummaryDiscussion] = useState('');
+  const [summaryConclusion, setSummaryConclusion] = useState('');
+  const [summaryLimitations, setSummaryLimitations] = useState('');
+  const [summaryFutureResearch, setSummaryFutureResearch] = useState('');
+  const [savingSummary, setSavingSummary] = useState(false);
+
+  const syncSummaryToEditor = useCallback((s: PaperSummary | null) => {
+    setSummaryAbstract(s?.abstract ?? '');
+    setSummaryKeyClaims(s?.key_claims ?? '');
+    setSummaryAcademicConstructs(s?.academic_constructs ?? '');
+    setSummaryIntroduction(s?.introduction ?? '');
+    setSummaryMethods(s?.methods ?? '');
+    setSummaryResults(s?.results_section ?? '');
+    setSummaryDiscussion(s?.discussion_section ?? '');
+    setSummaryConclusion(s?.conclusion_section ?? '');
+    setSummaryLimitations(s?.limitations_section ?? '');
+    setSummaryFutureResearch(s?.future_research_section ?? '');
+  }, []);
+
+  const parseStructuredSummary = useCallback((raw: string) => {
+    const txt = (raw || '').replace(/\r\n/g, '\n');
+    const headings = [
+      { key: 'abstract', label: 'abstract' },
+      { key: 'key_claims', label: 'key claims' },
+      { key: 'academic_constructs', label: 'academic constructs' },
+      { key: 'introduction', label: 'introduction' },
+      { key: 'methods', label: 'methods' },
+      { key: 'results_section', label: 'results' },
+      { key: 'discussion_section', label: 'discussion' },
+      { key: 'conclusion_section', label: 'conclusion' },
+      { key: 'limitations_section', label: 'limitations' },
+      { key: 'future_research_section', label: 'future research' },
+    ] as const;
+
+    const normal = txt
+      .replace(/^\s*#+\s*/gm, '') // strip markdown heading markers
+      .replace(/^\s*[-*]\s*/gm, '') // strip list markers at line start
+      .trim();
+
+    const positions: { idx: number; key: (typeof headings)[number]['key'] }[] = [];
+    for (const h of headings) {
+      const re = new RegExp(`(^|\\n)\\s*${h.label}\\s*:?\\s*(\\n|$)`, 'i');
+      const m = re.exec('\n' + normal);
+      if (m && typeof m.index === 'number') {
+        positions.push({ idx: m.index, key: h.key });
+      }
+    }
+    positions.sort((a, b) => a.idx - b.idx);
+    if (positions.length === 0) return null;
+
+    const out: Partial<Record<(typeof headings)[number]['key'], string>> = {};
+    for (let i = 0; i < positions.length; i++) {
+      const start = positions[i].idx;
+      const end = i + 1 < positions.length ? positions[i + 1].idx : undefined;
+      const chunk = ('\n' + normal).slice(start, end);
+      const chunkLines = chunk.split('\n');
+      chunkLines.shift(); // empty prefix
+      chunkLines.shift(); // heading line
+      const body = chunkLines.join('\n').trim();
+      out[positions[i].key] = body;
+    }
+    return out;
+  }, []);
 
   const getIdFromUrl = useCallback((): string | null => {
     if (typeof window === 'undefined') return null;
@@ -234,7 +315,11 @@ export default function PaperDetailPage() {
           .select('*')
           .eq('paper_id', paperId)
           .maybeSingle();
-        if (!cancelled && summaryData) setSummary(summaryData as PaperSummary);
+        if (!cancelled && summaryData) {
+          const s = summaryData as PaperSummary;
+          setSummary(s);
+          syncSummaryToEditor(s);
+        }
       } else {
         setError('Paper not found.');
         setPaper(null);
@@ -257,7 +342,11 @@ export default function PaperDetailPage() {
       .maybeSingle();
     setSummaryLoading(false);
     if (err) setSummaryError(err.message);
-    else if (data) setSummary(data as PaperSummary);
+    else if (data) {
+      const s = data as PaperSummary;
+      setSummary(s);
+      syncSummaryToEditor(s);
+    }
   }, []);
 
   const handleGenerateSummary = useCallback(async () => {
@@ -287,6 +376,47 @@ export default function PaperDetailPage() {
       setGeneratingSummary(false);
     }
   }, [paper]);
+
+  const handleSaveSummary = useCallback(async () => {
+    if (!paper || !supabase || !isSupabaseConfigured()) return;
+    setSavingSummary(true);
+    setSummaryError(null);
+    const payload = {
+      paper_id: paper.id,
+      abstract: summaryAbstract.trim() || null,
+      key_claims: summaryKeyClaims.trim() || null,
+      academic_constructs: summaryAcademicConstructs.trim() || null,
+      introduction: summaryIntroduction.trim() || null,
+      methods: summaryMethods.trim() || null,
+      results_section: summaryResults.trim() || null,
+      discussion_section: summaryDiscussion.trim() || null,
+      conclusion_section: summaryConclusion.trim() || null,
+      limitations_section: summaryLimitations.trim() || null,
+      future_research_section: summaryFutureResearch.trim() || null,
+      updated_at: new Date().toISOString(),
+    };
+    const { error: upsertErr } = await supabase.from('paper_summary').upsert(payload, { onConflict: 'paper_id' });
+    setSavingSummary(false);
+    if (upsertErr) {
+      setSummaryError(upsertErr.message);
+      return;
+    }
+    await loadSummary(paper.id);
+    setEditingSummary(false);
+  }, [
+    paper,
+    summaryAbstract,
+    summaryKeyClaims,
+    summaryAcademicConstructs,
+    summaryIntroduction,
+    summaryMethods,
+    summaryResults,
+    summaryDiscussion,
+    summaryConclusion,
+    summaryLimitations,
+    summaryFutureResearch,
+    loadSummary,
+  ]);
 
   const citation = paper ? buildAPA7Citation(paper) : '';
   const handleCopyCitation = useCallback(() => {
@@ -458,77 +588,167 @@ export default function PaperDetailPage() {
       )}
 
       <section className="paper-detail-section paper-detail-summary">
-        <h2 className="paper-detail-section-title">AI summary</h2>
-        {summaryLoading && !summary && <p className="paper-detail-summary-loading">Loading summary…</p>}
-        {summaryError && <p className="paper-detail-summary-error">{summaryError}</p>}
-        {generatingSummary && (
-          <p className="paper-detail-summary-generating">Generating summary from the paper… This may take a minute.</p>
-        )}
-        {!summary && !summaryLoading && !generatingSummary && (
-          <>
-            <p className="paper-detail-summary-empty">
-              No AI summary yet. Summaries are generated automatically when you add a paper; you can also generate one now — requires a free Gemini API key in your Supabase Edge Function secrets.
-            </p>
+        <div className="paper-detail-summary-header">
+          <h2 className="paper-detail-section-title">Summary</h2>
+          <div className="paper-detail-summary-header-actions">
             <button
               type="button"
               className="paper-detail-summary-btn"
+              onClick={() => {
+                setEditingSummary((v) => {
+                  const next = !v;
+                  if (next) syncSummaryToEditor(summary);
+                  return next;
+                });
+              }}
+            >
+              {editingSummary ? 'Close editor' : 'Edit summary'}
+            </button>
+            <button
+              type="button"
+              className="paper-detail-summary-btn paper-detail-summary-btn-secondary"
               onClick={handleGenerateSummary}
               disabled={generatingSummary}
+              title="Experimental: may fail on sites that block server-side access (403)."
             >
-              Generate summary
+              {generatingSummary ? 'Generating…' : 'Try auto summary'}
             </button>
-          </>
+          </div>
+        </div>
+
+        {summaryLoading && !summary && <p className="paper-detail-summary-loading">Loading summary…</p>}
+        {summaryError && <p className="paper-detail-summary-error">{summaryError}</p>}
+
+        {editingSummary && (
+          <div className="paper-detail-summary-editor">
+            <label className="paper-detail-summary-label">
+              Paste structured summary (optional)
+              <textarea
+                className="paper-detail-summary-textarea"
+                value={pasteSummary}
+                onChange={(e) => setPasteSummary(e.target.value)}
+                rows={6}
+                placeholder={`Abstract:\n...\n\nKey Claims:\n...\n\nAcademic Constructs:\n...\n\nIntroduction:\n...\n\nMethods:\n...\n\nResults:\n...\n\nDiscussion:\n...\n\nConclusion:\n...\n\nLimitations:\n...\n\nFuture Research:\n...`}
+              />
+            </label>
+            <div className="paper-detail-summary-editor-actions">
+              <button
+                type="button"
+                className="paper-detail-summary-btn paper-detail-summary-btn-secondary"
+                onClick={() => {
+                  const parsed = parseStructuredSummary(pasteSummary);
+                  if (!parsed) return;
+                  if (parsed.abstract != null) setSummaryAbstract(parsed.abstract || '');
+                  if (parsed.key_claims != null) setSummaryKeyClaims(parsed.key_claims || '');
+                  if (parsed.academic_constructs != null) setSummaryAcademicConstructs(parsed.academic_constructs || '');
+                  if (parsed.introduction != null) setSummaryIntroduction(parsed.introduction || '');
+                  if (parsed.methods != null) setSummaryMethods(parsed.methods || '');
+                  if (parsed.results_section != null) setSummaryResults(parsed.results_section || '');
+                  if (parsed.discussion_section != null) setSummaryDiscussion(parsed.discussion_section || '');
+                  if (parsed.conclusion_section != null) setSummaryConclusion(parsed.conclusion_section || '');
+                  if (parsed.limitations_section != null) setSummaryLimitations(parsed.limitations_section || '');
+                  if (parsed.future_research_section != null) setSummaryFutureResearch(parsed.future_research_section || '');
+                }}
+              >
+                Parse into sections
+              </button>
+              <button
+                type="button"
+                className="paper-detail-summary-btn"
+                onClick={handleSaveSummary}
+                disabled={savingSummary}
+              >
+                {savingSummary ? 'Saving…' : 'Save summary'}
+              </button>
+            </div>
+
+            <div className="paper-detail-summary-fields">
+              <label className="paper-detail-summary-label">
+                Abstract
+                <textarea className="paper-detail-summary-textarea" rows={3} value={summaryAbstract} onChange={(e) => setSummaryAbstract(e.target.value)} />
+              </label>
+              <label className="paper-detail-summary-label">
+                Key Claims
+                <textarea className="paper-detail-summary-textarea" rows={3} value={summaryKeyClaims} onChange={(e) => setSummaryKeyClaims(e.target.value)} />
+              </label>
+              <label className="paper-detail-summary-label">
+                Academic Constructs
+                <textarea className="paper-detail-summary-textarea" rows={3} value={summaryAcademicConstructs} onChange={(e) => setSummaryAcademicConstructs(e.target.value)} />
+              </label>
+              <label className="paper-detail-summary-label">
+                Introduction
+                <textarea className="paper-detail-summary-textarea" rows={3} value={summaryIntroduction} onChange={(e) => setSummaryIntroduction(e.target.value)} />
+              </label>
+              <label className="paper-detail-summary-label">
+                Methods
+                <textarea className="paper-detail-summary-textarea" rows={3} value={summaryMethods} onChange={(e) => setSummaryMethods(e.target.value)} />
+              </label>
+              <label className="paper-detail-summary-label">
+                Results
+                <textarea className="paper-detail-summary-textarea" rows={3} value={summaryResults} onChange={(e) => setSummaryResults(e.target.value)} />
+              </label>
+              <label className="paper-detail-summary-label">
+                Discussion
+                <textarea className="paper-detail-summary-textarea" rows={3} value={summaryDiscussion} onChange={(e) => setSummaryDiscussion(e.target.value)} />
+              </label>
+              <label className="paper-detail-summary-label">
+                Conclusion
+                <textarea className="paper-detail-summary-textarea" rows={3} value={summaryConclusion} onChange={(e) => setSummaryConclusion(e.target.value)} />
+              </label>
+              <label className="paper-detail-summary-label">
+                Limitations
+                <textarea className="paper-detail-summary-textarea" rows={3} value={summaryLimitations} onChange={(e) => setSummaryLimitations(e.target.value)} />
+              </label>
+              <label className="paper-detail-summary-label">
+                Future Research
+                <textarea className="paper-detail-summary-textarea" rows={3} value={summaryFutureResearch} onChange={(e) => setSummaryFutureResearch(e.target.value)} />
+              </label>
+            </div>
+          </div>
         )}
-        {summary && (
+
+        {!editingSummary && (
           <div className="paper-detail-summary-grid">
-            {summary.problem && (
-              <div className="paper-detail-summary-block">
-                <h3 className="paper-detail-summary-heading">Definition / Research problem</h3>
-                <p className="paper-detail-summary-text">{summary.problem}</p>
-              </div>
-            )}
-            {summary.claims && (
-              <div className="paper-detail-summary-block">
-                <h3 className="paper-detail-summary-heading">Key claims</h3>
-                <p className="paper-detail-summary-text">{summary.claims}</p>
-              </div>
-            )}
-            {summary.method && (
-              <div className="paper-detail-summary-block">
-                <h3 className="paper-detail-summary-heading">Method</h3>
-                <p className="paper-detail-summary-text">{summary.method}</p>
-              </div>
-            )}
-            {summary.results && (
-              <div className="paper-detail-summary-block">
-                <h3 className="paper-detail-summary-heading">Results</h3>
-                <p className="paper-detail-summary-text">{summary.results}</p>
-              </div>
-            )}
-            {summary.discussion && (
-              <div className="paper-detail-summary-block">
-                <h3 className="paper-detail-summary-heading">Discussion</h3>
-                <p className="paper-detail-summary-text">{summary.discussion}</p>
-              </div>
-            )}
-            {summary.limitations && (
-              <div className="paper-detail-summary-block">
-                <h3 className="paper-detail-summary-heading">Limitations</h3>
-                <p className="paper-detail-summary-text">{summary.limitations}</p>
-              </div>
-            )}
-            {summary.future_research && (
-              <div className="paper-detail-summary-block">
-                <h3 className="paper-detail-summary-heading">Future research</h3>
-                <p className="paper-detail-summary-text">{summary.future_research}</p>
-              </div>
-            )}
-            {summary.conclusion && (
-              <div className="paper-detail-summary-block">
-                <h3 className="paper-detail-summary-heading">Conclusion</h3>
-                <p className="paper-detail-summary-text">{summary.conclusion}</p>
-              </div>
-            )}
+            <div className="paper-detail-summary-block">
+              <h3 className="paper-detail-summary-heading">Abstract</h3>
+              <p className="paper-detail-summary-text">{summary?.abstract?.trim() || '—'}</p>
+            </div>
+            <div className="paper-detail-summary-block">
+              <h3 className="paper-detail-summary-heading">Key Claims</h3>
+              <p className="paper-detail-summary-text">{summary?.key_claims?.trim() || '—'}</p>
+            </div>
+            <div className="paper-detail-summary-block">
+              <h3 className="paper-detail-summary-heading">Academic Constructs</h3>
+              <p className="paper-detail-summary-text">{summary?.academic_constructs?.trim() || '—'}</p>
+            </div>
+            <div className="paper-detail-summary-block">
+              <h3 className="paper-detail-summary-heading">Introduction</h3>
+              <p className="paper-detail-summary-text">{summary?.introduction?.trim() || '—'}</p>
+            </div>
+            <div className="paper-detail-summary-block">
+              <h3 className="paper-detail-summary-heading">Methods</h3>
+              <p className="paper-detail-summary-text">{summary?.methods?.trim() || '—'}</p>
+            </div>
+            <div className="paper-detail-summary-block">
+              <h3 className="paper-detail-summary-heading">Results</h3>
+              <p className="paper-detail-summary-text">{summary?.results_section?.trim() || '—'}</p>
+            </div>
+            <div className="paper-detail-summary-block">
+              <h3 className="paper-detail-summary-heading">Discussion</h3>
+              <p className="paper-detail-summary-text">{summary?.discussion_section?.trim() || '—'}</p>
+            </div>
+            <div className="paper-detail-summary-block">
+              <h3 className="paper-detail-summary-heading">Conclusion</h3>
+              <p className="paper-detail-summary-text">{summary?.conclusion_section?.trim() || '—'}</p>
+            </div>
+            <div className="paper-detail-summary-block">
+              <h3 className="paper-detail-summary-heading">Limitations</h3>
+              <p className="paper-detail-summary-text">{summary?.limitations_section?.trim() || '—'}</p>
+            </div>
+            <div className="paper-detail-summary-block">
+              <h3 className="paper-detail-summary-heading">Future Research</h3>
+              <p className="paper-detail-summary-text">{summary?.future_research_section?.trim() || '—'}</p>
+            </div>
           </div>
         )}
       </section>
