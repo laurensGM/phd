@@ -275,6 +275,8 @@ export default function PaperDetailPage() {
 
     const bulletRe = /^\s*[-*•]\s+(.+)$/;
     const numberRe = /^\s*\d+[.)]\s+(.+)$/;
+    const looksLikeHeading = (s: string) => /^[A-Z][A-Za-z0-9\s/&(),\-]+$/.test(s) && s.length < 80;
+    const isLabelLine = (s: string) => /:\s*$/.test(s);
 
     while (i < lines.length) {
       const line = lines[i].trim();
@@ -351,6 +353,63 @@ export default function PaperDetailPage() {
               <li key={`oi-${idx}`}>{item}</li>
             ))}
           </ol>
+        );
+        continue;
+      }
+
+      // Heuristic mode: many pasted summaries are line-based without "-" or "1."
+      // Convert heading-like line groups into bullet structures.
+      if (looksLikeHeading(line)) {
+        const title = line;
+        i++;
+        const bodyLines: string[] = [];
+        while (i < lines.length) {
+          const l = lines[i].trim();
+          if (!l) {
+            i++;
+            if (bodyLines.length > 0) break;
+            continue;
+          }
+          if (bulletRe.test(l) || numberRe.test(l)) break;
+          if (looksLikeHeading(l) && bodyLines.length > 0) break;
+          bodyLines.push(l);
+          i++;
+        }
+
+        // Handle label + list pattern e.g. "Highlights importance of:" + items
+        const nestedStart = bodyLines.findIndex((l) => isLabelLine(l));
+        if (nestedStart !== -1 && nestedStart < bodyLines.length - 1) {
+          const intro = bodyLines.slice(0, nestedStart + 1).join(' ');
+          const nestedItems = bodyLines.slice(nestedStart + 1).filter(Boolean);
+          nodes.push(
+            <div key={`h-${key++}`} className="paper-detail-summary-bullet-block">
+              <ul className="paper-detail-summary-list paper-detail-summary-list-ul">
+                <li>
+                  <strong>{title}</strong>
+                  {intro ? <> {intro}</> : null}
+                  {nestedItems.length > 0 && (
+                    <ul className="paper-detail-summary-list paper-detail-summary-list-ul paper-detail-summary-sublist">
+                      {nestedItems.map((n, idx) => (
+                        <li key={`ns-${idx}`}>{n}</li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              </ul>
+            </div>
+          );
+          continue;
+        }
+
+        nodes.push(
+          <div key={`h-${key++}`} className="paper-detail-summary-bullet-block">
+            <ul className="paper-detail-summary-list paper-detail-summary-list-ul">
+              <li>
+                <strong>{title}</strong>
+                {bodyLines.length > 0 ? <> — {bodyLines.join(' ')}</> : null}
+              </li>
+            </ul>
+          </div>
         );
         continue;
       }
