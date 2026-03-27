@@ -273,8 +273,22 @@ import PaperDetailPage from '../../components/PaperDetailPage';
     font-size: 0.9rem;
     line-height: 1.55;
     color: var(--color-ink);
-    white-space: pre-wrap;
     word-break: break-word;
+  }
+  :global(.paper-detail-summary-rich) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  :global(.paper-detail-summary-paragraph) {
+    margin: 0;
+  }
+  :global(.paper-detail-summary-list) {
+    margin: 0;
+    padding-left: 1.25rem;
+  }
+  :global(.paper-detail-summary-list li) {
+    margin: 0.1rem 0;
   }
   :global(.paper-detail-snippets) {
     margin-top: 2rem;

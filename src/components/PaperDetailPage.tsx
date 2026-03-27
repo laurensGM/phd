@@ -225,7 +225,6 @@ export default function PaperDetailPage() {
 
     const normal = txt
       .replace(/^\s*#+\s*/gm, '') // strip markdown heading markers
-      .replace(/^\s*[-*]\s*/gm, '') // strip list markers at line start
       .trim();
 
     const positions: { idx: number; key: (typeof headings)[number]['key'] }[] = [];
@@ -263,6 +262,89 @@ export default function PaperDetailPage() {
         .trim();
     }
     return out;
+  }, []);
+
+  const renderSummaryText = useCallback((raw?: string | null) => {
+    const text = (raw ?? '').trim();
+    if (!text) return <span>—</span>;
+
+    const lines = text.replace(/\r\n/g, '\n').split('\n');
+    const nodes: React.ReactNode[] = [];
+    let i = 0;
+    let key = 0;
+
+    const bulletRe = /^\s*[-*•]\s+(.+)$/;
+    const numberRe = /^\s*\d+[.)]\s+(.+)$/;
+
+    while (i < lines.length) {
+      const line = lines[i].trim();
+      if (!line) {
+        i++;
+        continue;
+      }
+
+      if (bulletRe.test(line)) {
+        const items: string[] = [];
+        while (i < lines.length) {
+          const l = lines[i].trim();
+          if (!l) {
+            i++;
+            continue;
+          }
+          const m = l.match(bulletRe);
+          if (!m) break;
+          items.push(m[1].trim());
+          i++;
+        }
+        nodes.push(
+          <ul key={`u-${key++}`} className="paper-detail-summary-list">
+            {items.map((item, idx) => (
+              <li key={`ui-${idx}`}>{item}</li>
+            ))}
+          </ul>
+        );
+        continue;
+      }
+
+      if (numberRe.test(line)) {
+        const items: string[] = [];
+        while (i < lines.length) {
+          const l = lines[i].trim();
+          if (!l) {
+            i++;
+            continue;
+          }
+          const m = l.match(numberRe);
+          if (!m) break;
+          items.push(m[1].trim());
+          i++;
+        }
+        nodes.push(
+          <ol key={`o-${key++}`} className="paper-detail-summary-list">
+            {items.map((item, idx) => (
+              <li key={`oi-${idx}`}>{item}</li>
+            ))}
+          </ol>
+        );
+        continue;
+      }
+
+      const para: string[] = [];
+      while (i < lines.length) {
+        const l = lines[i].trim();
+        if (!l) break;
+        if (bulletRe.test(l) || numberRe.test(l)) break;
+        para.push(l);
+        i++;
+      }
+      nodes.push(
+        <p key={`p-${key++}`} className="paper-detail-summary-paragraph">
+          {para.join(' ')}
+        </p>
+      );
+    }
+
+    return <div className="paper-detail-summary-rich">{nodes}</div>;
   }, []);
 
   const getIdFromUrl = useCallback((): string | null => {
@@ -715,35 +797,39 @@ export default function PaperDetailPage() {
           <div className="paper-detail-summary-grid">
             <div className="paper-detail-summary-block">
               <h3 className="paper-detail-summary-heading">Abstract</h3>
-              <p className="paper-detail-summary-text">{summary?.abstract?.trim() || '—'}</p>
+              <div className="paper-detail-summary-text">{renderSummaryText(summary?.abstract)}</div>
             </div>
             <div className="paper-detail-summary-block">
               <h3 className="paper-detail-summary-heading">Key Claims</h3>
-              <p className="paper-detail-summary-text">{summary?.key_claims?.trim() || '—'}</p>
+              <div className="paper-detail-summary-text">{renderSummaryText(summary?.key_claims)}</div>
             </div>
             <div className="paper-detail-summary-block">
               <h3 className="paper-detail-summary-heading">Academic Constructs</h3>
-              <p className="paper-detail-summary-text">{summary?.academic_constructs?.trim() || '—'}</p>
+              <div className="paper-detail-summary-text">{renderSummaryText(summary?.academic_constructs)}</div>
             </div>
             <div className="paper-detail-summary-block">
               <h3 className="paper-detail-summary-heading">Introduction</h3>
-              <p className="paper-detail-summary-text">{summary?.introduction?.trim() || '—'}</p>
+              <div className="paper-detail-summary-text">{renderSummaryText(summary?.introduction)}</div>
             </div>
             <div className="paper-detail-summary-block">
               <h3 className="paper-detail-summary-heading">Methods</h3>
-              <p className="paper-detail-summary-text">{summary?.methods?.trim() || '—'}</p>
+              <div className="paper-detail-summary-text">{renderSummaryText(summary?.methods)}</div>
             </div>
             <div className="paper-detail-summary-block">
               <h3 className="paper-detail-summary-heading">Results and Discussion</h3>
-              <p className="paper-detail-summary-text">{(summary?.results_and_discussion ?? [summary?.results_section, summary?.discussion_section].filter((x) => !!x && x.trim()).join('\n\n')).trim() || '—'}</p>
+              <div className="paper-detail-summary-text">
+                {renderSummaryText((summary?.results_and_discussion ?? [summary?.results_section, summary?.discussion_section].filter((x) => !!x && x.trim()).join('\n\n')))}
+              </div>
             </div>
             <div className="paper-detail-summary-block">
               <h3 className="paper-detail-summary-heading">Conclusion</h3>
-              <p className="paper-detail-summary-text">{summary?.conclusion_section?.trim() || '—'}</p>
+              <div className="paper-detail-summary-text">{renderSummaryText(summary?.conclusion_section)}</div>
             </div>
             <div className="paper-detail-summary-block">
               <h3 className="paper-detail-summary-heading">Limitations and Future Research</h3>
-              <p className="paper-detail-summary-text">{(summary?.limitations_and_future_research ?? [summary?.limitations_section, summary?.future_research_section].filter((x) => !!x && x.trim()).join('\n\n')).trim() || '—'}</p>
+              <div className="paper-detail-summary-text">
+                {renderSummaryText((summary?.limitations_and_future_research ?? [summary?.limitations_section, summary?.future_research_section].filter((x) => !!x && x.trim()).join('\n\n')))}
+              </div>
             </div>
           </div>
         )}
