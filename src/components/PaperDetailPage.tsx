@@ -293,11 +293,24 @@ export default function PaperDetailPage() {
           }
           const m = l.match(bulletRe);
           if (!m) break;
-          items.push(m[1].trim());
+          const itemParts = [m[1].trim()];
           i++;
+          // Capture wrapped lines that belong to the same bullet item.
+          while (i < lines.length) {
+            const contRaw = lines[i];
+            const cont = contRaw.trim();
+            if (!cont) {
+              i++;
+              break;
+            }
+            if (bulletRe.test(cont) || numberRe.test(cont)) break;
+            itemParts.push(cont);
+            i++;
+          }
+          items.push(itemParts.join(' '));
         }
         nodes.push(
-          <ul key={`u-${key++}`} className="paper-detail-summary-list">
+          <ul key={`u-${key++}`} className="paper-detail-summary-list paper-detail-summary-list-ul">
             {items.map((item, idx) => (
               <li key={`ui-${idx}`}>{item}</li>
             ))}
@@ -316,11 +329,24 @@ export default function PaperDetailPage() {
           }
           const m = l.match(numberRe);
           if (!m) break;
-          items.push(m[1].trim());
+          const itemParts = [m[1].trim()];
           i++;
+          // Capture wrapped lines that belong to the same numbered item.
+          while (i < lines.length) {
+            const contRaw = lines[i];
+            const cont = contRaw.trim();
+            if (!cont) {
+              i++;
+              break;
+            }
+            if (numberRe.test(cont) || bulletRe.test(cont)) break;
+            itemParts.push(cont);
+            i++;
+          }
+          items.push(itemParts.join(' '));
         }
         nodes.push(
-          <ol key={`o-${key++}`} className="paper-detail-summary-list">
+          <ol key={`o-${key++}`} className="paper-detail-summary-list paper-detail-summary-list-ol">
             {items.map((item, idx) => (
               <li key={`oi-${idx}`}>{item}</li>
             ))}

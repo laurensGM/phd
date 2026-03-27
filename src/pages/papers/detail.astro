@@ -286,8 +286,16 @@ import PaperDetailPage from '../../components/PaperDetailPage';
   :global(.paper-detail-summary-list) {
     margin: 0;
     padding-left: 1.25rem;
+    list-style-position: outside;
+  }
+  :global(.paper-detail-summary-list.paper-detail-summary-list-ul) {
+    list-style-type: disc !important;
+  }
+  :global(.paper-detail-summary-list.paper-detail-summary-list-ol) {
+    list-style-type: decimal !important;
   }
   :global(.paper-detail-summary-list li) {
+    display: list-item;
     margin: 0.1rem 0;
   }
   :global(.paper-detail-snippets) {
