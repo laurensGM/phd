@@ -28,6 +28,28 @@ interface SavedPaper {
   created_at: string;
 }
 
+interface PaperSummaryPresenceRow {
+  paper_id: string;
+  abstract?: string | null;
+  key_claims?: string | null;
+  academic_constructs?: string | null;
+  introduction?: string | null;
+  methods?: string | null;
+  results_section?: string | null;
+  discussion_section?: string | null;
+  conclusion_section?: string | null;
+  limitations_section?: string | null;
+  future_research_section?: string | null;
+  problem?: string | null;
+  claims?: string | null;
+  method?: string | null;
+  results?: string | null;
+  discussion?: string | null;
+  conclusion?: string | null;
+  limitations?: string | null;
+  future_research?: string | null;
+}
+
 /** Extract DOI from a URL like https://doi.org/10.2307/249008 */
 function extractDoi(url: string): string | null {
   if (!url || typeof url !== 'string') return null;
@@ -160,6 +182,7 @@ const base = (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) |
 
 export default function PapersPage() {
   const [papers, setPapers] = useState<SavedPaper[]>([]);
+  const [papersWithSummary, setPapersWithSummary] = useState<Set<string>>(new Set());
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const [tagFilter, setTagFilter] = useState<string>('');
@@ -217,16 +240,52 @@ export default function PapersPage() {
     if (!supabase) return;
     setLoading(true);
     setError(null);
-    const { data, error: fetchError } = await supabase
-      .from('saved_papers')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(FETCH_LIMIT);
+    const [{ data, error: fetchError }, { data: summaryData }] = await Promise.all([
+      supabase
+        .from('saved_papers')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(FETCH_LIMIT),
+      supabase
+        .from('paper_summary')
+        .select(
+          'paper_id,abstract,key_claims,academic_constructs,introduction,methods,results_section,discussion_section,conclusion_section,limitations_section,future_research_section,problem,claims,method,results,discussion,conclusion,limitations,future_research'
+        ),
+    ]);
     if (fetchError) {
       setError(fetchError.message);
       setPapers([]);
+      setPapersWithSummary(new Set());
     } else {
       setPapers((data ?? []).map(mapRow));
+      const hasContent = (row: PaperSummaryPresenceRow) =>
+        [
+          row.abstract,
+          row.key_claims,
+          row.academic_constructs,
+          row.introduction,
+          row.methods,
+          row.results_section,
+          row.discussion_section,
+          row.conclusion_section,
+          row.limitations_section,
+          row.future_research_section,
+          // backward compatibility with older fields
+          row.problem,
+          row.claims,
+          row.method,
+          row.results,
+          row.discussion,
+          row.conclusion,
+          row.limitations,
+          row.future_research,
+        ].some((v) => typeof v === 'string' && v.trim().length > 0);
+
+      const ids = new Set<string>();
+      ((summaryData as PaperSummaryPresenceRow[] | null) ?? []).forEach((r) => {
+        if (r.paper_id && hasContent(r)) ids.add(r.paper_id);
+      });
+      setPapersWithSummary(ids);
     }
     setLoading(false);
   }, []);
@@ -991,6 +1050,11 @@ export default function PapersPage() {
                           {Number(paper.citations)} citation{Number(paper.citations) !== 1 ? 's' : ''}
                         </span>
                       )}
+                      {papersWithSummary.has(paper.id) && (
+                        <span className="papers-summary-badge" title="Paper has a structured summary">
+                          Summary
+                        </span>
+                      )}
                       <div className="papers-entry-tags">
                         {paper.tags.map((t) => (
                           <span key={t} className="papers-tag-badge">
@@ -1121,6 +1185,11 @@ export default function PapersPage() {
                             {(paper.citations !== null && paper.citations !== undefined) && (
                               <span className="papers-board-card-citations">
                                 {Number(paper.citations)}
+                              </span>
+                            )}
+                            {papersWithSummary.has(paper.id) && (
+                              <span className="papers-summary-badge papers-summary-badge-board" title="Paper has a structured summary">
+                                Summary
                               </span>
                             )}
                           </div>
