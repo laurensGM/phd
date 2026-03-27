@@ -35,6 +35,8 @@ interface PaperSummaryPresenceRow {
   academic_constructs?: string | null;
   introduction?: string | null;
   methods?: string | null;
+  results_and_discussion?: string | null;
+  limitations_and_future_research?: string | null;
   results_section?: string | null;
   discussion_section?: string | null;
   conclusion_section?: string | null;
@@ -249,7 +251,7 @@ export default function PapersPage() {
       supabase
         .from('paper_summary')
         .select(
-          'paper_id,abstract,key_claims,academic_constructs,introduction,methods,results_section,discussion_section,conclusion_section,limitations_section,future_research_section,problem,claims,method,results,discussion,conclusion,limitations,future_research'
+          'paper_id,abstract,key_claims,academic_constructs,introduction,methods,results_and_discussion,limitations_and_future_research,results_section,discussion_section,conclusion_section,limitations_section,future_research_section,problem,claims,method,results,discussion,conclusion,limitations,future_research'
         ),
     ]);
     if (fetchError) {
@@ -265,6 +267,8 @@ export default function PapersPage() {
           row.academic_constructs,
           row.introduction,
           row.methods,
+          row.results_and_discussion,
+          row.limitations_and_future_research,
           row.results_section,
           row.discussion_section,
           row.conclusion_section,

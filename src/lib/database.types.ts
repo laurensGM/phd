@@ -93,6 +93,8 @@ export interface Database {
           academic_constructs: string | null;
           introduction: string | null;
           methods: string | null;
+          results_and_discussion: string | null;
+          limitations_and_future_research: string | null;
           results_section: string | null;
           discussion_section: string | null;
           conclusion_section: string | null;
@@ -117,6 +119,8 @@ export interface Database {
           academic_constructs?: string | null;
           introduction?: string | null;
           methods?: string | null;
+          results_and_discussion?: string | null;
+          limitations_and_future_research?: string | null;
           results_section?: string | null;
           discussion_section?: string | null;
           conclusion_section?: string | null;
@@ -140,6 +144,8 @@ export interface Database {
           academic_constructs?: string | null;
           introduction?: string | null;
           methods?: string | null;
+          results_and_discussion?: string | null;
+          limitations_and_future_research?: string | null;
           results_section?: string | null;
           discussion_section?: string | null;
           conclusion_section?: string | null;

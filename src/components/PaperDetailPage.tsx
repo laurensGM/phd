@@ -47,6 +47,8 @@ interface PaperSummary {
   academic_constructs: string | null;
   introduction: string | null;
   methods: string | null;
+  results_and_discussion: string | null;
+  limitations_and_future_research: string | null;
   results_section: string | null;
   discussion_section: string | null;
   conclusion_section: string | null;
@@ -182,11 +184,9 @@ export default function PaperDetailPage() {
   const [summaryAcademicConstructs, setSummaryAcademicConstructs] = useState('');
   const [summaryIntroduction, setSummaryIntroduction] = useState('');
   const [summaryMethods, setSummaryMethods] = useState('');
-  const [summaryResults, setSummaryResults] = useState('');
-  const [summaryDiscussion, setSummaryDiscussion] = useState('');
+  const [summaryResultsAndDiscussion, setSummaryResultsAndDiscussion] = useState('');
   const [summaryConclusion, setSummaryConclusion] = useState('');
-  const [summaryLimitations, setSummaryLimitations] = useState('');
-  const [summaryFutureResearch, setSummaryFutureResearch] = useState('');
+  const [summaryLimitationsAndFutureResearch, setSummaryLimitationsAndFutureResearch] = useState('');
   const [savingSummary, setSavingSummary] = useState(false);
 
   const syncSummaryToEditor = useCallback((s: PaperSummary | null) => {
@@ -195,11 +195,15 @@ export default function PaperDetailPage() {
     setSummaryAcademicConstructs(s?.academic_constructs ?? '');
     setSummaryIntroduction(s?.introduction ?? '');
     setSummaryMethods(s?.methods ?? '');
-    setSummaryResults(s?.results_section ?? '');
-    setSummaryDiscussion(s?.discussion_section ?? '');
+    setSummaryResultsAndDiscussion(
+      s?.results_and_discussion ??
+        [s?.results_section, s?.discussion_section].filter((x) => !!x && x.trim()).join('\n\n').trim()
+    );
     setSummaryConclusion(s?.conclusion_section ?? '');
-    setSummaryLimitations(s?.limitations_section ?? '');
-    setSummaryFutureResearch(s?.future_research_section ?? '');
+    setSummaryLimitationsAndFutureResearch(
+      s?.limitations_and_future_research ??
+        [s?.limitations_section, s?.future_research_section].filter((x) => !!x && x.trim()).join('\n\n').trim()
+    );
   }, []);
 
   const parseStructuredSummary = useCallback((raw: string) => {
@@ -210,9 +214,11 @@ export default function PaperDetailPage() {
       { key: 'academic_constructs', label: 'academic constructs' },
       { key: 'introduction', label: 'introduction' },
       { key: 'methods', label: 'methods' },
+      { key: 'results_and_discussion', label: 'results and discussion' },
       { key: 'results_section', label: 'results' },
       { key: 'discussion_section', label: 'discussion' },
       { key: 'conclusion_section', label: 'conclusion' },
+      { key: 'limitations_and_future_research', label: 'limitations and future research' },
       { key: 'limitations_section', label: 'limitations' },
       { key: 'future_research_section', label: 'future research' },
     ] as const;
@@ -243,6 +249,18 @@ export default function PaperDetailPage() {
       chunkLines.shift(); // heading line
       const body = chunkLines.join('\n').trim();
       out[positions[i].key] = body;
+    }
+    if (!out.results_and_discussion) {
+      out.results_and_discussion = [out.results_section, out.discussion_section]
+        .filter((x) => !!x && x.trim())
+        .join('\n\n')
+        .trim();
+    }
+    if (!out.limitations_and_future_research) {
+      out.limitations_and_future_research = [out.limitations_section, out.future_research_section]
+        .filter((x) => !!x && x.trim())
+        .join('\n\n')
+        .trim();
     }
     return out;
   }, []);
@@ -388,11 +406,9 @@ export default function PaperDetailPage() {
       academic_constructs: summaryAcademicConstructs.trim() || null,
       introduction: summaryIntroduction.trim() || null,
       methods: summaryMethods.trim() || null,
-      results_section: summaryResults.trim() || null,
-      discussion_section: summaryDiscussion.trim() || null,
+      results_and_discussion: summaryResultsAndDiscussion.trim() || null,
       conclusion_section: summaryConclusion.trim() || null,
-      limitations_section: summaryLimitations.trim() || null,
-      future_research_section: summaryFutureResearch.trim() || null,
+      limitations_and_future_research: summaryLimitationsAndFutureResearch.trim() || null,
       updated_at: new Date().toISOString(),
     };
     const { error: upsertErr } = await supabase.from('paper_summary').upsert(payload, { onConflict: 'paper_id' });
@@ -410,11 +426,9 @@ export default function PaperDetailPage() {
     summaryAcademicConstructs,
     summaryIntroduction,
     summaryMethods,
-    summaryResults,
-    summaryDiscussion,
+    summaryResultsAndDiscussion,
     summaryConclusion,
-    summaryLimitations,
-    summaryFutureResearch,
+    summaryLimitationsAndFutureResearch,
     loadSummary,
   ]);
 
@@ -628,7 +642,7 @@ export default function PaperDetailPage() {
                 value={pasteSummary}
                 onChange={(e) => setPasteSummary(e.target.value)}
                 rows={6}
-                placeholder={`Abstract:\n...\n\nKey Claims:\n...\n\nAcademic Constructs:\n...\n\nIntroduction:\n...\n\nMethods:\n...\n\nResults:\n...\n\nDiscussion:\n...\n\nConclusion:\n...\n\nLimitations:\n...\n\nFuture Research:\n...`}
+                placeholder={`Abstract:\n...\n\nKey Claims:\n...\n\nAcademic Constructs:\n...\n\nIntroduction:\n...\n\nMethods:\n...\n\nResults and Discussion:\n...\n\nConclusion:\n...\n\nLimitations and Future Research:\n...`}
               />
             </label>
             <div className="paper-detail-summary-editor-actions">
@@ -643,11 +657,9 @@ export default function PaperDetailPage() {
                   if (parsed.academic_constructs != null) setSummaryAcademicConstructs(parsed.academic_constructs || '');
                   if (parsed.introduction != null) setSummaryIntroduction(parsed.introduction || '');
                   if (parsed.methods != null) setSummaryMethods(parsed.methods || '');
-                  if (parsed.results_section != null) setSummaryResults(parsed.results_section || '');
-                  if (parsed.discussion_section != null) setSummaryDiscussion(parsed.discussion_section || '');
+                  if (parsed.results_and_discussion != null) setSummaryResultsAndDiscussion(parsed.results_and_discussion || '');
                   if (parsed.conclusion_section != null) setSummaryConclusion(parsed.conclusion_section || '');
-                  if (parsed.limitations_section != null) setSummaryLimitations(parsed.limitations_section || '');
-                  if (parsed.future_research_section != null) setSummaryFutureResearch(parsed.future_research_section || '');
+                  if (parsed.limitations_and_future_research != null) setSummaryLimitationsAndFutureResearch(parsed.limitations_and_future_research || '');
                 }}
               >
                 Parse into sections
@@ -684,24 +696,16 @@ export default function PaperDetailPage() {
                 <textarea className="paper-detail-summary-textarea" rows={3} value={summaryMethods} onChange={(e) => setSummaryMethods(e.target.value)} />
               </label>
               <label className="paper-detail-summary-label">
-                Results
-                <textarea className="paper-detail-summary-textarea" rows={3} value={summaryResults} onChange={(e) => setSummaryResults(e.target.value)} />
-              </label>
-              <label className="paper-detail-summary-label">
-                Discussion
-                <textarea className="paper-detail-summary-textarea" rows={3} value={summaryDiscussion} onChange={(e) => setSummaryDiscussion(e.target.value)} />
+                Results and Discussion
+                <textarea className="paper-detail-summary-textarea" rows={3} value={summaryResultsAndDiscussion} onChange={(e) => setSummaryResultsAndDiscussion(e.target.value)} />
               </label>
               <label className="paper-detail-summary-label">
                 Conclusion
                 <textarea className="paper-detail-summary-textarea" rows={3} value={summaryConclusion} onChange={(e) => setSummaryConclusion(e.target.value)} />
               </label>
               <label className="paper-detail-summary-label">
-                Limitations
-                <textarea className="paper-detail-summary-textarea" rows={3} value={summaryLimitations} onChange={(e) => setSummaryLimitations(e.target.value)} />
-              </label>
-              <label className="paper-detail-summary-label">
-                Future Research
-                <textarea className="paper-detail-summary-textarea" rows={3} value={summaryFutureResearch} onChange={(e) => setSummaryFutureResearch(e.target.value)} />
+                Limitations and Future Research
+                <textarea className="paper-detail-summary-textarea" rows={3} value={summaryLimitationsAndFutureResearch} onChange={(e) => setSummaryLimitationsAndFutureResearch(e.target.value)} />
               </label>
             </div>
           </div>
@@ -730,24 +734,16 @@ export default function PaperDetailPage() {
               <p className="paper-detail-summary-text">{summary?.methods?.trim() || '—'}</p>
             </div>
             <div className="paper-detail-summary-block">
-              <h3 className="paper-detail-summary-heading">Results</h3>
-              <p className="paper-detail-summary-text">{summary?.results_section?.trim() || '—'}</p>
-            </div>
-            <div className="paper-detail-summary-block">
-              <h3 className="paper-detail-summary-heading">Discussion</h3>
-              <p className="paper-detail-summary-text">{summary?.discussion_section?.trim() || '—'}</p>
+              <h3 className="paper-detail-summary-heading">Results and Discussion</h3>
+              <p className="paper-detail-summary-text">{(summary?.results_and_discussion ?? [summary?.results_section, summary?.discussion_section].filter((x) => !!x && x.trim()).join('\n\n')).trim() || '—'}</p>
             </div>
             <div className="paper-detail-summary-block">
               <h3 className="paper-detail-summary-heading">Conclusion</h3>
               <p className="paper-detail-summary-text">{summary?.conclusion_section?.trim() || '—'}</p>
             </div>
             <div className="paper-detail-summary-block">
-              <h3 className="paper-detail-summary-heading">Limitations</h3>
-              <p className="paper-detail-summary-text">{summary?.limitations_section?.trim() || '—'}</p>
-            </div>
-            <div className="paper-detail-summary-block">
-              <h3 className="paper-detail-summary-heading">Future Research</h3>
-              <p className="paper-detail-summary-text">{summary?.future_research_section?.trim() || '—'}</p>
+              <h3 className="paper-detail-summary-heading">Limitations and Future Research</h3>
+              <p className="paper-detail-summary-text">{(summary?.limitations_and_future_research ?? [summary?.limitations_section, summary?.future_research_section].filter((x) => !!x && x.trim()).join('\n\n')).trim() || '—'}</p>
             </div>
           </div>
         )}
