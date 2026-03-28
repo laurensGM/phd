@@ -9,7 +9,7 @@ import PaperDetailPage from '../../components/PaperDetailPage';
 
 <style>
   :global(.paper-detail-page) {
-    max-width: 720px;
+    max-width: min(1180px, calc(100vw - 2rem));
     margin: 0 auto;
     padding: 0 1rem 3rem;
   }
@@ -250,14 +250,69 @@ import PaperDetailPage from '../../components/PaperDetailPage';
     grid-template-columns: 1fr;
     gap: 0.75rem;
   }
+  :global(.paper-detail-summary-fields-edit) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 340px);
+    gap: 1rem 1.5rem;
+    align-items: start;
+  }
+  :global(.paper-detail-summary-fields-edit .paper-detail-summary-fields-main),
+  :global(.paper-detail-summary-fields-edit .paper-detail-summary-fields-side) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-width: 0;
+  }
+  :global(.paper-detail-summary-layout) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 340px);
+    gap: 1rem 1.75rem;
+    align-items: start;
+  }
+  :global(.paper-detail-summary-col-main),
+  :global(.paper-detail-summary-col-side) {
+    min-width: 0;
+  }
+  :global(.paper-detail-summary-col-side) {
+    position: sticky;
+    top: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    align-self: start;
+  }
+  :global(.paper-detail-summary-col-side .paper-detail-summary-block) {
+    padding: 0.65rem 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+  :global(.paper-detail-summary-col-side .paper-detail-summary-block:last-child) {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+  @media (max-width: 900px) {
+    :global(.paper-detail-summary-layout),
+    :global(.paper-detail-summary-fields-edit) {
+      grid-template-columns: 1fr;
+    }
+    :global(.paper-detail-summary-col-side) {
+      position: static;
+    }
+  }
   :global(.paper-detail-summary-grid) {
     display: flex;
     flex-direction: column;
     gap: 1rem;
   }
+  :global(.paper-detail-summary-col-main .paper-detail-summary-grid) {
+    gap: 0;
+  }
   :global(.paper-detail-summary-block) {
     padding: 0.75rem 0;
     border-bottom: 1px solid var(--color-border);
+  }
+  :global(.paper-detail-summary-col-main .paper-detail-summary-block:last-child) {
+    border-bottom: none;
   }
   :global(.paper-detail-summary-block:last-child) {
     border-bottom: none;

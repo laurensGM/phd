@@ -841,81 +841,91 @@ export default function PaperDetailPage() {
               </button>
             </div>
 
-            <div className="paper-detail-summary-fields">
-              <label className="paper-detail-summary-label">
-                Abstract
-                <textarea className="paper-detail-summary-textarea" rows={3} value={summaryAbstract} onChange={(e) => setSummaryAbstract(e.target.value)} />
-              </label>
-              <label className="paper-detail-summary-label">
-                Key Claims
-                <textarea className="paper-detail-summary-textarea" rows={3} value={summaryKeyClaims} onChange={(e) => setSummaryKeyClaims(e.target.value)} />
-              </label>
-              <label className="paper-detail-summary-label">
-                Academic Constructs
-                <textarea className="paper-detail-summary-textarea" rows={3} value={summaryAcademicConstructs} onChange={(e) => setSummaryAcademicConstructs(e.target.value)} />
-              </label>
-              <label className="paper-detail-summary-label">
-                Introduction
-                <textarea className="paper-detail-summary-textarea" rows={3} value={summaryIntroduction} onChange={(e) => setSummaryIntroduction(e.target.value)} />
-              </label>
-              <label className="paper-detail-summary-label">
-                Methods
-                <textarea className="paper-detail-summary-textarea" rows={3} value={summaryMethods} onChange={(e) => setSummaryMethods(e.target.value)} />
-              </label>
-              <label className="paper-detail-summary-label">
-                Results and Discussion
-                <textarea className="paper-detail-summary-textarea" rows={3} value={summaryResultsAndDiscussion} onChange={(e) => setSummaryResultsAndDiscussion(e.target.value)} />
-              </label>
-              <label className="paper-detail-summary-label">
-                Conclusion
-                <textarea className="paper-detail-summary-textarea" rows={3} value={summaryConclusion} onChange={(e) => setSummaryConclusion(e.target.value)} />
-              </label>
-              <label className="paper-detail-summary-label">
-                Limitations and Future Research
-                <textarea className="paper-detail-summary-textarea" rows={3} value={summaryLimitationsAndFutureResearch} onChange={(e) => setSummaryLimitationsAndFutureResearch(e.target.value)} />
-              </label>
+            <div className="paper-detail-summary-fields paper-detail-summary-fields-edit">
+              <div className="paper-detail-summary-fields-main">
+                <label className="paper-detail-summary-label">
+                  Abstract
+                  <textarea className="paper-detail-summary-textarea" rows={3} value={summaryAbstract} onChange={(e) => setSummaryAbstract(e.target.value)} />
+                </label>
+                <label className="paper-detail-summary-label">
+                  Key Claims
+                  <textarea className="paper-detail-summary-textarea" rows={3} value={summaryKeyClaims} onChange={(e) => setSummaryKeyClaims(e.target.value)} />
+                </label>
+                <label className="paper-detail-summary-label">
+                  Introduction
+                  <textarea className="paper-detail-summary-textarea" rows={3} value={summaryIntroduction} onChange={(e) => setSummaryIntroduction(e.target.value)} />
+                </label>
+                <label className="paper-detail-summary-label">
+                  Methods
+                  <textarea className="paper-detail-summary-textarea" rows={3} value={summaryMethods} onChange={(e) => setSummaryMethods(e.target.value)} />
+                </label>
+                <label className="paper-detail-summary-label">
+                  Results and Discussion
+                  <textarea className="paper-detail-summary-textarea" rows={4} value={summaryResultsAndDiscussion} onChange={(e) => setSummaryResultsAndDiscussion(e.target.value)} />
+                </label>
+                <label className="paper-detail-summary-label">
+                  Conclusion
+                  <textarea className="paper-detail-summary-textarea" rows={3} value={summaryConclusion} onChange={(e) => setSummaryConclusion(e.target.value)} />
+                </label>
+              </div>
+              <div className="paper-detail-summary-fields-side">
+                <label className="paper-detail-summary-label">
+                  Academic Constructs
+                  <textarea className="paper-detail-summary-textarea" rows={5} value={summaryAcademicConstructs} onChange={(e) => setSummaryAcademicConstructs(e.target.value)} />
+                </label>
+                <label className="paper-detail-summary-label">
+                  Limitations and Future Research
+                  <textarea className="paper-detail-summary-textarea" rows={5} value={summaryLimitationsAndFutureResearch} onChange={(e) => setSummaryLimitationsAndFutureResearch(e.target.value)} />
+                </label>
+              </div>
             </div>
           </div>
         )}
 
         {!editingSummary && (
-          <div className="paper-detail-summary-grid">
-            <div className="paper-detail-summary-block">
-              <h3 className="paper-detail-summary-heading">Abstract</h3>
-              <div className="paper-detail-summary-text">{renderSummaryText(summary?.abstract)}</div>
-            </div>
-            <div className="paper-detail-summary-block">
-              <h3 className="paper-detail-summary-heading">Key Claims</h3>
-              <div className="paper-detail-summary-text">{renderSummaryText(summary?.key_claims)}</div>
-            </div>
-            <div className="paper-detail-summary-block">
-              <h3 className="paper-detail-summary-heading">Academic Constructs</h3>
-              <div className="paper-detail-summary-text">{renderSummaryText(summary?.academic_constructs)}</div>
-            </div>
-            <div className="paper-detail-summary-block">
-              <h3 className="paper-detail-summary-heading">Introduction</h3>
-              <div className="paper-detail-summary-text">{renderSummaryText(summary?.introduction)}</div>
-            </div>
-            <div className="paper-detail-summary-block">
-              <h3 className="paper-detail-summary-heading">Methods</h3>
-              <div className="paper-detail-summary-text">{renderSummaryText(summary?.methods)}</div>
-            </div>
-            <div className="paper-detail-summary-block">
-              <h3 className="paper-detail-summary-heading">Results and Discussion</h3>
-              <div className="paper-detail-summary-text">
-                {renderSummaryText((summary?.results_and_discussion ?? [summary?.results_section, summary?.discussion_section].filter((x) => !!x && x.trim()).join('\n\n')))}
+          <div className="paper-detail-summary-layout">
+            <div className="paper-detail-summary-col paper-detail-summary-col-main">
+              <div className="paper-detail-summary-grid">
+                <div className="paper-detail-summary-block">
+                  <h3 className="paper-detail-summary-heading">Abstract</h3>
+                  <div className="paper-detail-summary-text">{renderSummaryText(summary?.abstract)}</div>
+                </div>
+                <div className="paper-detail-summary-block">
+                  <h3 className="paper-detail-summary-heading">Key Claims</h3>
+                  <div className="paper-detail-summary-text">{renderSummaryText(summary?.key_claims)}</div>
+                </div>
+                <div className="paper-detail-summary-block">
+                  <h3 className="paper-detail-summary-heading">Introduction</h3>
+                  <div className="paper-detail-summary-text">{renderSummaryText(summary?.introduction)}</div>
+                </div>
+                <div className="paper-detail-summary-block">
+                  <h3 className="paper-detail-summary-heading">Methods</h3>
+                  <div className="paper-detail-summary-text">{renderSummaryText(summary?.methods)}</div>
+                </div>
+                <div className="paper-detail-summary-block">
+                  <h3 className="paper-detail-summary-heading">Results and Discussion</h3>
+                  <div className="paper-detail-summary-text">
+                    {renderSummaryText((summary?.results_and_discussion ?? [summary?.results_section, summary?.discussion_section].filter((x) => !!x && x.trim()).join('\n\n')))}
+                  </div>
+                </div>
+                <div className="paper-detail-summary-block">
+                  <h3 className="paper-detail-summary-heading">Conclusion</h3>
+                  <div className="paper-detail-summary-text">{renderSummaryText(summary?.conclusion_section)}</div>
+                </div>
               </div>
             </div>
-            <div className="paper-detail-summary-block">
-              <h3 className="paper-detail-summary-heading">Conclusion</h3>
-              <div className="paper-detail-summary-text">{renderSummaryText(summary?.conclusion_section)}</div>
-            </div>
-            <div className="paper-detail-summary-block">
-              <h3 className="paper-detail-summary-heading">Limitations and Future Research</h3>
-              <div className="paper-detail-summary-text">
-                {renderSummaryText((summary?.limitations_and_future_research ?? [summary?.limitations_section, summary?.future_research_section].filter((x) => !!x && x.trim()).join('\n\n')))}
+            <aside className="paper-detail-summary-col paper-detail-summary-col-side" aria-label="Constructs and limitations">
+              <div className="paper-detail-summary-block">
+                <h3 className="paper-detail-summary-heading">Academic Constructs</h3>
+                <div className="paper-detail-summary-text">{renderSummaryText(summary?.academic_constructs)}</div>
               </div>
-            </div>
+              <div className="paper-detail-summary-block">
+                <h3 className="paper-detail-summary-heading">Limitations and Future Research</h3>
+                <div className="paper-detail-summary-text">
+                  {renderSummaryText((summary?.limitations_and_future_research ?? [summary?.limitations_section, summary?.future_research_section].filter((x) => !!x && x.trim()).join('\n\n')))}
+                </div>
+              </div>
+            </aside>
           </div>
         )}
       </section>
