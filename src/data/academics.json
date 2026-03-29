@@ -47,6 +47,37 @@
     "constructs": ["Perceived Usefulness", "Perceived Ease of Use", "Behavioral Intention", "Actual Usage"]
   },
   {
+    "id": "icek-ajzen",
+    "name": "Icek Ajzen",
+    "image": "ajzen.png",
+    "bio": "Icek Ajzen is Professor Emeritus of Psychology at the University of Massachusetts Amherst. With Martin Fishbein he developed the Theory of Reasoned Action (TRA), which links attitudes and subjective norms to behavioral intentions and behavior. He later proposed the Theory of Planned Behavior (TPB), adding perceived behavioral control to account for actions that are not fully under volitional control. TRA and TPB are cornerstones of social psychology and have strongly influenced technology acceptance research—Fred Davis explicitly built TAM on Fishbein and Ajzen’s work.",
+    "keyContributions": [
+      {
+        "title": "Theory of Reasoned Action (with Martin Fishbein)",
+        "modelId": "tra",
+        "year": 1975
+      },
+      {
+        "title": "Theory of Planned Behavior (TPB)",
+        "modelId": "tpb",
+        "year": 1991
+      }
+    ],
+    "keyArticles": [
+      {
+        "citation": "Ajzen, I. (1991). The theory of planned behavior. Organizational Behavior and Human Decision Processes, 50(2), 179–211.",
+        "doi": "10.1016/0749-5978(91)90020-T",
+        "description": "Foundational journal article presenting TPB: intention is predicted by attitude, subjective norm, and perceived behavioral control; intention and PBC predict behavior when control is realistic."
+      },
+      {
+        "citation": "Fishbein, M., & Ajzen, I. (1975). Belief, attitude, intention, and behavior: An introduction to theory and research. Reading, MA: Addison-Wesley.",
+        "doi": "",
+        "description": "Classic monograph developing the Theory of Reasoned Action and the expectancy–value model of attitudes, forming the basis for later work on planned behavior."
+      }
+    ],
+    "constructs": ["Behavioral Intention", "Social Influence"]
+  },
+  {
     "id": "venkatesh",
     "name": "Viswanath Venkatesh",
     "image": "venkatesh.jpg",

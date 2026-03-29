@@ -536,5 +536,59 @@
     "relatedModels": [],
     "relatedConstructs": ["System Quality", "Perceived Usefulness", "Satisfaction"],
     "notes": "Common dimensions: accuracy, relevance, completeness. Typical relationships: Information quality → system usefulness; Information quality → user satisfaction."
+  },
+  {
+    "id": "attitude",
+    "name": "Attitude",
+    "abbreviation": "A",
+    "definition": "A person's overall evaluation of performing a behavior—favorable or unfavorable—based on beliefs about its outcomes and their evaluated importance (expectancy–value). In TRA/TPB, attitude toward the behavior is a key antecedent of behavioral intention.",
+    "sourcePaper": "Ajzen, I. (1991). The theory of planned behavior. Organizational Behavior and Human Decision Processes, 50(2), 179–211.",
+    "doi": "10.1016/0749-5978(91)90020-T",
+    "theoreticalDomain": "Theory of Reasoned Action / Planned Behavior",
+    "measurementItems": [
+      "For me, performing this behavior would be good/bad.",
+      "For me, performing this behavior would be harmful/beneficial.",
+      "For me, performing this behavior would be unpleasant/pleasant."
+    ],
+    "measurementScale": "Semantic differential or Likert scale",
+    "relatedModels": ["TRA", "TPB"],
+    "relatedConstructs": ["Subjective Norms", "Perceived Behavioral Control", "Behavioral Intention"],
+    "notes": "Formed from salient beliefs about the behavior; central to predicting intention alongside subjective norms and perceived behavioral control (TPB)."
+  },
+  {
+    "id": "subjective-norms",
+    "name": "Subjective Norms",
+    "abbreviation": "SN",
+    "definition": "The perceived social pressure to perform or not perform a behavior—whether important referents believe one should or should not engage in the behavior.",
+    "sourcePaper": "Ajzen, I. (1991). The theory of planned behavior. Organizational Behavior and Human Decision Processes, 50(2), 179–211.",
+    "doi": "10.1016/0749-5978(91)90020-T",
+    "theoreticalDomain": "Theory of Reasoned Action / Planned Behavior",
+    "measurementItems": [
+      "Most people who are important to me would approve of my performing this behavior.",
+      "People whose opinions I value would want me to perform this behavior.",
+      "It is expected of me that I perform this behavior."
+    ],
+    "measurementScale": "Likert scale",
+    "relatedModels": ["TRA", "TPB", "UTAUT"],
+    "relatedConstructs": ["Attitude", "Social Influence", "Perceived Behavioral Control", "Behavioral Intention"],
+    "notes": "In UTAUT, a related idea appears as social influence. In TPB, subjective norm is one of three direct predictors of intention."
+  },
+  {
+    "id": "perceived-behavioral-control",
+    "name": "Perceived Behavioral Control",
+    "abbreviation": "PBC",
+    "definition": "The perceived ease or difficulty of performing a behavior, reflecting beliefs about control over internal and external factors that may facilitate or impede performance. Often linked to self-efficacy and controllability.",
+    "sourcePaper": "Ajzen, I. (1991). The theory of planned behavior. Organizational Behavior and Human Decision Processes, 50(2), 179–211.",
+    "doi": "10.1016/0749-5978(91)90020-T",
+    "theoreticalDomain": "Theory of Planned Behavior",
+    "measurementItems": [
+      "For me, performing this behavior would be easy/difficult.",
+      "Whether I perform this behavior is entirely up to me.",
+      "I have the resources and opportunities needed to perform this behavior."
+    ],
+    "measurementScale": "Likert or semantic differential",
+    "relatedModels": ["TPB"],
+    "relatedConstructs": ["Attitude", "Subjective Norms", "Behavioral Intention", "Self-Efficacy"],
+    "notes": "Extends TRA to TPB; together with intention can predict behavior when volitional control is realistic. Distinct from but related to Bandura’s self-efficacy."
   }
 ]
