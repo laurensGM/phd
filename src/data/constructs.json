@@ -590,5 +590,42 @@
     "relatedModels": ["TPB"],
     "relatedConstructs": ["Attitude", "Subjective Norms", "Behavioral Intention", "Self-Efficacy"],
     "notes": "Extends TRA to TPB; together with intention can predict behavior when volitional control is realistic. Distinct from but related to Bandura’s self-efficacy."
+  },
+  {
+    "id": "facilitating-conditions",
+    "name": "Facilitating Conditions",
+    "abbreviation": "FC",
+    "definition": "The degree to which an individual believes that organizational and technical infrastructure exists to support use of the system. It captures enabling conditions and resources in the environment—such as device availability, connectivity, help-desk support, training, and compatibility with existing systems—rather than beliefs about the technology alone.",
+    "sourcePaper": "Venkatesh, V., Morris, M. G., Davis, G. B., & Davis, F. D. (2003). User acceptance of information technology: Toward a unified view. MIS Quarterly, 27(3), 425–478.",
+    "doi": "10.2307/30036540",
+    "theoreticalDomain": "Technology adoption (UTAUT)",
+    "measurementItems": [
+      "I have the resources necessary to use the system.",
+      "A specific person (or group) is available for assistance with system difficulties.",
+      "I have the knowledge required to use the system.",
+      "The system is compatible with other systems I use."
+    ],
+    "measurementScale": "Likert scale (adapted from Venkatesh et al., 2003)",
+    "relatedModels": ["UTAUT", "UTAUT2"],
+    "relatedConstructs": ["Behavioral Intention", "Social Influence", "Technology Adoption Intention", "Actual Usage", "Perceived Usefulness", "Perceived Ease of Use"],
+    "notes": "Type: enabling conditions / resources. Level: environment or context. In UTAUT, facilitating conditions (and sometimes intention) predict use behavior. Includes availability of resources, technical support, training, and compatibility with existing systems."
+  },
+  {
+    "id": "voluntariness",
+    "name": "Voluntariness",
+    "abbreviation": "V",
+    "definition": "The degree to which use of a system is perceived as voluntary rather than mandated—reflecting freedom of choice and the absence of coercion or compulsory requirement to adopt.",
+    "sourcePaper": "Venkatesh, V., Morris, M. G., Davis, G. B., & Davis, F. D. (2003). User acceptance of information technology: Toward a unified view. MIS Quarterly, 27(3), 425–478.",
+    "doi": "10.2307/30036540",
+    "theoreticalDomain": "Technology adoption (UTAUT)",
+    "measurementItems": [
+      "My use of the system is voluntary.",
+      "My manager does not require me to use the system.",
+      "Although it might be helpful, using the system is certainly not compulsory in my job."
+    ],
+    "measurementScale": "Likert scale (context-dependent; stronger in mandatory settings)",
+    "relatedModels": ["UTAUT"],
+    "relatedConstructs": ["Social Influence", "Behavioral Intention", "Technology Adoption Intention", "Perceived Usefulness", "Perceived Ease of Use"],
+    "notes": "Type: contextual perception. Level: situational (mandatory vs voluntary adoption). Role in UTAUT: often modeled as a moderator—e.g. strengthening or weakening effects of social influence and expectancy constructs on intention when use is more or less voluntary."
   }
 ]
