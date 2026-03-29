@@ -1,0 +1,218 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const base = import.meta.env.BASE_URL;
+
+const groups: { title: string; items: string[] }[] = [
+  {
+    title: 'Emphasis',
+    items: [
+      'Undoubtedly',
+      'Definitely',
+      'Obviously',
+      'Particularly',
+      'Especially',
+      'Clearly',
+      'Importantly',
+      'Absolutely',
+    ],
+  },
+  {
+    title: 'Addition',
+    items: [
+      'Along with',
+      'Moreover',
+      'Furthermore',
+      'Also',
+      'As well as that',
+      'Besides',
+      'In addition',
+    ],
+  },
+  {
+    title: 'Contrast',
+    items: [
+      'Unlike',
+      'Nevertheless',
+      'Nonetheless',
+      'In contrast',
+      'Contrary to',
+      'Whereas',
+      'Alternatively',
+      'Conversely',
+    ],
+  },
+  {
+    title: 'Order',
+    items: [
+      'Following',
+      'At this time',
+      'Previously',
+      'First / firstly',
+      'Secondly',
+      'Thirdly',
+      'Finally',
+      'Above all',
+    ],
+  },
+  {
+    title: 'Result',
+    items: [
+      'As a result',
+      'Thus',
+      'Hence',
+      'Consequently',
+      'For this reason',
+      'Due to',
+      'Therefore',
+    ],
+  },
+  {
+    title: 'Illustration',
+    items: [
+      'Such as',
+      'In this case',
+      'For example',
+      'For instance',
+      'To clarify',
+      'Including',
+      'Namely',
+      'Proof of this',
+    ],
+  },
+  {
+    title: 'Comparison',
+    items: [
+      'Similarly',
+      'Equally',
+      'Likewise',
+      'Just as',
+      'Just like',
+      'Compared to',
+      'Same as',
+      'In the same way',
+    ],
+  },
+  {
+    title: 'Summary',
+    items: [
+      'Briefly',
+      'In short',
+      'In conclusion',
+      'To summarise',
+      'Altogether',
+      'To sum up',
+      'In summary',
+      'To conclude',
+    ],
+  },
+  {
+    title: 'Reason',
+    items: [
+      'Because of',
+      'With this in mind',
+      'In fact',
+      'In order to',
+      'Due to',
+    ],
+  },
+  {
+    title: 'Condition',
+    items: ['If', 'In that case', 'In case', 'Unless'],
+  },
+  {
+    title: 'Concession',
+    items: [
+      'Admittedly',
+      'All the same',
+      'Up to a point',
+      'Even so',
+      'In spite of',
+      'Even if',
+      'However',
+    ],
+  },
+  {
+    title: 'Generalisation',
+    items: ['As a rule', 'On the whole', 'Overall', 'In most cases'],
+  },
+];
+---
+
+<BaseLayout
+  title="Writing tools"
+  description="Connecting words and phrases for academic writing — emphasis, contrast, result, and more."
+>
+  <p class="back-link"><a href={`${base}tools/`}>← Tools</a></p>
+  <h1>Writing tools</h1>
+  <p class="page-desc">
+    Handy connecting words and phrases you can drop into drafts to signal emphasis, structure, contrast, and logical
+    relationships between ideas.
+  </p>
+
+  <div class="writing-groups">
+    {groups.map((group) => (
+      <section class="writing-group">
+        <h2 class="writing-group-title">{group.title}</h2>
+        <ul class="writing-list">
+          {group.items.map((phrase) => (
+            <li>{phrase}</li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+</BaseLayout>
+
+<style>
+  .back-link {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  .back-link a {
+    color: var(--color-maroon);
+  }
+  .page-desc {
+    color: var(--color-ink-muted);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+    max-width: 42rem;
+  }
+  .writing-groups {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+    gap: 1.25rem 1.5rem;
+    align-items: start;
+  }
+  .writing-group {
+    margin: 0;
+    padding: 1.25rem 1.35rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    border-left: 4px solid var(--color-maroon);
+    box-shadow: var(--shadow-sm);
+  }
+  .writing-group-title {
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0 0 0.75rem 0;
+    color: var(--color-maroon);
+    letter-spacing: 0.02em;
+    text-transform: capitalize;
+  }
+  .writing-list {
+    margin: 0;
+    padding-left: 1.15rem;
+    line-height: 1.65;
+    color: var(--color-ink);
+    font-size: 0.95rem;
+  }
+  .writing-list li {
+    margin-bottom: 0.35rem;
+  }
+  .writing-list li:last-child {
+    margin-bottom: 0;
+  }
+</style>
