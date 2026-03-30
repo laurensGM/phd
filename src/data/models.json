@@ -440,7 +440,7 @@
   {
     "id": "ev-attitudes",
     "name": "Expectancy-Value Model of Attitudes",
-    "abbreviation": "EVM-A",
+    "abbreviation": "EVMA",
     "year": 1975,
     "authors": ["Fishbein", "Ajzen"],
     "description": "The expectancy-value model of attitudes explains how attitudes are formed from beliefs about outcomes (expectancies) and the evaluation/importance of those outcomes. In Fishbein and Ajzen’s framework, individuals combine salient behavioral beliefs with outcome evaluations to form an overall attitude that influences behavioural intention (via TRA-style logic).",

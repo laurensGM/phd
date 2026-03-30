@@ -43,6 +43,7 @@ const constructOptions = (constructsData as any[]).map((c) => ({
 const modelOptions = (modelsData as any[]).map((m) => ({
   id: m.id as string,
   name: (m.name as string) || (m.id as string),
+  abbreviation: (m.abbreviation as string | undefined) ?? undefined,
 }));
 
 interface UmbrellaConstructItem {
@@ -562,7 +563,7 @@ export default function SnippetsPage() {
               >
                 {modelOptionsSortedByCount.map((m) => (
                   <option key={m.id} value={m.id}>
-                    {m.name}
+                    {m.abbreviation || m.name}
                   </option>
                 ))}
               </select>
@@ -746,7 +747,7 @@ export default function SnippetsPage() {
                   >
                     {modelOptions.map((m) => (
                       <option key={m.id} value={m.id}>
-                        {m.name}
+                        {m.abbreviation || m.name}
                       </option>
                     ))}
                   </select>
@@ -856,8 +857,9 @@ export default function SnippetsPage() {
                             key={id}
                             href={`${base}models/${id}/`}
                             className="snippets-chip snippets-chip-model"
+                            title={m?.name || id}
                           >
-                            {m?.name || id}
+                            {m?.abbreviation || m?.name || id}
                           </a>
                         );
                       });
@@ -913,7 +915,7 @@ export default function SnippetsPage() {
                       >
                         {modelOptions.map((m) => (
                           <option key={m.id} value={m.id}>
-                            {m.name}
+                            {m.abbreviation || m.name}
                           </option>
                         ))}
                       </select>
