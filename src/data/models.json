@@ -436,5 +436,27 @@
       { "authors": "Goodhue & Thompson (1995)", "title": "Task-Technology Fit and Individual Performance", "doi": "10.2307/249689" },
       { "authors": "Bhattacherjee (2001)", "title": "Understanding Information Systems Continuance: An Expectation-Confirmation Model", "doi": "10.2307/3250921" }
     ]
+  },
+  {
+    "id": "ev-attitudes",
+    "name": "Expectancy-Value Model of Attitudes",
+    "abbreviation": "EVM-A",
+    "year": 1975,
+    "authors": ["Fishbein", "Ajzen"],
+    "description": "The expectancy-value model of attitudes explains how attitudes are formed from beliefs about outcomes (expectancies) and the evaluation/importance of those outcomes. In Fishbein and Ajzen’s framework, individuals combine salient behavioral beliefs with outcome evaluations to form an overall attitude that influences behavioural intention (via TRA-style logic).",
+    "notes": "Conceptual flow: salient beliefs about outcomes (expectancies) weighted by evaluations/importance \u2192 attitude toward the behavior \u2192 behavioural intention.\n\nNote: in this app, the model is represented using the available constructs; belief/evaluation components are not stored as separate constructs yet.",
+    "constructs": ["Attitude", "Behavioral Intention"],
+    "constructAbbreviations": {
+      "Attitude": "A",
+      "Behavioral Intention": "BI"
+    },
+    "relationships": [{ "from": "Attitude", "to": "Behavioral Intention" }],
+    "keyCitations": [
+      {
+        "authors": "Fishbein & Ajzen (1975)",
+        "title": "Belief, attitude, intention, and behavior: An introduction to theory and research",
+        "doi": ""
+      }
+    ]
   }
 ]
