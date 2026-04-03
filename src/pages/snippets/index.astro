@@ -18,18 +18,41 @@ import SnippetsPage from '../../components/SnippetsPage';
   }
   :global(.snippets-intro) {
     color: var(--color-ink-muted);
-    margin: 0 0 1.5rem 0;
+    margin: 0 0 1rem 0;
   }
-  :global(.snippets-open-add-btn) {
+  :global(.snippets-header-actions) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.75rem;
+    align-items: center;
     margin-bottom: 1.25rem;
+  }
+  :global(.snippets-open-add-btn),
+  :global(.snippets-prompt-mode-btn),
+  :global(.snippets-generate-prompt-btn) {
     padding: 0.55rem 1.2rem;
-    background: var(--color-maroon);
-    color: #fff;
     border-radius: 8px;
-    border: none;
     font-size: 0.9rem;
     font-weight: 500;
     cursor: pointer;
+    border: 1px solid var(--color-border);
+    background: #fff;
+    color: var(--color-ink);
+  }
+  :global(.snippets-open-add-btn) {
+    background: var(--color-maroon);
+    color: #fff;
+    border: none;
+  }
+  :global(.snippets-prompt-mode-btn-active) {
+    background: rgba(113, 32, 56, 0.12);
+    border-color: var(--color-maroon);
+    color: var(--color-maroon);
+    font-weight: 600;
+  }
+  :global(.snippets-generate-prompt-btn:disabled) {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
   :global(.snippets-layout) {
@@ -37,6 +60,31 @@ import SnippetsPage from '../../components/SnippetsPage';
     grid-template-columns: minmax(220px, 260px) minmax(0, 1fr);
     gap: 1.5rem;
     align-items: flex-start;
+  }
+  :global(.snippets-prompt-toolbar) {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1rem;
+    padding: 0.65rem 1rem;
+    background: rgba(113, 32, 56, 0.06);
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    font-size: 0.88rem;
+  }
+  :global(.snippets-prompt-count) {
+    font-weight: 600;
+    color: var(--color-maroon);
+    margin-right: 0.25rem;
+  }
+  :global(.snippets-prompt-toolbar-btn) {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.82rem;
+    border-radius: 6px;
+    border: 1px solid var(--color-border);
+    background: #fff;
+    cursor: pointer;
   }
   :global(.snippets-filters) {
     padding: 1rem 1.25rem;
@@ -236,6 +284,20 @@ import SnippetsPage from '../../components/SnippetsPage';
   :global(.snippets-card-header) {
     margin-bottom: 0.4rem;
   }
+  :global(.snippets-card-selectable .snippets-card-header) {
+    display: flex;
+    gap: 0.65rem;
+    align-items: flex-start;
+  }
+  :global(.snippets-card-checkbox-wrap) {
+    flex-shrink: 0;
+    padding-top: 0.1rem;
+    cursor: pointer;
+  }
+  :global(.snippets-card-selectable .snippets-card-title-row) {
+    flex: 1;
+    min-width: 0;
+  }
   :global(.snippets-card-title-row) {
     display: flex;
     flex-wrap: wrap;
@@ -380,6 +442,148 @@ import SnippetsPage from '../../components/SnippetsPage';
   }
   :global(.snippets-error) {
     color: var(--color-error, #b91c1c);
+  }
+
+  :global(.snippets-saved-prompts) {
+    grid-column: 1 / -1;
+    margin-top: 0.5rem;
+    padding: 1.25rem 1.35rem;
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    border-left: 4px solid var(--color-maroon);
+  }
+  :global(.snippets-saved-intro) {
+    font-size: 0.9rem;
+    color: var(--color-ink-muted);
+    line-height: 1.55;
+    margin: 0 0 1rem 0;
+  }
+  :global(.snippets-saved-loading),
+  :global(.snippets-saved-empty) {
+    font-size: 0.9rem;
+    color: var(--color-ink-muted);
+    margin: 0;
+  }
+  :global(.snippets-saved-list) {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  :global(.snippets-saved-card) {
+    padding: 1rem 1.15rem;
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+  }
+  :global(.snippets-saved-claim) {
+    margin: 0 0 0.35rem 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--color-ink);
+  }
+  :global(.snippets-saved-meta) {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--color-ink-muted);
+  }
+  :global(.snippets-saved-details) {
+    margin-top: 0.65rem;
+    font-size: 0.85rem;
+  }
+  :global(.snippets-saved-details summary) {
+    cursor: pointer;
+    color: var(--color-maroon);
+    font-weight: 600;
+  }
+  :global(.snippets-saved-snippet-list) {
+    margin: 0.4rem 0 0 1.1rem;
+    padding: 0;
+    line-height: 1.45;
+    font-size: 0.85rem;
+    color: var(--color-ink);
+  }
+  :global(.snippets-saved-snippet-paper) {
+    color: var(--color-ink-muted);
+    font-style: italic;
+  }
+  :global(.snippets-saved-snippet-missing) {
+    color: var(--color-ink-muted);
+  }
+  :global(.snippets-saved-prompt-pre) {
+    margin: 0.4rem 0 0 0;
+    padding: 0.75rem;
+    background: var(--color-bg-alt);
+    border-radius: 8px;
+    font-size: 0.78rem;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 240px;
+    overflow: auto;
+  }
+  :global(.snippets-saved-label) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-top: 0.85rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+  :global(.snippets-saved-textarea) {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    resize: vertical;
+    font-family: var(--font-sans);
+  }
+  :global(.snippets-saved-card-actions) {
+    margin-top: 0.65rem;
+  }
+  :global(.snippets-saved-delete) {
+    font-size: 0.8rem;
+    border: none;
+    background: transparent;
+    color: var(--color-error, #b91c1c);
+    cursor: pointer;
+    padding: 0;
+  }
+  :global(.snippets-modal-wide) {
+    max-width: min(720px, 100vw - 2rem);
+    width: 100%;
+  }
+  :global(.snippets-prompt-modal-body) {
+    padding: 0 1.5rem 1.25rem 1.5rem;
+  }
+  :global(.snippets-prompt-hint) {
+    font-size: 0.88rem;
+    color: var(--color-ink-muted);
+    line-height: 1.55;
+    margin: 0 0 0.75rem 0;
+  }
+  :global(.snippets-prompt-output) {
+    font-family: var(--font-sans);
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+  :global(.snippets-prompt-back-btn) {
+    padding: 0.55rem 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    background: #fff;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  :global(.snippets-modal-actions) {
+    flex-wrap: wrap;
   }
 
   @media (max-width: 640px) {

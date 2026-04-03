@@ -317,6 +317,33 @@ export interface Database {
           updated_at?: string;
         };
       };
+      literature_review_prompts: {
+        Row: {
+          id: string;
+          claim: string;
+          snippet_ids: string[];
+          prompt_text: string;
+          generated_paragraph: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          claim: string;
+          snippet_ids: string[];
+          prompt_text: string;
+          generated_paragraph?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          claim?: string;
+          snippet_ids?: string[];
+          prompt_text?: string;
+          generated_paragraph?: string | null;
+          updated_at?: string;
+        };
+      };
     };
   };
 }

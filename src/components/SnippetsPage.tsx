@@ -14,11 +14,70 @@ const SNIPPET_TYPE_OPTIONS = [
   { value: 'future research', label: 'Future research' },
 ] as const;
 
+function buildLiteratureReviewPrompt(claim: string, evidenceBlock: string): string {
+  const c = claim.trim();
+  const e = evidenceBlock.trim();
+  return `You are writing an academic literature review paragraph for a PhD-level paper in Information Systems.
+
+TASK:
+Write ONE concise, well-structured paragraph that supports the following claim:
+
+${c}
+
+EVIDENCE (snippets from academic papers):
+${e}
+
+REQUIREMENTS:
+- Use formal academic language
+- Synthesize the evidence (do NOT copy or list snippets)
+- Show relationships between constructs where relevant
+- Combine multiple sources into a coherent argument
+- Avoid repetition
+- Be precise and concise (5–8 sentences maximum)
+- Do NOT invent findings that are not present in the snippets
+- If evidence is limited or mixed, reflect that uncertainty
+
+CITATIONS:
+- Use author–year style where possible (e.g., Bhattacherjee, 2001)
+- If author names are not available, refer to "prior research" or "existing studies"
+- Do NOT fabricate citations
+
+OUTPUT:
+Return only the paragraph (no bullet points, no headings).`;
+}
+
+function buildEvidenceBlock(
+  orderedIds: string[],
+  snippetById: Map<string, Snippet>,
+  paperById: Map<string, PaperSummary>
+): string {
+  const parts: string[] = [];
+  let n = 0;
+  for (const id of orderedIds) {
+    const s = snippetById.get(id);
+    if (!s) continue;
+    n += 1;
+    const p = paperById.get(s.paper_id);
+    const lines: string[] = [];
+    lines.push(`[${n}]`);
+    if (p?.title?.trim()) lines.push(`Paper: ${p.title.trim()}`);
+    if (p?.authors?.trim()) lines.push(`Authors: ${p.authors.trim()}`);
+    if (p?.year?.trim()) lines.push(`Year: ${p.year.trim()}`);
+    if (p?.journal?.trim()) lines.push(`Journal: ${p.journal.trim()}`);
+    if (s.page_number != null) lines.push(`Page: ${s.page_number}`);
+    lines.push(`Snippet: ${s.content}`);
+    parts.push(lines.join('\n'));
+  }
+  return parts.join('\n\n');
+}
+
 interface Snippet {
   id: string;
   paper_id: string;
   construct_id: string | null;
   model_id: string | null;
+  construct_ids?: string[];
+  model_ids?: string[];
   content: string;
   notes: string | null;
   tags: string[];
@@ -32,6 +91,18 @@ interface PaperSummary {
   title: string | null;
   url: string;
   journal: string | null;
+  authors?: string | null;
+  year?: string | null;
+}
+
+interface LiteratureReviewPrompt {
+  id: string;
+  claim: string;
+  snippet_ids: string[];
+  prompt_text: string;
+  generated_paragraph: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 const constructOptions = (constructsData as any[]).map((c) => ({
@@ -111,6 +182,17 @@ export default function SnippetsPage() {
   const [editSnippetType, setEditSnippetType] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
 
+  const [promptMode, setPromptMode] = useState(false);
+  const [selectedSnippetIds, setSelectedSnippetIds] = useState<string[]>([]);
+  const [showPromptModal, setShowPromptModal] = useState(false);
+  const [promptStep, setPromptStep] = useState<'claim' | 'preview'>('claim');
+  const [promptClaim, setPromptClaim] = useState('');
+  const [builtPromptText, setBuiltPromptText] = useState('');
+  const [promptSaving, setPromptSaving] = useState(false);
+  const [promptCopyFeedback, setPromptCopyFeedback] = useState(false);
+  const [savedPrompts, setSavedPrompts] = useState<LiteratureReviewPrompt[]>([]);
+  const [savedPromptsLoading, setSavedPromptsLoading] = useState(true);
+
   useEffect(() => {
     if (!isSupabaseConfigured()) {
       setLoading(false);
@@ -127,7 +209,7 @@ export default function SnippetsPage() {
             .from('snippets')
             .select('*')
             .order('created_at', { ascending: false }),
-          supabase!.from('saved_papers').select('id,title,url,journal'),
+          supabase!.from('saved_papers').select('id,title,url,journal,authors,year'),
         ]);
       if (cancelled) return;
       if (snippetErr) {
@@ -157,9 +239,21 @@ export default function SnippetsPage() {
             title: (p.title as string | null) ?? null,
             url: p.url as string,
             journal: (p.journal as string | null) ?? null,
+            authors: (p.authors as string | null) ?? null,
+            year: (p.year as string | null) ?? null,
           }))
         );
       }
+      const promptsRes = await supabase!
+        .from('literature_review_prompts')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (promptsRes.error) {
+        setSavedPrompts([]);
+      } else {
+        setSavedPrompts((promptsRes.data ?? []) as LiteratureReviewPrompt[]);
+      }
+      setSavedPromptsLoading(false);
       setLoading(false);
     })();
     return () => {
@@ -172,6 +266,12 @@ export default function SnippetsPage() {
     for (const p of papers) map.set(p.id, p);
     return map;
   }, [papers]);
+
+  const snippetById = useMemo(() => {
+    const map = new Map<string, Snippet>();
+    for (const s of snippets) map.set(s.id, s);
+    return map;
+  }, [snippets]);
 
   const allJournals = useMemo(() => {
     const set = new Set<string>();
@@ -373,7 +473,104 @@ export default function SnippetsPage() {
       setError(deleteErr.message);
     } else {
       setSnippets((prev) => prev.filter((s) => s.id !== id));
+      setSelectedSnippetIds((prev) => prev.filter((x) => x !== id));
     }
+  }, []);
+
+  const toggleSnippetSelected = useCallback((snippetId: string) => {
+    setSelectedSnippetIds((prev) =>
+      prev.includes(snippetId) ? prev.filter((x) => x !== snippetId) : [...prev, snippetId]
+    );
+  }, []);
+
+  const selectAllVisibleSnippets = useCallback(() => {
+    setSelectedSnippetIds(filteredSnippets.map((s) => s.id));
+  }, [filteredSnippets]);
+
+  const clearSnippetSelection = useCallback(() => {
+    setSelectedSnippetIds([]);
+  }, []);
+
+  const openPromptFlow = useCallback(() => {
+    if (selectedSnippetIds.length === 0) return;
+    setPromptClaim('');
+    setBuiltPromptText('');
+    setPromptStep('claim');
+    setShowPromptModal(true);
+  }, [selectedSnippetIds]);
+
+  const goToPromptPreview = useCallback(() => {
+    if (!promptClaim.trim()) return;
+    const evidence = buildEvidenceBlock(selectedSnippetIds, snippetById, paperById);
+    setBuiltPromptText(buildLiteratureReviewPrompt(promptClaim, evidence));
+    setPromptStep('preview');
+  }, [promptClaim, selectedSnippetIds, snippetById, paperById]);
+
+  const copyBuiltPrompt = useCallback(async () => {
+    if (!builtPromptText) return;
+    try {
+      await navigator.clipboard.writeText(builtPromptText);
+      setPromptCopyFeedback(true);
+      window.setTimeout(() => setPromptCopyFeedback(false), 2000);
+    } catch {
+      setError('Could not copy to clipboard.');
+    }
+  }, [builtPromptText]);
+
+  const savePromptToDatabase = useCallback(async () => {
+    if (!supabase || !isSupabaseConfigured() || !builtPromptText.trim() || !promptClaim.trim()) return;
+    setPromptSaving(true);
+    setError(null);
+    const { data, error: insErr } = await supabase
+      .from('literature_review_prompts')
+      .insert({
+        claim: promptClaim.trim(),
+        snippet_ids: selectedSnippetIds,
+        prompt_text: builtPromptText.trim(),
+        generated_paragraph: null,
+      })
+      .select('*')
+      .single();
+    setPromptSaving(false);
+    if (insErr) {
+      setError(insErr.message);
+      return;
+    }
+    if (data) {
+      setSavedPrompts((prev) => [data as LiteratureReviewPrompt, ...prev]);
+    }
+    setShowPromptModal(false);
+    setPromptStep('claim');
+    setPromptClaim('');
+    setBuiltPromptText('');
+  }, [builtPromptText, promptClaim, selectedSnippetIds]);
+
+  const updateSavedParagraph = useCallback(async (rowId: string, paragraph: string) => {
+    if (!supabase || !isSupabaseConfigured()) return;
+    const { data, error: upErr } = await supabase
+      .from('literature_review_prompts')
+      .update({ generated_paragraph: paragraph.trim() || null, updated_at: new Date().toISOString() })
+      .eq('id', rowId)
+      .select('*')
+      .single();
+    if (upErr) {
+      setError(upErr.message);
+      return;
+    }
+    if (data) {
+      setSavedPrompts((prev) => prev.map((r) => (r.id === rowId ? (data as LiteratureReviewPrompt) : r)));
+    }
+  }, []);
+
+  const deleteSavedPrompt = useCallback(async (rowId: string) => {
+    if (!supabase || !isSupabaseConfigured()) return;
+    if (!window.confirm('Delete this saved prompt record?')) return;
+    const { error: delErr } = await supabase.from('literature_review_prompts').delete().eq('id', rowId);
+    if (delErr) {
+      setError(delErr.message);
+      return;
+    }
+    setSavedPrompts((prev) => prev.filter((r) => r.id !== rowId));
   }, []);
 
   const startEdit = useCallback((snippet: Snippet) => {
@@ -487,18 +684,56 @@ export default function SnippetsPage() {
         <p className="snippets-intro">
           Conceptual snippets extracted from papers. Filter by paper, construct, model, or tags.
         </p>
-        <button
-          type="button"
-          className="snippets-open-add-btn"
-          onClick={() => setShowAddModal(true)}
-        >
-          Add snippet
-        </button>
+        <div className="snippets-header-actions">
+          <button
+            type="button"
+            className={`snippets-prompt-mode-btn${promptMode ? ' snippets-prompt-mode-btn-active' : ''}`}
+            onClick={() => {
+              setPromptMode((m) => {
+                if (m) setSelectedSnippetIds([]);
+                return !m;
+              });
+            }}
+            aria-pressed={promptMode}
+          >
+            Prompt generation mode
+          </button>
+          {promptMode && (
+            <button
+              type="button"
+              className="snippets-generate-prompt-btn"
+              disabled={selectedSnippetIds.length === 0}
+              onClick={openPromptFlow}
+            >
+              Generate prompt
+            </button>
+          )}
+          <button
+            type="button"
+            className="snippets-open-add-btn"
+            onClick={() => setShowAddModal(true)}
+          >
+            Add snippet
+          </button>
+        </div>
       </header>
 
       {error && <p className="snippets-error">{error}</p>}
 
       <div className="snippets-layout">
+        {promptMode && (
+          <div className="snippets-prompt-toolbar" role="region" aria-label="Prompt generation selection">
+            <span className="snippets-prompt-count">
+              {selectedSnippetIds.length} snippet{selectedSnippetIds.length === 1 ? '' : 's'} selected
+            </span>
+            <button type="button" className="snippets-prompt-toolbar-btn" onClick={selectAllVisibleSnippets}>
+              Select all in view
+            </button>
+            <button type="button" className="snippets-prompt-toolbar-btn" onClick={clearSnippetSelection}>
+              Clear selection
+            </button>
+          </div>
+        )}
         <section className="snippets-filters">
           <div className="snippets-filter-row">
             <label className="snippets-search-label">
@@ -822,8 +1057,18 @@ export default function SnippetsPage() {
           {filteredSnippets.map((s) => {
             const paper = paperById.get(s.paper_id);
             return (
-              <article key={s.id} className="snippets-card">
+              <article key={s.id} className={`snippets-card${promptMode ? ' snippets-card-selectable' : ''}`}>
                 <header className="snippets-card-header">
+                  {promptMode && (
+                    <label className="snippets-card-checkbox-wrap">
+                      <input
+                        type="checkbox"
+                        checked={selectedSnippetIds.includes(s.id)}
+                        onChange={() => toggleSnippetSelected(s.id)}
+                        aria-label="Select snippet for prompt"
+                      />
+                    </label>
+                  )}
                   <div className="snippets-card-title-row">
                     <h3 className="snippets-card-title">
                       {s.content.length > 140 ? `${s.content.slice(0, 140)}…` : s.content}
@@ -1036,7 +1281,192 @@ export default function SnippetsPage() {
           })}
         </div>
       </section>
+
+      <section className="snippets-saved-prompts" aria-labelledby="saved-prompts-heading">
+        <h2 id="saved-prompts-heading" className="snippets-section-title">
+          Saved literature review prompts
+        </h2>
+        <p className="snippets-saved-intro">
+          Each record stores your <strong>claim</strong>, the <strong>linked snippets</strong>, and the full prompt. Paste the
+          paragraph returned by your external AI tool below.
+        </p>
+        {savedPromptsLoading ? (
+          <p className="snippets-saved-loading">Loading saved prompts…</p>
+        ) : savedPrompts.length === 0 ? (
+          <p className="snippets-saved-empty">No saved prompts yet. Use Prompt generation mode, select snippets, generate
+            the prompt, copy it to an external chat, then save the record and paste your paragraph here.</p>
+        ) : (
+          <ul className="snippets-saved-list">
+            {savedPrompts.map((row) => (
+              <li key={row.id} className="snippets-saved-card">
+                <div className="snippets-saved-card-head">
+                  <p className="snippets-saved-claim">{row.claim}</p>
+                  <p className="snippets-saved-meta">
+                    {row.snippet_ids.length} snippet{row.snippet_ids.length === 1 ? '' : 's'} ·{' '}
+                    {new Date(row.created_at).toLocaleString()}
+                  </p>
+                </div>
+                <details className="snippets-saved-details">
+                  <summary>Linked snippets</summary>
+                  <ol className="snippets-saved-snippet-list">
+                    {row.snippet_ids.map((sid) => {
+                      const sn = snippetById.get(sid);
+                      return (
+                        <li key={sid}>
+                          {sn ? (
+                            <>
+                              <span className="snippets-saved-snippet-text">{sn.content}</span>
+                              {paperById.get(sn.paper_id)?.title && (
+                                <span className="snippets-saved-snippet-paper">
+                                  {' '}
+                                  — {paperById.get(sn.paper_id)?.title}
+                                </span>
+                              )}
+                            </>
+                          ) : (
+                            <span className="snippets-saved-snippet-missing">Snippet {sid} (removed or unavailable)</span>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ol>
+                </details>
+                <details className="snippets-saved-details">
+                  <summary>Full prompt text</summary>
+                  <pre className="snippets-saved-prompt-pre">{row.prompt_text}</pre>
+                </details>
+                <label className="snippets-saved-label">
+                  Generated paragraph (from external AI)
+                  <textarea
+                    key={`${row.id}-${row.updated_at}`}
+                    className="snippets-saved-textarea"
+                    rows={5}
+                    defaultValue={row.generated_paragraph ?? ''}
+                    placeholder="Paste the paragraph from your AI chat here…"
+                    onBlur={(e) => {
+                      const v = e.target.value.trim();
+                      const prev = (row.generated_paragraph ?? '').trim();
+                      if (v !== prev) updateSavedParagraph(row.id, e.target.value);
+                    }}
+                  />
+                </label>
+                <div className="snippets-saved-card-actions">
+                  <button type="button" className="snippets-saved-delete" onClick={() => deleteSavedPrompt(row.id)}>
+                    Delete record
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
       </div>
+
+      {showPromptModal && (
+        <div className="snippets-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="prompt-modal-title">
+          <div className="snippets-modal snippets-modal-wide">
+            <header className="snippets-modal-header">
+              <h2 id="prompt-modal-title" className="snippets-section-title">
+                {promptStep === 'claim' ? 'Your claim' : 'Copy prompt for external AI'}
+              </h2>
+              <button
+                type="button"
+                className="snippets-modal-close"
+                onClick={() => {
+                  setShowPromptModal(false);
+                  setPromptStep('claim');
+                  setPromptClaim('');
+                  setBuiltPromptText('');
+                }}
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </header>
+            {promptStep === 'claim' ? (
+              <div className="snippets-prompt-modal-body">
+                <p className="snippets-prompt-hint">
+                  {selectedSnippetIds.length} snippet{selectedSnippetIds.length === 1 ? '' : 's'} will be included as
+                  evidence. Enter the claim your literature-review paragraph should support.
+                </p>
+                <label className="snippets-label">
+                  Claim
+                  <textarea
+                    className="snippets-textarea"
+                    value={promptClaim}
+                    onChange={(e) => setPromptClaim(e.target.value)}
+                    rows={4}
+                    placeholder="e.g., Perceived usefulness is the strongest predictor of adoption intention in enterprise settings…"
+                  />
+                </label>
+                <div className="snippets-modal-actions">
+                  <button
+                    type="button"
+                    className="snippets-add-btn"
+                    disabled={!promptClaim.trim()}
+                    onClick={goToPromptPreview}
+                  >
+                    Build prompt
+                  </button>
+                  <button
+                    type="button"
+                    className="snippets-edit-cancel-btn"
+                    onClick={() => {
+                      setShowPromptModal(false);
+                      setPromptClaim('');
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="snippets-prompt-modal-body">
+                <p className="snippets-prompt-hint">
+                  Copy this prompt into your external AI tool. When you receive the paragraph, save this record (below) and
+                  paste the result into the <strong>Generated paragraph</strong> field in the saved list.
+                </p>
+                <textarea className="snippets-textarea snippets-prompt-output" readOnly value={builtPromptText} rows={18} />
+                <div className="snippets-modal-actions">
+                  <button type="button" className="snippets-add-btn" onClick={copyBuiltPrompt}>
+                    {promptCopyFeedback ? 'Copied!' : 'Copy prompt'}
+                  </button>
+                  <button
+                    type="button"
+                    className="snippets-prompt-back-btn"
+                    onClick={() => {
+                      setPromptStep('claim');
+                      setBuiltPromptText('');
+                    }}
+                  >
+                    Back
+                  </button>
+                  <button
+                    type="button"
+                    className="snippets-generate-prompt-btn"
+                    onClick={savePromptToDatabase}
+                    disabled={promptSaving}
+                  >
+                    {promptSaving ? 'Saving…' : 'Save to PhD Manager'}
+                  </button>
+                  <button
+                    type="button"
+                    className="snippets-edit-cancel-btn"
+                    onClick={() => {
+                      setShowPromptModal(false);
+                      setPromptStep('claim');
+                      setPromptClaim('');
+                      setBuiltPromptText('');
+                    }}
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
