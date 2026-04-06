@@ -627,5 +627,23 @@
     "relatedModels": ["UTAUT"],
     "relatedConstructs": ["Social Influence", "Behavioral Intention", "Technology Adoption Intention", "Perceived Usefulness", "Perceived Ease of Use"],
     "notes": "Type: contextual perception. Level: situational (mandatory vs voluntary adoption). Role in UTAUT: often modeled as a moderator—e.g. strengthening or weakening effects of social influence and expectancy constructs on intention when use is more or less voluntary."
+  },
+  {
+    "id": "habit",
+    "name": "Habit",
+    "abbreviation": "H",
+    "definition": "The extent to which people tend to perform behaviors automatically due to learning.",
+    "sourcePaper": "Venkatesh et al. (2012) - UTAUT2",
+    "doi": "",
+    "theoreticalDomain": "Technology adoption",
+    "measurementItems": [
+      "The use of the system has become a habit for me.",
+      "I am addicted to using the system.",
+      "I must use the system."
+    ],
+    "measurementScale": "7-point Likert (Strongly disagree - Strongly agree)",
+    "relatedModels": ["UTAUT2"],
+    "relatedConstructs": ["Behavioral Intention", "Actual Usage", "Continued Use", "Hedonic Motivation"],
+    "notes": "In UTAUT2, habit captures automaticity and routinization of use; often predicts behavioral intention and use, especially in voluntary consumer contexts."
   }
 ]

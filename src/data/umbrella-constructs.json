@@ -2,7 +2,7 @@
   {
     "id": "technology-adoption",
     "name": "Technology Adoption",
-    "constructIds": ["behavioral-intention", "technology-adoption-intention", "social-influence", "attitude", "subjective-norms", "perceived-behavioral-control", "facilitating-conditions", "voluntariness"]
+    "constructIds": ["behavioral-intention", "technology-adoption-intention", "social-influence", "attitude", "subjective-norms", "perceived-behavioral-control", "facilitating-conditions", "voluntariness", "habit"]
   },
   {
     "id": "post-adoption-behavior",
