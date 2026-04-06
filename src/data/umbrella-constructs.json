@@ -12,7 +12,7 @@
   {
     "id": "technology-perceptions",
     "name": "Technology Perceptions",
-    "constructIds": ["perceived-usefulness", "perceived-ease-of-use", "perceived-benefit"]
+    "constructIds": ["perceived-usefulness", "perceived-ease-of-use", "perceived-benefit", "intention-to-use"]
   },
   {
     "id": "expectation-evaluation",
@@ -42,7 +42,7 @@
   {
     "id": "system-use-outcomes",
     "name": "System Use Outcomes",
-    "constructIds": ["utilization", "performance-impact"]
+    "constructIds": ["utilization", "performance-impact", "net-benefits"]
   },
   {
     "id": "user-participation",
@@ -67,6 +67,6 @@
   {
     "id": "information-systems-quality",
     "name": "Information Systems Quality",
-    "constructIds": ["system-quality", "information-quality"]
+    "constructIds": ["system-quality", "information-quality", "service-quality"]
   }
 ]

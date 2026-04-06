@@ -87,7 +87,7 @@
       "I am contented with the use of the system."
     ],
     "measurementScale": "7-point Likert (Strongly disagree - Strongly agree)",
-    "relatedModels": ["ECT", "ECM"],
+    "relatedModels": ["ECT", "ECM", "ISSM"],
     "relatedConstructs": ["Confirmation", "Perceived Usefulness", "Continuance Intention"],
     "notes": "Key mediator between confirmation and continuance intention in ECM."
   },
@@ -533,8 +533,8 @@
       "The information provided is complete."
     ],
     "measurementScale": "Likert scale",
-    "relatedModels": [],
-    "relatedConstructs": ["System Quality", "Perceived Usefulness", "Satisfaction"],
+    "relatedModels": ["ISSM"],
+    "relatedConstructs": ["System Quality", "Perceived Usefulness", "Satisfaction", "Service Quality"],
     "notes": "Common dimensions: accuracy, relevance, completeness. Typical relationships: Information quality → system usefulness; Information quality → user satisfaction."
   },
   {
@@ -665,5 +665,59 @@
     "relatedModels": ["TAM", "UTAUT"],
     "relatedConstructs": ["Perceived Usefulness", "Task-Technology Fit", "Behavioral Intention", "Technology Adoption Intention"],
     "notes": "Align with Perceived Usefulness where performance is narrowly job-related; PB is broader and especially salient when benefits are economic, relational (markets), temporal, and risk-related—not only output per hectare."
+  },
+  {
+    "id": "service-quality",
+    "name": "Service Quality",
+    "abbreviation": "ServQ",
+    "definition": "The quality of the support services surrounding an information system—such as responsiveness of help desks, training, and ongoing assistance—rather than the technical system or the information content alone.",
+    "sourcePaper": "DeLone & McLean (2003) - Information Systems Success Model update",
+    "doi": "10.1080/07421222.2003.11045748",
+    "theoreticalDomain": "Information systems success",
+    "measurementItems": [
+      "Support staff respond to my requests in a timely manner.",
+      "I receive adequate training to use the system.",
+      "When I need help, the support I get is of high quality."
+    ],
+    "measurementScale": "Likert scale",
+    "relatedModels": ["ISSM"],
+    "relatedConstructs": ["System Quality", "Information Quality", "Satisfaction", "Intention to Use"],
+    "notes": "Added in the 2003 DeLone & McLean update alongside system and information quality as a driver of use, intention to use, and user satisfaction."
+  },
+  {
+    "id": "intention-to-use",
+    "name": "Intention to Use",
+    "abbreviation": "ITU",
+    "definition": "The strength of a user's intention to use an information system in the future; in success models it sits between system/information/service quality perceptions and outcomes such as satisfaction and net benefits.",
+    "sourcePaper": "DeLone & McLean (2003) - Information Systems Success Model update",
+    "doi": "10.1080/07421222.2003.11045748",
+    "theoreticalDomain": "Information systems success; technology adoption",
+    "measurementItems": [
+      "I intend to use the system in the next months.",
+      "I predict I would use the system.",
+      "I plan to use the system."
+    ],
+    "measurementScale": "Likert scale",
+    "relatedModels": ["ISSM", "TAM", "UTAUT"],
+    "relatedConstructs": ["Behavioral Intention", "Actual Usage", "System Quality", "Information Quality", "Satisfaction"],
+    "notes": "Closely related to behavioural intention in TAM/UTAUT; ISSM positions ITU between quality perceptions and satisfaction/use."
+  },
+  {
+    "id": "net-benefits",
+    "name": "Net Benefits",
+    "abbreviation": "NB",
+    "definition": "The net positive impacts of an information system for individuals or organizations—aggregating and balancing benefits and costs. In the updated DeLone & McLean model, net benefits are the ultimate success criterion, subsuming earlier separate impact dimensions.",
+    "sourcePaper": "DeLone & McLean (2003) - Information Systems Success Model update",
+    "doi": "10.1080/07421222.2003.11045748",
+    "theoreticalDomain": "Information systems success",
+    "measurementItems": [
+      "The system has improved my effectiveness at work.",
+      "The benefits of the system outweigh its costs for my organization.",
+      "Overall, the system has a positive impact on how we operate."
+    ],
+    "measurementScale": "Likert scale; organizational studies may use archival or financial measures.",
+    "relatedModels": ["ISSM"],
+    "relatedConstructs": ["Satisfaction", "Actual Usage", "Performance Impact", "System Quality", "Information Quality"],
+    "notes": "Success at the net-benefits level often requires prior success on quality, use, and satisfaction; measures should match the unit of analysis (individual vs organizational)."
   }
 ]

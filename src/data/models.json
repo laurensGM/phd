@@ -458,5 +458,57 @@
         "doi": ""
       }
     ]
+  },
+  {
+    "id": "issm",
+    "name": "Information System Success Model",
+    "abbreviation": "ISSM",
+    "year": 2003,
+    "authors": ["DeLone", "McLean"],
+    "description": "The DeLone and McLean Information Systems Success Model explains what makes an information system successful. The original framework (1992) defined interdependent success dimensions; the ten-year update (2003) added service quality, intention to use, and consolidated consequences into net benefits. System quality, information quality, and service quality shape use and intention to use; these behaviours and perceptions feed user satisfaction; satisfaction and use contribute to net benefits for users and organizations.",
+    "notes": "Core constructs (updated model):\n• System quality — technical performance of the IS (e.g. reliability, responsiveness).\n• Information quality — quality of outputs (e.g. accuracy, relevance, completeness).\n• Service quality — quality of support surrounding the system (e.g. help desk, training).\n• Use / intention to use — actual use and willingness to use the system.\n• User satisfaction — affective response to the IS experience.\n• Net benefits — net positive impacts at individual or organizational level (e.g. efficiency, effectiveness, innovation); replaces separate impact constructs in the 2003 formulation.\n\nCausal ordering is often depicted as qualities → use and intention → satisfaction → net benefits, with additional paths from qualities to satisfaction in many empirical specifications.",
+    "constructs": [
+      "System Quality",
+      "Information Quality",
+      "Service Quality",
+      "Intention to Use",
+      "Satisfaction",
+      "Net Benefits"
+    ],
+    "constructAbbreviations": {
+      "System Quality": "SQ",
+      "Information Quality": "IQ",
+      "Service Quality": "ServQ",
+      "Intention to Use": "ITU",
+      "Satisfaction": "Sat",
+      "Net Benefits": "NB"
+    },
+    "constructCategories": {
+      "SQ": "cognitive",
+      "IQ": "cognitive",
+      "ServQ": "cognitive",
+      "ITU": "neutral",
+      "Sat": "neutral",
+      "NB": "neutral"
+    },
+    "relationships": [
+      { "from": "SQ", "to": "ITU" },
+      { "from": "IQ", "to": "ITU" },
+      { "from": "ServQ", "to": "ITU" },
+      { "from": "ITU", "to": "Sat" },
+      { "from": "Sat", "to": "NB" }
+    ],
+    "keyCitations": [
+      {
+        "authors": "DeLone & McLean (1992)",
+        "title": "Information Systems Success: The Quest for the Dependent Variable",
+        "doi": "10.2307/249522"
+      },
+      {
+        "authors": "DeLone & McLean (2003)",
+        "title": "The DeLone and McLean Model of Information Systems Success: A Ten-Year Update",
+        "doi": "10.1080/07421222.2003.11045748"
+      }
+    ]
   }
 ]
