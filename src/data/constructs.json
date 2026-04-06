@@ -645,5 +645,25 @@
     "relatedModels": ["UTAUT2"],
     "relatedConstructs": ["Behavioral Intention", "Actual Usage", "Continued Use", "Hedonic Motivation"],
     "notes": "In UTAUT2, habit captures automaticity and routinization of use; often predicts behavioral intention and use, especially in voluntary consumer contexts."
+  },
+  {
+    "id": "perceived-benefit",
+    "name": "Perceived Benefit",
+    "abbreviation": "PB",
+    "definition": "The extent to which users believe that adopting or using a technology will yield positive outcomes for them. In sub-Saharan African agritech contexts, perceived benefit is not limited to productivity or yield—it may include income improvement, better access to markets, reduced production or commercial risk, time savings, and greater resilience to shocks.",
+    "sourcePaper": "Context-specific extension of outcome-expectancy and usefulness notions; widely used in agritech, ICT4D, and adoption studies in smallholder settings.",
+    "doi": "",
+    "theoreticalDomain": "Technology adoption; agritech and development information systems",
+    "measurementItems": [
+      "Using this technology would improve my income or livelihood.",
+      "Using this technology would help me reach buyers or markets.",
+      "Using this technology would reduce risks I face in farming or selling.",
+      "Using this technology would save me time.",
+      "Using this technology would make my farming more resilient to setbacks."
+    ],
+    "measurementScale": "7-point Likert (Strongly disagree - Strongly agree); adapt wording to local pilot instruments.",
+    "relatedModels": ["TAM", "UTAUT"],
+    "relatedConstructs": ["Perceived Usefulness", "Task-Technology Fit", "Behavioral Intention", "Technology Adoption Intention"],
+    "notes": "Align with Perceived Usefulness where performance is narrowly job-related; PB is broader and especially salient when benefits are economic, relational (markets), temporal, and risk-related—not only output per hectare."
   }
 ]

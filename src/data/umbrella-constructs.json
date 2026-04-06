@@ -12,7 +12,7 @@
   {
     "id": "technology-perceptions",
     "name": "Technology Perceptions",
-    "constructIds": ["perceived-usefulness", "perceived-ease-of-use"]
+    "constructIds": ["perceived-usefulness", "perceived-ease-of-use", "perceived-benefit"]
   },
   {
     "id": "expectation-evaluation",
