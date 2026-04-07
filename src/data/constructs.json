@@ -606,9 +606,9 @@
       "The system is compatible with other systems I use."
     ],
     "measurementScale": "Likert scale (adapted from Venkatesh et al., 2003)",
-    "relatedModels": ["UTAUT", "UTAUT2"],
-    "relatedConstructs": ["Behavioral Intention", "Social Influence", "Technology Adoption Intention", "Actual Usage", "Perceived Usefulness", "Perceived Ease of Use"],
-    "notes": "Type: enabling conditions / resources. Level: environment or context. In UTAUT, facilitating conditions (and sometimes intention) predict use behavior. Includes availability of resources, technical support, training, and compatibility with existing systems."
+    "relatedModels": ["UTAUT", "UTAUT2", "TOE"],
+    "relatedConstructs": ["Behavioral Intention", "Social Influence", "Technology Adoption Intention", "Actual Usage", "Perceived Usefulness", "Perceived Ease of Use", "Environment Context"],
+    "notes": "Type: enabling conditions / resources. Level: environment or context. In UTAUT, facilitating conditions (and sometimes intention) predict use behavior. Includes availability of resources, technical support, training, and compatibility with existing systems. At a higher level of analysis, the TOE environment context helps explain where such constraints and supports originate (e.g. infrastructure, institutions)—a bridge to individual-level FC in agritech and similar settings."
   },
   {
     "id": "voluntariness",
@@ -719,5 +719,77 @@
     "relatedModels": ["ISSM"],
     "relatedConstructs": ["Satisfaction", "Actual Usage", "Performance Impact", "System Quality", "Information Quality"],
     "notes": "Success at the net-benefits level often requires prior success on quality, use, and satisfaction; measures should match the unit of analysis (individual vs organizational)."
+  },
+  {
+    "id": "technology-context",
+    "name": "Technology Context",
+    "abbreviation": "TC",
+    "definition": "In the Technology–Organization–Environment (TOE) framework, the technology context refers to characteristics of the innovation or system itself—such as relative advantage, compatibility, complexity, trialability, and observability—that influence organizational adoption and assimilation.",
+    "sourcePaper": "Tornatzky & Fleischer (1990); widely applied in organizational IS adoption research (e.g. Zhu, Kraemer & Xu, 2006)",
+    "doi": "",
+    "theoreticalDomain": "Organizational technology adoption (TOE)",
+    "measurementItems": [
+      "The technology offers clear advantages over our current way of working.",
+      "The technology is compatible with our existing systems and practices.",
+      "We can try the technology on a limited basis before full commitment."
+    ],
+    "measurementScale": "Likert scale; items adapted to innovation and setting",
+    "relatedModels": ["TOE"],
+    "relatedConstructs": ["Technology Characteristics", "Organization Context", "Environment Context", "Organizational Adoption"],
+    "notes": "One of three TOE contexts; often combined with organizational and environmental factors in meta-models of innovation adoption."
+  },
+  {
+    "id": "organization-context",
+    "name": "Organization Context",
+    "abbreviation": "OC",
+    "definition": "In the TOE framework, the organization context captures firm-level attributes that shape adoption—such as size, slack resources, managerial and technical capability, centralization, and formalization—that affect readiness to absorb and use new technology.",
+    "sourcePaper": "Tornatzky & Fleischer (1990); applied in Zhu, Kraemer & Xu (2006) and many IS diffusion studies",
+    "doi": "",
+    "theoreticalDomain": "Organizational technology adoption (TOE)",
+    "measurementItems": [
+      "Our organization has adequate financial resources to invest in this technology.",
+      "We have the technical skills internally to implement and use the technology.",
+      "Top management supports adoption of new information technologies."
+    ],
+    "measurementScale": "Likert scale; organizational surveys or archival proxies (e.g. firm size)",
+    "relatedModels": ["TOE"],
+    "relatedConstructs": ["Technology Context", "Environment Context", "Organizational Adoption", "Organizational Learning"],
+    "notes": "Contrasts with individual-level beliefs in TAM/ECM: TOE is typically measured at firm or unit level."
+  },
+  {
+    "id": "environment-context",
+    "name": "Environment Context",
+    "abbreviation": "EC",
+    "definition": "In the TOE framework, the environment context refers to external forces—regulatory pressure, competitive intensity, partner readiness, infrastructure quality, and institutional support—that influence whether organizations adopt and sustain technology use.",
+    "sourcePaper": "Tornatzky & Fleischer (1990); Zhu, Kraemer & Xu (2006)",
+    "doi": "",
+    "theoreticalDomain": "Organizational technology adoption (TOE)",
+    "measurementItems": [
+      "Competitive pressure in our industry encourages us to adopt new technology.",
+      "Government policy and regulation support (or require) use of this type of system.",
+      "Infrastructure (e.g. connectivity, utilities) in our environment is adequate for adoption."
+    ],
+    "measurementScale": "Likert scale; sector and country context strongly shape wording",
+    "relatedModels": ["TOE"],
+    "relatedConstructs": ["Technology Context", "Organization Context", "Organizational Adoption", "Market Uncertainty", "Facilitating Conditions"],
+    "notes": "Often linked conceptually to individual-level facilitating conditions: macro environment shapes the resources and constraints users experience on the ground (e.g. in agritech in Sub-Saharan Africa)."
+  },
+  {
+    "id": "organizational-adoption",
+    "name": "Organizational Adoption",
+    "abbreviation": "OA",
+    "definition": "The extent to which an organization decides to adopt, implement, and use a technology—in TOE studies often measured as adoption intention, assimilation stage, breadth of use, or similar firm-level outcomes rather than a single user’s continuance intention.",
+    "sourcePaper": "TOE and innovation diffusion literature (e.g. Zhu, Kraemer & Xu, 2006)",
+    "doi": "",
+    "theoreticalDomain": "Organizational technology adoption",
+    "measurementItems": [
+      "Our organization has formally adopted this technology.",
+      "The technology is widely used across relevant units in our organization.",
+      "We intend to deepen use of this technology over the next year."
+    ],
+    "measurementScale": "Likert scale or staged assimilation measures",
+    "relatedModels": ["TOE"],
+    "relatedConstructs": ["Technology Context", "Organization Context", "Environment Context", "Technology Adoption Intention", "Continuance Intention"],
+    "notes": "Unit of analysis is the organization; differs from individual-level continuance intention (CI) in ECM-style thesis models, though both can be narratively connected via context and facilitating conditions."
   }
 ]

@@ -2,7 +2,7 @@
   {
     "id": "technology-adoption",
     "name": "Technology Adoption",
-    "constructIds": ["behavioral-intention", "technology-adoption-intention", "social-influence", "attitude", "subjective-norms", "perceived-behavioral-control", "facilitating-conditions", "voluntariness", "habit"]
+    "constructIds": ["behavioral-intention", "technology-adoption-intention", "social-influence", "attitude", "subjective-norms", "perceived-behavioral-control", "facilitating-conditions", "voluntariness", "habit", "organizational-adoption"]
   },
   {
     "id": "post-adoption-behavior",
@@ -37,7 +37,7 @@
   {
     "id": "task-technology-alignment",
     "name": "Task–Technology Alignment",
-    "constructIds": ["task-characteristics", "technology-characteristics", "task-technology-fit"]
+    "constructIds": ["task-characteristics", "technology-characteristics", "task-technology-fit", "technology-context"]
   },
   {
     "id": "system-use-outcomes",
@@ -52,7 +52,7 @@
   {
     "id": "innovation-capabilities",
     "name": "Innovation Capabilities",
-    "constructIds": ["experimentation-capability", "organizational-learning"]
+    "constructIds": ["experimentation-capability", "organizational-learning", "organization-context"]
   },
   {
     "id": "innovation-outcomes",
@@ -62,7 +62,7 @@
   {
     "id": "environmental-factors",
     "name": "Environmental Factors",
-    "constructIds": ["market-uncertainty"]
+    "constructIds": ["market-uncertainty", "environment-context"]
   },
   {
     "id": "information-systems-quality",

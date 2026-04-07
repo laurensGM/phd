@@ -510,5 +510,49 @@
         "doi": "10.1080/07421222.2003.11045748"
       }
     ]
+  },
+  {
+    "id": "toe",
+    "name": "Technology–Organization–Environment Framework",
+    "abbreviation": "TOE",
+    "year": 1990,
+    "authors": ["Tornatzky", "Fleischer"],
+    "description": "The Technology–Organization–Environment (TOE) framework explains technology adoption at the organizational level. It focuses on three contexts: the technology context (characteristics of the innovation or system), the organization context (e.g. size, resources, managerial and technical capabilities), and the environment context (e.g. regulation, competitive pressure, infrastructure and institutional support). These contexts jointly influence whether and how organizations adopt and assimilate technology.",
+    "notes": "Three TOE contexts (typical content):\n• Technology context → system characteristics (e.g. relative advantage, compatibility, complexity).\n• Organization context → size, resources, capabilities (including managerial and structural readiness).\n• Environment context → regulation, competition, infrastructure, and broader institutional forces.\n\n———\nRelation to this thesis (ECM + TTF + facilitating conditions)\n\nYou are building a model that combines:\n• User perception (ECM)\n• Task alignment (TTF)\n• Context constraints (facilitating conditions)\n\nTOE helps explain where those constraints come from — that is powerful, but indirect.\n\n• Your study focuses on individual users (farmers, technicians) and continuance intention (CI).\n• TOE focuses on organizations (firms, institutions) and adoption decisions.\n\nSo there is a level mismatch:\n• TOE = organizational level\n• Your model = individual level\n\nEven though it is not a core model in your thesis, TOE is useful for one thing: explaining contextual constraints.\n\nEspecially in Sub-Saharan Africa, a plausible conceptual bridge is:\n\nEnvironment (TOE)\n  → Facilitating conditions (your model)\n  → Continuance intention\n\nExamples of what flows through that chain: connectivity, affordability, institutional support, infrastructure.\n\nThis aligns with the idea that satisfaction alone is not enough — conditions must enable use.",
+    "constructs": [
+      "Technology Context",
+      "Organization Context",
+      "Environment Context",
+      "Organizational Adoption"
+    ],
+    "constructAbbreviations": {
+      "Technology Context": "TC",
+      "Organization Context": "OC",
+      "Environment Context": "EC",
+      "Organizational Adoption": "OA"
+    },
+    "constructCategories": {
+      "TC": "cognitive",
+      "OC": "cognitive",
+      "EC": "cognitive",
+      "OA": "neutral"
+    },
+    "relationships": [
+      { "from": "TC", "to": "OA" },
+      { "from": "OC", "to": "OA" },
+      { "from": "EC", "to": "OA" }
+    ],
+    "keyCitations": [
+      {
+        "authors": "Tornatzky & Fleischer (1990)",
+        "title": "The Processes of Technological Innovation",
+        "doi": ""
+      },
+      {
+        "authors": "Zhu, Kraemer & Xu (2006)",
+        "title": "The Process of Innovation Assimilation in Organizations: An International Perspective",
+        "doi": "10.2307/25148735"
+      }
+    ]
   }
 ]
