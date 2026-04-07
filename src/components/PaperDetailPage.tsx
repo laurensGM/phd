@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { PAPER_STATUSES, type PaperStatusId } from '../constants/paperStatuses';
 import constructsData from '../data/constructs.json';
 import modelsData from '../data/models.json';
 
@@ -57,15 +58,6 @@ interface PaperSummary {
   created_at: string;
   updated_at: string;
 }
-
-const PAPER_STATUSES = [
-  { id: 'Not read', label: 'Not read' },
-  { id: '1st reading', label: '1st reading' },
-  { id: '2nd reading', label: '2nd reading' },
-  { id: 'Read', label: 'Read' },
-  { id: 'Completed', label: 'Completed' },
-  { id: 'Archive', label: 'Archive' },
-] as const;
 
 function mapRow(row: {
   id: string;
@@ -188,6 +180,8 @@ export default function PaperDetailPage() {
   const [summaryConclusion, setSummaryConclusion] = useState('');
   const [summaryLimitationsAndFutureResearch, setSummaryLimitationsAndFutureResearch] = useState('');
   const [savingSummary, setSavingSummary] = useState(false);
+  const [statusSaving, setStatusSaving] = useState(false);
+  const [statusError, setStatusError] = useState<string | null>(null);
 
   const syncSummaryToEditor = useCallback((s: PaperSummary | null) => {
     setSummaryAbstract(s?.abstract ?? '');
@@ -514,7 +508,28 @@ export default function PaperDetailPage() {
     return () => {
       cancelled = true;
     };
-  }, [getIdFromUrl]);
+  }, [getIdFromUrl, syncSummaryToEditor]);
+
+  const handleStatusChange = useCallback(
+    async (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const newStatus = e.target.value as PaperStatusId;
+      if (!paper || !supabase || !isSupabaseConfigured()) return;
+      if (newStatus === paper.status) return;
+      setStatusSaving(true);
+      setStatusError(null);
+      const { error: updateError } = await supabase
+        .from('saved_papers')
+        .update({ status: newStatus })
+        .eq('id', paper.id);
+      setStatusSaving(false);
+      if (updateError) {
+        setStatusError(updateError.message);
+        return;
+      }
+      setPaper((prev) => (prev ? { ...prev, status: newStatus } : null));
+    },
+    [paper]
+  );
 
   const loadSummary = useCallback(async (paperId: string) => {
     if (!supabase) return;
@@ -712,18 +727,28 @@ export default function PaperDetailPage() {
       <header className="paper-detail-header">
         <h1 className="paper-detail-title">{paper.title || 'Untitled'}</h1>
         {paper.authors && <p className="paper-detail-authors">{paper.authors}</p>}
-        {(paper.year || paper.journal || paper.status) && (
-          <div className="paper-detail-meta-row">
-            {paper.year && <span className="paper-detail-year">{paper.year}</span>}
-            {paper.journal && <span className="paper-detail-journal">{paper.journal}</span>}
-            {paper.status && (
-              <span className={`paper-detail-status paper-detail-status-${paper.status.replace(/\s+/g, '-').toLowerCase()}`}>
-                {paper.status}
-              </span>
-            )}
-            {paper.golden && <span className="paper-detail-golden">Golden</span>}
-          </div>
-        )}
+        <div className="paper-detail-meta-row">
+          {paper.year && <span className="paper-detail-year">{paper.year}</span>}
+          {paper.journal && <span className="paper-detail-journal">{paper.journal}</span>}
+          <select
+            id="paper-detail-status"
+            className={`paper-detail-status-select paper-detail-status-${paper.status.replace(/\s+/g, '-').toLowerCase()}`}
+            value={paper.status}
+            onChange={handleStatusChange}
+            disabled={statusSaving}
+            aria-label="Reading status"
+            aria-busy={statusSaving}
+          >
+            {PAPER_STATUSES.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.label}
+              </option>
+            ))}
+          </select>
+          {statusSaving && <span className="paper-detail-status-saving">Saving…</span>}
+          {statusError && <span className="paper-detail-status-error">{statusError}</span>}
+          {paper.golden && <span className="paper-detail-golden">Golden</span>}
+        </div>
       </header>
 
       <section className="paper-detail-section">

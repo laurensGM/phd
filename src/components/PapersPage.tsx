@@ -1,16 +1,6 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-
-const PAPER_STATUSES = [
-  { id: 'Not read', label: 'Not read', description: "Haven't read the paper at all.", color: 'status-not-read' },
-  { id: '1st reading', label: '1st reading', description: 'Read abstract, introduction and conclusion.', color: 'status-1st' },
-  { id: '2nd reading', label: '2nd reading', description: 'Also dove deeper into method, results and discussion.', color: 'status-2nd' },
-  { id: 'Read', label: 'Read', description: 'Read all relevant sections.', color: 'status-read' },
-  { id: 'Completed', label: 'Completed', description: 'Copied snippets from the article and attached them for later review.', color: 'status-completed' },
-  { id: 'Archive', label: 'Archive', description: 'Paper is archived but still kept for reference.', color: 'status-archive' },
-] as const;
-
-type PaperStatusId = (typeof PAPER_STATUSES)[number]['id'];
+import { PAPER_STATUSES, type PaperStatusId } from '../constants/paperStatuses';
 
 interface SavedPaper {
   id: string;
@@ -459,8 +449,14 @@ export default function PapersPage() {
 
   const handleBoardDragStart = (e: React.DragEvent, paperId: string) => {
     setDraggedPaperId(paperId);
+    // text/plain is required for reliable drop data in some browsers; JSON is secondary.
+    e.dataTransfer.setData('text/plain', paperId);
     e.dataTransfer.setData('application/json', JSON.stringify({ paperId }));
     e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleBoardDragEnd = () => {
+    setDraggedPaperId(null);
   };
 
   const handleBoardDragOver = (e: React.DragEvent) => {
@@ -468,31 +464,45 @@ export default function PapersPage() {
     e.dataTransfer.dropEffect = 'move';
   };
 
+  const resolveDroppedPaperId = (e: React.DragEvent): string | null => {
+    let paperId: string | undefined;
+    const rawJson = e.dataTransfer.getData('application/json');
+    if (rawJson) {
+      try {
+        const parsed = JSON.parse(rawJson) as { paperId?: string };
+        if (parsed?.paperId) paperId = parsed.paperId;
+      } catch {
+        /* ignore */
+      }
+    }
+    if (!paperId) {
+      const plain = e.dataTransfer.getData('text/plain').trim();
+      if (plain) paperId = plain;
+    }
+    return paperId || null;
+  };
+
   const handleBoardDrop = async (e: React.DragEvent, newStatus: string) => {
     e.preventDefault();
+    e.stopPropagation();
     setDraggedPaperId(null);
-    const raw = e.dataTransfer.getData('application/json');
-    if (!raw) return;
-    try {
-      const { paperId } = JSON.parse(raw);
-      const paper = papers.find((p) => p.id === paperId);
-      if (!paper || paper.status === newStatus) return;
-      if (!supabase) return;
-      setError(null);
-      const { error: updateError } = await supabase
-        .from('saved_papers')
-        .update({ status: newStatus })
-        .eq('id', paperId);
-      if (updateError) {
-        setError(updateError.message);
-        return;
-      }
-      setPapers((prev) =>
-        prev.map((p) => (p.id === paperId ? { ...p, status: newStatus } : p))
-      );
-    } catch {
-      setDraggedPaperId(null);
+    const paperId = resolveDroppedPaperId(e);
+    if (!paperId) return;
+    const paper = papers.find((p) => p.id === paperId);
+    if (!paper || paper.status === newStatus) return;
+    if (!supabase) return;
+    setError(null);
+    const { error: updateError } = await supabase
+      .from('saved_papers')
+      .update({ status: newStatus })
+      .eq('id', paperId);
+    if (updateError) {
+      setError(updateError.message);
+      return;
     }
+    setPapers((prev) =>
+      prev.map((p) => (p.id === paperId ? { ...p, status: newStatus } : p))
+    );
   };
 
   const getStatusColorClass = (status: string) => {
@@ -1143,7 +1153,10 @@ export default function PapersPage() {
                     {col.label}
                     <span className="papers-board-column-count">{columnPapers.length}</span>
                   </h3>
-                  <div className="papers-board-cards">
+                  <div
+                    className="papers-board-cards"
+                    onDragOver={handleBoardDragOver}
+                  >
                     {columnPapers
                       .map((paper) => (
                         <div
@@ -1151,6 +1164,8 @@ export default function PapersPage() {
                           className={`papers-board-card ${draggedPaperId === paper.id ? 'papers-board-card-dragging' : ''} ${paper.golden ? 'papers-board-card-golden' : ''}`}
                           draggable
                           onDragStart={(e) => handleBoardDragStart(e, paper.id)}
+                          onDragEnd={handleBoardDragEnd}
+                          onDragOver={handleBoardDragOver}
                           onClick={(e) => {
                             if ((e.target as HTMLElement).closest('a, button')) return;
                             window.location.href = `${base}papers/detail/?id=${paper.id}`;
@@ -1165,7 +1180,12 @@ export default function PapersPage() {
                           }}
                         >
                           <h4 className="papers-board-card-title">
-                            <a href={paper.url} target="_blank" rel="noopener noreferrer">
+                            <a
+                              href={paper.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              draggable={false}
+                            >
                               {(paper.title || paper.url).length > 30
                                 ? `${(paper.title || paper.url).slice(0, 30)}…`
                                 : (paper.title || paper.url)}
@@ -1173,7 +1193,12 @@ export default function PapersPage() {
                           </h4>
                           {paper.secondary_url && (
                             <p className="papers-board-card-secondary">
-                              <a href={paper.secondary_url} target="_blank" rel="noopener noreferrer">
+                              <a
+                                href={paper.secondary_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                draggable={false}
+                              >
                                 Secondary link
                               </a>
                             </p>
