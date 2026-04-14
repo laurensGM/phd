@@ -532,6 +532,88 @@ import PapersPage from '../../components/PapersPage';
     color: var(--color-ink-muted);
     line-height: 1.6;
   }
+  :global(.papers-page .papers-entry-comments) {
+    margin-top: 0.85rem;
+    padding-top: 0.75rem;
+    border-top: 1px dashed var(--color-border);
+  }
+  :global(.papers-page .papers-entry-comments-title) {
+    margin: 0 0 0.45rem 0;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--color-ink-muted);
+  }
+  :global(.papers-page .papers-entry-comments-empty) {
+    margin: 0 0 0.6rem 0;
+    font-size: 0.85rem;
+    color: var(--color-ink-muted);
+  }
+  :global(.papers-page .papers-entry-comments-list) {
+    margin: 0 0 0.65rem 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+  :global(.papers-page .papers-entry-comment-item) {
+    padding: 0.45rem 0.6rem;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background: #fafafa;
+  }
+  :global(.papers-page .papers-entry-comment-content) {
+    margin: 0 0 0.25rem 0;
+    font-size: 0.87rem;
+    color: var(--color-ink);
+    line-height: 1.45;
+    white-space: pre-wrap;
+  }
+  :global(.papers-page .papers-entry-comment-time) {
+    font-size: 0.75rem;
+    color: var(--color-ink-muted);
+  }
+  :global(.papers-page .papers-entry-comment-form) {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-end;
+  }
+  :global(.papers-page .papers-entry-comment-input) {
+    flex: 1;
+    min-height: 2.5rem;
+    resize: vertical;
+    padding: 0.5rem 0.65rem;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    line-height: 1.4;
+    background: #fff;
+  }
+  :global(.papers-page .papers-entry-comment-input:focus) {
+    outline: none;
+    border-color: var(--color-maroon);
+    box-shadow: 0 0 0 2px rgba(113, 32, 56, 0.12);
+  }
+  :global(.papers-page .papers-entry-comment-add) {
+    padding: 0.45rem 0.75rem;
+    border-radius: 6px;
+    border: 1px solid var(--color-border);
+    background: #fff;
+    color: var(--color-ink);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  :global(.papers-page .papers-entry-comment-add:hover:not(:disabled)) {
+    border-color: var(--color-maroon-muted);
+    background: rgba(113, 32, 56, 0.06);
+  }
+  :global(.papers-page .papers-entry-comment-add:disabled) {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
   :global(.papers-page .papers-empty) {
     color: var(--color-ink-muted);
     padding: 2.5rem;

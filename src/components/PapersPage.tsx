@@ -42,6 +42,13 @@ interface PaperSummaryPresenceRow {
   future_research?: string | null;
 }
 
+interface PaperComment {
+  id: string;
+  paper_id: string;
+  content: string;
+  created_at: string;
+}
+
 /** Extract DOI from a URL like https://doi.org/10.2307/249008 */
 function extractDoi(url: string): string | null {
   if (!url || typeof url !== 'string') return null;
@@ -175,6 +182,9 @@ const base = (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) |
 export default function PapersPage() {
   const [papers, setPapers] = useState<SavedPaper[]>([]);
   const [papersWithSummary, setPapersWithSummary] = useState<Set<string>>(new Set());
+  const [paperComments, setPaperComments] = useState<Record<string, PaperComment[]>>({});
+  const [commentInputs, setCommentInputs] = useState<Record<string, string>>({});
+  const [commentSavingPaperId, setCommentSavingPaperId] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const [tagFilter, setTagFilter] = useState<string>('');
@@ -232,7 +242,7 @@ export default function PapersPage() {
     if (!supabase) return;
     setLoading(true);
     setError(null);
-    const [{ data, error: fetchError }, { data: summaryData }] = await Promise.all([
+    const [{ data, error: fetchError }, { data: summaryData }, { data: commentsData, error: commentsError }] = await Promise.all([
       supabase
         .from('saved_papers')
         .select('*')
@@ -243,11 +253,17 @@ export default function PapersPage() {
         .select(
           'paper_id,abstract,key_claims,academic_constructs,introduction,methods,results_and_discussion,limitations_and_future_research,results_section,discussion_section,conclusion_section,limitations_section,future_research_section,problem,claims,method,results,discussion,conclusion,limitations,future_research'
         ),
+      supabase
+        .from('paper_comments')
+        .select('id, paper_id, content, created_at')
+        .order('created_at', { ascending: false })
+        .limit(1000),
     ]);
     if (fetchError) {
       setError(fetchError.message);
       setPapers([]);
       setPapersWithSummary(new Set());
+      setPaperComments({});
     } else {
       setPapers((data ?? []).map(mapRow));
       const hasContent = (row: PaperSummaryPresenceRow) =>
@@ -280,6 +296,18 @@ export default function PapersPage() {
         if (r.paper_id && hasContent(r)) ids.add(r.paper_id);
       });
       setPapersWithSummary(ids);
+
+      if (commentsError) {
+        setError((prev) => prev ?? commentsError.message);
+      } else {
+        const byPaper: Record<string, PaperComment[]> = {};
+        ((commentsData as PaperComment[] | null) ?? []).forEach((row) => {
+          if (!row.paper_id) return;
+          if (!byPaper[row.paper_id]) byPaper[row.paper_id] = [];
+          byPaper[row.paper_id].push(row);
+        });
+        setPaperComments(byPaper);
+      }
     }
     setLoading(false);
   }, []);
@@ -559,6 +587,41 @@ export default function PapersPage() {
       return d.toLocaleDateString(undefined, { dateStyle: 'medium' });
     } catch {
       return iso.slice(0, 10);
+    }
+  };
+
+  const formatDateTime = (iso: string) => {
+    try {
+      const d = new Date(iso);
+      return d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+    } catch {
+      return iso;
+    }
+  };
+
+  const handleAddComment = async (paperId: string) => {
+    if (!supabase) return;
+    const raw = commentInputs[paperId] ?? '';
+    const content = raw.trim();
+    if (!content) return;
+    setCommentSavingPaperId(paperId);
+    setError(null);
+    const { data: inserted, error: insertError } = await supabase
+      .from('paper_comments')
+      .insert({ paper_id: paperId, content })
+      .select('id, paper_id, content, created_at')
+      .single();
+    setCommentSavingPaperId(null);
+    if (insertError) {
+      setError(insertError.message);
+      return;
+    }
+    if (inserted) {
+      setPaperComments((prev) => {
+        const existing = prev[paperId] ?? [];
+        return { ...prev, [paperId]: [inserted as PaperComment, ...existing] };
+      });
+      setCommentInputs((prev) => ({ ...prev, [paperId]: '' }));
     }
   };
 
@@ -909,7 +972,7 @@ export default function PapersPage() {
               key={paper.id}
               className={`papers-entry ${paper.golden ? 'papers-entry-golden' : ''} ${editingId !== paper.id ? 'papers-entry-clickable' : ''}`}
               onClick={editingId !== paper.id ? (e) => {
-                if ((e.target as HTMLElement).closest('a, button')) return;
+                if ((e.target as HTMLElement).closest('a, button, input, textarea, select, form, label')) return;
                 window.location.href = `${base}papers/detail/?id=${paper.id}`;
               } : undefined}
               role={editingId !== paper.id ? 'button' : undefined}
@@ -917,7 +980,7 @@ export default function PapersPage() {
               onKeyDown={editingId !== paper.id ? (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
-                  if (!(e.target as HTMLElement).closest('a, button')) window.location.href = `${base}papers/detail/?id=${paper.id}`;
+                  if (!(e.target as HTMLElement).closest('a, button, input, textarea, select, form, label')) window.location.href = `${base}papers/detail/?id=${paper.id}`;
                 }
               } : undefined}
             >
@@ -1123,6 +1186,42 @@ export default function PapersPage() {
                   {paper.motivation && (
                     <p className="papers-entry-motivation">{paper.motivation}</p>
                   )}
+                  <section className="papers-entry-comments" onClick={(e) => e.stopPropagation()}>
+                    <h5 className="papers-entry-comments-title">Comments</h5>
+                    {(paperComments[paper.id] ?? []).length === 0 ? (
+                      <p className="papers-entry-comments-empty">No comments yet.</p>
+                    ) : (
+                      <ul className="papers-entry-comments-list">
+                        {(paperComments[paper.id] ?? []).map((comment) => (
+                          <li key={comment.id} className="papers-entry-comment-item">
+                            <p className="papers-entry-comment-content">{comment.content}</p>
+                            <time className="papers-entry-comment-time" dateTime={comment.created_at}>
+                              {formatDateTime(comment.created_at)}
+                            </time>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    <div className="papers-entry-comment-form">
+                      <textarea
+                        value={commentInputs[paper.id] ?? ''}
+                        onChange={(e) =>
+                          setCommentInputs((prev) => ({ ...prev, [paper.id]: e.target.value }))
+                        }
+                        rows={2}
+                        className="papers-entry-comment-input"
+                        placeholder="Add a quick comment..."
+                      />
+                      <button
+                        type="button"
+                        className="papers-entry-comment-add"
+                        onClick={() => handleAddComment(paper.id)}
+                        disabled={commentSavingPaperId === paper.id || !(commentInputs[paper.id] ?? '').trim()}
+                      >
+                        {commentSavingPaperId === paper.id ? 'Saving…' : 'Add comment'}
+                      </button>
+                    </div>
+                  </section>
                 </>
               )}
             </article>
