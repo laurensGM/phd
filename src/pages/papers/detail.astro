@@ -144,6 +144,85 @@ import PaperDetailPage from '../../components/PaperDetailPage';
     margin: 0;
     font-size: 1rem;
   }
+  :global(.paper-detail-comments) {
+    padding: 1rem;
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+  }
+  :global(.paper-detail-comments-add) {
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-end;
+    margin-bottom: 0.75rem;
+  }
+  :global(.paper-detail-comments-input) {
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    padding: 0.6rem 0.75rem;
+    font-size: 0.92rem;
+    resize: vertical;
+    background: #fff;
+    color: var(--color-ink);
+    min-height: 3rem;
+  }
+  :global(.paper-detail-comments-input:focus) {
+    outline: none;
+    border-color: var(--color-maroon);
+    box-shadow: 0 0 0 2px rgba(113, 32, 56, 0.12);
+  }
+  :global(.paper-detail-comments-btn) {
+    padding: 0.5rem 0.95rem;
+    background: var(--color-maroon);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  :global(.paper-detail-comments-btn:hover:not(:disabled)) {
+    background: var(--color-maroon-dark);
+  }
+  :global(.paper-detail-comments-btn:disabled) {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  :global(.paper-detail-comments-error) {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
+    color: var(--color-error, #b91c1c);
+  }
+  :global(.paper-detail-comments-empty) {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--color-ink-muted);
+  }
+  :global(.paper-detail-comments-list) {
+    margin: 0.35rem 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+  :global(.paper-detail-comments-item) {
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: #fff;
+  }
+  :global(.paper-detail-comments-content) {
+    margin: 0 0 0.25rem 0;
+    color: var(--color-ink);
+    line-height: 1.45;
+    white-space: pre-wrap;
+  }
+  :global(.paper-detail-comments-time) {
+    font-size: 0.8rem;
+    color: var(--color-ink-muted);
+  }
   :global(.paper-detail-apa-section) {
     margin-top: 2rem;
     padding: 1.25rem;

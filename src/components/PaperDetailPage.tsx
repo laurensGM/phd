@@ -59,6 +59,13 @@ interface PaperSummary {
   updated_at: string;
 }
 
+interface PaperComment {
+  id: string;
+  paper_id: string;
+  content: string;
+  created_at: string;
+}
+
 function mapRow(row: {
   id: string;
   url: string;
@@ -182,6 +189,11 @@ export default function PaperDetailPage() {
   const [savingSummary, setSavingSummary] = useState(false);
   const [statusSaving, setStatusSaving] = useState(false);
   const [statusError, setStatusError] = useState<string | null>(null);
+  const [comments, setComments] = useState<PaperComment[]>([]);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [commentError, setCommentError] = useState<string | null>(null);
+  const [newComment, setNewComment] = useState('');
+  const [commentSaving, setCommentSaving] = useState(false);
 
   const syncSummaryToEditor = useCallback((s: PaperSummary | null) => {
     setSummaryAbstract(s?.abstract ?? '');
@@ -549,6 +561,47 @@ export default function PaperDetailPage() {
     }
   }, []);
 
+  const loadComments = useCallback(async (paperId: string) => {
+    if (!supabase) return;
+    setCommentsLoading(true);
+    setCommentError(null);
+    const { data, error: err } = await supabase
+      .from('paper_comments')
+      .select('id, paper_id, content, created_at')
+      .eq('paper_id', paperId)
+      .order('created_at', { ascending: false });
+    setCommentsLoading(false);
+    if (err) setCommentError(err.message);
+    else setComments((data ?? []) as PaperComment[]);
+  }, []);
+
+  useEffect(() => {
+    if (!paper?.id || !supabase || !isSupabaseConfigured()) return;
+    loadComments(paper.id);
+  }, [paper?.id, loadComments]);
+
+  const handleAddComment = useCallback(async () => {
+    if (!paper || !supabase || !isSupabaseConfigured()) return;
+    const content = newComment.trim();
+    if (!content) return;
+    setCommentSaving(true);
+    setCommentError(null);
+    const { data, error: insertError } = await supabase
+      .from('paper_comments')
+      .insert({ paper_id: paper.id, content })
+      .select('id, paper_id, content, created_at')
+      .single();
+    setCommentSaving(false);
+    if (insertError) {
+      setCommentError(insertError.message);
+      return;
+    }
+    if (data) {
+      setComments((prev) => [data as PaperComment, ...prev]);
+      setNewComment('');
+    }
+  }, [paper, newComment]);
+
   const handleGenerateSummary = useCallback(async () => {
     if (!paper || !supabase || !isSupabaseConfigured()) return;
     setGeneratingSummary(true);
@@ -792,6 +845,46 @@ export default function PaperDetailPage() {
           <p className="paper-detail-citations">{paper.citations}</p>
         </section>
       )}
+
+      <section className="paper-detail-section paper-detail-comments">
+        <h2 className="paper-detail-section-title">Comments</h2>
+        <div className="paper-detail-comments-add">
+          <textarea
+            className="paper-detail-comments-input"
+            rows={3}
+            placeholder="Add a quick comment about this paper..."
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+          />
+          <button
+            type="button"
+            className="paper-detail-comments-btn"
+            onClick={handleAddComment}
+            disabled={commentSaving || !newComment.trim()}
+          >
+            {commentSaving ? 'Saving…' : 'Add comment'}
+          </button>
+        </div>
+        {commentError && <p className="paper-detail-comments-error">{commentError}</p>}
+        {commentsLoading && comments.length === 0 && (
+          <p className="paper-detail-comments-empty">Loading comments…</p>
+        )}
+        {!commentsLoading && comments.length === 0 && !commentError && (
+          <p className="paper-detail-comments-empty">No comments yet.</p>
+        )}
+        {comments.length > 0 && (
+          <ul className="paper-detail-comments-list">
+            {comments.map((c) => (
+              <li key={c.id} className="paper-detail-comments-item">
+                <p className="paper-detail-comments-content">{c.content}</p>
+                <time className="paper-detail-comments-time" dateTime={c.created_at}>
+                  {new Date(c.created_at).toLocaleString()}
+                </time>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       <section className="paper-detail-section paper-detail-summary">
         <div className="paper-detail-summary-header">
