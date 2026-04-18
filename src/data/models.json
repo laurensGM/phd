@@ -310,11 +310,50 @@
     "abbreviation": "DOI",
     "year": 1962,
     "authors": ["Rogers"],
-    "description": "Originated with Everett Rogers in 1962 (Diffusion of Innovations, 1st edition). One of the most cited theories in social science, respected across multiple fields. The 2003 citation is the 5th edition. Describes how innovations spread and how adopters are categorised by stage of adoption.",
-    "notes": "Five adopter types: innovators, early adopters, early majority, late majority, laggards. Five stages of the innovation-decision process (Rogers, 1995): (1) Knowledge — gaining information about the innovation; (2) Persuasion — forming an attitude toward it; (3) Decision — deciding to adopt or reject; (4) Implementation — putting it into use; (5) Confirmation — reinforcing or reversing the decision (continuation or discontinuation).",
-    "constructs": ["Knowledge", "Persuasion", "Decision", "Implementation", "Confirmation"],
-    "constructAbbreviations": { "Knowledge": "Know", "Persuasion": "Pers", "Decision": "Dec", "Implementation": "Impl", "Confirmation": "Conf" },
+    "description": "Originated with Everett Rogers in 1962 (Diffusion of Innovations, 1st edition). One of the most cited theories in social science, respected across multiple fields. The 2003 citation is the 5th edition. Describes how innovations spread, how adopters are categorised by stage of adoption, and how perceived characteristics of an innovation—relative advantage, compatibility, complexity, trialability, and observability (visibility of results)—shape adoption through the innovation-decision process. Information systems research often adds constructs such as image and result demonstrability alongside these Rogers attributes.",
+    "notes": "Five adopter types: innovators, early adopters, early majority, late majority, laggards.\n\nFive stages of the innovation-decision process (Rogers, 1995): (1) Knowledge — gaining information about the innovation; (2) Persuasion — forming an attitude toward it; (3) Decision — deciding to adopt or reject; (4) Implementation — putting it into use; (5) Confirmation — reinforcing or reversing the decision (continuation or discontinuation).\n\nPerceived innovation attributes (shown in the diagram feeding Persuasion): relative advantage, compatibility, observability (how visible results are to others), image (social prestige of use), and result demonstrability (how easy outcomes are to show—related to TAM2). Together with knowledge, these shape persuasion and downstream stages.",
+    "constructs": [
+      "Relative Advantage",
+      "Compatibility",
+      "Observability",
+      "Image",
+      "Result Demonstrability",
+      "Knowledge",
+      "Persuasion",
+      "Decision",
+      "Implementation",
+      "Confirmation"
+    ],
+    "constructAbbreviations": {
+      "Relative Advantage": "RA",
+      "Compatibility": "Comp",
+      "Observability": "Obs",
+      "Image": "Img",
+      "Result Demonstrability": "RD",
+      "Knowledge": "Know",
+      "Persuasion": "Pers",
+      "Decision": "Dec",
+      "Implementation": "Impl",
+      "Confirmation": "Conf"
+    },
+    "constructCategories": {
+      "RA": "cognitive",
+      "Comp": "cognitive",
+      "Obs": "cognitive",
+      "Img": "social",
+      "RD": "cognitive",
+      "Know": "neutral",
+      "Pers": "cognitive",
+      "Dec": "neutral",
+      "Impl": "neutral",
+      "Conf": "neutral"
+    },
     "relationships": [
+      { "from": "RA", "to": "Pers" },
+      { "from": "Comp", "to": "Pers" },
+      { "from": "Obs", "to": "Pers" },
+      { "from": "Img", "to": "Pers" },
+      { "from": "RD", "to": "Pers" },
       { "from": "Know", "to": "Pers" },
       { "from": "Pers", "to": "Dec" },
       { "from": "Dec", "to": "Impl" },
@@ -552,6 +591,170 @@
         "authors": "Zhu, Kraemer & Xu (2006)",
         "title": "The Process of Innovation Assimilation in Organizations: An International Perspective",
         "doi": "10.2307/25148735"
+      }
+    ]
+  },
+  {
+    "id": "sct",
+    "name": "Social Cognitive Theory",
+    "abbreviation": "SCT",
+    "year": 1986,
+    "authors": ["Bandura"],
+    "description": "Social cognitive theory (SCT) is one of the most influential accounts of human behaviour, emphasizing reciprocal interactions among personal factors (e.g. self-efficacy and beliefs), behaviour, and the environment. In information systems, Compeau and Higgins (1995) applied and extended SCT to computer utilization, positing that outcome expectations (performance and personal), self-efficacy, affect, and anxiety relate to how people use computers at work; Compeau et al. (1999) further developed longitudinal insights into these relationships.",
+    "notes": "Core constructs in the MIS stream (Compeau & Higgins):\n• Outcome expectations (performance) — performance-related consequences of use.\n• Outcome expectations (personal) — personal/self-relevant consequences of use.\n• Self-efficacy — confidence in ability to perform computing tasks.\n• Affect — emotional response toward using computers.\n• Anxiety — apprehension about computer use (often computer anxiety).\n\nBehavioural outcome: utilization (or related use measures) is often predicted by self-efficacy and outcome expectations; anxiety and affect are typically important antecedents or correlates.",
+    "constructs": [
+      "Outcome Expectations Performance",
+      "Outcome Expectations Personal",
+      "Self-Efficacy",
+      "Affect",
+      "Anxiety",
+      "Utilization"
+    ],
+    "constructAbbreviations": {
+      "Outcome Expectations Performance": "OEP",
+      "Outcome Expectations Personal": "OEPer",
+      "Self-Efficacy": "SE",
+      "Affect": "Aff",
+      "Anxiety": "Anx",
+      "Utilization": "Util"
+    },
+    "constructCategories": {
+      "OEP": "cognitive",
+      "OEPer": "cognitive",
+      "SE": "cognitive",
+      "Aff": "cognitive",
+      "Anx": "cognitive",
+      "Util": "neutral"
+    },
+    "relationships": [
+      { "from": "Anx", "to": "SE" },
+      { "from": "OEP", "to": "Util" },
+      { "from": "OEPer", "to": "Util" },
+      { "from": "SE", "to": "Util" },
+      { "from": "Aff", "to": "Util" }
+    ],
+    "keyCitations": [
+      {
+        "authors": "Bandura (1986)",
+        "title": "Social Foundations of Thought and Action: A Social Cognitive Theory",
+        "doi": ""
+      },
+      {
+        "authors": "Compeau & Higgins (1995)",
+        "title": "Computer Self-Efficacy: Development of a Measure and Initial Test",
+        "doi": "10.2307/249688"
+      },
+      {
+        "authors": "Compeau et al. (1999)",
+        "title": "Social Cognitive Theory and Individual Reactions to Computing Technology: A Longitudinal Study",
+        "doi": "10.2307/249749"
+      }
+    ]
+  },
+  {
+    "id": "mpcu",
+    "name": "Model of PC Utilization",
+    "abbreviation": "MPCU",
+    "year": 1991,
+    "authors": ["Thompson", "Higgins", "Howell"],
+    "description": "Derived from Triandis’s (1977) theory of interpersonal behavior, the Model of PC Utilization (MPCU) offers a competing perspective to the Theory of Reasoned Action and Theory of Planned Behavior by emphasizing habits, affect, and perceived consequences alongside social and cognitive determinants. Thompson, Higgins, and Howell (1991) adapted Triandis’s structure to information systems and used it to predict personal computer utilization among knowledge workers. Although the original study emphasized usage behavior rather than intention, the framework applies broadly to individual acceptance and use of information technologies.",
+    "notes": "Core determinants in the Thompson et al. (1991) stream include job fit, complexity, long-term consequences, affect toward use, and social factors.\n\n• Compared with TRA/TPB: MPCU draws on Triandis rather than Fishbein–Ajzen, and bundles cognitive, affective, and social antecedents in one model.\n\n• Your thesis framing: Thompson et al. (1991) predicted usage; the diagram below shows these determinants leading to **behavioral intention**, which aligns with testing intention as the outcome while keeping theory’s roots.\n\nFor a behavioral outcome, link **Utilization** (or equivalent) instead of or in addition to intention.",
+    "constructs": [
+      "Job Fit",
+      "Complexity",
+      "Long Term Consequences",
+      "Affect Towards Use",
+      "Social Factors",
+      "Behavioral Intention"
+    ],
+    "constructAbbreviations": {
+      "Job Fit": "JF",
+      "Complexity": "Cplx",
+      "Long Term Consequences": "LTC",
+      "Affect Towards Use": "ATU",
+      "Social Factors": "SF",
+      "Behavioral Intention": "BI"
+    },
+    "constructCategories": {
+      "JF": "cognitive",
+      "Cplx": "cognitive",
+      "LTC": "cognitive",
+      "ATU": "cognitive",
+      "SF": "social",
+      "BI": "neutral"
+    },
+    "relationships": [
+      { "from": "JF", "to": "BI" },
+      { "from": "Cplx", "to": "BI" },
+      { "from": "LTC", "to": "BI" },
+      { "from": "ATU", "to": "BI" },
+      { "from": "SF", "to": "BI" }
+    ],
+    "keyCitations": [
+      {
+        "authors": "Triandis (1977)",
+        "title": "Interpersonal Behavior",
+        "doi": ""
+      },
+      {
+        "authors": "Thompson, Higgins & Howell (1991)",
+        "title": "Personal Computing: Toward a Conceptual Model of Utilization",
+        "doi": "10.2307/249443"
+      }
+    ]
+  },
+  {
+    "id": "mm",
+    "name": "Motivational Model",
+    "abbreviation": "MM",
+    "year": 1992,
+    "authors": ["Davis", "Bagozzi", "Warshaw"],
+    "description": "A substantial body of psychological research treats motivation as a central explanation for behaviour. Vallerand (1997) synthesizes the core ideas of intrinsic versus extrinsic motivation and related mechanisms. Within information systems, Davis, Bagozzi, and Warshaw (1992) applied motivational theory to new technology adoption and use, modeling how intrinsic and extrinsic motivation to use computers shape beliefs such as perceived usefulness and perceived enjoyment, which in turn influence usage intentions. Venkatesh and Speier (1999) and related work extend motivation-based reasoning in IS contexts such as training and adoption.",
+    "notes": "The classic IS operationalization (Davis et al., 1992) positions **intrinsic motivation** and **extrinsic motivation** as antecedents of **perceived usefulness** and **perceived enjoyment**, with intention (and ultimately use) as downstream outcomes.\n\n• Ties to TAM: PU and enjoyment bridge motivation to acceptance; extended TAM and UTAUT2 often incorporate hedonic or intrinsic mechanisms.\n\n• Psychology base: self-determination and cognitive evaluation traditions (e.g. Deci & Ryan) underpin how intrinsic and extrinsic reasons are distinguished.",
+    "constructs": [
+      "Intrinsic Motivation",
+      "Extrinsic Motivation",
+      "Perceived Usefulness",
+      "Perceived Enjoyment",
+      "Behavioral Intention"
+    ],
+    "constructAbbreviations": {
+      "Intrinsic Motivation": "IM",
+      "Extrinsic Motivation": "EM",
+      "Perceived Usefulness": "PU",
+      "Perceived Enjoyment": "PEnjoy",
+      "Behavioral Intention": "BI"
+    },
+    "constructCategories": {
+      "IM": "cognitive",
+      "EM": "cognitive",
+      "PU": "cognitive",
+      "PEnjoy": "cognitive",
+      "BI": "neutral"
+    },
+    "relationships": [
+      { "from": "IM", "to": "PU" },
+      { "from": "EM", "to": "PU" },
+      { "from": "IM", "to": "PEnjoy" },
+      { "from": "EM", "to": "PEnjoy" },
+      { "from": "PU", "to": "BI" },
+      { "from": "PEnjoy", "to": "BI" }
+    ],
+    "keyCitations": [
+      {
+        "authors": "Vallerand (1997)",
+        "title": "Toward a Hierarchical Model of Intrinsic and Extrinsic Motivation",
+        "doi": "10.1016/S0065-2601(08)60019-2"
+      },
+      {
+        "authors": "Davis, Bagozzi & Warshaw (1992)",
+        "title": "Extrinsic and Intrinsic Motivation to Use Computers in the Workplace",
+        "doi": "10.2307/249752"
+      },
+      {
+        "authors": "Venkatesh & Speier (1999)",
+        "title": "Computer Technology Training in the Workplace: A Longitudinal Investigation of the Effect of Mood",
+        "doi": "10.1006/obhd.1999.2850"
       }
     ]
   }

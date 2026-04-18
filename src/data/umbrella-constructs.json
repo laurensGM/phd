@@ -2,7 +2,7 @@
   {
     "id": "technology-adoption",
     "name": "Technology Adoption",
-    "constructIds": ["behavioral-intention", "technology-adoption-intention", "social-influence", "attitude", "subjective-norms", "perceived-behavioral-control", "facilitating-conditions", "voluntariness", "habit", "organizational-adoption"]
+    "constructIds": ["behavioral-intention", "technology-adoption-intention", "social-influence", "attitude", "subjective-norms", "perceived-behavioral-control", "facilitating-conditions", "voluntariness", "habit", "organizational-adoption", "social-factors"]
   },
   {
     "id": "post-adoption-behavior",
@@ -12,17 +12,17 @@
   {
     "id": "technology-perceptions",
     "name": "Technology Perceptions",
-    "constructIds": ["perceived-usefulness", "perceived-ease-of-use", "perceived-benefit", "intention-to-use"]
+    "constructIds": ["perceived-usefulness", "perceived-ease-of-use", "perceived-benefit", "intention-to-use", "relative-advantage", "compatibility", "observability", "image", "result-demonstrability", "complexity"]
   },
   {
     "id": "expectation-evaluation",
     "name": "Expectation Evaluation",
-    "constructIds": ["expectations", "prior-expectations", "confirmation", "perceived-performance"]
+    "constructIds": ["expectations", "prior-expectations", "confirmation", "perceived-performance", "outcome-expectations-performance", "outcome-expectations-personal", "long-term-consequences"]
   },
   {
     "id": "motivational-factors",
     "name": "Motivational Factors",
-    "constructIds": ["hedonic-motivation", "perceived-enjoyment"]
+    "constructIds": ["hedonic-motivation", "perceived-enjoyment", "affect", "anxiety", "affect-towards-use", "intrinsic-motivation", "extrinsic-motivation"]
   },
   {
     "id": "user-characteristics",
@@ -37,7 +37,7 @@
   {
     "id": "task-technology-alignment",
     "name": "Task–Technology Alignment",
-    "constructIds": ["task-characteristics", "technology-characteristics", "task-technology-fit", "technology-context"]
+    "constructIds": ["task-characteristics", "technology-characteristics", "task-technology-fit", "technology-context", "job-fit"]
   },
   {
     "id": "system-use-outcomes",

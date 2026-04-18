@@ -14,7 +14,7 @@
       "I find the system useful in my job."
     ],
     "measurementScale": "7-point Likert (Strongly disagree - Strongly agree)",
-    "relatedModels": ["TAM", "ECM", "TAM2"],
+    "relatedModels": ["TAM", "ECM", "TAM2", "MM"],
     "relatedConstructs": ["Perceived Ease of Use", "Behavioral Intention", "Satisfaction"],
     "notes": "Core construct in technology acceptance. Often mediates the effect of PEOU on intention."
   },
@@ -51,9 +51,9 @@
       "I plan to continue using the system."
     ],
     "measurementScale": "7-point Likert (Strongly disagree - Strongly agree)",
-    "relatedModels": ["TAM", "TRA", "TPB"],
+    "relatedModels": ["TAM", "TRA", "TPB", "MPCU", "MM"],
     "relatedConstructs": ["Perceived Usefulness", "Perceived Ease of Use", "Actual Usage"],
-    "notes": "Key predictor of actual behavior in TRA/TPB. Mediates attitudes toward behavior."
+    "notes": "Key predictor of actual behavior in TRA/TPB. Mediates attitudes toward behavior. MPCU studies often predict usage directly; many extensions use intention as a proximal outcome."
   },
   {
     "id": "confirmation",
@@ -231,9 +231,9 @@
     "theoreticalDomain": "Task-Technology Fit",
     "measurementItems": ["Frequency and extent of use", "Use of specific features for task completion"],
     "measurementScale": "Self-reported or system-captured usage",
-    "relatedModels": ["TTF"],
-    "relatedConstructs": ["Task-Technology Fit", "Performance Impact"],
-    "notes": "When fit is high, utilization is more likely; utilization can mediate the effect of fit on performance."
+    "relatedModels": ["TTF", "SCT"],
+    "relatedConstructs": ["Task-Technology Fit", "Performance Impact", "Self-Efficacy", "Outcome Expectations Performance"],
+    "notes": "When fit is high, utilization is more likely; utilization can mediate the effect of fit on performance. In social cognitive theory applications (e.g. Compeau & Higgins), utilization is a key behavioral outcome influenced by self-efficacy and outcome expectations."
   },
   {
     "id": "performance-impact",
@@ -353,7 +353,7 @@
       "I have fun using the system."
     ],
     "measurementScale": "7-point Likert (Strongly disagree - Strongly agree)",
-    "relatedModels": ["TAM", "UTAUT2"],
+    "relatedModels": ["TAM", "UTAUT2", "MM"],
     "relatedConstructs": ["Hedonic Motivation", "Behavioral Intention"],
     "notes": "Closely related to hedonic motivation; often used in adoption of entertainment or experiential technologies."
   },
@@ -371,8 +371,8 @@
       "I am able to use the system even if there is no one to help me."
     ],
     "measurementScale": "7-point Likert (Strongly disagree - Strongly agree)",
-    "relatedModels": ["TAM", "UTAUT", "TPB"],
-    "relatedConstructs": ["Perceived Ease of Use", "Behavioral Intention"],
+    "relatedModels": ["TAM", "UTAUT", "TPB", "SCT"],
+    "relatedConstructs": ["Perceived Ease of Use", "Behavioral Intention", "Outcome Expectations Performance", "Outcome Expectations Personal", "Anxiety"],
     "notes": "Originates from Bandura's social cognitive theory; in tech research often measured as \"computer self-efficacy\" or domain-specific self-efficacy."
   },
   {
@@ -791,5 +791,293 @@
     "relatedModels": ["TOE"],
     "relatedConstructs": ["Technology Context", "Organization Context", "Environment Context", "Technology Adoption Intention", "Continuance Intention"],
     "notes": "Unit of analysis is the organization; differs from individual-level continuance intention (CI) in ECM-style thesis models, though both can be narratively connected via context and facilitating conditions."
+  },
+  {
+    "id": "outcome-expectations-performance",
+    "name": "Outcome Expectations Performance",
+    "abbreviation": "OEP",
+    "definition": "Beliefs about the performance-related consequences of using a technology—such as improvements in job effectiveness, productivity, or quality of work—if one were to use it.",
+    "sourcePaper": "Compeau & Higgins (1995); Compeau et al. (1999) — application of social cognitive theory to computer utilization",
+    "doi": "10.2307/249688",
+    "theoreticalDomain": "Social cognitive theory; information systems use",
+    "measurementItems": [
+      "Using computers in my job would enable me to accomplish tasks more quickly.",
+      "Using computers would improve the quality of the work I do.",
+      "Using computers would increase my productivity."
+    ],
+    "measurementScale": "Likert scale (adapt wording to context; items stem from Compeau & Higgins)",
+    "relatedModels": ["SCT"],
+    "relatedConstructs": ["Outcome Expectations Personal", "Self-Efficacy", "Utilization", "Perceived Usefulness"],
+    "notes": "One of two outcome-expectations dimensions in Compeau & Higgins (1995); distinguished from personal outcomes (e.g. status, self-worth)."
+  },
+  {
+    "id": "outcome-expectations-personal",
+    "name": "Outcome Expectations Personal",
+    "abbreviation": "OEPer",
+    "definition": "Beliefs about the self-relevant or personal consequences of using a technology—such as recognition, image, or sense of competence—rather than task performance alone.",
+    "sourcePaper": "Compeau & Higgins (1995); Compeau et al. (1999)",
+    "doi": "10.2307/249688",
+    "theoreticalDomain": "Social cognitive theory; information systems use",
+    "measurementItems": [
+      "Using computers in my job would give me greater control over my work.",
+      "Using computers in my job would improve my professional image.",
+      "Using computers would make my job more interesting."
+    ],
+    "measurementScale": "Likert scale (adapt to context)",
+    "relatedModels": ["SCT"],
+    "relatedConstructs": ["Outcome Expectations Performance", "Self-Efficacy", "Utilization", "Affect"],
+    "notes": "Paired with performance outcome expectations in IS applications of SCT; both influence intentions and use alongside self-efficacy and affect."
+  },
+  {
+    "id": "affect",
+    "name": "Affect",
+    "abbreviation": "Aff",
+    "definition": "The emotional response associated with performing or contemplating use of a technology—often positive or negative feelings toward computing in context (distinct from satisfaction with a specific episode of use).",
+    "sourcePaper": "Compeau & Higgins (1995); affect in social cognitive accounts of computer use",
+    "doi": "10.2307/249688",
+    "theoreticalDomain": "Social cognitive theory; affect and technology use",
+    "measurementItems": [
+      "I feel comfortable using computers in my work.",
+      "I feel relaxed when using computers for my job.",
+      "I enjoy using computers for my work."
+    ],
+    "measurementScale": "Likert scale; reverse or supplement items if measuring negative affect separately",
+    "relatedModels": ["SCT"],
+    "relatedConstructs": ["Anxiety", "Self-Efficacy", "Outcome Expectations Personal", "Perceived Enjoyment"],
+    "notes": "In Compeau & Higgins, affect toward computing relates to self-efficacy and usage; do not conflate with ECM satisfaction unless theory justifies it."
+  },
+  {
+    "id": "anxiety",
+    "name": "Anxiety",
+    "abbreviation": "Anx",
+    "definition": "Apprehension or unease about using computers or information technology—often termed computer anxiety in MIS research; tends to reduce confidence and use.",
+    "sourcePaper": "Compeau & Higgins (1995); Compeau et al. (1999)",
+    "doi": "10.2307/249688",
+    "theoreticalDomain": "Social cognitive theory; MIS and HCI",
+    "measurementItems": [
+      "I feel apprehensive about using computers.",
+      "I hesitate to use computers for fear of making mistakes.",
+      "Using computers makes me nervous."
+    ],
+    "measurementScale": "Likert scale",
+    "relatedModels": ["SCT"],
+    "relatedConstructs": ["Self-Efficacy", "Affect", "Perceived Ease of Use", "Outcome Expectations Performance"],
+    "notes": "Often negatively related to self-efficacy and utilization in SCT-based IS models; items should match the target technology."
+  },
+  {
+    "id": "relative-advantage",
+    "name": "Relative Advantage",
+    "abbreviation": "RA",
+    "definition": "The degree to which an innovation is perceived as better than the idea, practice, or product it supersedes—often in terms of economic profitability, social prestige, or other valued outcomes.",
+    "sourcePaper": "Rogers (2003) — Diffusion of Innovations; Moore & Benbasat (1991) for IS operationalizations",
+    "doi": "",
+    "theoreticalDomain": "Diffusion of innovations; technology adoption",
+    "measurementItems": [
+      "Using [innovation] improves the quality of the work I do.",
+      "Using [innovation] gives me greater control over my work.",
+      "Using [innovation] increases the effectiveness of my work."
+    ],
+    "measurementScale": "Likert scale (adapt items to context; many IS studies adapt Moore & Benbasat–style wording)",
+    "relatedModels": ["DOI", "TOE"],
+    "relatedConstructs": ["Compatibility", "Observability", "Technology Context", "Organizational Adoption"],
+    "notes": "One of Rogers’ five perceived attributes of innovations. Frequently appears in TOE’s technology context and in individual-level adoption research."
+  },
+  {
+    "id": "image",
+    "name": "Image",
+    "abbreviation": "Img",
+    "definition": "The degree to which use of an innovation is perceived to enhance one’s status or standing in one’s social system—how much adopting or using the innovation improves how others see the user.",
+    "sourcePaper": "Rogers (2003); Venkatesh & Davis (2000) — TAM2 social influence antecedent to perceived usefulness",
+    "doi": "",
+    "theoreticalDomain": "Diffusion of innovations; social influence in IS",
+    "measurementItems": [
+      "People in my organization who use [technology] have more prestige than those who do not.",
+      "People who use [technology] have a higher profile in the organization.",
+      "Having [technology] is a status symbol among my peers."
+    ],
+    "measurementScale": "7-point Likert (Strongly disagree - Strongly agree); align wording with target system",
+    "relatedModels": ["DOI", "TAM2"],
+    "relatedConstructs": ["Subjective Norms", "Social Influence", "Perceived Usefulness", "Relative Advantage"],
+    "notes": "In Rogers, image is tied to the social visibility of adoption. In TAM2, Image is a social-influence path to perceived usefulness (distinct from subjective norm)."
+  },
+  {
+    "id": "observability",
+    "name": "Observability",
+    "abbreviation": "Obs",
+    "definition": "The degree to which the results of an innovation are visible to others—how readily potential adopters can see evidence of the innovation’s effects (sometimes discussed informally as visibility of outcomes).",
+    "sourcePaper": "Rogers (2003) — Diffusion of Innovations",
+    "doi": "",
+    "theoreticalDomain": "Diffusion of innovations",
+    "measurementItems": [
+      "I have seen others achieve clear benefits from using [innovation].",
+      "The positive results of using [innovation] are easy for others to notice.",
+      "It is easy for me to observe whether [innovation] works well for others."
+    ],
+    "measurementScale": "Likert scale (Moore & Benbasat–style items are common in IS)",
+    "relatedModels": ["DOI"],
+    "relatedConstructs": ["Relative Advantage", "Result Demonstrability", "Compatibility"],
+    "notes": "Rogers’ fifth perceived attribute (alongside relative advantage, compatibility, complexity, and trialability). Often discussed as how visible the innovation’s results are to others. Do not confuse with organizational “visibility” of a project unless theory defines it that way."
+  },
+  {
+    "id": "compatibility",
+    "name": "Compatibility",
+    "abbreviation": "Comp",
+    "definition": "The degree to which an innovation is perceived as consistent with existing values, past experiences, and needs of potential adopters—fit with current practices, norms, and infrastructure.",
+    "sourcePaper": "Rogers (2003); Moore & Benbasat (1991) — perceived characteristics in IS",
+    "doi": "",
+    "theoreticalDomain": "Diffusion of innovations; technology adoption",
+    "measurementItems": [
+      "Using [innovation] is compatible with how I prefer to work.",
+      "Using [innovation] fits well with my existing skills and habits.",
+      "[Innovation] works well with the systems and processes I already use."
+    ],
+    "measurementScale": "Likert scale",
+    "relatedModels": ["DOI", "TOE"],
+    "relatedConstructs": ["Relative Advantage", "Facilitating Conditions", "Task-Technology Fit", "Technology Context"],
+    "notes": "Central in Rogers’ attribute set and in TOE’s technology context (fit with organization and environment as well as user-level consistency)."
+  },
+  {
+    "id": "result-demonstrability",
+    "name": "Result Demonstrability",
+    "abbreviation": "RD",
+    "definition": "The degree to which the outcomes or benefits of using a system are tangible, observable, and communicable to others—how easy it is to show or explain the positive results of use.",
+    "sourcePaper": "Venkatesh & Davis (2000) — TAM2; conceptually related to observability in diffusion research",
+    "doi": "",
+    "theoreticalDomain": "Information systems; cognitive instrumental processes",
+    "measurementItems": [
+      "I would have no difficulty explaining to others the benefits of using [system].",
+      "The benefits of using [system] are clear to me.",
+      "I would have no difficulty showing others that using [system] leads to good outcomes."
+    ],
+    "measurementScale": "7-point Likert (Venkatesh & Davis 2000)",
+    "relatedModels": ["DOI", "TAM2"],
+    "relatedConstructs": ["Perceived Usefulness", "Observability", "Relative Advantage", "Compatibility"],
+    "notes": "In TAM2, result demonstrability is a cognitive-instrumental antecedent of perceived usefulness. It overlaps conceptually with Rogers’ observability but is defined at the individual user’s ability to demonstrate outcomes of use."
+  },
+  {
+    "id": "job-fit",
+    "name": "Job Fit",
+    "abbreviation": "JF",
+    "definition": "The degree to which an individual believes that using a computer or information technology on the job would enhance their performance of job-related tasks—compatibility between the technology and the demands of the work role.",
+    "sourcePaper": "Thompson, Higgins & Howell (1991) — Model of PC Utilization; Triandis (1977) theory of interpersonal behavior",
+    "doi": "10.2307/249443",
+    "theoreticalDomain": "Individual technology acceptance and use",
+    "measurementItems": [
+      "Using a PC makes it easier to do my job.",
+      "A PC is useful for the kinds of tasks I must perform in my job.",
+      "Using a PC improves my job performance."
+    ],
+    "measurementScale": "Likert scale (adapt items to target technology and setting)",
+    "relatedModels": ["MPCU"],
+    "relatedConstructs": ["Task-Technology Fit", "Perceived Usefulness", "Complexity", "Behavioral Intention"],
+    "notes": "Central cognitive belief in MPCU; closely related to task–technology fit and usefulness but defined as job-role fit in the Thompson et al. stream."
+  },
+  {
+    "id": "complexity",
+    "name": "Complexity",
+    "abbreviation": "Cplx",
+    "definition": "The degree to which an individual perceives that using a computer or information technology is difficult to understand and use—perceived difficulty and effort required to operate the system in the work context.",
+    "sourcePaper": "Thompson, Higgins & Howell (1991) — Model of PC Utilization",
+    "doi": "10.2307/249443",
+    "theoreticalDomain": "Individual technology acceptance and use",
+    "measurementItems": [
+      "Learning to use a PC for my job is easy for me.",
+      "My interaction with a PC is clear and understandable.",
+      "I find it easy to get a PC to do what I want it to do."
+    ],
+    "measurementScale": "Likert scale (reverse-code if using ease-style items; align with study’s scoring)",
+    "relatedModels": ["MPCU"],
+    "relatedConstructs": ["Perceived Ease of Use", "Job Fit", "Anxiety", "Behavioral Intention"],
+    "notes": "In MPCU this is perceived complexity of using the PC on the job—not Rogers’ innovation attribute at the organizational level. Often negatively related to use or intention."
+  },
+  {
+    "id": "long-term-consequences",
+    "name": "Long Term Consequences",
+    "abbreviation": "LTC",
+    "definition": "Beliefs about the longer-run outcomes of using a computer or information technology for one’s job or career—effects that unfold over time rather than immediate task payoffs (e.g. skill development, career prospects, future flexibility).",
+    "sourcePaper": "Thompson, Higgins & Howell (1991) — Model of PC Utilization; Triandis (1977)",
+    "doi": "10.2307/249443",
+    "theoreticalDomain": "Individual technology acceptance and use",
+    "measurementItems": [
+      "Using a PC in my job will improve my long-term career prospects.",
+      "Using a PC helps me develop skills that will matter in the future.",
+      "Over time, using a PC will make me more effective in my role."
+    ],
+    "measurementScale": "Likert scale",
+    "relatedModels": ["MPCU"],
+    "relatedConstructs": ["Outcome Expectations Performance", "Job Fit", "Behavioral Intention"],
+    "notes": "Distinguish from short-term performance beliefs; in Triandis-style models it captures anticipated delayed outcomes of behavior."
+  },
+  {
+    "id": "affect-towards-use",
+    "name": "Affect Towards Use",
+    "abbreviation": "ATU",
+    "definition": "The feelings of pleasure, enjoyment, or dislike associated with the act of using a computer or information technology in the job context—affective evaluation of use rather than purely instrumental beliefs.",
+    "sourcePaper": "Thompson, Higgins & Howell (1991) — Model of PC Utilization; Triandis (1977)",
+    "doi": "10.2307/249443",
+    "theoreticalDomain": "Affect and technology use",
+    "measurementItems": [
+      "I like using a PC for my job.",
+      "Using a PC for my work is pleasant.",
+      "I enjoy working with a PC."
+    ],
+    "measurementScale": "Likert scale",
+    "relatedModels": ["MPCU"],
+    "relatedConstructs": ["Affect", "Perceived Enjoyment", "Hedonic Motivation", "Behavioral Intention"],
+    "notes": "Labeled affect toward use in the MPCU stream; related but not identical to Compeau–Higgins affect or ECM satisfaction—keep definitions aligned to your measures."
+  },
+  {
+    "id": "social-factors",
+    "name": "Social Factors",
+    "abbreviation": "SF",
+    "definition": "The degree to which an individual perceives that important others (e.g. supervisors, peers) believe they should use a computer or information technology, or the normative and referent influence of the social environment on use.",
+    "sourcePaper": "Thompson, Higgins & Howell (1991) — Model of PC Utilization; Triandis (1977)",
+    "doi": "10.2307/249443",
+    "theoreticalDomain": "Social influence and technology use",
+    "measurementItems": [
+      "People who influence my work think I should use a PC.",
+      "My supervisor encourages me to use a PC for my job.",
+      "Most people whose opinions I value expect me to use a PC at work."
+    ],
+    "measurementScale": "Likert scale",
+    "relatedModels": ["MPCU"],
+    "relatedConstructs": ["Subjective Norms", "Social Influence", "Image", "Behavioral Intention"],
+    "notes": "Captures social/normative pressure in MPCU; overlaps with subjective norm in TRA/TPB but operationalization follows Thompson et al."
+  },
+  {
+    "id": "intrinsic-motivation",
+    "name": "Intrinsic Motivation",
+    "abbreviation": "IM",
+    "definition": "The degree to which an individual performs a behavior for its own sake—because the activity itself is interesting, enjoyable, or inherently satisfying—rather than to obtain separable consequences.",
+    "sourcePaper": "Deci & Ryan (1985); Vallerand (1997) review of intrinsic and extrinsic motivation; Davis, Bagozzi & Warshaw (1992) in IS",
+    "doi": "",
+    "theoreticalDomain": "Motivation psychology; technology adoption",
+    "measurementItems": [
+      "I find using [technology] to be an enjoyable activity in its own right.",
+      "Using [technology] is fun for me.",
+      "I use [technology] because I want to, not only because I have to."
+    ],
+    "measurementScale": "Likert scale (adapt to context; align with Davis et al. or self-determination–style wording)",
+    "relatedModels": ["MM"],
+    "relatedConstructs": ["Extrinsic Motivation", "Perceived Enjoyment", "Perceived Usefulness", "Hedonic Motivation"],
+    "notes": "In Davis et al. (1992), intrinsic motivation to use computers in the workplace is a key antecedent of perceived usefulness and perceived enjoyment. Distinct from extrinsic motivation (instrumental or reward-driven reasons)."
+  },
+  {
+    "id": "extrinsic-motivation",
+    "name": "Extrinsic Motivation",
+    "abbreviation": "EM",
+    "definition": "The degree to which an individual performs a behavior to obtain outcomes that are separable from the activity itself—such as rewards, performance gains, approval, or avoiding negative consequences.",
+    "sourcePaper": "Deci & Ryan (1985); Vallerand (1997); Davis, Bagozzi & Warshaw (1992) in IS",
+    "doi": "",
+    "theoreticalDomain": "Motivation psychology; technology adoption",
+    "measurementItems": [
+      "I use [technology] because it helps me perform my job better.",
+      "I use [technology] because my work requires it.",
+      "Using [technology] helps me achieve outcomes that matter for my performance."
+    ],
+    "measurementScale": "Likert scale",
+    "relatedModels": ["MM"],
+    "relatedConstructs": ["Intrinsic Motivation", "Perceived Usefulness", "Perceived Enjoyment", "Outcome Expectations Performance"],
+    "notes": "In Davis et al. (1992), extrinsic motivation reflects instrumental reasons for use and predicts perceived usefulness and enjoyment alongside intrinsic motivation."
   }
 ]
