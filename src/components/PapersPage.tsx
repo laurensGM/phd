@@ -183,6 +183,8 @@ export default function PapersPage() {
   const [papers, setPapers] = useState<SavedPaper[]>([]);
   const [papersWithSummary, setPapersWithSummary] = useState<Set<string>>(new Set());
   const [paperComments, setPaperComments] = useState<Record<string, PaperComment[]>>({});
+  /** Snippet counts keyed by paper_id (from snippets table). */
+  const [snippetCountByPaperId, setSnippetCountByPaperId] = useState<Record<string, number>>({});
   const [commentInputs, setCommentInputs] = useState<Record<string, string>>({});
   const [commentSavingPaperId, setCommentSavingPaperId] = useState<string | null>(null);
   const [search, setSearch] = useState('');
@@ -242,7 +244,12 @@ export default function PapersPage() {
     if (!supabase) return;
     setLoading(true);
     setError(null);
-    const [{ data, error: fetchError }, { data: summaryData }, { data: commentsData, error: commentsError }] = await Promise.all([
+    const [
+      { data, error: fetchError },
+      { data: summaryData },
+      { data: commentsData, error: commentsError },
+      { data: snippetRows, error: snippetError },
+    ] = await Promise.all([
       supabase
         .from('saved_papers')
         .select('*')
@@ -258,12 +265,14 @@ export default function PapersPage() {
         .select('id, paper_id, content, created_at')
         .order('created_at', { ascending: false })
         .limit(1000),
+      supabase.from('snippets').select('paper_id').limit(10000),
     ]);
     if (fetchError) {
       setError(fetchError.message);
       setPapers([]);
       setPapersWithSummary(new Set());
       setPaperComments({});
+      setSnippetCountByPaperId({});
     } else {
       setPapers((data ?? []).map(mapRow));
       const hasContent = (row: PaperSummaryPresenceRow) =>
@@ -307,6 +316,19 @@ export default function PapersPage() {
           byPaper[row.paper_id].push(row);
         });
         setPaperComments(byPaper);
+      }
+
+      if (snippetError) {
+        setError((prev) => prev ?? snippetError.message);
+        setSnippetCountByPaperId({});
+      } else {
+        const snippetCounts: Record<string, number> = {};
+        ((snippetRows as { paper_id: string | null }[] | null) ?? []).forEach((row) => {
+          const pid = row.paper_id;
+          if (!pid) return;
+          snippetCounts[pid] = (snippetCounts[pid] ?? 0) + 1;
+        });
+        setSnippetCountByPaperId(snippetCounts);
       }
     }
     setLoading(false);
@@ -967,7 +989,9 @@ export default function PapersPage() {
           </div>
         )}
         <div className="papers-entries">
-          {papersOnPage.map((paper) => (
+          {papersOnPage.map((paper) => {
+            const snippetN = snippetCountByPaperId[paper.id] ?? 0;
+            return (
             <article
               key={paper.id}
               className={`papers-entry ${paper.golden ? 'papers-entry-golden' : ''} ${editingId !== paper.id ? 'papers-entry-clickable' : ''}`}
@@ -1132,6 +1156,12 @@ export default function PapersPage() {
                           Summary
                         </span>
                       )}
+                      <span
+                        className={`papers-snippet-count ${snippetN === 0 ? 'papers-snippet-count-zero' : ''}`}
+                        title="Snippets linked to this paper"
+                      >
+                        {snippetN} snippet{snippetN !== 1 ? 's' : ''}
+                      </span>
                       <div className="papers-entry-tags">
                         {paper.tags.map((t) => (
                           <span key={t} className="papers-tag-badge">
@@ -1225,7 +1255,8 @@ export default function PapersPage() {
                 </>
               )}
             </article>
-          ))}
+            );
+          })}
           {filteredPapers.length === 0 && !loading && (
             <p className="papers-empty">
               No saved papers yet. Add a link and motivation above so you remember why you kept it.
@@ -1257,7 +1288,9 @@ export default function PapersPage() {
                     onDragOver={handleBoardDragOver}
                   >
                     {columnPapers
-                      .map((paper) => (
+                      .map((paper) => {
+                        const snippetN = snippetCountByPaperId[paper.id] ?? 0;
+                        return (
                         <div
                           key={paper.id}
                           className={`papers-board-card ${draggedPaperId === paper.id ? 'papers-board-card-dragging' : ''} ${paper.golden ? 'papers-board-card-golden' : ''}`}
@@ -1320,6 +1353,12 @@ export default function PapersPage() {
                                 Summary
                               </span>
                             )}
+                            <span
+                              className={`papers-snippet-count papers-snippet-count-board ${snippetN === 0 ? 'papers-snippet-count-zero' : ''}`}
+                              title="Snippets linked to this paper"
+                            >
+                              {snippetN} snippet{snippetN !== 1 ? 's' : ''}
+                            </span>
                           </div>
                           <div className="papers-board-card-actions">
                             <button type="button" className="papers-board-card-action" onClick={() => startEdit(paper)}>
@@ -1335,7 +1374,8 @@ export default function PapersPage() {
                             </button>
                           </div>
                         </div>
-                      ))}
+                        );
+                      })}
                   </div>
                 </div>
                 );
