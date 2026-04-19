@@ -599,6 +599,69 @@ import PapersPage from '../../components/PapersPage';
     gap: 0.5rem;
     align-items: flex-end;
   }
+  :global(.papers-page .papers-entry-comment-form-main) {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  :global(.papers-page .papers-entry-comment-image-row) {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+    font-size: 0.8rem;
+  }
+  :global(.papers-page .papers-entry-comment-file-label) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    cursor: pointer;
+    color: var(--color-maroon);
+    font-weight: 600;
+  }
+  :global(.papers-page .papers-entry-comment-file-input) {
+    position: absolute;
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    z-index: -1;
+  }
+  :global(.papers-page .papers-entry-comment-file-name) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--color-ink-muted);
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  :global(.papers-page .papers-entry-comment-file-clear) {
+    padding: 0 0.35rem;
+    line-height: 1.2;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--color-ink-muted);
+    font-size: 1.1rem;
+  }
+  :global(.papers-page .papers-entry-comment-file-clear:hover) {
+    color: var(--color-maroon);
+  }
+  :global(.papers-page .papers-entry-comment-image-link) {
+    display: block;
+    margin: 0.25rem 0;
+  }
+  :global(.papers-page .papers-entry-comment-image) {
+    max-width: 100%;
+    max-height: 160px;
+    border-radius: 6px;
+    border: 1px solid var(--color-border);
+    object-fit: contain;
+  }
   :global(.papers-page .papers-entry-comment-input) {
     flex: 1;
     min-height: 2.5rem;

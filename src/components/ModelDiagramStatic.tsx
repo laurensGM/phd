@@ -161,17 +161,17 @@ function EcmIsDiagram({ base = '', constructToSlug = {} }: { base: string; const
 }
 
 const MY_THESIS_2_CONSTRUCT_INFO: Record<string, { title: string; text: string }> = {
-  ttf: {
-    title: 'Task-Technology Fit (TTF)',
-    text: "The degree to which the technology supports the tasks the user needs to perform. Goodhue & Thompson (1995). When fit is high, the tool is more likely to be used and to improve performance. In your thesis, TTF is the functional fit dimension that feeds into perceived usefulness and continuance intention in agritech contexts.",
+  tpc: {
+    title: 'Technology-to-Performance Chain (TPC)',
+    text: "Goodhue & Thompson (1995): IT improves individual performance only when it is used and when it fits the tasks it supports. Task–technology fit is the central link in this chain. In your thesis, fit is the functional dimension that feeds into perceived usefulness and continuance intention in agritech contexts.",
   },
   confirm: {
     title: 'Confirmation',
-    text: "The degree to which a user's initial expectations were met after actual use. From ECM-IS (Bhattacherjee 2001). Together with TTF it influences perceived usefulness and satisfaction.",
+    text: "The degree to which a user's initial expectations were met after actual use. From ECM-IS (Bhattacherjee 2001). Together with task–technology fit (TPC) it influences perceived usefulness and satisfaction.",
   },
   useful: {
     title: 'Perceived Usefulness',
-    text: "After using the product, how useful does the user believe it to be? Shaped by TTF and Confirmation. In agritech, when the tool fits the task and meets expectations, perceived usefulness increases.",
+    text: "After using the product, how useful does the user believe it to be? Shaped by task–technology fit and Confirmation. In agritech, when the tool fits the task and meets expectations, perceived usefulness increases.",
   },
   satisfy: {
     title: 'Satisfaction',
@@ -198,14 +198,14 @@ function MyThesis2Diagram({ base = '', constructToSlug = {} }: { base: string; c
 
   return (
     <div className="ecm-diagram-wrap">
-      <h2 className="ecm-diagram-title">My Thesis 2: TTF + ECM-IS</h2>
+      <h2 className="ecm-diagram-title">My Thesis 2: TPC + ECM-IS</h2>
       <p className="ecm-diagram-subtitle">Click any construct to learn more</p>
 
       <div className="ecm-diagram">
         <div className="ecm-diagram-main-flow">
-        <div className="ecm-box prior ecm-box-novel" onClick={() => setInfoKey('ttf')} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && setInfoKey('ttf')}>
-          <div className="ecm-box-name">TTF</div>
-          <div className="ecm-box-desc">Task-Technology Fit — fit between task and technology</div>
+        <div className="ecm-box prior ecm-box-novel" onClick={() => setInfoKey('tpc')} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && setInfoKey('tpc')}>
+          <div className="ecm-box-name">TPC</div>
+          <div className="ecm-box-desc">Task–technology fit (Technology-to-Performance Chain)</div>
         </div>
 
         <div className="ecm-arrow-group">
@@ -302,7 +302,7 @@ function MyThesis2Diagram({ base = '', constructToSlug = {} }: { base: string; c
       </div>
 
       <div className="ecm-legend">
-        <div className="ecm-legend-item"><span className="ecm-legend-dot prior" /> TTF / Fit</div>
+        <div className="ecm-legend-item"><span className="ecm-legend-dot prior" /> TPC / Fit</div>
         <div className="ecm-legend-item"><span className="ecm-legend-dot confirm" /> Post-use cognition</div>
         <div className="ecm-legend-item"><span className="ecm-legend-dot satisfy" /> Affective response</div>
         <div className="ecm-legend-item"><span className="ecm-legend-dot intention" /> Behavioural intention</div>

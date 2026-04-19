@@ -153,8 +153,81 @@ import PaperDetailPage from '../../components/PaperDetailPage';
   :global(.paper-detail-comments-add) {
     display: flex;
     gap: 0.6rem;
-    align-items: flex-end;
+    align-items: flex-start;
     margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+  }
+  :global(.paper-detail-comments-add-fields) {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+  :global(.paper-detail-comments-image-tools) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  :global(.paper-detail-comments-file-label) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--color-maroon);
+    font-weight: 600;
+  }
+  :global(.paper-detail-comments-file-input) {
+    position: absolute;
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    z-index: -1;
+  }
+  :global(.paper-detail-comments-file-text) {
+    text-decoration: underline;
+  }
+  :global(.paper-detail-comments-file-clear) {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.8rem;
+    border: 1px solid var(--color-border);
+    background: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--color-ink-muted);
+  }
+  :global(.paper-detail-comments-file-clear:hover) {
+    border-color: var(--color-maroon-muted);
+    color: var(--color-maroon);
+  }
+  :global(.paper-detail-comments-preview-wrap) {
+    margin-top: 0.25rem;
+  }
+  :global(.paper-detail-comments-preview) {
+    max-width: 100%;
+    max-height: 200px;
+    width: auto;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    object-fit: contain;
+    display: block;
+  }
+  :global(.paper-detail-comments-image-link) {
+    display: block;
+    margin: 0.35rem 0 0.25rem 0;
+  }
+  :global(.paper-detail-comments-image) {
+    max-width: 100%;
+    max-height: 280px;
+    width: auto;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    object-fit: contain;
+    display: block;
   }
   :global(.paper-detail-comments-input) {
     width: 100%;

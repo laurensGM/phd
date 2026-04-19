@@ -209,6 +209,8 @@ export default function TheoryMapGraph({ constructs: constructsProp, models: mod
       });
     });
 
+    const canonicalModelId = (mid: string) => (mid === 'ttf' ? 'tpc' : mid);
+
     snippetLinks.forEach((link) => {
       link.constructIds.forEach((cid) => {
         const eid = `paper-construct-${link.paperId}-${cid}`;
@@ -227,7 +229,8 @@ export default function TheoryMapGraph({ constructs: constructsProp, models: mod
         }
       });
       link.modelIds.forEach((mid) => {
-        const eid = `paper-model-${link.paperId}-${mid}`;
+        const normalizedMid = canonicalModelId(mid);
+        const eid = `paper-model-${link.paperId}-${normalizedMid}`;
         if (!edgeIds.has(eid)) {
           edgeIds.add(eid);
           edges.push({
@@ -235,7 +238,7 @@ export default function TheoryMapGraph({ constructs: constructsProp, models: mod
             data: {
               id: eid,
               source: `paper-${link.paperId}`,
-              target: `model-${mid}`,
+              target: `model-${normalizedMid}`,
               type: 'supports',
               label: 'supported by',
             },

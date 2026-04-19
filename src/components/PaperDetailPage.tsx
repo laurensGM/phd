@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { uploadPaperCommentImage, removePaperCommentImage } from '../lib/paperCommentImage';
 import { PAPER_STATUSES, type PaperStatusId } from '../constants/paperStatuses';
 import constructsData from '../data/constructs.json';
 import modelsData from '../data/models.json';
@@ -63,6 +64,7 @@ interface PaperComment {
   id: string;
   paper_id: string;
   content: string;
+  image_url: string | null;
   created_at: string;
 }
 
@@ -157,6 +159,10 @@ const modelOptions = (modelsData as any[]).map((m) => ({
   name: (m.name as string) || (m.id as string),
 }));
 
+function canonicalModelId(id: string): string {
+  return id === 'ttf' ? 'tpc' : id;
+}
+
 export default function PaperDetailPage() {
   const base = (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) || '';
   const [paper, setPaper] = useState<SavedPaper | null>(null);
@@ -193,7 +199,20 @@ export default function PaperDetailPage() {
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [commentError, setCommentError] = useState<string | null>(null);
   const [newComment, setNewComment] = useState('');
+  const [commentImageFile, setCommentImageFile] = useState<File | null>(null);
+  const [commentImagePreviewUrl, setCommentImagePreviewUrl] = useState<string | null>(null);
+  const [commentFileInputKey, setCommentFileInputKey] = useState(0);
   const [commentSaving, setCommentSaving] = useState(false);
+
+  useEffect(() => {
+    if (!commentImageFile) {
+      setCommentImagePreviewUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(commentImageFile);
+    setCommentImagePreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [commentImageFile]);
 
   const syncSummaryToEditor = useCallback((s: PaperSummary | null) => {
     setSummaryAbstract(s?.abstract ?? '');
@@ -567,7 +586,7 @@ export default function PaperDetailPage() {
     setCommentError(null);
     const { data, error: err } = await supabase
       .from('paper_comments')
-      .select('id, paper_id, content, created_at')
+      .select('id, paper_id, content, image_url, created_at')
       .eq('paper_id', paperId)
       .order('created_at', { ascending: false });
     setCommentsLoading(false);
@@ -583,24 +602,40 @@ export default function PaperDetailPage() {
   const handleAddComment = useCallback(async () => {
     if (!paper || !supabase || !isSupabaseConfigured()) return;
     const content = newComment.trim();
-    if (!content) return;
+    if (!content && !commentImageFile) return;
     setCommentSaving(true);
     setCommentError(null);
+    let uploadedPath: string | null = null;
+    let imageUrl: string | null = null;
+    if (commentImageFile) {
+      const up = await uploadPaperCommentImage(supabase, paper.id, commentImageFile);
+      if ('error' in up) {
+        setCommentError(up.error);
+        setCommentSaving(false);
+        return;
+      }
+      uploadedPath = up.path;
+      imageUrl = up.url;
+    }
     const { data, error: insertError } = await supabase
       .from('paper_comments')
-      .insert({ paper_id: paper.id, content })
-      .select('id, paper_id, content, created_at')
+      .insert({ paper_id: paper.id, content: content || '', image_url: imageUrl })
+      .select('id, paper_id, content, image_url, created_at')
       .single();
-    setCommentSaving(false);
     if (insertError) {
+      if (uploadedPath) await removePaperCommentImage(supabase, uploadedPath);
       setCommentError(insertError.message);
+      setCommentSaving(false);
       return;
     }
+    setCommentSaving(false);
     if (data) {
       setComments((prev) => [data as PaperComment, ...prev]);
       setNewComment('');
+      setCommentImageFile(null);
+      setCommentFileInputKey((k) => k + 1);
     }
-  }, [paper, newComment]);
+  }, [paper, newComment, commentImageFile]);
 
   const handleGenerateSummary = useCallback(async () => {
     if (!paper || !supabase || !isSupabaseConfigured()) return;
@@ -849,18 +884,56 @@ export default function PaperDetailPage() {
       <section className="paper-detail-section paper-detail-comments">
         <h2 className="paper-detail-section-title">Comments</h2>
         <div className="paper-detail-comments-add">
-          <textarea
-            className="paper-detail-comments-input"
-            rows={3}
-            placeholder="Add a quick comment about this paper..."
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-          />
+          <div className="paper-detail-comments-add-fields">
+            <textarea
+              className="paper-detail-comments-input"
+              rows={3}
+              placeholder="Add a quick comment about this paper (text optional if you attach an image)..."
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+            />
+            <div className="paper-detail-comments-image-tools">
+              <label className="paper-detail-comments-file-label">
+                <input
+                  key={commentFileInputKey}
+                  type="file"
+                  accept="image/jpeg,image/png,image/gif,image/webp"
+                  className="paper-detail-comments-file-input"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0] ?? null;
+                    setCommentImageFile(f);
+                  }}
+                />
+                <span className="paper-detail-comments-file-text">Attach image</span>
+              </label>
+              {commentImageFile && (
+                <button
+                  type="button"
+                  className="paper-detail-comments-file-clear"
+                  onClick={() => {
+                    setCommentImageFile(null);
+                    setCommentFileInputKey((k) => k + 1);
+                  }}
+                >
+                  Remove image
+                </button>
+              )}
+            </div>
+            {commentImagePreviewUrl && (
+              <div className="paper-detail-comments-preview-wrap">
+                <img
+                  src={commentImagePreviewUrl}
+                  alt="Selected attachment preview"
+                  className="paper-detail-comments-preview"
+                />
+              </div>
+            )}
+          </div>
           <button
             type="button"
             className="paper-detail-comments-btn"
             onClick={handleAddComment}
-            disabled={commentSaving || !newComment.trim()}
+            disabled={commentSaving || (!newComment.trim() && !commentImageFile)}
           >
             {commentSaving ? 'Saving…' : 'Add comment'}
           </button>
@@ -876,7 +949,24 @@ export default function PaperDetailPage() {
           <ul className="paper-detail-comments-list">
             {comments.map((c) => (
               <li key={c.id} className="paper-detail-comments-item">
-                <p className="paper-detail-comments-content">{c.content}</p>
+                {c.content.trim() ? (
+                  <p className="paper-detail-comments-content">{c.content}</p>
+                ) : null}
+                {c.image_url ? (
+                  <a
+                    href={c.image_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="paper-detail-comments-image-link"
+                  >
+                    <img
+                      src={c.image_url}
+                      alt=""
+                      className="paper-detail-comments-image"
+                      loading="lazy"
+                    />
+                  </a>
+                ) : null}
                 <time className="paper-detail-comments-time" dateTime={c.created_at}>
                   {new Date(c.created_at).toLocaleString()}
                 </time>
@@ -1159,14 +1249,18 @@ export default function PaperDetailPage() {
                       Construct: {s.construct_id}
                     </a>
                   )}
-                  {s.model_id && (
+                  {s.model_id && (() => {
+                    const mid = canonicalModelId(s.model_id);
+                    const m = modelOptions.find((x) => x.id === mid);
+                    return (
                     <a
-                      href={`${base}models/${s.model_id}/`}
+                      href={`${base}models/${mid}/`}
                       className="paper-detail-snippet-chip"
                     >
-                      Model: {s.model_id}
+                      Model: {m?.name ?? mid}
                     </a>
-                  )}
+                    );
+                  })()}
                 </div>
                   )}
                 </div>

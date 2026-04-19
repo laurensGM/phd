@@ -117,6 +117,11 @@ const modelOptions = (modelsData as any[]).map((m) => ({
   abbreviation: (m.abbreviation as string | undefined) ?? undefined,
 }));
 
+/** Legacy snippet rows may still store model id `ttf`; canonical model id is now `tpc`. */
+function canonicalModelId(id: string): string {
+  return id === 'ttf' ? 'tpc' : id;
+}
+
 interface UmbrellaConstructItem {
   id: string;
   name: string;
@@ -361,7 +366,7 @@ export default function SnippetsPage() {
         }
       }
       if (filterModelIds.length > 0) {
-        const snippetModels = getSnippetModelIds(s);
+        const snippetModels = getSnippetModelIds(s).map(canonicalModelId);
         if (!snippetModels.some((id) => filterModelIds.includes(id))) return false;
       }
       if (filterSnippetType) {
@@ -378,8 +383,9 @@ export default function SnippetsPage() {
         const tags = Array.isArray(s.tags) ? s.tags.join(' ').toLowerCase() : '';
         const constructName =
           constructOptions.find((c) => getSnippetConstructIds(s).includes(c.id))?.name.toLowerCase() ?? '';
+        const snippetModelIdsCanon = getSnippetModelIds(s).map(canonicalModelId);
         const modelName =
-          modelOptions.find((m) => getSnippetModelIds(s).includes(m.id))?.name.toLowerCase() ?? '';
+          modelOptions.find((m) => snippetModelIdsCanon.includes(m.id))?.name.toLowerCase() ?? '';
         if (!inContent && !tags.includes(q) && !constructName.includes(q) && !modelName.includes(q))
           return false;
       }
@@ -1096,15 +1102,16 @@ export default function SnippetsPage() {
                     {(() => {
                       const modelIds = getSnippetModelIds(s);
                       return modelIds.map((id) => {
-                        const m = modelOptions.find((opt) => opt.id === id);
+                        const cid = canonicalModelId(id);
+                        const m = modelOptions.find((opt) => opt.id === cid);
                         return (
                           <a
                             key={id}
-                            href={`${base}models/${id}/`}
+                            href={`${base}models/${cid}/`}
                             className="snippets-chip snippets-chip-model"
-                            title={m?.name || id}
+                            title={m?.name || cid}
                           >
-                            {m?.abbreviation || m?.name || id}
+                            {m?.abbreviation || m?.name || cid}
                           </a>
                         );
                       });

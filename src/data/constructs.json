@@ -189,7 +189,7 @@
     "theoreticalDomain": "Task-Technology Fit",
     "measurementItems": ["Task complexity, variety, and interdependence items adapted to context"],
     "measurementScale": "7-point Likert or task-based scales",
-    "relatedModels": ["TTF"],
+    "relatedModels": ["TPC"],
     "relatedConstructs": ["Technology Characteristics", "Task-Technology Fit"],
     "notes": "One of two antecedents of fit; describes what the task demands from the user and the technology."
   },
@@ -203,7 +203,7 @@
     "theoreticalDomain": "Task-Technology Fit",
     "measurementItems": ["Technology capability and functionality items adapted to context"],
     "measurementScale": "7-point Likert",
-    "relatedModels": ["TTF"],
+    "relatedModels": ["TPC"],
     "relatedConstructs": ["Task Characteristics", "Task-Technology Fit"],
     "notes": "One of two antecedents of fit; describes what the technology provides."
   },
@@ -217,9 +217,9 @@
     "theoreticalDomain": "Task-Technology Fit",
     "measurementItems": ["The extent to which the technology meets my task needs", "The technology has the right features for my tasks", "The technology fits the way I work"],
     "measurementScale": "7-point Likert (Strongly disagree - Strongly agree)",
-    "relatedModels": ["TTF"],
+    "relatedModels": ["TPC"],
     "relatedConstructs": ["Task Characteristics", "Technology Characteristics", "Utilization", "Performance Impact"],
-    "notes": "Central construct of TTF theory. Mediates the effect of task and technology on utilization and performance."
+    "notes": "Central construct in Goodhue & Thompson’s Technology-to-Performance Chain (TPC). Mediates the effect of task and technology on utilization and performance."
   },
   {
     "id": "utilization",
@@ -231,7 +231,7 @@
     "theoreticalDomain": "Task-Technology Fit",
     "measurementItems": ["Frequency and extent of use", "Use of specific features for task completion"],
     "measurementScale": "Self-reported or system-captured usage",
-    "relatedModels": ["TTF", "SCT"],
+    "relatedModels": ["TPC", "SCT"],
     "relatedConstructs": ["Task-Technology Fit", "Performance Impact", "Self-Efficacy", "Outcome Expectations Performance"],
     "notes": "When fit is high, utilization is more likely; utilization can mediate the effect of fit on performance. In social cognitive theory applications (e.g. Compeau & Higgins), utilization is a key behavioral outcome influenced by self-efficacy and outcome expectations."
   },
@@ -245,9 +245,9 @@
     "theoreticalDomain": "Task-Technology Fit",
     "measurementItems": ["Using the system improves my job performance", "The system helps me accomplish tasks more quickly", "The system has a positive impact on my work outcomes"],
     "measurementScale": "7-point Likert (Strongly disagree - Strongly agree)",
-    "relatedModels": ["TTF"],
+    "relatedModels": ["TPC"],
     "relatedConstructs": ["Task-Technology Fit", "Utilization"],
-    "notes": "The key outcome in TTF: technology is more likely to improve performance when fit is high and utilization occurs."
+    "notes": "The key outcome in the TPC: technology is more likely to improve performance when fit is high and utilization occurs."
   },
   {
     "id": "personal-innovativeness",

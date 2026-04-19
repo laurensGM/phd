@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { uploadPaperCommentImage, removePaperCommentImage } from '../lib/paperCommentImage';
 import { PAPER_STATUSES, type PaperStatusId } from '../constants/paperStatuses';
 
 interface SavedPaper {
@@ -46,6 +47,7 @@ interface PaperComment {
   id: string;
   paper_id: string;
   content: string;
+  image_url: string | null;
   created_at: string;
 }
 
@@ -186,6 +188,9 @@ export default function PapersPage() {
   /** Snippet counts keyed by paper_id (from snippets table). */
   const [snippetCountByPaperId, setSnippetCountByPaperId] = useState<Record<string, number>>({});
   const [commentInputs, setCommentInputs] = useState<Record<string, string>>({});
+  /** Pending image file per paper row (papers list comment form). */
+  const [commentImageFiles, setCommentImageFiles] = useState<Record<string, File | null>>({});
+  const [commentFileInputVersion, setCommentFileInputVersion] = useState<Record<string, number>>({});
   const [commentSavingPaperId, setCommentSavingPaperId] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
@@ -262,7 +267,7 @@ export default function PapersPage() {
         ),
       supabase
         .from('paper_comments')
-        .select('id, paper_id, content, created_at')
+        .select('id, paper_id, content, image_url, created_at')
         .order('created_at', { ascending: false })
         .limit(1000),
       supabase.from('snippets').select('paper_id').limit(10000),
@@ -625,25 +630,42 @@ export default function PapersPage() {
     if (!supabase) return;
     const raw = commentInputs[paperId] ?? '';
     const content = raw.trim();
-    if (!content) return;
+    const imageFile = commentImageFiles[paperId] ?? null;
+    if (!content && !imageFile) return;
     setCommentSavingPaperId(paperId);
     setError(null);
+    let uploadedPath: string | null = null;
+    let imageUrl: string | null = null;
+    if (imageFile) {
+      const up = await uploadPaperCommentImage(supabase, paperId, imageFile);
+      if ('error' in up) {
+        setError(up.error);
+        setCommentSavingPaperId(null);
+        return;
+      }
+      uploadedPath = up.path;
+      imageUrl = up.url;
+    }
     const { data: inserted, error: insertError } = await supabase
       .from('paper_comments')
-      .insert({ paper_id: paperId, content })
-      .select('id, paper_id, content, created_at')
+      .insert({ paper_id: paperId, content: content || '', image_url: imageUrl })
+      .select('id, paper_id, content, image_url, created_at')
       .single();
-    setCommentSavingPaperId(null);
     if (insertError) {
+      if (uploadedPath) await removePaperCommentImage(supabase, uploadedPath);
       setError(insertError.message);
+      setCommentSavingPaperId(null);
       return;
     }
+    setCommentSavingPaperId(null);
     if (inserted) {
       setPaperComments((prev) => {
         const existing = prev[paperId] ?? [];
         return { ...prev, [paperId]: [inserted as PaperComment, ...existing] };
       });
       setCommentInputs((prev) => ({ ...prev, [paperId]: '' }));
+      setCommentImageFiles((prev) => ({ ...prev, [paperId]: null }));
+      setCommentFileInputVersion((prev) => ({ ...prev, [paperId]: (prev[paperId] ?? 0) + 1 }));
     }
   };
 
@@ -1224,7 +1246,24 @@ export default function PapersPage() {
                       <ul className="papers-entry-comments-list">
                         {(paperComments[paper.id] ?? []).map((comment) => (
                           <li key={comment.id} className="papers-entry-comment-item">
-                            <p className="papers-entry-comment-content">{comment.content}</p>
+                            {comment.content.trim() ? (
+                              <p className="papers-entry-comment-content">{comment.content}</p>
+                            ) : null}
+                            {comment.image_url ? (
+                              <a
+                                href={comment.image_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="papers-entry-comment-image-link"
+                              >
+                                <img
+                                  src={comment.image_url}
+                                  alt=""
+                                  className="papers-entry-comment-image"
+                                  loading="lazy"
+                                />
+                              </a>
+                            ) : null}
                             <time className="papers-entry-comment-time" dateTime={comment.created_at}>
                               {formatDateTime(comment.created_at)}
                             </time>
@@ -1233,20 +1272,58 @@ export default function PapersPage() {
                       </ul>
                     )}
                     <div className="papers-entry-comment-form">
-                      <textarea
-                        value={commentInputs[paper.id] ?? ''}
-                        onChange={(e) =>
-                          setCommentInputs((prev) => ({ ...prev, [paper.id]: e.target.value }))
-                        }
-                        rows={2}
-                        className="papers-entry-comment-input"
-                        placeholder="Add a quick comment..."
-                      />
+                      <div className="papers-entry-comment-form-main">
+                        <textarea
+                          value={commentInputs[paper.id] ?? ''}
+                          onChange={(e) =>
+                            setCommentInputs((prev) => ({ ...prev, [paper.id]: e.target.value }))
+                          }
+                          rows={2}
+                          className="papers-entry-comment-input"
+                          placeholder="Add a quick comment (optional if you attach an image)..."
+                        />
+                        <div className="papers-entry-comment-image-row">
+                          <label className="papers-entry-comment-file-label">
+                            <input
+                              key={`cf-${paper.id}-${commentFileInputVersion[paper.id] ?? 0}`}
+                              type="file"
+                              accept="image/jpeg,image/png,image/gif,image/webp"
+                              className="papers-entry-comment-file-input"
+                              onChange={(e) => {
+                                const f = e.target.files?.[0] ?? null;
+                                setCommentImageFiles((prev) => ({ ...prev, [paper.id]: f }));
+                              }}
+                            />
+                            <span>Image</span>
+                          </label>
+                          {commentImageFiles[paper.id] && (
+                            <span className="papers-entry-comment-file-name">
+                              {commentImageFiles[paper.id]!.name}
+                              <button
+                                type="button"
+                                className="papers-entry-comment-file-clear"
+                                onClick={() => {
+                                  setCommentImageFiles((prev) => ({ ...prev, [paper.id]: null }));
+                                  setCommentFileInputVersion((prev) => ({
+                                    ...prev,
+                                    [paper.id]: (prev[paper.id] ?? 0) + 1,
+                                  }));
+                                }}
+                              >
+                                ×
+                              </button>
+                            </span>
+                          )}
+                        </div>
+                      </div>
                       <button
                         type="button"
                         className="papers-entry-comment-add"
                         onClick={() => handleAddComment(paper.id)}
-                        disabled={commentSavingPaperId === paper.id || !(commentInputs[paper.id] ?? '').trim()}
+                        disabled={
+                          commentSavingPaperId === paper.id ||
+                          (!(commentInputs[paper.id] ?? '').trim() && !commentImageFiles[paper.id])
+                        }
                       >
                         {commentSavingPaperId === paper.id ? 'Saving…' : 'Add comment'}
                       </button>

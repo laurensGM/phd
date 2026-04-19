@@ -317,6 +317,28 @@ export interface Database {
           updated_at?: string;
         };
       };
+      paper_comments: {
+        Row: {
+          id: string;
+          paper_id: string;
+          content: string;
+          image_url: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          paper_id: string;
+          content: string;
+          image_url?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          paper_id?: string;
+          content?: string;
+          image_url?: string | null;
+          created_at?: string;
+        };
+      };
       literature_review_prompts: {
         Row: {
           id: string;
