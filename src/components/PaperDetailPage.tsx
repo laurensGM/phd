@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { uploadPaperCommentImage, removePaperCommentImage } from '../lib/paperCommentImage';
+import { extractImageFileFromClipboard } from '../lib/clipboardImage';
 import { PAPER_STATUSES, type PaperStatusId } from '../constants/paperStatuses';
 import constructsData from '../data/constructs.json';
 import modelsData from '../data/models.json';
@@ -888,9 +889,15 @@ export default function PaperDetailPage() {
             <textarea
               className="paper-detail-comments-input"
               rows={3}
-              placeholder="Add a quick comment about this paper (text optional if you attach an image)..."
+              placeholder="Add a quick comment (you can also paste an image with Cmd+V)..."
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
+              onPaste={(e) => {
+                const pastedImage = extractImageFileFromClipboard(e.clipboardData);
+                if (!pastedImage) return;
+                e.preventDefault();
+                setCommentImageFile(pastedImage);
+              }}
             />
             <div className="paper-detail-comments-image-tools">
               <label className="paper-detail-comments-file-label">
@@ -904,7 +911,7 @@ export default function PaperDetailPage() {
                     setCommentImageFile(f);
                   }}
                 />
-                <span className="paper-detail-comments-file-text">Attach image</span>
+                <span className="paper-detail-comments-file-text">Attach image / Paste (Cmd+V)</span>
               </label>
               {commentImageFile && (
                 <button

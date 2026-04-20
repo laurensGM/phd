@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { uploadPaperCommentImage, removePaperCommentImage } from '../lib/paperCommentImage';
+import { extractImageFileFromClipboard } from '../lib/clipboardImage';
 import { PAPER_STATUSES, type PaperStatusId } from '../constants/paperStatuses';
 
 interface SavedPaper {
@@ -1278,9 +1279,15 @@ export default function PapersPage() {
                           onChange={(e) =>
                             setCommentInputs((prev) => ({ ...prev, [paper.id]: e.target.value }))
                           }
+                          onPaste={(e) => {
+                            const pastedImage = extractImageFileFromClipboard(e.clipboardData);
+                            if (!pastedImage) return;
+                            e.preventDefault();
+                            setCommentImageFiles((prev) => ({ ...prev, [paper.id]: pastedImage }));
+                          }}
                           rows={2}
                           className="papers-entry-comment-input"
-                          placeholder="Add a quick comment (optional if you attach an image)..."
+                          placeholder="Add a quick comment (you can also paste an image with Cmd+V)..."
                         />
                         <div className="papers-entry-comment-image-row">
                           <label className="papers-entry-comment-file-label">
@@ -1294,7 +1301,7 @@ export default function PapersPage() {
                                 setCommentImageFiles((prev) => ({ ...prev, [paper.id]: f }));
                               }}
                             />
-                            <span>Image</span>
+                            <span>Image / Paste (Cmd+V)</span>
                           </label>
                           {commentImageFiles[paper.id] && (
                             <span className="papers-entry-comment-file-name">
