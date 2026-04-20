@@ -487,6 +487,26 @@ import PapersPage from '../../components/PapersPage';
     font-size: 0.7rem;
     padding: 0.15rem 0.45rem;
   }
+  :global(.papers-page .papers-comment-count) {
+    display: inline-block;
+    padding: 0.2rem 0.55rem;
+    font-size: 0.74rem;
+    font-weight: 600;
+    border-radius: 999px;
+    background: rgba(29, 78, 216, 0.08);
+    border: 1px solid rgba(29, 78, 216, 0.22);
+    color: var(--color-ink);
+    line-height: 1;
+    letter-spacing: 0.01em;
+  }
+  :global(.papers-page .papers-comment-count.papers-comment-count-zero) {
+    opacity: 0.55;
+    font-weight: 500;
+  }
+  :global(.papers-page .papers-comment-count-board) {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.45rem;
+  }
   :global(.papers-page .papers-entry-tags) {
     display: flex;
     flex-wrap: wrap;

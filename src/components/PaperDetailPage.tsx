@@ -1146,7 +1146,9 @@ export default function PaperDetailPage() {
       </section>
 
       <section className="paper-detail-section paper-detail-snippets">
-        <h2 className="paper-detail-section-title">Snippets from this paper</h2>
+        <h2 className="paper-detail-section-title">
+          Snippets from this paper ({snippets.length})
+        </h2>
         <p className="paper-detail-snippets-hint">
           Capture key ideas or quotes here and optionally link them to constructs or models so you can reuse them later.
         </p>

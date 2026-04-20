@@ -1,7 +1,5 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import { uploadPaperCommentImage, removePaperCommentImage } from '../lib/paperCommentImage';
-import { extractImageFileFromClipboard } from '../lib/clipboardImage';
 import { PAPER_STATUSES, type PaperStatusId } from '../constants/paperStatuses';
 
 interface SavedPaper {
@@ -42,14 +40,6 @@ interface PaperSummaryPresenceRow {
   conclusion?: string | null;
   limitations?: string | null;
   future_research?: string | null;
-}
-
-interface PaperComment {
-  id: string;
-  paper_id: string;
-  content: string;
-  image_url: string | null;
-  created_at: string;
 }
 
 /** Extract DOI from a URL like https://doi.org/10.2307/249008 */
@@ -185,14 +175,10 @@ const base = (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) |
 export default function PapersPage() {
   const [papers, setPapers] = useState<SavedPaper[]>([]);
   const [papersWithSummary, setPapersWithSummary] = useState<Set<string>>(new Set());
-  const [paperComments, setPaperComments] = useState<Record<string, PaperComment[]>>({});
+  /** Comment counts keyed by paper_id (from paper_comments table). */
+  const [commentCountByPaperId, setCommentCountByPaperId] = useState<Record<string, number>>({});
   /** Snippet counts keyed by paper_id (from snippets table). */
   const [snippetCountByPaperId, setSnippetCountByPaperId] = useState<Record<string, number>>({});
-  const [commentInputs, setCommentInputs] = useState<Record<string, string>>({});
-  /** Pending image file per paper row (papers list comment form). */
-  const [commentImageFiles, setCommentImageFiles] = useState<Record<string, File | null>>({});
-  const [commentFileInputVersion, setCommentFileInputVersion] = useState<Record<string, number>>({});
-  const [commentSavingPaperId, setCommentSavingPaperId] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const [tagFilter, setTagFilter] = useState<string>('');
@@ -268,8 +254,7 @@ export default function PapersPage() {
         ),
       supabase
         .from('paper_comments')
-        .select('id, paper_id, content, image_url, created_at')
-        .order('created_at', { ascending: false })
+        .select('paper_id')
         .limit(1000),
       supabase.from('snippets').select('paper_id').limit(10000),
     ]);
@@ -277,7 +262,7 @@ export default function PapersPage() {
       setError(fetchError.message);
       setPapers([]);
       setPapersWithSummary(new Set());
-      setPaperComments({});
+      setCommentCountByPaperId({});
       setSnippetCountByPaperId({});
     } else {
       setPapers((data ?? []).map(mapRow));
@@ -315,13 +300,13 @@ export default function PapersPage() {
       if (commentsError) {
         setError((prev) => prev ?? commentsError.message);
       } else {
-        const byPaper: Record<string, PaperComment[]> = {};
-        ((commentsData as PaperComment[] | null) ?? []).forEach((row) => {
-          if (!row.paper_id) return;
-          if (!byPaper[row.paper_id]) byPaper[row.paper_id] = [];
-          byPaper[row.paper_id].push(row);
+        const commentCounts: Record<string, number> = {};
+        ((commentsData as { paper_id: string | null }[] | null) ?? []).forEach((row) => {
+          const pid = row.paper_id;
+          if (!pid) return;
+          commentCounts[pid] = (commentCounts[pid] ?? 0) + 1;
         });
-        setPaperComments(byPaper);
+        setCommentCountByPaperId(commentCounts);
       }
 
       if (snippetError) {
@@ -615,58 +600,6 @@ export default function PapersPage() {
       return d.toLocaleDateString(undefined, { dateStyle: 'medium' });
     } catch {
       return iso.slice(0, 10);
-    }
-  };
-
-  const formatDateTime = (iso: string) => {
-    try {
-      const d = new Date(iso);
-      return d.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
-    } catch {
-      return iso;
-    }
-  };
-
-  const handleAddComment = async (paperId: string) => {
-    if (!supabase) return;
-    const raw = commentInputs[paperId] ?? '';
-    const content = raw.trim();
-    const imageFile = commentImageFiles[paperId] ?? null;
-    if (!content && !imageFile) return;
-    setCommentSavingPaperId(paperId);
-    setError(null);
-    let uploadedPath: string | null = null;
-    let imageUrl: string | null = null;
-    if (imageFile) {
-      const up = await uploadPaperCommentImage(supabase, paperId, imageFile);
-      if ('error' in up) {
-        setError(up.error);
-        setCommentSavingPaperId(null);
-        return;
-      }
-      uploadedPath = up.path;
-      imageUrl = up.url;
-    }
-    const { data: inserted, error: insertError } = await supabase
-      .from('paper_comments')
-      .insert({ paper_id: paperId, content: content || '', image_url: imageUrl })
-      .select('id, paper_id, content, image_url, created_at')
-      .single();
-    if (insertError) {
-      if (uploadedPath) await removePaperCommentImage(supabase, uploadedPath);
-      setError(insertError.message);
-      setCommentSavingPaperId(null);
-      return;
-    }
-    setCommentSavingPaperId(null);
-    if (inserted) {
-      setPaperComments((prev) => {
-        const existing = prev[paperId] ?? [];
-        return { ...prev, [paperId]: [inserted as PaperComment, ...existing] };
-      });
-      setCommentInputs((prev) => ({ ...prev, [paperId]: '' }));
-      setCommentImageFiles((prev) => ({ ...prev, [paperId]: null }));
-      setCommentFileInputVersion((prev) => ({ ...prev, [paperId]: (prev[paperId] ?? 0) + 1 }));
     }
   };
 
@@ -1014,6 +947,7 @@ export default function PapersPage() {
         <div className="papers-entries">
           {papersOnPage.map((paper) => {
             const snippetN = snippetCountByPaperId[paper.id] ?? 0;
+            const commentN = commentCountByPaperId[paper.id] ?? 0;
             return (
             <article
               key={paper.id}
@@ -1185,6 +1119,12 @@ export default function PapersPage() {
                       >
                         {snippetN} snippet{snippetN !== 1 ? 's' : ''}
                       </span>
+                      <span
+                        className={`papers-comment-count ${commentN === 0 ? 'papers-comment-count-zero' : ''}`}
+                        title="Comments on this paper"
+                      >
+                        {commentN} comment{commentN !== 1 ? 's' : ''}
+                      </span>
                       <div className="papers-entry-tags">
                         {paper.tags.map((t) => (
                           <span key={t} className="papers-tag-badge">
@@ -1239,103 +1179,6 @@ export default function PapersPage() {
                   {paper.motivation && (
                     <p className="papers-entry-motivation">{paper.motivation}</p>
                   )}
-                  <section className="papers-entry-comments" onClick={(e) => e.stopPropagation()}>
-                    <h5 className="papers-entry-comments-title">Comments</h5>
-                    {(paperComments[paper.id] ?? []).length === 0 ? (
-                      <p className="papers-entry-comments-empty">No comments yet.</p>
-                    ) : (
-                      <ul className="papers-entry-comments-list">
-                        {(paperComments[paper.id] ?? []).map((comment) => (
-                          <li key={comment.id} className="papers-entry-comment-item">
-                            {comment.content.trim() ? (
-                              <p className="papers-entry-comment-content">{comment.content}</p>
-                            ) : null}
-                            {comment.image_url ? (
-                              <a
-                                href={comment.image_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="papers-entry-comment-image-link"
-                              >
-                                <img
-                                  src={comment.image_url}
-                                  alt=""
-                                  className="papers-entry-comment-image"
-                                  loading="lazy"
-                                />
-                              </a>
-                            ) : null}
-                            <time className="papers-entry-comment-time" dateTime={comment.created_at}>
-                              {formatDateTime(comment.created_at)}
-                            </time>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                    <div className="papers-entry-comment-form">
-                      <div className="papers-entry-comment-form-main">
-                        <textarea
-                          value={commentInputs[paper.id] ?? ''}
-                          onChange={(e) =>
-                            setCommentInputs((prev) => ({ ...prev, [paper.id]: e.target.value }))
-                          }
-                          onPaste={(e) => {
-                            const pastedImage = extractImageFileFromClipboard(e.clipboardData);
-                            if (!pastedImage) return;
-                            e.preventDefault();
-                            setCommentImageFiles((prev) => ({ ...prev, [paper.id]: pastedImage }));
-                          }}
-                          rows={2}
-                          className="papers-entry-comment-input"
-                          placeholder="Add a quick comment (you can also paste an image with Cmd+V)..."
-                        />
-                        <div className="papers-entry-comment-image-row">
-                          <label className="papers-entry-comment-file-label">
-                            <input
-                              key={`cf-${paper.id}-${commentFileInputVersion[paper.id] ?? 0}`}
-                              type="file"
-                              accept="image/jpeg,image/png,image/gif,image/webp"
-                              className="papers-entry-comment-file-input"
-                              onChange={(e) => {
-                                const f = e.target.files?.[0] ?? null;
-                                setCommentImageFiles((prev) => ({ ...prev, [paper.id]: f }));
-                              }}
-                            />
-                            <span>Image / Paste (Cmd+V)</span>
-                          </label>
-                          {commentImageFiles[paper.id] && (
-                            <span className="papers-entry-comment-file-name">
-                              {commentImageFiles[paper.id]!.name}
-                              <button
-                                type="button"
-                                className="papers-entry-comment-file-clear"
-                                onClick={() => {
-                                  setCommentImageFiles((prev) => ({ ...prev, [paper.id]: null }));
-                                  setCommentFileInputVersion((prev) => ({
-                                    ...prev,
-                                    [paper.id]: (prev[paper.id] ?? 0) + 1,
-                                  }));
-                                }}
-                              >
-                                ×
-                              </button>
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        className="papers-entry-comment-add"
-                        onClick={() => handleAddComment(paper.id)}
-                        disabled={
-                          commentSavingPaperId === paper.id ||
-                          (!(commentInputs[paper.id] ?? '').trim() && !commentImageFiles[paper.id])
-                        }
-                      >
-                        {commentSavingPaperId === paper.id ? 'Saving…' : 'Add comment'}
-                      </button>
-                    </div>
-                  </section>
                 </>
               )}
             </article>
@@ -1374,6 +1217,7 @@ export default function PapersPage() {
                     {columnPapers
                       .map((paper) => {
                         const snippetN = snippetCountByPaperId[paper.id] ?? 0;
+                        const commentN = commentCountByPaperId[paper.id] ?? 0;
                         return (
                         <div
                           key={paper.id}
@@ -1442,6 +1286,12 @@ export default function PapersPage() {
                               title="Snippets linked to this paper"
                             >
                               {snippetN} snippet{snippetN !== 1 ? 's' : ''}
+                            </span>
+                            <span
+                              className={`papers-comment-count papers-comment-count-board ${commentN === 0 ? 'papers-comment-count-zero' : ''}`}
+                              title="Comments on this paper"
+                            >
+                              {commentN} comment{commentN !== 1 ? 's' : ''}
                             </span>
                           </div>
                           <div className="papers-board-card-actions">
