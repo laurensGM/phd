@@ -14,7 +14,7 @@
       "I find the system useful in my job."
     ],
     "measurementScale": "7-point Likert (Strongly disagree - Strongly agree)",
-    "relatedModels": ["TAM", "ECM", "TAM2", "MM"],
+    "relatedModels": ["TAM", "ECM-IS", "TAM2", "MM"],
     "relatedConstructs": ["Perceived Ease of Use", "Behavioral Intention", "Satisfaction"],
     "notes": "Core construct in technology acceptance. Often mediates the effect of PEOU on intention."
   },
@@ -69,7 +69,7 @@
       "Overall, most of my expectations from using the system were confirmed."
     ],
     "measurementScale": "7-point Likert (Strongly disagree - Strongly agree)",
-    "relatedModels": ["ECT", "ECM"],
+    "relatedModels": ["ECT", "ECM-IS"],
     "relatedConstructs": ["Expectations", "Perceived Performance", "Satisfaction", "Perceived Usefulness"],
     "notes": "Central to post-adoption research. Disconfirmation (negative confirmation) drives satisfaction changes."
   },
@@ -87,7 +87,7 @@
       "I am contented with the use of the system."
     ],
     "measurementScale": "7-point Likert (Strongly disagree - Strongly agree)",
-    "relatedModels": ["ECT", "ECM", "ISSM"],
+    "relatedModels": ["ECT", "ECM-IS", "ISSM"],
     "relatedConstructs": ["Confirmation", "Perceived Usefulness", "Continuance Intention"],
     "notes": "Key mediator between confirmation and continuance intention in ECM."
   },
@@ -105,7 +105,7 @@
       "I will keep using the system as regularly as I do now."
     ],
     "measurementScale": "7-point Likert (Strongly disagree - Strongly agree)",
-    "relatedModels": ["ECT", "ECM"],
+    "relatedModels": ["ECT", "ECM-IS"],
     "relatedConstructs": ["Satisfaction", "Perceived Usefulness"],
     "notes": "Post-adoption equivalent of behavioral intention. Different from adoption intention."
   },

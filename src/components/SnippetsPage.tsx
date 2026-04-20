@@ -117,9 +117,11 @@ const modelOptions = (modelsData as any[]).map((m) => ({
   abbreviation: (m.abbreviation as string | undefined) ?? undefined,
 }));
 
-/** Legacy snippet rows may still store model id `ttf`; canonical model id is now `tpc`. */
+/** Canonicalize legacy model ids still present on some snippet rows. */
 function canonicalModelId(id: string): string {
-  return id === 'ttf' ? 'tpc' : id;
+  if (id === 'ttf') return 'tpc';
+  if (id === 'ecm') return 'ecm-is';
+  return id;
 }
 
 interface UmbrellaConstructItem {

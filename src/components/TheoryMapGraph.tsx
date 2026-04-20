@@ -209,7 +209,11 @@ export default function TheoryMapGraph({ constructs: constructsProp, models: mod
       });
     });
 
-    const canonicalModelId = (mid: string) => (mid === 'ttf' ? 'tpc' : mid);
+    const canonicalModelId = (mid: string) => {
+      if (mid === 'ttf') return 'tpc';
+      if (mid === 'ecm') return 'ecm-is';
+      return mid;
+    };
 
     snippetLinks.forEach((link) => {
       link.constructIds.forEach((cid) => {

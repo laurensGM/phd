@@ -2,29 +2,69 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import models from '../../data/models.json';
 const base = import.meta.env.BASE_URL;
+
+const thesisModelIds = new Set(['my-thesis-model', 'my-thesis-2']);
+
+const sortedModels = [...models].sort((a: any, b: any) =>
+  String(a.name || '').localeCompare(String(b.name || ''), undefined, { sensitivity: 'base' })
+);
+
+const theoreticalModels = sortedModels.filter((model: any) => !thesisModelIds.has(model.id));
+const thesisModels = sortedModels.filter((model: any) => thesisModelIds.has(model.id));
 ---
 
 <BaseLayout title="Models" description="Theoretical models - TAM, ECT, ECM and more">
   <h1>Models</h1>
   <p class="page-desc">Theoretical models with diagrams, constructs, and citations. Click a card to open the model detail page.</p>
 
-  <div class="models-grid">
-    {models.map((model: any) => (
-      <article class="model-card">
-        <h2><a href={`${base}models/${model.id}/`}>{model.name}</a></h2>
-        <span class="abbrev">{model.abbreviation}</span>
-        <p class="model-meta">{(model.authors && model.authors.length > 0 ? model.authors.join(', ') : '—')}{(model.year != null ? ` (${model.year})` : '')}</p>
-        <p class="model-desc-teaser">{model.description.slice(0, 160)}{model.description.length > 160 ? '…' : ''}</p>
-        <div class="meta">
-          <span>Constructs: {model.constructs.slice(0, 4).map((c: string) => model.constructAbbreviations?.[c] || c).join(', ')}{model.constructs.length > 4 ? '…' : ''}</span>
-        </div>
-      </article>
-    ))}
-  </div>
+  <section class="models-section">
+    <h2 class="models-section-title">Theoretical Models</h2>
+    <div class="models-grid">
+      {theoreticalModels.map((model: any) => (
+        <article class="model-card">
+          <h3><a href={`${base}models/${model.id}/`}>{model.name}</a></h3>
+          <span class="abbrev">{model.abbreviation}</span>
+          <p class="model-meta">{(model.authors && model.authors.length > 0 ? model.authors.join(', ') : '—')}{(model.year != null ? ` (${model.year})` : '')}</p>
+          <p class="model-desc-teaser">{model.description.slice(0, 160)}{model.description.length > 160 ? '…' : ''}</p>
+          <div class="meta">
+            <span>Constructs: {model.constructs.slice(0, 4).map((c: string) => model.constructAbbreviations?.[c] || c).join(', ')}{model.constructs.length > 4 ? '…' : ''}</span>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  {thesisModels.length > 0 && (
+    <section class="models-section models-section-thesis">
+      <h2 class="models-section-title">Featured Thesis Models</h2>
+      <div class="models-grid">
+        {thesisModels.map((model: any) => (
+          <article class="model-card model-card-thesis">
+            <h3><a href={`${base}models/${model.id}/`}>{model.name}</a></h3>
+            <span class="abbrev">{model.abbreviation}</span>
+            <p class="model-meta">{(model.authors && model.authors.length > 0 ? model.authors.join(', ') : '—')}{(model.year != null ? ` (${model.year})` : '')}</p>
+            <p class="model-desc-teaser">{model.description.slice(0, 160)}{model.description.length > 160 ? '…' : ''}</p>
+            <div class="meta">
+              <span>Constructs: {model.constructs.slice(0, 4).map((c: string) => model.constructAbbreviations?.[c] || c).join(', ')}{model.constructs.length > 4 ? '…' : ''}</span>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  )}
 </BaseLayout>
 
 <style>
   .page-desc { color: var(--color-ink-muted); margin-bottom: 2rem; }
+
+  .models-section + .models-section {
+    margin-top: 2.25rem;
+  }
+
+  .models-section-title {
+    margin: 0 0 1rem 0;
+    font-size: 1.25rem;
+  }
 
   .models-grid {
     display: grid;
@@ -39,7 +79,7 @@ const base = import.meta.env.BASE_URL;
     border-radius: 8px;
   }
 
-  .model-card h2 { margin-top: 0; font-size: 1.25rem; }
+  .model-card h3 { margin-top: 0; font-size: 1.25rem; }
   .model-card .abbrev {
     display: inline-block;
     margin-left: 0.5rem;
@@ -52,4 +92,13 @@ const base = import.meta.env.BASE_URL;
   .model-meta { font-size: 0.875rem; color: var(--color-ink-muted); margin: 0.5rem 0; }
   .model-desc-teaser { font-size: 0.9rem; margin: 0.75rem 0; line-height: 1.5; }
   .model-card .meta { font-size: 0.85rem; margin-top: 0.5rem; color: var(--color-ink-muted); }
+
+  .models-section-thesis .models-section-title {
+    color: var(--color-maroon);
+  }
+
+  .model-card-thesis {
+    border-color: var(--color-maroon-muted);
+    background: var(--color-bg-alt);
+  }
 </style>

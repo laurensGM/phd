@@ -20,6 +20,40 @@ interface ModelDiagramStaticProps {
   base?: string;
 }
 
+const ECM_BASE_MODEL: Model = {
+  id: 'ecm-base',
+  name: 'ECM',
+  abbreviation: 'ECM',
+  year: 2001,
+  authors: ['Bhattacherjee'],
+  constructs: [
+    'Confirmation',
+    'Perceived Usefulness',
+    'Satisfaction',
+    'Continuance Intention',
+  ],
+  constructAbbreviations: {
+    Confirmation: 'Confirm',
+    'Perceived Usefulness': 'PU',
+    Satisfaction: 'Sat',
+    'Continuance Intention': 'CI',
+  },
+  relationships: [
+    { from: 'Confirm', to: 'PU' },
+    { from: 'Confirm', to: 'Sat' },
+    { from: 'PU', to: 'Sat' },
+    { from: 'PU', to: 'CI' },
+    { from: 'Sat', to: 'CI' },
+  ],
+  keyCitations: [
+    {
+      authors: 'Bhattacherjee (2001)',
+      title: 'Understanding Information Systems Continuance: An Expectation-Confirmation Model',
+      doi: '10.2307/3250921',
+    },
+  ],
+};
+
 const ECM_CONSTRUCT_INFO: Record<string, { title: string; text: string }> = {
   prior: {
     title: 'Prior Expectations',
@@ -434,7 +468,24 @@ function GenericStatic({ model, base = '', constructToSlug = {} }: ModelDiagramS
   );
 }
 
+function MergedEcmDiagrams({ base = '', constructToSlug = {} }: { base: string; constructToSlug: Record<string, string> }) {
+  return (
+    <div className="ecm-merged-diagrams">
+      <h4>1) Base ECM</h4>
+      <p className="ecm-diagram-subtitle">Start with Bhattacherjee&apos;s core post-adoption continuance structure.</p>
+      <GenericFlowDiagram model={ECM_BASE_MODEL} base={base} constructToSlug={constructToSlug} />
+
+      <h4>2) ECM-IS Extension</h4>
+      <p className="ecm-diagram-subtitle">Then extend ECM by adding prior expectations and continued use for the full flow.</p>
+      <EcmIsDiagram base={base} constructToSlug={constructToSlug} />
+    </div>
+  );
+}
+
 export default function ModelDiagramStatic({ model, constructToSlug = {}, base = '' }: ModelDiagramStaticProps) {
+  if (model.id === 'ecm-is') {
+    return <MergedEcmDiagrams base={base} constructToSlug={constructToSlug} />;
+  }
   if (model.diagramType === 'ecm-is') {
     return <EcmIsDiagram base={base} constructToSlug={constructToSlug} />;
   }

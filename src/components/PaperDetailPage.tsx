@@ -161,7 +161,9 @@ const modelOptions = (modelsData as any[]).map((m) => ({
 }));
 
 function canonicalModelId(id: string): string {
-  return id === 'ttf' ? 'tpc' : id;
+  if (id === 'ttf') return 'tpc';
+  if (id === 'ecm') return 'ecm-is';
+  return id;
 }
 
 export default function PaperDetailPage() {
