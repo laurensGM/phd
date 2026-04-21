@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { uploadPaperCommentImage, removePaperCommentImage } from '../lib/paperCommentImage';
 import { extractImageFileFromClipboard } from '../lib/clipboardImage';
+import PaperModelLinks from './PaperModelLinks';
 import { PAPER_STATUSES, type PaperStatusId } from '../constants/paperStatuses';
 import constructsData from '../data/constructs.json';
 import modelsData from '../data/models.json';
@@ -857,6 +858,14 @@ export default function PaperDetailPage() {
             </>
           )}
         </p>
+      </section>
+
+      <section className="paper-detail-section paper-detail-section-models">
+        <h2 className="paper-detail-section-title">Linked models</h2>
+        <p className="paper-detail-model-links-intro">
+          Attach this paper to theoretical models. The same links appear under Key Citations on each model page.
+        </p>
+        <PaperModelLinks paperId={paper.id} base={base} />
       </section>
 
       {paper.motivation && (
