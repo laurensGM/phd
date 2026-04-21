@@ -220,6 +220,25 @@ export interface Database {
           updated_at?: string;
         };
       };
+      model_papers: {
+        Row: {
+          id: string;
+          model_id: string;
+          paper_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          model_id: string;
+          paper_id: string;
+          created_at?: string;
+        };
+        Update: {
+          model_id?: string;
+          paper_id?: string;
+          created_at?: string;
+        };
+      };
       tasks: {
         Row: {
           id: string;

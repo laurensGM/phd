@@ -1,6 +1,7 @@
 import React from 'react';
 import ModelDiagramStatic from './ModelDiagramStatic';
 import ModelNotes from './ModelNotes';
+import ModelPaperCitations from './ModelPaperCitations';
 
 interface Model {
   id: string;
@@ -75,6 +76,12 @@ export default function ModelDetailView({ model, constructToSlug, base }: ModelD
           </li>
         ))}
       </ul>
+
+      <h4 className="model-library-citations-heading">Papers in your library</h4>
+      <p className="model-library-citations-desc">
+        Link entries from your saved papers so this section opens the paper in PhD Manager (not the external article URL).
+      </p>
+      <ModelPaperCitations modelId={model.id} base={base} />
 
       <ModelNotes modelId={model.id} staticNote={model.notes} />
     </div>
