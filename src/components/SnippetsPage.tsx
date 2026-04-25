@@ -10,9 +10,28 @@ const SNIPPET_TYPE_OPTIONS = [
   { value: 'theory', label: 'Theory' },
   { value: 'empirical finding', label: 'Empirical finding' },
   { value: 'method', label: 'Method' },
-  { value: 'limitation', label: 'Limitation' },
-  { value: 'future research', label: 'Future research' },
+  {
+    value: 'limitations and future research',
+    label: 'Limitations and Future Research',
+  },
 ] as const;
+
+const SNIPPET_TYPE_LABEL_BY_VALUE = new Map(
+  SNIPPET_TYPE_OPTIONS.map((opt) => [opt.value, opt.label])
+);
+
+function canonicalSnippetType(value: string | null | undefined): string {
+  const v = (value ?? '').trim().toLowerCase();
+  if (v === 'limitation' || v === 'future research' || v === 'limitations and future research') {
+    return 'limitations and future research';
+  }
+  return v;
+}
+
+function snippetTypeLabel(value: string | null | undefined): string {
+  const canonical = canonicalSnippetType(value);
+  return SNIPPET_TYPE_LABEL_BY_VALUE.get(canonical) ?? (value ?? '').trim();
+}
 
 function buildLiteratureReviewPrompt(claim: string, evidenceBlock: string): string {
   const c = claim.trim();
@@ -338,7 +357,7 @@ export default function SnippetsPage() {
   const snippetTypeCounts = useMemo(() => {
     const map = new Map<string, number>();
     snippets.forEach((s) => {
-      const st = ((s as any).snippet_type ?? '').trim();
+      const st = canonicalSnippetType((s as any).snippet_type);
       if (!st) return;
       map.set(st, (map.get(st) ?? 0) + 1);
     });
@@ -382,7 +401,7 @@ export default function SnippetsPage() {
         if (!snippetModels.some((id) => filterModelIds.includes(id))) return false;
       }
       if (filterSnippetType) {
-        const st = (s as any).snippet_type?.trim();
+        const st = canonicalSnippetType((s as any).snippet_type);
         if (st !== filterSnippetType) return false;
       }
       if (filterTag) {
@@ -450,7 +469,7 @@ export default function SnippetsPage() {
           notes: null,
           tags,
           page_number: pageNum != null && !Number.isNaN(pageNum) ? pageNum : null,
-          snippet_type: newSnippetType.trim() || null,
+          snippet_type: canonicalSnippetType(newSnippetType) || null,
         })
         .select('*')
         .single();
@@ -598,7 +617,7 @@ export default function SnippetsPage() {
     setEditModelId(getSnippetModelIds(snippet).join(','));
     setEditPageNumber(snippet.page_number != null ? String(snippet.page_number) : '');
     setEditTagsInput(Array.isArray(snippet.tags) ? snippet.tags.join(', ') : '');
-    setEditSnippetType((snippet as any).snippet_type ?? '');
+    setEditSnippetType(canonicalSnippetType((snippet as any).snippet_type));
   }, []);
 
   const cancelEdit = useCallback(() => {
@@ -650,7 +669,7 @@ export default function SnippetsPage() {
           construct_ids: constructIds,
           model_ids: modelIds,
           page_number: pageNum != null && !Number.isNaN(pageNum) ? pageNum : null,
-          snippet_type: editSnippetType.trim() || null,
+          snippet_type: canonicalSnippetType(editSnippetType) || null,
           tags,
         })
         .eq('id', snippet.id)
@@ -1092,8 +1111,10 @@ export default function SnippetsPage() {
                       {s.content.length > 140 ? `${s.content.slice(0, 140)}…` : s.content}
                     </h3>
                   </div>
-                  {(s as any).snippet_type && (
-                    <span className="snippets-card-type">{(s as any).snippet_type}</span>
+                  {canonicalSnippetType((s as any).snippet_type) && (
+                    <span className="snippets-card-type">
+                      {snippetTypeLabel((s as any).snippet_type)}
+                    </span>
                   )}
                   <div className="snippets-card-links">
                     {(() => {
