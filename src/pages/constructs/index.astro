@@ -20,6 +20,43 @@ const base = import.meta.env.BASE_URL;
     margin-bottom: 2rem;
   }
 
+  :global(.constructs-letter-filter) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.85rem;
+  }
+
+  :global(.constructs-letter-label) {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-ink);
+    margin-right: 0.2rem;
+  }
+
+  :global(.constructs-letter-chip) {
+    padding: 0.22rem 0.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background: #fff;
+    font-size: 0.78rem;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--color-ink);
+  }
+
+  :global(.constructs-letter-chip:hover) {
+    background: var(--color-bg-alt);
+  }
+
+  :global(.constructs-letter-chip.active) {
+    background: rgba(113, 32, 56, 0.12);
+    border-color: var(--color-maroon);
+    color: var(--color-maroon);
+    font-weight: 700;
+  }
+
   :global(.constructs-umbrella-list) {
     display: flex;
     flex-wrap: wrap;

@@ -25,6 +25,9 @@ interface ConstructsListPageProps {
 
 export default function ConstructsListPage({ constructs, umbrellaConstructs }: ConstructsListPageProps) {
   const [filterUmbrellaId, setFilterUmbrellaId] = useState('');
+  const [filterLetter, setFilterLetter] = useState('');
+
+  const alphabet = useMemo(() => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''), []);
 
   const constructIdToUmbrella = useMemo(() => {
     const m = new Map<string, UmbrellaConstruct>();
@@ -38,15 +41,46 @@ export default function ConstructsListPage({ constructs, umbrellaConstructs }: C
     const sortedByName = (items: Construct[]) =>
       [...items].sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
 
-    if (!filterUmbrellaId) return sortedByName(constructs);
-    const umbrella = umbrellaConstructs.find((u) => u.id === filterUmbrellaId);
-    if (!umbrella) return sortedByName(constructs);
-    const set = new Set(umbrella.constructIds);
-    return sortedByName(constructs.filter((c) => set.has(c.id)));
-  }, [constructs, umbrellaConstructs, filterUmbrellaId]);
+    const umbrellaFiltered = (() => {
+      if (!filterUmbrellaId) return constructs;
+      const umbrella = umbrellaConstructs.find((u) => u.id === filterUmbrellaId);
+      if (!umbrella) return constructs;
+      const set = new Set(umbrella.constructIds);
+      return constructs.filter((c) => set.has(c.id));
+    })();
+
+    const letterFiltered = filterLetter
+      ? umbrellaFiltered.filter((c) =>
+          c.name.trim().toUpperCase().startsWith(filterLetter)
+        )
+      : umbrellaFiltered;
+
+    return sortedByName(letterFiltered);
+  }, [constructs, umbrellaConstructs, filterUmbrellaId, filterLetter]);
 
   return (
     <div className="constructs-page">
+      <div className="constructs-letter-filter" aria-label="Filter constructs by first letter">
+        <span className="constructs-letter-label">Starts with:</span>
+        <button
+          type="button"
+          className={`constructs-letter-chip ${filterLetter === '' ? 'active' : ''}`}
+          onClick={() => setFilterLetter('')}
+        >
+          All
+        </button>
+        {alphabet.map((letter) => (
+          <button
+            key={letter}
+            type="button"
+            className={`constructs-letter-chip ${filterLetter === letter ? 'active' : ''}`}
+            onClick={() => setFilterLetter(letter)}
+          >
+            {letter}
+          </button>
+        ))}
+      </div>
+
       <div className="constructs-umbrella-list">
         <span className="constructs-umbrella-label">Umbrella constructs:</span>
         {umbrellaConstructs.map((u) => (
