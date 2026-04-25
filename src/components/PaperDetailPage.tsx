@@ -151,10 +151,12 @@ function buildAPA7Citation(paper: SavedPaper): string {
   return (authorPart + yearPart + titlePart + (end ? end : '')).trim().replace(/\s+\.$/, '.');
 }
 
-const constructOptions = (constructsData as any[]).map((c) => ({
-  id: c.id as string,
-  name: (c.name as string) || (c.id as string),
-}));
+const constructOptions = (constructsData as any[])
+  .map((c) => ({
+    id: c.id as string,
+    name: (c.name as string) || (c.id as string),
+  }))
+  .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
 
 const modelOptions = (modelsData as any[]).map((m) => ({
   id: m.id as string,

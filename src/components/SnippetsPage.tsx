@@ -105,11 +105,13 @@ interface LiteratureReviewPrompt {
   updated_at: string;
 }
 
-const constructOptions = (constructsData as any[]).map((c) => ({
-  id: c.id as string,
-  name: (c.name as string) || (c.id as string),
-  abbreviation: (c.abbreviation as string | undefined) ?? undefined,
-}));
+const constructOptions = (constructsData as any[])
+  .map((c) => ({
+    id: c.id as string,
+    name: (c.name as string) || (c.id as string),
+    abbreviation: (c.abbreviation as string | undefined) ?? undefined,
+  }))
+  .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
 
 const modelOptions = (modelsData as any[]).map((m) => ({
   id: m.id as string,
@@ -297,30 +299,6 @@ export default function SnippetsPage() {
   const papersSortedByCount = useMemo(() => {
     return [...papers].sort((a, b) => (paperSnippetCounts.get(b.id) ?? 0) - (paperSnippetCounts.get(a.id) ?? 0));
   }, [papers, paperSnippetCounts]);
-
-  const constructSnippetCounts = useMemo(() => {
-    const map = new Map<string, number>();
-    snippets.forEach((s) => {
-      const raw: string[] = getSnippetConstructIds(s);
-      const ids = raw
-        .map((val) => {
-          const match = constructOptions.find(
-            (opt) =>
-              opt.id === val ||
-              opt.name.toLowerCase() === val.toLowerCase() ||
-              (opt.abbreviation && opt.abbreviation.toLowerCase() === val.toLowerCase())
-          );
-          return match ? match.id : val;
-        })
-        .filter(Boolean);
-      ids.forEach((id) => map.set(id, (map.get(id) ?? 0) + 1));
-    });
-    return map;
-  }, [snippets]);
-
-  const constructOptionsSortedByCount = useMemo(() => {
-    return [...constructOptions].sort((a, b) => (constructSnippetCounts.get(b.id) ?? 0) - (constructSnippetCounts.get(a.id) ?? 0));
-  }, [constructSnippetCounts]);
 
   const modelSnippetCounts = useMemo(() => {
     const map = new Map<string, number>();
@@ -843,7 +821,7 @@ export default function SnippetsPage() {
                   )
                 }
               >
-                {constructOptionsSortedByCount.map((c) => (
+                {constructOptions.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.name}
                   </option>

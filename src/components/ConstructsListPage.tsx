@@ -35,11 +35,14 @@ export default function ConstructsListPage({ constructs, umbrellaConstructs }: C
   }, [umbrellaConstructs]);
 
   const filteredConstructs = useMemo(() => {
-    if (!filterUmbrellaId) return constructs;
+    const sortedByName = (items: Construct[]) =>
+      [...items].sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+
+    if (!filterUmbrellaId) return sortedByName(constructs);
     const umbrella = umbrellaConstructs.find((u) => u.id === filterUmbrellaId);
-    if (!umbrella) return constructs;
+    if (!umbrella) return sortedByName(constructs);
     const set = new Set(umbrella.constructIds);
-    return constructs.filter((c) => set.has(c.id));
+    return sortedByName(constructs.filter((c) => set.has(c.id)));
   }, [constructs, umbrellaConstructs, filterUmbrellaId]);
 
   return (

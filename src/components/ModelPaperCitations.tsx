@@ -8,6 +8,7 @@ interface SavedPaperRow {
   title: string | null;
   authors: string | null;
   year: string | null;
+  status: string | null;
   url: string;
 }
 
@@ -26,6 +27,11 @@ function paperLabel(p: SavedPaperRow): string {
   const title = (p.title && p.title.trim()) || p.url;
   const meta = [p.authors?.trim(), p.year?.trim()].filter(Boolean).join(', ');
   return meta ? `${title} (${meta})` : title;
+}
+
+function statusClassName(status: string | null | undefined): string {
+  const normalized = (status || 'Not read').trim().toLowerCase().replace(/\s+/g, '-');
+  return `model-paper-status model-paper-status-${normalized}`;
 }
 
 function sortLinksByLabel(
@@ -68,7 +74,7 @@ export default function ModelPaperCitations({ modelId, base }: ModelPaperCitatio
     setError(null);
     const { data, error: fetchError } = await supabase
       .from('saved_papers')
-      .select('id, title, authors, year, url')
+      .select('id, title, authors, year, status, url')
       .order('created_at', { ascending: false })
       .limit(PAPERS_FETCH_LIMIT);
     if (fetchError) {
@@ -104,7 +110,7 @@ export default function ModelPaperCitations({ modelId, base }: ModelPaperCitatio
     }
     const { data: paperRows, error: paperErr } = await supabase
       .from('saved_papers')
-      .select('id, title, authors, year, url')
+      .select('id, title, authors, year, status, url')
       .in('id', ids);
     if (paperErr) {
       setError(paperErr.message);
@@ -217,21 +223,31 @@ export default function ModelPaperCitations({ modelId, base }: ModelPaperCitatio
           {links.map((link) => {
             const p = link.paper ?? paperById.get(link.paper_id);
             const href = `${base}papers/detail/?id=${link.paper_id}`;
-            const label = p ? paperLabel(p) : `Paper ${link.paper_id.slice(0, 8)}…`;
+            const title = (p?.title && p.title.trim()) || (p?.url ?? `Paper ${link.paper_id.slice(0, 8)}…`);
+            const meta = [p?.authors?.trim(), p?.year?.trim()].filter(Boolean).join(' · ');
+            const status = (p?.status && p.status.trim()) || 'Not read';
             return (
               <li key={link.id} className="model-paper-citations-item">
-                <a href={href} className="model-paper-citations-link">
-                  {label}
-                </a>
-                <button
-                  type="button"
-                  className="model-paper-citations-remove"
-                  onClick={() => handleRemove(link.id)}
-                  disabled={removingId === link.id}
-                  title="Remove link"
-                >
-                  {removingId === link.id ? '…' : 'Remove'}
-                </button>
+                <article className="model-paper-card">
+                  <div className="model-paper-card-header">
+                    <span className={statusClassName(status)}>{status}</span>
+                    <button
+                      type="button"
+                      className="model-paper-citations-remove"
+                      onClick={() => handleRemove(link.id)}
+                      disabled={removingId === link.id}
+                      title="Remove link"
+                    >
+                      {removingId === link.id ? '…' : 'Remove'}
+                    </button>
+                  </div>
+                  <h5 className="model-paper-card-title">
+                    <a href={href} className="model-paper-citations-link">
+                      {title}
+                    </a>
+                  </h5>
+                  {meta && <p className="model-paper-card-meta">{meta}</p>}
+                </article>
               </li>
             );
           })}

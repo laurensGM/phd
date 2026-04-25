@@ -315,22 +315,54 @@ if (!model) {
     list-style: none;
     padding: 0;
     margin: 0.75rem 0 0 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 0.75rem;
   }
 
   :global(.model-detail-view .model-paper-citations-item) {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 0.75rem;
-    padding: 0.5rem 0;
-    border-top: 1px solid var(--color-border);
-    font-size: 0.9rem;
-    line-height: 1.45;
+    margin: 0;
   }
 
-  :global(.model-detail-view .model-paper-citations-item:first-child) {
-    border-top: none;
-    padding-top: 0;
+  :global(.model-detail-view .model-paper-card) {
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    background: #fff;
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    min-height: 126px;
+  }
+
+  :global(.model-detail-view .model-paper-card-header) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  :global(.model-detail-view .model-paper-status) {
+    display: inline-block;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1;
+    border: 1px solid transparent;
+  }
+
+  :global(.model-detail-view .model-paper-status-not-read) { background: #e2e8f0; color: #475569; border-color: #cbd5e1; }
+  :global(.model-detail-view .model-paper-status-1st-reading) { background: #dbeafe; color: #1e40af; border-color: #bfdbfe; }
+  :global(.model-detail-view .model-paper-status-2nd-reading) { background: #e0e7ff; color: #3730a3; border-color: #c7d2fe; }
+  :global(.model-detail-view .model-paper-status-read) { background: #fef9c3; color: #854d0e; border-color: #fde68a; }
+  :global(.model-detail-view .model-paper-status-completed) { background: #dcfce7; color: #166534; border-color: #bbf7d0; }
+  :global(.model-detail-view .model-paper-status-archive) { background: #f3e8ff; color: #6b21a8; border-color: #e9d5ff; }
+
+  :global(.model-detail-view .model-paper-card-title) {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.35;
   }
 
   :global(.model-detail-view .model-paper-citations-link) {
@@ -342,6 +374,13 @@ if (!model) {
 
   :global(.model-detail-view .model-paper-citations-link:hover) {
     text-decoration: underline;
+  }
+
+  :global(.model-detail-view .model-paper-card-meta) {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--color-ink-muted);
+    line-height: 1.45;
   }
 
   :global(.model-detail-view .model-paper-citations-remove) {

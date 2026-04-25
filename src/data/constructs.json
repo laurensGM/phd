@@ -647,6 +647,24 @@
     "notes": "In UTAUT2, habit captures automaticity and routinization of use; often predicts behavioral intention and use, especially in voluntary consumer contexts."
   },
   {
+    "id": "price-value",
+    "name": "Price Value",
+    "abbreviation": "PV",
+    "definition": "The consumer's cognitive trade-off between the perceived benefits of using a technology and the monetary cost of using it.",
+    "sourcePaper": "Venkatesh et al. (2012) - UTAUT2",
+    "doi": "",
+    "theoreticalDomain": "Technology adoption",
+    "measurementItems": [
+      "Using the system is reasonably priced.",
+      "At the current price, the system provides good value.",
+      "The benefits of using the system are worth the monetary cost."
+    ],
+    "measurementScale": "7-point Likert (Strongly disagree - Strongly agree)",
+    "relatedModels": ["UTAUT2"],
+    "relatedConstructs": ["Behavioral Intention", "Perceived Benefit", "Perceived Usefulness"],
+    "notes": "In UTAUT2, price value is typically a direct antecedent of behavioral intention, especially in voluntary consumer settings."
+  },
+  {
     "id": "perceived-benefit",
     "name": "Perceived Benefit",
     "abbreviation": "PB",
