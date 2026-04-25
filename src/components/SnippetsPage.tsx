@@ -335,6 +335,16 @@ export default function SnippetsPage() {
     );
   }, []);
 
+  const snippetTypeCounts = useMemo(() => {
+    const map = new Map<string, number>();
+    snippets.forEach((s) => {
+      const st = ((s as any).snippet_type ?? '').trim();
+      if (!st) return;
+      map.set(st, (map.get(st) ?? 0) + 1);
+    });
+    return map;
+  }, [snippets]);
+
   const filteredSnippets = useMemo(() => {
     return snippets.filter((s) => {
       if (filterPaperId && s.paper_id !== filterPaperId) return false;
@@ -885,7 +895,7 @@ export default function SnippetsPage() {
                 <option value="">All</option>
                 {SNIPPET_TYPE_OPTIONS.filter((o) => o.value).map((opt) => (
                   <option key={opt.value} value={opt.value}>
-                    {opt.label}
+                    {opt.label} ({snippetTypeCounts.get(opt.value) ?? 0})
                   </option>
                 ))}
               </select>
