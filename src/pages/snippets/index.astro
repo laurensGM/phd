@@ -93,6 +93,9 @@ import SnippetsPage from '../../components/SnippetsPage';
     border: 1px solid var(--color-border);
     position: sticky;
     top: 1rem;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
   :global(.snippets-filter-row) {
     display: flex;

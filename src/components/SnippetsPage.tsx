@@ -300,18 +300,40 @@ export default function SnippetsPage() {
     return [...papers].sort((a, b) => (paperSnippetCounts.get(b.id) ?? 0) - (paperSnippetCounts.get(a.id) ?? 0));
   }, [papers, paperSnippetCounts]);
 
+  const constructSnippetCounts = useMemo(() => {
+    const map = new Map<string, number>();
+    snippets.forEach((s) => {
+      const rawSnippetConstructs = getSnippetConstructIds(s);
+      const normalized = rawSnippetConstructs
+        .map((val) => {
+          const match = constructOptions.find(
+            (opt) =>
+              opt.id === val ||
+              opt.name.toLowerCase() === val.toLowerCase() ||
+              opt.abbreviation?.toLowerCase() === val.toLowerCase()
+          );
+          return match ? match.id : val;
+        })
+        .filter(Boolean);
+      normalized.forEach((id) => map.set(id, (map.get(id) ?? 0) + 1));
+    });
+    return map;
+  }, [snippets]);
+
   const modelSnippetCounts = useMemo(() => {
     const map = new Map<string, number>();
     snippets.forEach((s) => {
-      const ids = getSnippetModelIds(s);
+      const ids = getSnippetModelIds(s).map(canonicalModelId);
       ids.forEach((id) => map.set(id, (map.get(id) ?? 0) + 1));
     });
     return map;
   }, [snippets]);
 
-  const modelOptionsSortedByCount = useMemo(() => {
-    return [...modelOptions].sort((a, b) => (modelSnippetCounts.get(b.id) ?? 0) - (modelSnippetCounts.get(a.id) ?? 0));
-  }, [modelOptions, modelSnippetCounts]);
+  const modelOptionsAlphabetical = useMemo(() => {
+    return [...modelOptions].sort((a, b) =>
+      a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
+    );
+  }, []);
 
   const filteredSnippets = useMemo(() => {
     return snippets.filter((s) => {
@@ -782,9 +804,9 @@ export default function SnippetsPage() {
                   )
                 }
               >
-                {modelOptionsSortedByCount.map((m) => (
+                {modelOptionsAlphabetical.map((m) => (
                   <option key={m.id} value={m.id}>
-                    {m.abbreviation || m.name}
+                    {(m.abbreviation || m.name)} ({modelSnippetCounts.get(m.id) ?? 0})
                   </option>
                 ))}
               </select>
@@ -823,7 +845,7 @@ export default function SnippetsPage() {
               >
                 {constructOptions.map((c) => (
                   <option key={c.id} value={c.id}>
-                    {c.name}
+                    {c.name} ({constructSnippetCounts.get(c.id) ?? 0})
                   </option>
                 ))}
               </select>
