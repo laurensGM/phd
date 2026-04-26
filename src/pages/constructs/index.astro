@@ -23,6 +23,9 @@ const base = import.meta.env.BASE_URL;
   .page-desc { color: var(--color-ink-muted); margin-bottom: 2rem; }
 
   :global(.constructs-page) {
+    background: #f7f4ef;
+    padding: 1rem;
+    border-radius: 12px;
     margin-bottom: 2rem;
   }
 
@@ -43,23 +46,23 @@ const base = import.meta.env.BASE_URL;
 
   :global(.constructs-letter-chip) {
     padding: 0.22rem 0.5rem;
-    border: 1px solid var(--color-border);
+    border: 1px solid #d1c9b8;
     border-radius: 6px;
     background: #fff;
     font-size: 0.78rem;
     line-height: 1;
     cursor: pointer;
-    color: var(--color-ink);
+    color: #5a4a3a;
   }
 
   :global(.constructs-letter-chip:hover) {
-    background: var(--color-bg-alt);
+    background: #faf8f3;
   }
 
   :global(.constructs-letter-chip.active) {
-    background: rgba(113, 32, 56, 0.12);
-    border-color: var(--color-maroon);
-    color: var(--color-maroon);
+    background: #6b1a2a;
+    border-color: #6b1a2a;
+    color: #c9a84c;
     font-weight: 700;
   }
 
@@ -80,22 +83,22 @@ const base = import.meta.env.BASE_URL;
 
   :global(.constructs-umbrella-chip) {
     padding: 0.35rem 0.75rem;
-    border: 1px solid var(--color-border);
+    border: 1px solid #d1c9b8;
     border-radius: 6px;
     background: white;
     font-size: 0.85rem;
     cursor: pointer;
-    color: var(--color-ink);
+    color: #5a4a3a;
   }
 
   :global(.constructs-umbrella-chip:hover) {
-    background: var(--color-bg-alt);
+    background: #faf8f3;
   }
 
   :global(.constructs-umbrella-chip.active) {
-    background: rgba(113, 32, 56, 0.12);
-    border-color: var(--color-maroon);
-    color: var(--color-maroon);
+    background: #6b1a2a;
+    border-color: #6b1a2a;
+    color: #c9a84c;
   }
 
   :global(.constructs-model-list) {
@@ -115,22 +118,22 @@ const base = import.meta.env.BASE_URL;
 
   :global(.constructs-model-chip) {
     padding: 0.35rem 0.75rem;
-    border: 1px solid var(--color-border);
+    border: 1px solid #d1c9b8;
     border-radius: 6px;
     background: white;
     font-size: 0.85rem;
     cursor: pointer;
-    color: var(--color-ink);
+    color: #5a4a3a;
   }
 
   :global(.constructs-model-chip:hover) {
-    background: var(--color-bg-alt);
+    background: #faf8f3;
   }
 
   :global(.constructs-model-chip.active) {
-    background: rgba(113, 32, 56, 0.12);
-    border-color: var(--color-maroon);
-    color: var(--color-maroon);
+    background: #6b1a2a;
+    border-color: #6b1a2a;
+    color: #c9a84c;
   }
 
   :global(.constructs-importance-list) {
@@ -150,22 +153,22 @@ const base = import.meta.env.BASE_URL;
 
   :global(.constructs-importance-chip) {
     padding: 0.35rem 0.75rem;
-    border: 1px solid var(--color-border);
+    border: 1px solid #d1c9b8;
     border-radius: 6px;
     background: white;
     font-size: 0.85rem;
     cursor: pointer;
-    color: var(--color-ink);
+    color: #5a4a3a;
   }
 
   :global(.constructs-importance-chip:hover) {
-    background: var(--color-bg-alt);
+    background: #faf8f3;
   }
 
   :global(.constructs-importance-chip.active) {
-    background: rgba(113, 32, 56, 0.12);
-    border-color: var(--color-maroon);
-    color: var(--color-maroon);
+    background: #6b1a2a;
+    border-color: #6b1a2a;
+    color: #c9a84c;
   }
 
   :global(.constructs-grid) {
@@ -176,9 +179,10 @@ const base = import.meta.env.BASE_URL;
 
   :global(.construct-card) {
     padding: 1.5rem;
-    background: white;
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
+    background: #fff;
+    border: 0.5px solid #e0d8cc;
+    border-left: 3px solid #e0d8cc;
+    border-radius: 12px;
     position: relative;
     min-height: 210px;
     max-height: 210px;
@@ -186,20 +190,20 @@ const base = import.meta.env.BASE_URL;
   }
 
   :global(.construct-card.construct-card-top) {
-    background: linear-gradient(135deg, #e9d48a 0%, #d8bc67 100%);
-    border-color: #b5953e;
-    color: #3e2b09;
+    background: #fff;
+    border-left-color: #c9a84c;
+    color: #1c1008;
   }
 
   :global(.construct-card.construct-card-ci) {
-    background: var(--color-maroon);
-    border-color: var(--color-gold);
-    color: #f7e6a3;
+    background: #fff;
+    border-left-color: #6b1a2a;
+    color: #1c1008;
   }
 
   :global(.construct-card.construct-card-secondary) {
-    background: #fff7de;
-    border-color: #e0c773;
+    background: #fff;
+    border-left-color: #e0d8cc;
   }
 
   :global(.construct-card.construct-card-top a),
@@ -216,49 +220,54 @@ const base = import.meta.env.BASE_URL;
   }
 
   :global(.construct-card.construct-card-top .abbrev) {
-    background: rgba(62, 43, 9, 0.12);
-    color: #3e2b09;
+    background: #fdf3dc;
+    color: #7a5400;
   }
 
   :global(.construct-card.construct-card-ci .abbrev) {
-    background: rgba(247, 230, 163, 0.16);
-    color: #f7e6a3;
+    background: #f5e8ea;
+    color: #6b1a2a;
   }
 
-  :global(.construct-card.construct-card-top .construct-card-umbrella),
-  :global(.construct-card.construct-card-ci .construct-card-umbrella) {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.16);
-  }
-
-  :global(.construct-card.construct-card-top .construct-card-umbrella) {
-    color: #3e2b09;
-    background: rgba(62, 43, 9, 0.12);
+  :global(.construct-card.construct-card-secondary .abbrev) {
+    background: #f0ece4;
+    color: #5a4a3a;
   }
 
   :global(.construct-card-umbrella) {
     display: inline-block;
-    font-size: 0.75rem;
+    font-size: 10px;
     font-weight: 600;
-    color: var(--color-maroon);
-    background: rgba(113, 32, 56, 0.08);
-    padding: 0.2rem 0.5rem;
-    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #9a8878;
     margin-bottom: 0.5rem;
   }
 
-  :global(.construct-card h2) { margin-top: 0; font-size: 1.25rem; }
+  :global(.construct-card h2) {
+    margin-top: 0;
+    font-size: 15px;
+    font-weight: 500;
+    color: #1c1008;
+  }
+  :global(.construct-card h2 a) {
+    color: #1c1008;
+    text-decoration: none;
+  }
   :global(.construct-card .abbrev) {
     display: inline-block;
     margin-left: 0.5rem;
-    padding: 0.15rem 0.5rem;
-    background: var(--color-bg-alt);
-    font-size: 0.8rem;
+    padding: 0.16rem 0.52rem;
+    font-size: 11px;
     font-weight: 600;
-    border-radius: 4px;
+    border-radius: 999px;
+    background: #f0ece4;
+    color: #5a4a3a;
   }
   :global(.construct-card .definition) {
-    font-style: italic;
+    font-size: 13px;
+    color: #5a4a3a;
+    line-height: 1.6;
     margin: 0.75rem 0;
     display: -webkit-box;
     -webkit-line-clamp: 3;
@@ -266,19 +275,37 @@ const base = import.meta.env.BASE_URL;
     overflow: hidden;
   }
   :global(.construct-card .source) {
-    font-size: 0.875rem;
-    color: var(--color-ink-muted);
+    font-size: 11px;
+    color: #9a8878;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
   :global(.construct-card .meta) {
-    font-size: 0.85rem;
+    font-size: 13px;
+    color: #5a4a3a;
     margin-top: 0.5rem;
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
+  }
+  :global(.construct-card-theory-tags) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+  :global(.construct-theory-tag) {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.5rem;
+    background: #fff;
+    border: 0.5px solid #d1c9b8;
+    border-radius: 999px;
+    color: #5a4a3a;
+    font-size: 11px;
+    line-height: 1.2;
+    font-weight: 500;
   }
   :global(.construct-card .meta span) {
     display: -webkit-box;

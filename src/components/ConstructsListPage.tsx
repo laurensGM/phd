@@ -247,7 +247,13 @@ export default function ConstructsListPage({ constructs, umbrellaConstructs, mod
               <div className="meta">
                 {construct.theoreticalDomain && <span>Domain: {construct.theoreticalDomain}</span>}
                 {construct.relatedModels && construct.relatedModels.length > 0 && (
-                  <span>Used in: {construct.relatedModels.join(', ')}</span>
+                  <span className="construct-card-theory-tags">
+                    {construct.relatedModels.map((model) => (
+                      <span key={`${construct.id}-${model}`} className="construct-theory-tag">
+                        {model}
+                      </span>
+                    ))}
+                  </span>
                 )}
               </div>
             </article>
