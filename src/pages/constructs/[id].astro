@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ConstructNotes from '../../components/ConstructNotes';
 import constructs from '../../data/constructs.json';
+import models from '../../data/models.json';
 
 export function getStaticPaths() {
   return constructs.map((c: { id: string }) => ({ params: { id: c.id } }));
@@ -13,6 +14,50 @@ const base = import.meta.env.BASE_URL;
 if (!construct) {
   return Astro.redirect(`${base}constructs/`);
 }
+
+type ModelItem = {
+  id: string;
+  name?: string;
+  abbreviation?: string;
+  constructs?: string[];
+};
+
+const modelList = models as ModelItem[];
+
+function canon(val: string): string {
+  return val.trim().toLowerCase();
+}
+
+function modelMatchesLabel(model: ModelItem, label: string): boolean {
+  const labelCanon = canon(label);
+  if (!labelCanon) return false;
+  return (
+    canon(model.id) === labelCanon ||
+    canon(model.name ?? '') === labelCanon ||
+    canon(model.abbreviation ?? '') === labelCanon
+  );
+}
+
+function resolveModelByLabel(label: string): ModelItem | undefined {
+  return modelList.find((m) => modelMatchesLabel(m, label));
+}
+
+const relatedByConstructField = (construct.relatedModels ?? [])
+  .map((label: string) => resolveModelByLabel(label))
+  .filter(Boolean) as ModelItem[];
+
+const relatedByModelMembership = modelList.filter((m) =>
+  (m.constructs ?? []).some((name) => canon(name) === canon(construct.name))
+);
+
+const relatedModels = Array.from(
+  new Map(
+    [...relatedByConstructField, ...relatedByModelMembership].map((m) => [
+      m.id,
+      { id: m.id, label: m.abbreviation || m.name || m.id },
+    ])
+  ).values()
+).sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
 ---
 
 <BaseLayout title={construct.name} description={construct.definition}>
@@ -59,9 +104,13 @@ if (!construct) {
     <section>
       <h2>Related Models</h2>
       <ul class="related-list">
-        {construct.relatedModels?.map((m: string) => (
-          <li><a href={`${base}models/#${m.toLowerCase()}`}>{m}</a></li>
-        ))}
+        {relatedModels.length > 0 ? (
+          relatedModels.map((m) => (
+            <li><a href={`${base}models/${m.id}/`}>{m.label}</a></li>
+          ))
+        ) : (
+          <li>No related models recorded yet.</li>
+        )}
       </ul>
     </section>
 

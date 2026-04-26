@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import ConstructsListPage from '../../components/ConstructsListPage';
 import constructs from '../../data/constructs.json';
 import umbrellaConstructs from '../../data/umbrella-constructs.json';
+import models from '../../data/models.json';
 const base = import.meta.env.BASE_URL;
 ---
 
@@ -10,7 +11,12 @@ const base = import.meta.env.BASE_URL;
   <h1>Constructs</h1>
   <p class="page-desc">Definitions, source papers, measurement items, and related models. Filter by umbrella construct to see constructs by category.</p>
 
-  <ConstructsListPage client:load constructs={constructs} umbrellaConstructs={umbrellaConstructs} />
+  <ConstructsListPage
+    client:load
+    constructs={constructs}
+    umbrellaConstructs={umbrellaConstructs}
+    models={models}
+  />
 </BaseLayout>
 
 <style>
@@ -92,25 +98,74 @@ const base = import.meta.env.BASE_URL;
     color: var(--color-maroon);
   }
 
-  :global(.constructs-filter-row) {
-    margin-bottom: 1.5rem;
+  :global(.constructs-model-list) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.2rem;
   }
 
-  :global(.constructs-filter-row label) {
-    display: block;
+  :global(.constructs-model-label) {
     font-size: 0.9rem;
     font-weight: 600;
-    margin-bottom: 0.35rem;
+    color: var(--color-ink);
+    margin-right: 0.25rem;
+  }
+
+  :global(.constructs-model-chip) {
+    padding: 0.35rem 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background: white;
+    font-size: 0.85rem;
+    cursor: pointer;
     color: var(--color-ink);
   }
 
-  :global(.constructs-umbrella-select) {
-    padding: 0.5rem 0.75rem;
-    border: 2px solid var(--color-border);
-    border-radius: 8px;
-    font-size: 1rem;
-    min-width: 260px;
-    max-width: 100%;
+  :global(.constructs-model-chip:hover) {
+    background: var(--color-bg-alt);
+  }
+
+  :global(.constructs-model-chip.active) {
+    background: rgba(113, 32, 56, 0.12);
+    border-color: var(--color-maroon);
+    color: var(--color-maroon);
+  }
+
+  :global(.constructs-importance-list) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  :global(.constructs-importance-label) {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-ink);
+    margin-right: 0.25rem;
+  }
+
+  :global(.constructs-importance-chip) {
+    padding: 0.35rem 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background: white;
+    font-size: 0.85rem;
+    cursor: pointer;
+    color: var(--color-ink);
+  }
+
+  :global(.constructs-importance-chip:hover) {
+    background: var(--color-bg-alt);
+  }
+
+  :global(.constructs-importance-chip.active) {
+    background: rgba(113, 32, 56, 0.12);
+    border-color: var(--color-maroon);
+    color: var(--color-maroon);
   }
 
   :global(.constructs-grid) {
@@ -128,6 +183,52 @@ const base = import.meta.env.BASE_URL;
     min-height: 210px;
     max-height: 210px;
     overflow: hidden;
+  }
+
+  :global(.construct-card.construct-card-top) {
+    background: linear-gradient(135deg, #d4af37 0%, #b9901e 100%);
+    border-color: #8b6f10;
+    color: #fff;
+  }
+
+  :global(.construct-card.construct-card-ci) {
+    background: var(--color-maroon);
+    border-color: var(--color-gold);
+    color: #f7e6a3;
+  }
+
+  :global(.construct-card.construct-card-secondary) {
+    background: #fff7de;
+    border-color: #e0c773;
+  }
+
+  :global(.construct-card.construct-card-top a),
+  :global(.construct-card.construct-card-top .source),
+  :global(.construct-card.construct-card-top .meta),
+  :global(.construct-card.construct-card-top .abbrev),
+  :global(.construct-card.construct-card-top .definition),
+  :global(.construct-card.construct-card-ci a),
+  :global(.construct-card.construct-card-ci .source),
+  :global(.construct-card.construct-card-ci .meta),
+  :global(.construct-card.construct-card-ci .abbrev),
+  :global(.construct-card.construct-card-ci .definition) {
+    color: inherit;
+  }
+
+  :global(.construct-card.construct-card-top .abbrev) {
+    background: rgba(255, 255, 255, 0.16);
+    color: #fff;
+  }
+
+  :global(.construct-card.construct-card-ci .abbrev) {
+    background: rgba(247, 230, 163, 0.16);
+    color: #f7e6a3;
+  }
+
+  :global(.construct-card.construct-card-top .construct-card-umbrella),
+  :global(.construct-card.construct-card-ci .construct-card-umbrella) {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.16);
   }
 
   :global(.construct-card-umbrella) {

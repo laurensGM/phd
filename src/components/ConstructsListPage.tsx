@@ -12,6 +12,12 @@ interface Construct {
   relatedModels?: string[];
 }
 
+interface ModelOption {
+  id: string;
+  name: string;
+  abbreviation?: string;
+}
+
 interface UmbrellaConstruct {
   id: string;
   name: string;
@@ -21,13 +27,62 @@ interface UmbrellaConstruct {
 interface ConstructsListPageProps {
   constructs: Construct[];
   umbrellaConstructs: UmbrellaConstruct[];
+  models: ModelOption[];
 }
 
-export default function ConstructsListPage({ constructs, umbrellaConstructs }: ConstructsListPageProps) {
+export default function ConstructsListPage({ constructs, umbrellaConstructs, models }: ConstructsListPageProps) {
   const [filterUmbrellaId, setFilterUmbrellaId] = useState('');
   const [filterLetter, setFilterLetter] = useState('');
+  const [filterModelId, setFilterModelId] = useState('');
+  const [filterImportance, setFilterImportance] = useState<'all' | 'top' | 'secondary'>('all');
 
   const alphabet = useMemo(() => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''), []);
+  const modelOptions = useMemo(
+    () =>
+      [...models].sort((a, b) =>
+        (a.abbreviation || a.name).localeCompare(b.abbreviation || b.name, undefined, {
+          sensitivity: 'base',
+        })
+      ),
+    [models]
+  );
+
+  const topConstructNames = useMemo(
+    () =>
+      new Set(
+        [
+          'Satisfaction',
+          'Perceived Usefulness',
+          'Confirmation',
+          'Facilitating Conditions',
+          'Task-Technology Fit',
+          'Continuance Intention',
+        ].map((n) => n.trim().toLowerCase())
+      ),
+    []
+  );
+
+  const secondaryConstructNames = useMemo(
+    () =>
+      new Set(
+        [
+          'Trust',
+          'Habit',
+          'Social Influence',
+          'Self-Efficacy',
+          'Perceived Enjoyment',
+          'Price Value',
+        ].map((n) => n.trim().toLowerCase())
+      ),
+    []
+  );
+
+  const getConstructPriority = (name: string): 'top' | 'secondary' | 'default' => {
+    const key = name.trim().toLowerCase();
+    if (topConstructNames.has(key)) return 'top';
+    if (secondaryConstructNames.has(key)) return 'secondary';
+    return 'default';
+  };
 
   const constructIdToUmbrella = useMemo(() => {
     const m = new Map<string, UmbrellaConstruct>();
@@ -38,8 +93,10 @@ export default function ConstructsListPage({ constructs, umbrellaConstructs }: C
   }, [umbrellaConstructs]);
 
   const filteredConstructs = useMemo(() => {
+    const normalize = (v: string) => v.trim().toLowerCase();
     const sortedByName = (items: Construct[]) =>
       [...items].sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+    const selectedModel = modelOptions.find((m) => m.id === filterModelId);
 
     const umbrellaFiltered = (() => {
       if (!filterUmbrellaId) return constructs;
@@ -49,14 +106,31 @@ export default function ConstructsListPage({ constructs, umbrellaConstructs }: C
       return constructs.filter((c) => set.has(c.id));
     })();
 
+    const modelFiltered = (() => {
+      if (!selectedModel) return umbrellaFiltered;
+      const accepted = new Set([
+        normalize(selectedModel.id),
+        normalize(selectedModel.name),
+        normalize(selectedModel.abbreviation ?? ''),
+      ]);
+      return umbrellaFiltered.filter((c) =>
+        (c.relatedModels ?? []).some((m) => accepted.has(normalize(m)))
+      );
+    })();
+
+    const importanceFiltered = (() => {
+      if (filterImportance === 'all') return modelFiltered;
+      return modelFiltered.filter((c) => getConstructPriority(c.name) === filterImportance);
+    })();
+
     const letterFiltered = filterLetter
-      ? umbrellaFiltered.filter((c) =>
+      ? importanceFiltered.filter((c) =>
           c.name.trim().toUpperCase().startsWith(filterLetter)
         )
-      : umbrellaFiltered;
+      : importanceFiltered;
 
     return sortedByName(letterFiltered);
-  }, [constructs, umbrellaConstructs, filterUmbrellaId, filterLetter]);
+  }, [constructs, umbrellaConstructs, modelOptions, filterUmbrellaId, filterLetter, filterModelId, filterImportance]);
 
   return (
     <div className="constructs-page">
@@ -83,6 +157,13 @@ export default function ConstructsListPage({ constructs, umbrellaConstructs }: C
 
       <div className="constructs-umbrella-list">
         <span className="constructs-umbrella-label">Umbrella constructs:</span>
+        <button
+          type="button"
+          className={`constructs-umbrella-chip ${filterUmbrellaId === '' ? 'active' : ''}`}
+          onClick={() => setFilterUmbrellaId('')}
+        >
+          All
+        </button>
         {umbrellaConstructs.map((u) => (
           <button
             key={u.id}
@@ -94,29 +175,66 @@ export default function ConstructsListPage({ constructs, umbrellaConstructs }: C
           </button>
         ))}
       </div>
-      <div className="constructs-filter-row">
-        <label htmlFor="umbrella-filter">
-          Filter by umbrella construct
-          <select
-            id="umbrella-filter"
-            className="constructs-umbrella-select"
-            value={filterUmbrellaId}
-            onChange={(e) => setFilterUmbrellaId(e.target.value)}
+
+      <div className="constructs-model-list">
+        <span className="constructs-model-label">Models:</span>
+        <button
+          type="button"
+          className={`constructs-model-chip ${filterModelId === '' ? 'active' : ''}`}
+          onClick={() => setFilterModelId('')}
+        >
+          All
+        </button>
+        {modelOptions.map((m) => (
+          <button
+            key={m.id}
+            type="button"
+            className={`constructs-model-chip ${filterModelId === m.id ? 'active' : ''}`}
+            onClick={() => setFilterModelId((prev) => (prev === m.id ? '' : m.id))}
           >
-            <option value="">All constructs</option>
-            {umbrellaConstructs.map((u) => (
-              <option key={u.id} value={u.id}>
-                {u.name}
-              </option>
-            ))}
-          </select>
-        </label>
+            {m.abbreviation || m.name}
+          </button>
+        ))}
+      </div>
+
+      <div className="constructs-importance-list">
+        <span className="constructs-importance-label">Priority:</span>
+        <button
+          type="button"
+          className={`constructs-importance-chip ${filterImportance === 'all' ? 'active' : ''}`}
+          onClick={() => setFilterImportance('all')}
+        >
+          All
+        </button>
+        <button
+          type="button"
+          className={`constructs-importance-chip ${filterImportance === 'top' ? 'active' : ''}`}
+          onClick={() => setFilterImportance('top')}
+        >
+          Top 5 + CI
+        </button>
+        <button
+          type="button"
+          className={`constructs-importance-chip ${filterImportance === 'secondary' ? 'active' : ''}`}
+          onClick={() => setFilterImportance('secondary')}
+        >
+          Secondary Important
+        </button>
       </div>
       <div className="constructs-grid">
         {filteredConstructs.map((construct) => {
           const umbrella = constructIdToUmbrella.get(construct.id);
+          const priority = getConstructPriority(construct.name);
+          const cardClassName =
+            priority === 'top' && construct.name.trim().toLowerCase() === 'continuance intention'
+              ? 'construct-card construct-card-ci'
+              : priority === 'top'
+                ? 'construct-card construct-card-top'
+                : priority === 'secondary'
+                  ? 'construct-card construct-card-secondary'
+                  : 'construct-card';
           return (
-            <article key={construct.id} className="construct-card">
+            <article key={construct.id} className={cardClassName}>
               {umbrella && (
                 <span className="construct-card-umbrella">{umbrella.name}</span>
               )}
@@ -137,7 +255,7 @@ export default function ConstructsListPage({ constructs, umbrellaConstructs }: C
         })}
       </div>
       {filteredConstructs.length === 0 && (
-        <p className="constructs-empty">No constructs match the selected umbrella.</p>
+        <p className="constructs-empty">No constructs match the selected filters.</p>
       )}
     </div>
   );

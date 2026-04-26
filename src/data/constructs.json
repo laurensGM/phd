@@ -1097,5 +1097,23 @@
     "relatedModels": ["MM"],
     "relatedConstructs": ["Intrinsic Motivation", "Perceived Usefulness", "Perceived Enjoyment", "Outcome Expectations Performance"],
     "notes": "In Davis et al. (1992), extrinsic motivation reflects instrumental reasons for use and predicts perceived usefulness and enjoyment alongside intrinsic motivation."
+  },
+  {
+    "id": "switching-costs",
+    "name": "Switching Costs",
+    "abbreviation": "SC",
+    "definition": "Difficulty/cost of leaving system",
+    "sourcePaper": "",
+    "doi": "",
+    "theoreticalDomain": "Technology continuance",
+    "measurementItems": [
+      "Switching to another system would be difficult for me.",
+      "Changing to another system would involve high effort or cost.",
+      "It would take significant time to move away from this system."
+    ],
+    "measurementScale": "Likert scale",
+    "relatedModels": ["ECM-IS"],
+    "relatedConstructs": ["Continuance Intention", "Satisfaction", "Habit", "Trust"],
+    "notes": "Represents perceived barriers (time, effort, monetary or psychological costs) associated with moving from a current system to an alternative."
   }
 ]
