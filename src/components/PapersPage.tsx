@@ -217,6 +217,7 @@ export default function PapersPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'table' | 'board'>('table');
   const [draggedPaperId, setDraggedPaperId] = useState<string | null>(null);
+  const [justDraggedPaperId, setJustDraggedPaperId] = useState<string | null>(null);
   const [statusGuideOpen, setStatusGuideOpen] = useState(false);
   const [sortField, setSortField] = useState<'created_at' | 'year'>('created_at');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
@@ -490,6 +491,7 @@ export default function PapersPage() {
 
   const handleBoardDragStart = (e: React.DragEvent, paperId: string) => {
     setDraggedPaperId(paperId);
+    setJustDraggedPaperId(null);
     // text/plain is required for reliable drop data in some browsers; JSON is secondary.
     e.dataTransfer.setData('text/plain', paperId);
     e.dataTransfer.setData('application/json', JSON.stringify({ paperId }));
@@ -526,8 +528,9 @@ export default function PapersPage() {
   const handleBoardDrop = async (e: React.DragEvent, newStatus: string) => {
     e.preventDefault();
     e.stopPropagation();
+    if (draggedPaperId) setJustDraggedPaperId(draggedPaperId);
     setDraggedPaperId(null);
-    const paperId = resolveDroppedPaperId(e);
+    const paperId = resolveDroppedPaperId(e) ?? draggedPaperId;
     if (!paperId) return;
     const paper = papers.find((p) => p.id === paperId);
     if (!paper || paper.status === newStatus) return;
@@ -1228,6 +1231,10 @@ export default function PapersPage() {
                           onDragOver={handleBoardDragOver}
                           onClick={(e) => {
                             if ((e.target as HTMLElement).closest('a, button')) return;
+                            if (justDraggedPaperId === paper.id) {
+                              setJustDraggedPaperId(null);
+                              return;
+                            }
                             window.location.href = `${base}papers/detail/?id=${paper.id}`;
                           }}
                           role="button"

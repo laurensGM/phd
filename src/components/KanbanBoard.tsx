@@ -82,6 +82,7 @@ export default function KanbanBoard() {
   const handleDragStart = (e: React.DragEvent, taskId: string) => {
     setDraggedId(taskId);
     setJustDraggedId(null);
+    e.dataTransfer.setData('text/plain', taskId);
     e.dataTransfer.setData('application/json', JSON.stringify({ taskId }));
     e.dataTransfer.effectAllowed = 'move';
   };
@@ -96,10 +97,23 @@ export default function KanbanBoard() {
     const prevId = draggedId;
     setDraggedId(null);
     if (prevId) setJustDraggedId(prevId);
+    let taskId: string | null = null;
     const raw = e.dataTransfer.getData('application/json');
-    if (!raw) return;
+    if (raw) {
+      try {
+        const parsed = JSON.parse(raw) as { taskId?: string };
+        if (parsed?.taskId) taskId = parsed.taskId;
+      } catch {
+        taskId = null;
+      }
+    }
+    if (!taskId) {
+      const plain = e.dataTransfer.getData('text/plain').trim();
+      if (plain) taskId = plain;
+    }
+    if (!taskId && prevId) taskId = prevId;
+    if (!taskId) return;
     try {
-      const { taskId } = JSON.parse(raw);
       const task = tasks.find((t) => t.id === taskId);
       if (!task || task.status === newStatus) return;
       if (!supabase) return;
