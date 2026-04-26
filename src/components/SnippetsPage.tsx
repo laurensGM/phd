@@ -236,6 +236,14 @@ export default function SnippetsPage() {
   const [promptCopyFeedback, setPromptCopyFeedback] = useState(false);
   const [savedPrompts, setSavedPrompts] = useState<LiteratureReviewPrompt[]>([]);
   const [savedPromptsLoading, setSavedPromptsLoading] = useState(true);
+  const [localEmbeddingsAvailable, setLocalEmbeddingsAvailable] = useState(true);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const host = window.location.hostname;
+    const localHosts = new Set(['localhost', '127.0.0.1', '::1']);
+    setLocalEmbeddingsAvailable(localHosts.has(host));
+  }, []);
 
   useEffect(() => {
     if (!isSupabaseConfigured()) {
@@ -452,6 +460,12 @@ export default function SnippetsPage() {
   }, [filteredSnippetsBase, searchMode, search, semanticIdsOrdered]);
 
   useEffect(() => {
+    if (!localEmbeddingsAvailable) {
+      setSemanticIdsOrdered([]);
+      setSemanticSearchLoading(false);
+      setSemanticSearchError('Semantic search is disabled on deployed sites. Use localhost to connect to Ollama.');
+      return;
+    }
     if (searchMode !== 'semantic' || !search.trim()) {
       setSemanticIdsOrdered([]);
       setSemanticSearchLoading(false);
@@ -490,7 +504,7 @@ export default function SnippetsPage() {
     return () => {
       cancelled = true;
     };
-  }, [searchMode, search]);
+  }, [searchMode, search, localEmbeddingsAvailable]);
 
   const syncSnippetEmbedding = useCallback(async (snippetId: string, content: string) => {
     if (!supabase || !isSupabaseConfigured()) return;
@@ -503,6 +517,10 @@ export default function SnippetsPage() {
   }, []);
 
   const backfillMissingEmbeddings = useCallback(async () => {
+    if (!localEmbeddingsAvailable) {
+      setSemanticSearchError('UI backfill is disabled on deployed sites. Run on localhost or use the CLI backfill script.');
+      return;
+    }
     if (!supabase || !isSupabaseConfigured()) return;
     const candidates = snippets.filter((s) => !Array.isArray((s as any).embedding) || (s as any).embedding.length === 0);
     const total = candidates.length;
@@ -529,7 +547,7 @@ export default function SnippetsPage() {
     } finally {
       setBackfillEmbeddingRunning(false);
     }
-  }, [snippets]);
+  }, [snippets, localEmbeddingsAvailable]);
 
   const handleAddSnippet = useCallback(
     async (e: React.FormEvent) => {
@@ -871,12 +889,17 @@ export default function SnippetsPage() {
             type="button"
             className="snippets-backfill-btn"
             onClick={backfillMissingEmbeddings}
-            disabled={backfillEmbeddingRunning}
+            disabled={backfillEmbeddingRunning || !localEmbeddingsAvailable}
             title="Generate missing semantic embeddings for currently loaded snippets"
           >
             {backfillEmbeddingRunning ? 'Backfilling embeddings…' : 'Backfill embeddings'}
           </button>
         </div>
+        {!localEmbeddingsAvailable && (
+          <p className="snippets-backfill-status">
+            Semantic mode and in-app backfill are disabled on deployed sites. Run locally to connect to Ollama.
+          </p>
+        )}
         {backfillEmbeddingProgress && (
           <p className="snippets-backfill-status">
             Embedding backfill: {backfillEmbeddingProgress.done}/{backfillEmbeddingProgress.total}
@@ -928,7 +951,16 @@ export default function SnippetsPage() {
               <button
                 type="button"
                 className={`snippets-search-mode-btn${searchMode === 'semantic' ? ' snippets-search-mode-btn-active' : ''}`}
-                onClick={() => setSearchMode('semantic')}
+                onClick={() => {
+                  if (!localEmbeddingsAvailable) return;
+                  setSearchMode('semantic');
+                }}
+                disabled={!localEmbeddingsAvailable}
+                title={
+                  localEmbeddingsAvailable
+                    ? 'Search by meaning using local embeddings'
+                    : 'Semantic mode is available only on localhost'
+                }
               >
                 Semantic
               </button>
