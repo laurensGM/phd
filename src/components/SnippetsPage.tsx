@@ -33,6 +33,8 @@ function snippetTypeLabel(value: string | null | undefined): string {
   return SNIPPET_TYPE_LABEL_BY_VALUE.get(canonical) ?? (value ?? '').trim();
 }
 
+const SNIPPET_PREVIEW_LENGTH = 140;
+
 function buildLiteratureReviewPrompt(claim: string, evidenceBlock: string): string {
   const c = claim.trim();
   const e = evidenceBlock.trim();
@@ -209,6 +211,7 @@ export default function SnippetsPage() {
   const [editTagsInput, setEditTagsInput] = useState('');
   const [editSnippetType, setEditSnippetType] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [expandedSnippetIds, setExpandedSnippetIds] = useState<string[]>([]);
 
   const [promptMode, setPromptMode] = useState(false);
   const [selectedSnippetIds, setSelectedSnippetIds] = useState<string[]>([]);
@@ -628,6 +631,12 @@ export default function SnippetsPage() {
     setEditPageNumber('');
     setEditTagsInput('');
     setEditSnippetType('');
+  }, []);
+
+  const toggleSnippetExpanded = useCallback((snippetId: string) => {
+    setExpandedSnippetIds((prev) =>
+      prev.includes(snippetId) ? prev.filter((id) => id !== snippetId) : [...prev, snippetId]
+    );
   }, []);
 
   const handleSaveEdit = useCallback(
@@ -1093,6 +1102,12 @@ export default function SnippetsPage() {
         <div className="snippets-list">
           {filteredSnippets.map((s) => {
             const paper = paperById.get(s.paper_id);
+            const canExpand = s.content.length > SNIPPET_PREVIEW_LENGTH;
+            const isExpanded = expandedSnippetIds.includes(s.id);
+            const displayContent =
+              canExpand && !isExpanded
+                ? `${s.content.slice(0, SNIPPET_PREVIEW_LENGTH)}…`
+                : s.content;
             return (
               <article key={s.id} className={`snippets-card${promptMode ? ' snippets-card-selectable' : ''}`}>
                 <header className="snippets-card-header">
@@ -1108,8 +1123,18 @@ export default function SnippetsPage() {
                   )}
                   <div className="snippets-card-title-row">
                     <h3 className="snippets-card-title">
-                      {s.content.length > 140 ? `${s.content.slice(0, 140)}…` : s.content}
+                      {displayContent}
                     </h3>
+                    {canExpand && (
+                      <button
+                        type="button"
+                        className="snippets-card-toggle"
+                        onClick={() => toggleSnippetExpanded(s.id)}
+                        aria-expanded={isExpanded}
+                      >
+                        {isExpanded ? '▲ Less' : '▼ More'}
+                      </button>
+                    )}
                   </div>
                   {canonicalSnippetType((s as any).snippet_type) && (
                     <span className="snippets-card-type">

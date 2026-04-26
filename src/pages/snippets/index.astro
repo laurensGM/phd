@@ -312,6 +312,21 @@ import SnippetsPage from '../../components/SnippetsPage';
     font-weight: 600;
     font-size: 0.95rem;
     margin: 0;
+    white-space: pre-wrap;
+  }
+  :global(.snippets-card-toggle) {
+    border: 1px solid var(--color-border);
+    background: #fff;
+    color: var(--color-maroon);
+    border-radius: 999px;
+    padding: 0.15rem 0.55rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  :global(.snippets-card-toggle:hover) {
+    background: rgba(113, 32, 56, 0.08);
   }
   :global(.snippets-card-paper) {
     font-weight: 600;
