@@ -166,6 +166,38 @@ import SnippetsPage from '../../components/SnippetsPage';
     color: var(--color-ink-muted);
     line-height: 1.35;
   }
+  :global(.snippets-semantic-controls) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 0.9rem;
+    margin: 0.1rem 0 0.35rem 0;
+  }
+  :global(.snippets-semantic-control) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.78rem;
+    color: var(--color-ink-muted);
+  }
+  :global(.snippets-semantic-input) {
+    width: 84px;
+    padding: 0.3rem 0.45rem;
+    font-size: 0.8rem;
+  }
+  :global(.snippets-help-tip) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    border: 1px solid var(--color-border);
+    color: var(--color-maroon);
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: #fff;
+    cursor: help;
+  }
   :global(.snippets-input.snippets-construct-select) {
     border-color: #38bdf8;
     background: #f0f9ff;

@@ -36,6 +36,8 @@ function snippetTypeLabel(value: string | null | undefined): string {
 
 const SNIPPET_PREVIEW_LENGTH = 140;
 type SearchMode = 'keyword' | 'semantic';
+const DEFAULT_SEMANTIC_MATCH_COUNT = 50;
+const DEFAULT_SEMANTIC_MIN_SIMILARITY = 0.55;
 
 function buildLiteratureReviewPrompt(claim: string, evidenceBlock: string): string {
   const c = claim.trim();
@@ -200,6 +202,8 @@ export default function SnippetsPage() {
   const [semanticIdsOrdered, setSemanticIdsOrdered] = useState<string[]>([]);
   const [semanticSearchLoading, setSemanticSearchLoading] = useState(false);
   const [semanticSearchError, setSemanticSearchError] = useState<string | null>(null);
+  const [semanticMatchCount, setSemanticMatchCount] = useState<number>(DEFAULT_SEMANTIC_MATCH_COUNT);
+  const [semanticMinSimilarity, setSemanticMinSimilarity] = useState<number>(DEFAULT_SEMANTIC_MIN_SIMILARITY);
 
   const [newContent, setNewContent] = useState('');
   const [newPaperId, setNewPaperId] = useState('');
@@ -483,11 +487,13 @@ export default function SnippetsPage() {
         if (cancelled) return;
         const { data, error } = await (supabase as any).rpc('match_snippets_semantic', {
           query_embedding: embedding,
-          match_count: 200,
+          match_count: semanticMatchCount,
         });
         if (cancelled) return;
         if (error) throw error;
-        const ids = ((data ?? []) as Array<{ snippet_id: string }>).map((row) => row.snippet_id);
+        const ids = ((data ?? []) as Array<{ snippet_id: string; similarity: number }>)
+          .filter((row) => typeof row.similarity === 'number' && row.similarity >= semanticMinSimilarity)
+          .map((row) => row.snippet_id);
         setSemanticIdsOrdered(ids);
       } catch (err: any) {
         if (cancelled) return;
@@ -504,7 +510,7 @@ export default function SnippetsPage() {
     return () => {
       cancelled = true;
     };
-  }, [searchMode, search, localEmbeddingsAvailable]);
+  }, [searchMode, search, localEmbeddingsAvailable, semanticMatchCount, semanticMinSimilarity]);
 
   const syncSnippetEmbedding = useCallback(async (snippetId: string, content: string) => {
     if (!supabase || !isSupabaseConfigured()) return;
@@ -985,11 +991,57 @@ export default function SnippetsPage() {
             </button>
           </div>
           {searchMode === 'semantic' && (
-            <p className="snippets-semantic-note">
-              Semantic mode uses local embeddings (default: Ollama on localhost) and returns snippets by meaning.
-              {semanticSearchLoading ? ' Searching…' : ''}
-              {!semanticSearchLoading && semanticSearchError ? ` ${semanticSearchError}` : ''}
-            </p>
+            <>
+              <div className="snippets-semantic-controls">
+                <label className="snippets-semantic-control">
+                  Similarity threshold
+                  <span
+                    className="snippets-help-tip"
+                    title="Higher threshold = stricter matching (fewer, more focused results). Lower threshold = broader matching (more, less precise results)."
+                    aria-label="Semantic threshold help"
+                  >
+                    ?
+                  </span>
+                  <input
+                    type="number"
+                    min={0}
+                    max={1}
+                    step={0.01}
+                    className="snippets-input snippets-semantic-input"
+                    value={semanticMinSimilarity}
+                    onChange={(e) =>
+                      setSemanticMinSimilarity(Math.min(1, Math.max(0, Number(e.target.value) || 0)))
+                    }
+                  />
+                </label>
+                <label className="snippets-semantic-control">
+                  Max candidates
+                  <span
+                    className="snippets-help-tip"
+                    title="How many top semantic matches to consider before applying your other filters."
+                    aria-label="Max candidates help"
+                  >
+                    ?
+                  </span>
+                  <input
+                    type="number"
+                    min={1}
+                    max={200}
+                    step={1}
+                    className="snippets-input snippets-semantic-input"
+                    value={semanticMatchCount}
+                    onChange={(e) =>
+                      setSemanticMatchCount(Math.min(200, Math.max(1, Number(e.target.value) || 1)))
+                    }
+                  />
+                </label>
+              </div>
+              <p className="snippets-semantic-note">
+                Semantic mode uses local embeddings (default: Ollama on localhost) and returns snippets by meaning.
+                {semanticSearchLoading ? ' Searching…' : ''}
+                {!semanticSearchLoading && semanticSearchError ? ` ${semanticSearchError}` : ''}
+              </p>
+            </>
           )}
           <div className="snippets-filter-row">
             <label>
