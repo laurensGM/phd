@@ -60,6 +60,7 @@ Semantic search adds a vector retrieval layer so the app behaves as a personal l
 
 - Migration: `supabase/migrations/033_snippets_semantic_search.sql`
 - Local embedding helper: `src/lib/localEmbeddings.ts`
+- Backfill script: `scripts/backfill-snippet-embeddings.mjs`
 - Snippet UI integration:
   - Search mode toggle (`Keyword` / `Semantic`)
   - Semantic retrieval path + ranking
@@ -75,6 +76,12 @@ Semantic search adds a vector retrieval layer so the app behaves as a personal l
 4. Optional env vars (if not using defaults):
    - `PUBLIC_OLLAMA_BASE_URL`
    - `PUBLIC_LOCAL_EMBED_MODEL`
+   - `SNIPPET_EMBED_BATCH_SIZE` (optional; default `50`)
+5. Backfill historical snippets:
+   - `npm run semantic:backfill`
+   - required env vars:
+     - `PUBLIC_SUPABASE_URL`
+     - `SUPABASE_SERVICE_ROLE_KEY`
 
 ## Limitations / Current Trade-offs
 
