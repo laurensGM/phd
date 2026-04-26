@@ -303,6 +303,7 @@ export interface Database {
           construct_ids: string[];
           model_ids: string[];
           content: string;
+          embedding: number[] | null;
           notes: string | null;
           tags: string[];
           page_number: number | null;
@@ -316,6 +317,7 @@ export interface Database {
           construct_ids?: string[];
           model_ids?: string[];
           content: string;
+          embedding?: number[] | null;
           notes?: string | null;
           tags?: string[];
           page_number?: number | null;
@@ -328,6 +330,7 @@ export interface Database {
           construct_ids?: string[];
           model_ids?: string[];
           content?: string;
+          embedding?: number[] | null;
           notes?: string | null;
           tags?: string[];
           page_number?: number | null;

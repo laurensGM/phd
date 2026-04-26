@@ -125,6 +125,32 @@ import SnippetsPage from '../../components/SnippetsPage';
   :global(.snippets-search-label .snippets-input) {
     width: 100%;
   }
+  :global(.snippets-search-mode) {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 0.35rem;
+  }
+  :global(.snippets-search-mode-btn) {
+    padding: 0.35rem 0.7rem;
+    border: 1px solid var(--color-border);
+    border-radius: 7px;
+    background: #fff;
+    color: var(--color-ink);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  :global(.snippets-search-mode-btn-active) {
+    background: var(--color-maroon);
+    color: #fff;
+    border-color: var(--color-maroon);
+  }
+  :global(.snippets-semantic-note) {
+    margin: 0.1rem 0 0.75rem 0;
+    font-size: 0.8rem;
+    color: var(--color-ink-muted);
+    line-height: 1.35;
+  }
   :global(.snippets-input.snippets-construct-select) {
     border-color: #38bdf8;
     background: #f0f9ff;

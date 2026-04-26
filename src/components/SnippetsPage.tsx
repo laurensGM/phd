@@ -3,6 +3,7 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import constructsData from '../data/constructs.json';
 import modelsData from '../data/models.json';
 import umbrellaConstructsData from '../data/umbrella-constructs.json';
+import { getLocalEmbedding } from '../lib/localEmbeddings';
 
 const SNIPPET_TYPE_OPTIONS = [
   { value: '', label: '—' },
@@ -34,6 +35,7 @@ function snippetTypeLabel(value: string | null | undefined): string {
 }
 
 const SNIPPET_PREVIEW_LENGTH = 140;
+type SearchMode = 'keyword' | 'semantic';
 
 function buildLiteratureReviewPrompt(claim: string, evidenceBlock: string): string {
   const c = claim.trim();
@@ -193,6 +195,10 @@ export default function SnippetsPage() {
   const [filterTag, setFilterTag] = useState('');
   const [filterSnippetType, setFilterSnippetType] = useState('');
   const [search, setSearch] = useState('');
+  const [searchMode, setSearchMode] = useState<SearchMode>('keyword');
+  const [semanticIdsOrdered, setSemanticIdsOrdered] = useState<string[]>([]);
+  const [semanticSearchLoading, setSemanticSearchLoading] = useState(false);
+  const [semanticSearchError, setSemanticSearchError] = useState<string | null>(null);
 
   const [newContent, setNewContent] = useState('');
   const [newPaperId, setNewPaperId] = useState('');
@@ -367,7 +373,7 @@ export default function SnippetsPage() {
     return map;
   }, [snippets]);
 
-  const filteredSnippets = useMemo(() => {
+  const filteredSnippetsBase = useMemo(() => {
     return snippets.filter((s) => {
       if (filterPaperId && s.paper_id !== filterPaperId) return false;
       if (filterJournalNames.length > 0) {
@@ -411,7 +417,7 @@ export default function SnippetsPage() {
         const tags = Array.isArray(s.tags) ? s.tags : [];
         if (!tags.some((t) => t.toLowerCase() === filterTag.toLowerCase())) return false;
       }
-      if (search) {
+      if (search && searchMode === 'keyword') {
         const q = search.toLowerCase();
         const inContent = s.content.toLowerCase().includes(q);
         const tags = Array.isArray(s.tags) ? s.tags.join(' ').toLowerCase() : '';
@@ -425,7 +431,69 @@ export default function SnippetsPage() {
       }
       return true;
     });
-  }, [snippets, filterPaperId, filterJournalNames, filterConstructIds, filterUmbrellaConstructId, filterModelIds, filterSnippetType, filterTag, search, paperById]);
+  }, [snippets, filterPaperId, filterJournalNames, filterConstructIds, filterUmbrellaConstructId, filterModelIds, filterSnippetType, filterTag, search, searchMode, paperById]);
+
+  const filteredSnippets = useMemo(() => {
+    if (searchMode !== 'semantic' || !search.trim()) return filteredSnippetsBase;
+
+    if (semanticIdsOrdered.length === 0) return [];
+    const order = new Map<string, number>();
+    semanticIdsOrdered.forEach((id, idx) => order.set(id, idx));
+    return filteredSnippetsBase
+      .filter((s) => order.has(s.id))
+      .sort((a, b) => (order.get(a.id) ?? Number.MAX_SAFE_INTEGER) - (order.get(b.id) ?? Number.MAX_SAFE_INTEGER));
+  }, [filteredSnippetsBase, searchMode, search, semanticIdsOrdered]);
+
+  useEffect(() => {
+    if (searchMode !== 'semantic' || !search.trim()) {
+      setSemanticIdsOrdered([]);
+      setSemanticSearchLoading(false);
+      setSemanticSearchError(null);
+      return;
+    }
+    if (!supabase || !isSupabaseConfigured()) return;
+
+    let cancelled = false;
+    (async () => {
+      setSemanticSearchLoading(true);
+      setSemanticSearchError(null);
+      try {
+        const embedding = await getLocalEmbedding(search.trim());
+        if (cancelled) return;
+        const { data, error } = await (supabase as any).rpc('match_snippets_semantic', {
+          query_embedding: embedding,
+          match_count: 200,
+        });
+        if (cancelled) return;
+        if (error) throw error;
+        const ids = ((data ?? []) as Array<{ snippet_id: string }>).map((row) => row.snippet_id);
+        setSemanticIdsOrdered(ids);
+      } catch (err: any) {
+        if (cancelled) return;
+        setSemanticIdsOrdered([]);
+        setSemanticSearchError(
+          err?.message ||
+            'Semantic search failed. Ensure local embeddings are running (default: Ollama at http://localhost:11434).'
+        );
+      } finally {
+        if (!cancelled) setSemanticSearchLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [searchMode, search]);
+
+  const syncSnippetEmbedding = useCallback(async (snippetId: string, content: string) => {
+    if (!supabase || !isSupabaseConfigured()) return;
+    try {
+      const embedding = await getLocalEmbedding(content);
+      await (supabase as any).from('snippets').update({ embedding }).eq('id', snippetId);
+    } catch {
+      // Non-blocking by design; semantic backfill can recover missing vectors.
+    }
+  }, []);
 
   const handleAddSnippet = useCallback(
     async (e: React.FormEvent) => {
@@ -481,6 +549,7 @@ export default function SnippetsPage() {
       } else if (data) {
         const inserted = data as Snippet;
         setSnippets((prev) => [inserted, ...prev]);
+        void syncSnippetEmbedding(inserted.id, inserted.content);
         if (Array.isArray(inserted.tags)) {
           setAllTags((prev) => {
             const set = new Set(prev);
@@ -501,7 +570,7 @@ export default function SnippetsPage() {
       }
       setSaving(false);
     },
-    [newContent, newPaperId, newConstructId, newModelId, newPageNumber, newTagsInput, newSnippetType, allTags]
+    [newContent, newPaperId, newConstructId, newModelId, newPageNumber, newTagsInput, newSnippetType, allTags, syncSnippetEmbedding]
   );
 
   const handleDelete = useCallback(async (id: string) => {
@@ -689,6 +758,7 @@ export default function SnippetsPage() {
       } else if (data) {
         const updated = data as Snippet;
         setSnippets((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
+        void syncSnippetEmbedding(updated.id, updated.content);
         if (Array.isArray(updated.tags)) {
           setAllTags((prev) => {
             const set = new Set(prev);
@@ -701,7 +771,7 @@ export default function SnippetsPage() {
         cancelEdit();
       }
     },
-    [editContent, editConstructId, editModelId, editPageNumber, editTagsInput, editSnippetType, allTags, cancelEdit]
+    [editContent, editConstructId, editModelId, editPageNumber, editTagsInput, editSnippetType, allTags, cancelEdit, syncSnippetEmbedding]
   );
 
   if (loading) {
@@ -789,9 +859,29 @@ export default function SnippetsPage() {
                 className="snippets-input"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search in snippet text, tags, constructs, models…"
+                placeholder={
+                  searchMode === 'semantic'
+                    ? 'Search by meaning (e.g., drivers of continuance intention)…'
+                    : 'Search in snippet text, tags, constructs, models…'
+                }
               />
             </label>
+            <div className="snippets-search-mode" role="group" aria-label="Search mode">
+              <button
+                type="button"
+                className={`snippets-search-mode-btn${searchMode === 'keyword' ? ' snippets-search-mode-btn-active' : ''}`}
+                onClick={() => setSearchMode('keyword')}
+              >
+                Keyword
+              </button>
+              <button
+                type="button"
+                className={`snippets-search-mode-btn${searchMode === 'semantic' ? ' snippets-search-mode-btn-active' : ''}`}
+                onClick={() => setSearchMode('semantic')}
+              >
+                Semantic
+              </button>
+            </div>
             <button
               type="button"
               className="snippets-clear-btn"
@@ -811,6 +901,13 @@ export default function SnippetsPage() {
               Clear filters
             </button>
           </div>
+          {searchMode === 'semantic' && (
+            <p className="snippets-semantic-note">
+              Semantic mode uses local embeddings (default: Ollama on localhost) and returns snippets by meaning.
+              {semanticSearchLoading ? ' Searching…' : ''}
+              {!semanticSearchLoading && semanticSearchError ? ` ${semanticSearchError}` : ''}
+            </p>
+          )}
           <div className="snippets-filter-row">
             <label>
               Paper
