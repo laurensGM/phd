@@ -28,6 +28,7 @@ import SnippetsPage from '../../components/SnippetsPage';
     margin-bottom: 1.25rem;
   }
   :global(.snippets-open-add-btn),
+  :global(.snippets-backfill-btn),
   :global(.snippets-prompt-mode-btn),
   :global(.snippets-generate-prompt-btn) {
     padding: 0.55rem 1.2rem;
@@ -43,6 +44,20 @@ import SnippetsPage from '../../components/SnippetsPage';
     background: var(--color-maroon);
     color: #fff;
     border: none;
+  }
+  :global(.snippets-backfill-btn) {
+    background: #fff7ed;
+    border-color: #fdba74;
+    color: #9a3412;
+  }
+  :global(.snippets-backfill-btn:disabled) {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+  :global(.snippets-backfill-status) {
+    margin: 0.35rem 0 0 0;
+    font-size: 0.82rem;
+    color: var(--color-ink-muted);
   }
   :global(.snippets-prompt-mode-btn-active) {
     background: rgba(113, 32, 56, 0.12);

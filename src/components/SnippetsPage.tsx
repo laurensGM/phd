@@ -103,6 +103,7 @@ interface Snippet {
   model_ids?: string[];
   content: string;
   notes: string | null;
+  embedding?: number[] | null;
   tags: string[];
   page_number: number | null;
   snippet_type: string | null;
@@ -218,6 +219,12 @@ export default function SnippetsPage() {
   const [editSnippetType, setEditSnippetType] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [expandedSnippetIds, setExpandedSnippetIds] = useState<string[]>([]);
+  const [backfillEmbeddingRunning, setBackfillEmbeddingRunning] = useState(false);
+  const [backfillEmbeddingProgress, setBackfillEmbeddingProgress] = useState<{
+    done: number;
+    total: number;
+    failed: number;
+  } | null>(null);
 
   const [promptMode, setPromptMode] = useState(false);
   const [selectedSnippetIds, setSelectedSnippetIds] = useState<string[]>([]);
@@ -494,6 +501,35 @@ export default function SnippetsPage() {
       // Non-blocking by design; semantic backfill can recover missing vectors.
     }
   }, []);
+
+  const backfillMissingEmbeddings = useCallback(async () => {
+    if (!supabase || !isSupabaseConfigured()) return;
+    const candidates = snippets.filter((s) => !Array.isArray((s as any).embedding) || (s as any).embedding.length === 0);
+    const total = candidates.length;
+    setBackfillEmbeddingProgress({ done: 0, total, failed: 0 });
+    if (total === 0) return;
+
+    setBackfillEmbeddingRunning(true);
+    let done = 0;
+    let failed = 0;
+    try {
+      for (const s of candidates) {
+        try {
+          const embedding = await getLocalEmbedding(s.content);
+          const { error } = await (supabase as any).from('snippets').update({ embedding }).eq('id', s.id);
+          if (error) throw error;
+          setSnippets((prev) => prev.map((item) => (item.id === s.id ? { ...item, embedding } : item)));
+        } catch {
+          failed += 1;
+        } finally {
+          done += 1;
+          setBackfillEmbeddingProgress({ done, total, failed });
+        }
+      }
+    } finally {
+      setBackfillEmbeddingRunning(false);
+    }
+  }, [snippets]);
 
   const handleAddSnippet = useCallback(
     async (e: React.FormEvent) => {
@@ -831,7 +867,22 @@ export default function SnippetsPage() {
           >
             Add snippet
           </button>
+          <button
+            type="button"
+            className="snippets-backfill-btn"
+            onClick={backfillMissingEmbeddings}
+            disabled={backfillEmbeddingRunning}
+            title="Generate missing semantic embeddings for currently loaded snippets"
+          >
+            {backfillEmbeddingRunning ? 'Backfilling embeddings…' : 'Backfill embeddings'}
+          </button>
         </div>
+        {backfillEmbeddingProgress && (
+          <p className="snippets-backfill-status">
+            Embedding backfill: {backfillEmbeddingProgress.done}/{backfillEmbeddingProgress.total}
+            {backfillEmbeddingProgress.failed > 0 ? ` (${backfillEmbeddingProgress.failed} failed)` : ''}
+          </p>
+        )}
       </header>
 
       {error && <p className="snippets-error">{error}</p>}
