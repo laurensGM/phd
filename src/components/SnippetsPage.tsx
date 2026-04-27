@@ -36,6 +36,7 @@ function snippetTypeLabel(value: string | null | undefined): string {
 
 const SNIPPET_PREVIEW_LENGTH = 140;
 type SearchMode = 'keyword' | 'semantic';
+type SnippetsTab = 'snippets' | 'saved-prompts';
 const DEFAULT_SEMANTIC_MATCH_COUNT = 50;
 const DEFAULT_SEMANTIC_MIN_SIMILARITY = 0.55;
 
@@ -199,6 +200,7 @@ export default function SnippetsPage() {
   const [filterSnippetType, setFilterSnippetType] = useState('');
   const [search, setSearch] = useState('');
   const [searchMode, setSearchMode] = useState<SearchMode>('keyword');
+  const [activeTab, setActiveTab] = useState<SnippetsTab>('snippets');
   const [semanticIdsOrdered, setSemanticIdsOrdered] = useState<string[]>([]);
   const [semanticSearchLoading, setSemanticSearchLoading] = useState(false);
   const [semanticSearchError, setSemanticSearchError] = useState<string | null>(null);
@@ -901,6 +903,26 @@ export default function SnippetsPage() {
             {backfillEmbeddingRunning ? 'Backfilling embeddings…' : 'Backfill embeddings'}
           </button>
         </div>
+        <div className="snippets-top-tabs" role="tablist" aria-label="Snippets sections">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'snippets'}
+            className={`snippets-top-tab${activeTab === 'snippets' ? ' snippets-top-tab-active' : ''}`}
+            onClick={() => setActiveTab('snippets')}
+          >
+            Snippets ({filteredSnippets.length})
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'saved-prompts'}
+            className={`snippets-top-tab${activeTab === 'saved-prompts' ? ' snippets-top-tab-active' : ''}`}
+            onClick={() => setActiveTab('saved-prompts')}
+          >
+            Saved prompts ({savedPrompts.length})
+          </button>
+        </div>
         {!localEmbeddingsAvailable && (
           <p className="snippets-backfill-status">
             Semantic mode and in-app backfill are disabled on deployed sites. Run locally to connect to Ollama.
@@ -917,6 +939,8 @@ export default function SnippetsPage() {
       {error && <p className="snippets-error">{error}</p>}
 
       <div className="snippets-layout">
+        {activeTab === 'snippets' && (
+          <>
         {promptMode && (
           <div className="snippets-prompt-toolbar" role="region" aria-label="Prompt generation selection">
             <span className="snippets-prompt-count">
@@ -1578,7 +1602,10 @@ export default function SnippetsPage() {
           })}
         </div>
       </section>
+          </>
+        )}
 
+      {activeTab === 'saved-prompts' && (
       <section className="snippets-saved-prompts" aria-labelledby="saved-prompts-heading">
         <h2 id="saved-prompts-heading" className="snippets-section-title">
           Saved literature review prompts
@@ -1657,6 +1684,7 @@ export default function SnippetsPage() {
           </ul>
         )}
       </section>
+      )}
       </div>
 
       {showPromptModal && (

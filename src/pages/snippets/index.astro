@@ -59,6 +59,26 @@ import SnippetsPage from '../../components/SnippetsPage';
     font-size: 0.82rem;
     color: var(--color-ink-muted);
   }
+  :global(.snippets-top-tabs) {
+    display: inline-flex;
+    gap: 0.45rem;
+    margin-top: 0.8rem;
+  }
+  :global(.snippets-top-tab) {
+    padding: 0.4rem 0.9rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--color-ink);
+    font-size: 0.84rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  :global(.snippets-top-tab-active) {
+    background: var(--color-maroon);
+    color: #fff;
+    border-color: var(--color-maroon);
+  }
   :global(.snippets-prompt-mode-btn-active) {
     background: rgba(113, 32, 56, 0.12);
     border-color: var(--color-maroon);
