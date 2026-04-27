@@ -37,12 +37,45 @@ function snippetTypeLabel(value: string | null | undefined): string {
 const SNIPPET_PREVIEW_LENGTH = 140;
 type SearchMode = 'keyword' | 'semantic';
 type SnippetsTab = 'snippets' | 'saved-prompts';
+type PromptStrategy = 'paragraph' | 'analysis';
 const DEFAULT_SEMANTIC_MATCH_COUNT = 50;
 const DEFAULT_SEMANTIC_MIN_SIMILARITY = 0.55;
 
-function buildLiteratureReviewPrompt(claim: string, evidenceBlock: string): string {
+function buildLiteratureReviewPrompt(claim: string, evidenceBlock: string, strategy: PromptStrategy): string {
   const c = claim.trim();
   const e = evidenceBlock.trim();
+  if (strategy === 'analysis') {
+    return `You are a research analysis assistant for a PhD-level Information Systems literature review.
+
+TASK FOCUS:
+${c}
+
+EVIDENCE (snippets from academic papers):
+${e}
+
+INSTRUCTIONS:
+- Do NOT write a full narrative paragraph.
+- Use only the provided evidence.
+- Do NOT invent studies, findings, or citations.
+- If evidence is weak, mixed, or missing, state that explicitly.
+
+OUTPUT FORMAT (use these exact section headings):
+1) Bullet summary
+- 4-8 concise bullets capturing the core findings relevant to the task focus.
+
+2) Argument map
+- List key claims and supporting evidence chains in bullet form.
+- Show links between constructs where possible.
+
+3) Compare findings
+- Highlight agreements and differences across the included studies/snippets.
+- Note contextual differences (method, setting, population) when visible.
+
+4) Identify contradictions
+- Explicitly list tensions, contradictions, or unresolved inconsistencies.
+- If none are visible, state "No clear contradictions in provided evidence."
+`;
+  }
   return `You are writing an academic literature review paragraph for a PhD-level paper in Information Systems.
 
 TASK:
@@ -237,6 +270,7 @@ export default function SnippetsPage() {
   const [showPromptModal, setShowPromptModal] = useState(false);
   const [promptStep, setPromptStep] = useState<'claim' | 'preview'>('claim');
   const [promptClaim, setPromptClaim] = useState('');
+  const [promptStrategy, setPromptStrategy] = useState<PromptStrategy>('paragraph');
   const [builtPromptText, setBuiltPromptText] = useState('');
   const [promptSaving, setPromptSaving] = useState(false);
   const [promptCopyFeedback, setPromptCopyFeedback] = useState(false);
@@ -665,6 +699,7 @@ export default function SnippetsPage() {
   const openPromptFlow = useCallback(() => {
     if (selectedSnippetIds.length === 0) return;
     setPromptClaim('');
+    setPromptStrategy('paragraph');
     setBuiltPromptText('');
     setPromptStep('claim');
     setShowPromptModal(true);
@@ -673,9 +708,9 @@ export default function SnippetsPage() {
   const goToPromptPreview = useCallback(() => {
     if (!promptClaim.trim()) return;
     const evidence = buildEvidenceBlock(selectedSnippetIds, snippetById, paperById);
-    setBuiltPromptText(buildLiteratureReviewPrompt(promptClaim, evidence));
+    setBuiltPromptText(buildLiteratureReviewPrompt(promptClaim, evidence, promptStrategy));
     setPromptStep('preview');
-  }, [promptClaim, selectedSnippetIds, snippetById, paperById]);
+  }, [promptClaim, selectedSnippetIds, snippetById, paperById, promptStrategy]);
 
   const copyBuiltPrompt = useCallback(async () => {
     if (!builtPromptText) return;
@@ -1712,16 +1747,33 @@ export default function SnippetsPage() {
               <div className="snippets-prompt-modal-body">
                 <p className="snippets-prompt-hint">
                   {selectedSnippetIds.length} snippet{selectedSnippetIds.length === 1 ? '' : 's'} will be included as
-                  evidence. Enter the claim your literature-review paragraph should support.
+                  evidence. Choose a prompt strategy and define the focus.
                 </p>
+                <label className="snippets-label-inline">
+                  Prompt strategy
+                  <select
+                    className="snippets-input-inline"
+                    value={promptStrategy}
+                    onChange={(e) => setPromptStrategy(e.target.value as PromptStrategy)}
+                  >
+                    <option value="paragraph">Generate full paragraph</option>
+                    <option value="analysis">
+                      Structured analysis (bullet summary, argument map, compare findings, contradictions)
+                    </option>
+                  </select>
+                </label>
                 <label className="snippets-label">
-                  Claim
+                  {promptStrategy === 'paragraph' ? 'Claim' : 'Focus question'}
                   <textarea
                     className="snippets-textarea"
                     value={promptClaim}
                     onChange={(e) => setPromptClaim(e.target.value)}
                     rows={4}
-                    placeholder="e.g., Perceived usefulness is the strongest predictor of adoption intention in enterprise settings…"
+                    placeholder={
+                      promptStrategy === 'paragraph'
+                        ? 'e.g., Perceived usefulness is the strongest predictor of adoption intention in enterprise settings…'
+                        : 'e.g., What are the main drivers of continuance intention and where do findings disagree?'
+                    }
                   />
                 </label>
                 <div className="snippets-modal-actions">
@@ -1739,6 +1791,7 @@ export default function SnippetsPage() {
                     onClick={() => {
                       setShowPromptModal(false);
                       setPromptClaim('');
+                      setPromptStrategy('paragraph');
                     }}
                   >
                     Cancel
@@ -1781,6 +1834,7 @@ export default function SnippetsPage() {
                       setShowPromptModal(false);
                       setPromptStep('claim');
                       setPromptClaim('');
+                      setPromptStrategy('paragraph');
                       setBuiltPromptText('');
                     }}
                   >
