@@ -3,8 +3,14 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 
 const base = import.meta.env.BASE_URL;
 
-const groups: { title: string; items: string[] }[] = [
+type WordKind = 'adverb' | 'verb';
+
+type WritingGroup = { kind: WordKind; title: string; items: string[] };
+
+const groups: WritingGroup[] = [
+  // —— Adverbs / connectors (existing content) ——
   {
+    kind: 'adverb',
     title: 'Emphasis',
     items: [
       'Undoubtedly',
@@ -18,6 +24,7 @@ const groups: { title: string; items: string[] }[] = [
     ],
   },
   {
+    kind: 'adverb',
     title: 'Addition',
     items: [
       'Along with',
@@ -30,6 +37,7 @@ const groups: { title: string; items: string[] }[] = [
     ],
   },
   {
+    kind: 'adverb',
     title: 'Contrast',
     items: [
       'Unlike',
@@ -43,6 +51,7 @@ const groups: { title: string; items: string[] }[] = [
     ],
   },
   {
+    kind: 'adverb',
     title: 'Order',
     items: [
       'Following',
@@ -56,6 +65,7 @@ const groups: { title: string; items: string[] }[] = [
     ],
   },
   {
+    kind: 'adverb',
     title: 'Result',
     items: [
       'As a result',
@@ -68,6 +78,7 @@ const groups: { title: string; items: string[] }[] = [
     ],
   },
   {
+    kind: 'adverb',
     title: 'Illustration',
     items: [
       'Such as',
@@ -81,6 +92,7 @@ const groups: { title: string; items: string[] }[] = [
     ],
   },
   {
+    kind: 'adverb',
     title: 'Comparison',
     items: [
       'Similarly',
@@ -94,6 +106,7 @@ const groups: { title: string; items: string[] }[] = [
     ],
   },
   {
+    kind: 'adverb',
     title: 'Summary',
     items: [
       'Briefly',
@@ -107,6 +120,7 @@ const groups: { title: string; items: string[] }[] = [
     ],
   },
   {
+    kind: 'adverb',
     title: 'Reason',
     items: [
       'Because of',
@@ -117,10 +131,12 @@ const groups: { title: string; items: string[] }[] = [
     ],
   },
   {
+    kind: 'adverb',
     title: 'Condition',
     items: ['If', 'In that case', 'In case', 'Unless'],
   },
   {
+    kind: 'adverb',
     title: 'Concession',
     items: [
       'Admittedly',
@@ -133,36 +149,167 @@ const groups: { title: string; items: string[] }[] = [
     ],
   },
   {
+    kind: 'adverb',
     title: 'Generalisation',
     items: ['As a rule', 'On the whole', 'Overall', 'In most cases'],
+  },
+  // —— Verbs ——
+  {
+    kind: 'verb',
+    title: 'Making a claim',
+    items: [
+      'argue',
+      'assert',
+      'believe',
+      'claim',
+      'emphasise',
+      'insist',
+      'observe',
+      'remind us',
+      'report',
+      'suggest',
+      'demonstrate',
+      'declare',
+      'stress',
+      'allege',
+      'maintain',
+    ],
+  },
+  {
+    kind: 'verb',
+    title: 'Agreeing',
+    items: [
+      'acknowledge',
+      'endorse',
+      'admire',
+      'extol',
+      'agree',
+      'praise',
+      'reaffirm',
+      'corroborate',
+      'support',
+      'verify',
+      'approve',
+      'consent',
+      'concede',
+    ],
+  },
+  {
+    kind: 'verb',
+    title: 'Disagreeing',
+    items: [
+      'complain',
+      'complicate',
+      'contend',
+      'contradict',
+      'deny',
+      'deplore',
+      'disavow',
+      'question',
+      'refute',
+      'reject',
+      'renounce',
+      'repudiate',
+      'dispute',
+      'doubt',
+      'challenge',
+      'contest',
+      'disprove',
+    ],
+  },
+  {
+    kind: 'verb',
+    title: 'Making recommendations',
+    items: [
+      'advocate',
+      'encourage',
+      'plead',
+      'warn',
+      'call for',
+      'exhort',
+      'recommend',
+      'suggest',
+      'demand',
+      'implore',
+      'urge',
+      'propose',
+      'advise',
+      'put forward',
+    ],
   },
 ];
 ---
 
 <BaseLayout
   title="Writing tools"
-  description="Connecting words and phrases for academic writing — emphasis, contrast, result, and more."
+  description="Connecting words, adverbial phrases, and reporting verbs for academic writing."
 >
   <p class="back-link"><a href={`${base}tools/`}>← Tools</a></p>
   <h1>Writing tools</h1>
   <p class="page-desc">
-    Handy connecting words and phrases you can drop into drafts to signal emphasis, structure, contrast, and logical
-    relationships between ideas.
+    Adverbial connectors and reporting verbs you can use in drafts to signal structure, stance, and relationships between
+    ideas. Use the legend below to show only one type at a time.
   </p>
 
-  <div class="writing-groups">
-    {groups.map((group) => (
-      <section class="writing-group">
-        <h2 class="writing-group-title">{group.title}</h2>
-        <ul class="writing-list">
-          {group.items.map((phrase) => (
-            <li>{phrase}</li>
-          ))}
-        </ul>
-      </section>
-    ))}
+  <div class="writing-legend" role="group" aria-label="Filter by word type">
+    <span class="writing-legend-label">Show:</span>
+    <button type="button" class="writing-legend-btn is-active" data-writing-filter="all">
+      <span class="writing-legend-swatch writing-legend-swatch--all" aria-hidden="true"></span>
+      All
+    </button>
+    <button type="button" class="writing-legend-btn" data-writing-filter="adverbs">
+      <span class="writing-legend-swatch writing-legend-swatch--adverb" aria-hidden="true"></span>
+      Adverbs &amp; connectors
+    </button>
+    <button type="button" class="writing-legend-btn" data-writing-filter="verbs">
+      <span class="writing-legend-swatch writing-legend-swatch--verb" aria-hidden="true"></span>
+      Verbs
+    </button>
+  </div>
+
+  <div id="writing-tools-root" class="writing-page" data-filter="all">
+    <div class="writing-groups">
+      {
+        groups.map((group) => (
+          <section
+            class:list={['writing-group', group.kind === 'verb' ? 'writing-group--verb' : 'writing-group--adverb']}
+            data-kind={group.kind}
+          >
+            <h2 class="writing-group-title">
+              <span class="writing-kind-badge">{group.kind === 'verb' ? 'Verb' : 'Adverb'}</span>
+              {group.title}
+            </h2>
+            <ul class="writing-list">
+              {group.items.map((phrase) => (
+                <li>{phrase}</li>
+              ))}
+            </ul>
+          </section>
+        ))
+      }
+    </div>
   </div>
 </BaseLayout>
+
+<script>
+  const root = document.getElementById('writing-tools-root');
+  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-writing-filter]');
+
+  function setFilter(value: string) {
+    if (!root) return;
+    root.dataset.filter = value;
+    buttons.forEach((btn) => {
+      btn.classList.toggle('is-active', btn.dataset.writingFilter === value);
+    });
+  }
+
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const v = btn.dataset.writingFilter;
+      if (v) setFilter(v);
+    });
+  });
+</script>
 
 <style>
   .back-link {
@@ -174,10 +321,73 @@ const groups: { title: string; items: string[] }[] = [
   }
   .page-desc {
     color: var(--color-ink-muted);
-    margin-bottom: 2rem;
+    margin-bottom: 1.25rem;
     line-height: 1.6;
     max-width: 42rem;
   }
+
+  .writing-legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    margin-bottom: 1.75rem;
+    padding: 0.85rem 1rem;
+    background: #f7f4ef;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    max-width: 52rem;
+  }
+  .writing-legend-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-ink-muted);
+    margin-right: 0.25rem;
+  }
+  .writing-legend-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.9rem;
+    font-family: inherit;
+    cursor: pointer;
+    border-radius: 999px;
+    border: 1px solid #d1c9b8;
+    background: #fff;
+    color: var(--color-ink);
+    transition:
+      background 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease;
+  }
+  .writing-legend-btn:hover {
+    border-color: var(--color-maroon);
+    color: var(--color-maroon);
+  }
+  .writing-legend-btn.is-active {
+    background: var(--color-maroon);
+    border-color: var(--color-maroon);
+    color: #fdf8f3;
+  }
+  .writing-legend-swatch {
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .writing-legend-swatch--all {
+    background: linear-gradient(135deg, #1e5a7a 50%, #c9a84c 50%);
+  }
+  .writing-legend-swatch--adverb {
+    background: #1e5a7a;
+  }
+  .writing-legend-swatch--verb {
+    background: #8b4d6b;
+  }
+
   .writing-groups {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
@@ -187,20 +397,55 @@ const groups: { title: string; items: string[] }[] = [
   .writing-group {
     margin: 0;
     padding: 1.25rem 1.35rem;
-    background: #fff;
-    border: 1px solid var(--color-border);
     border-radius: 10px;
-    border-left: 4px solid var(--color-maroon);
     box-shadow: var(--shadow-sm);
+    border: 1px solid var(--color-border);
+  }
+  .writing-group--adverb {
+    background: linear-gradient(to right, #e8f2f7 0%, #fff 12%);
+    border-left: 4px solid #1e5a7a;
+  }
+  .writing-group--verb {
+    background: linear-gradient(to right, #f5eaef 0%, #fff 12%);
+    border-left: 4px solid #8b4d6b;
   }
   .writing-group-title {
     font-family: var(--font-serif);
     font-size: 1.05rem;
     font-weight: 600;
     margin: 0 0 0.75rem 0;
-    color: var(--color-maroon);
     letter-spacing: 0.02em;
     text-transform: capitalize;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.4rem 0.5rem;
+    line-height: 1.35;
+  }
+  .writing-group--adverb .writing-group-title {
+    color: #143d52;
+  }
+  .writing-group--verb .writing-group-title {
+    color: #5c2840;
+  }
+  .writing-kind-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    font-family: var(--font-sans, system-ui, sans-serif);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    padding: 0.2rem 0.45rem;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .writing-group--adverb .writing-kind-badge {
+    background: #c5dde8;
+    color: #143d52;
+  }
+  .writing-group--verb .writing-kind-badge {
+    background: #e8d0da;
+    color: #5c2840;
   }
   .writing-list {
     margin: 0;
@@ -214,5 +459,12 @@ const groups: { title: string; items: string[] }[] = [
   }
   .writing-list li:last-child {
     margin-bottom: 0;
+  }
+
+  .writing-page[data-filter='verbs'] .writing-group--adverb {
+    display: none;
+  }
+  .writing-page[data-filter='adverbs'] .writing-group--verb {
+    display: none;
   }
 </style>
