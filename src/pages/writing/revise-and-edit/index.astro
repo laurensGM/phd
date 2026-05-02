@@ -1,0 +1,141 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout
+  title="Revise and edit"
+  description="Layered revision: global message through chapters, sections, paragraphs, and sentences."
+>
+  <p class="back-link"><a href={`${base}writing/`}>← Writing</a></p>
+  <h1>Revise and edit</h1>
+  <p class="page-desc">
+    Revise in layers, paying attention to one level at a time. First do a global revision and ignore everything else,
+    then move on to the next level.
+  </p>
+
+  <article class="revise-content">
+    <section class="revise-intro">
+      <p>
+        When most people revise their writing, they tend to spend most of their time on levels 4 and 5, when in fact
+        levels 1–3 are the most important. This is because it is useless to write a document with impeccable spelling
+        and grammar if it has a confusing message.
+      </p>
+    </section>
+
+    <section>
+      <h2>Level 1: Global</h2>
+      <ul>
+        <li>You first revise by checking if the global message comes through clearly and that the framework makes sense.</li>
+        <li>Check that the introduction clearly provides context and pre-reveals the global message.</li>
+        <li>
+          Check that the conclusion reveals the global message and that it is the same as the message pre-revealed in
+          the introduction.
+        </li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Level 2: Chapters (one chapter at a time, if you have chapters)</h2>
+      <ul>
+        <li>Ensure that all the chapters&rsquo; messages are derived from the global message.</li>
+        <li>Does each chapter&rsquo;s message come through clearly?</li>
+        <li>Does the framework used in the chapter organise the ideas correctly?</li>
+        <li>
+          Check that the introduction of each chapter clearly provides context and pre-reveals the chapter&rsquo;s message.
+          Check that the conclusion reveals the chapter&rsquo;s message and that it is the same as the message pre-revealed in
+          the introduction.
+        </li>
+        <li>Are all chapters clearly connected?</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Level 3: Sections</h2>
+      <ul>
+        <li>Ensure that in every chapter all the sections&rsquo; messages are derived from the chapter message.</li>
+        <li>Does each section&rsquo;s message come through clearly?</li>
+        <li>Does the framework used for each section organise the ideas correctly?</li>
+        <li>
+          Check that the introduction of each section clearly provides context and pre-reveals the section&rsquo;s message.
+          Check that the conclusion reveals the section&rsquo;s message and that it is the same as the message pre-revealed in
+          the introduction.
+        </li>
+        <li>Are all sections in the chapter clearly connected?</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Level 4: Paragraphs</h2>
+      <ul>
+        <li>Ensure that in every section all the paragraphs&rsquo; messages are derived from the section message.</li>
+        <li>Does every paragraph have a single message (only one message)?</li>
+        <li>Is every paragraph correctly organised?</li>
+        <li>Is every paragraph clearly linked to the previous paragraph?</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Level 5: Sentences</h2>
+      <ul>
+        <li>Does every sentence clearly flow from the previous sentence?</li>
+        <li>Check grammar.</li>
+        <li>Check spelling.</li>
+      </ul>
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .back-link {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  .back-link a {
+    color: var(--color-maroon);
+  }
+  .page-desc {
+    color: var(--color-ink-muted);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+    max-width: 42rem;
+  }
+  .revise-content {
+    max-width: 720px;
+  }
+  .revise-intro {
+    margin-bottom: 2rem;
+  }
+  .revise-intro p {
+    margin: 0;
+    line-height: 1.65;
+    color: var(--color-ink);
+  }
+  .revise-content section {
+    margin-bottom: 2.25rem;
+  }
+  .revise-content section:last-child {
+    margin-bottom: 0;
+  }
+  .revise-content h2 {
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    color: var(--color-maroon);
+    margin: 0 0 0.75rem 0;
+    line-height: 1.35;
+  }
+  .revise-content ul {
+    margin: 0;
+    padding-left: 1.25rem;
+    line-height: 1.65;
+    color: var(--color-ink);
+    font-size: 0.95rem;
+  }
+  .revise-content li {
+    margin-bottom: 0.5rem;
+  }
+  .revise-content li:last-child {
+    margin-bottom: 0;
+  }
+</style>

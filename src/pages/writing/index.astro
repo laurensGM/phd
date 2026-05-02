@@ -1,0 +1,92 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout
+  title="Writing"
+  description="Words, layered revision, and systematic literature review guidance."
+>
+  <h1>Writing</h1>
+  <p class="page-desc">
+    Quick links to word lists, layered revision, and your SLR notes and process.
+  </p>
+
+  <div class="writing-hub-grid">
+    <a href={`${base}tools/writing/`} class="writing-hub-card">
+      <span class="writing-hub-icon" aria-hidden="true">✍️</span>
+      <h2 class="writing-hub-title">Words</h2>
+      <p class="writing-hub-desc">Adverbial connectors and reporting verbs for structure, contrast, and stance.</p>
+      <span class="writing-hub-link">Open words →</span>
+    </a>
+    <a href={`${base}writing/revise-and-edit/`} class="writing-hub-card">
+      <span class="writing-hub-icon" aria-hidden="true">📐</span>
+      <h2 class="writing-hub-title">Revise and edit</h2>
+      <p class="writing-hub-desc">Revise from global message down to sentences—one layer at a time.</p>
+      <span class="writing-hub-link">Open revise and edit →</span>
+    </a>
+    <a href={`${base}slr/`} class="writing-hub-card">
+      <span class="writing-hub-icon" aria-hidden="true">📋</span>
+      <h2 class="writing-hub-title">SLR</h2>
+      <p class="writing-hub-desc">Systematic literature review — scope, process, and guidance.</p>
+      <span class="writing-hub-link">Open SLR →</span>
+    </a>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-desc {
+    color: var(--color-ink-muted);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+    max-width: 40rem;
+  }
+  .writing-hub-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+  .writing-hub-card {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    border-left: 4px solid var(--color-maroon);
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  }
+  .writing-hub-card:hover {
+    border-color: var(--color-maroon-muted);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    text-decoration: none;
+    color: inherit;
+  }
+  .writing-hub-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+  }
+  .writing-hub-title {
+    font-family: var(--font-serif);
+    font-size: 1.35rem;
+    margin: 0 0 0.5rem 0;
+    color: var(--color-maroon);
+  }
+  .writing-hub-desc {
+    flex: 1;
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--color-ink);
+  }
+  .writing-hub-link {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-maroon);
+  }
+</style>

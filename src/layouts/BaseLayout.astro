@@ -45,6 +45,13 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
               <li><a href={`${base}snippets/`}>Snippets</a></li>
               <li><a href={`${base}academics/`}>Academics</a></li>
               <li><a href={`${base}theory-map/`}>Theory Map</a></li>
+            </ul>
+          </li>
+          <li class="nav-dropdown-wrap">
+            <span class="nav-dropdown-trigger" tabindex="0" aria-haspopup="true" aria-expanded="false" id="writing-trigger">Writing</span>
+            <ul class="nav-dropdown" aria-labelledby="writing-trigger">
+              <li><a href={`${base}tools/writing/`}>Words</a></li>
+              <li><a href={`${base}writing/revise-and-edit/`}>Revise and edit</a></li>
               <li><a href={`${base}slr/`}>SLR</a></li>
             </ul>
           </li>
@@ -55,7 +62,6 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
             <ul class="nav-dropdown" aria-labelledby="tools-trigger">
               <li><a href={`${base}tools/ai/`}>AI tools</a></li>
               <li><a href={`${base}tools/databases/`}>Databases</a></li>
-              <li><a href={`${base}tools/writing/`}>Writing tools</a></li>
               <li><a href={`${base}tools/golden-nuggets/`}>Golden nuggets</a></li>
               <li><a href={`${base}tools/memes/`}>Memes</a></li>
             </ul>
