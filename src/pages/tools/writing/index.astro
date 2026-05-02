@@ -3,7 +3,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 
 const base = import.meta.env.BASE_URL;
 
-type WordKind = 'adverb' | 'verb';
+type WordKind = 'adverb' | 'verb' | 'phrase';
 
 type WritingGroup = { kind: WordKind; title: string; items: string[] };
 
@@ -200,6 +200,57 @@ const groups: WritingGroup[] = [
     title: 'Generalisation',
     items: ['As a rule', 'On the whole', 'Overall', 'In most cases'],
   },
+  // —— Phrases ——
+  {
+    kind: 'phrase',
+    title: 'Introducing standard views',
+    items: [
+      'Most … believe that immigrants …',
+      'Conventional wisdom amongst economists is …',
+      'The standard way of thinking about … is that …',
+      'Many researchers assume that …',
+    ],
+  },
+  {
+    kind: 'phrase',
+    title: 'Highlighting implied meanings',
+    items: [
+      'One implication of REF\'s treatment of … is that …',
+      'Although REF does not say so directly, he apparently assumes that …',
+      'While neoclassical economists rarely admit it, they often take it for granted that … as is evident from REF',
+    ],
+  },
+  {
+    kind: 'phrase',
+    title: 'Quoting and explaining quotes',
+    items: [
+      'REF insists that "…"',
+      'As REF puts it, "…"',
+      'It seems that REF agrees when he concedes, "…"',
+      'In the view of REF, "…"',
+      'REF complicates matters further when she states, "…"',
+    ],
+  },
+  {
+    kind: 'phrase',
+    title: 'Quotation follow ups',
+    items: [
+      'What REF is trying to say is …',
+      'In other words, REF believes …',
+      'In drawing these conclusions, REF is assuming that …',
+      'Apparently, REF\'s point is that …',
+      'The essence of REF\'s argument is that …',
+      'REF is insisting that …',
+    ],
+  },
+  {
+    kind: 'phrase',
+    title: 'Introducing a debate',
+    items: [
+      'In discussions of …, one controversial issue has been …. On the one hand, neoclassicals (like REF) argue …. On the other hand, Marxists contend … (see REF). It seems that both sides neglect …',
+      'When it comes to the topic of …, most economists agree that … (REF). Where this argument usually ends, is on the question of … Whereas some REF are convinced that …, others maintain that … (REF).',
+    ],
+  },
   // —— Verbs ——
   {
     kind: 'verb',
@@ -289,13 +340,13 @@ const groups: WritingGroup[] = [
 
 <BaseLayout
   title="Words"
-  description="Connecting words, adverbial phrases, and reporting verbs for academic writing."
+  description="Adverbs, phrases, and reporting verbs for academic drafting and revision."
 >
   <p class="back-link"><a href={`${base}writing/`}>← Writing</a></p>
   <h1>Words</h1>
   <p class="page-desc">
-    Adverbial connectors and reporting verbs you can use in drafts to signal structure, stance, and relationships between
-    ideas. Use the legend below to show only one type at a time.
+    Adverbial connectors, reusable sentence openers, and reporting verbs for drafts. Use the legend below to show only
+    one type at a time.
   </p>
 
   <div class="writing-legend" role="group" aria-label="Filter by word type">
@@ -308,6 +359,10 @@ const groups: WritingGroup[] = [
       <span class="writing-legend-swatch writing-legend-swatch--adverb" aria-hidden="true"></span>
       Adverbs &amp; connectors
     </button>
+    <button type="button" class="writing-legend-btn" data-writing-filter="phrases">
+      <span class="writing-legend-swatch writing-legend-swatch--phrase" aria-hidden="true"></span>
+      Phrases
+    </button>
     <button type="button" class="writing-legend-btn" data-writing-filter="verbs">
       <span class="writing-legend-swatch writing-legend-swatch--verb" aria-hidden="true"></span>
       Verbs
@@ -319,11 +374,20 @@ const groups: WritingGroup[] = [
       {
         groups.map((group) => (
           <section
-            class:list={['writing-group', group.kind === 'verb' ? 'writing-group--verb' : 'writing-group--adverb']}
+            class:list={[
+              'writing-group',
+              group.kind === 'verb'
+                ? 'writing-group--verb'
+                : group.kind === 'phrase'
+                  ? 'writing-group--phrase'
+                  : 'writing-group--adverb',
+            ]}
             data-kind={group.kind}
           >
             <h2 class="writing-group-title">
-              <span class="writing-kind-badge">{group.kind === 'verb' ? 'Verb' : 'Adverb'}</span>
+              <span class="writing-kind-badge">
+                {group.kind === 'verb' ? 'Verb' : group.kind === 'phrase' ? 'Phrase' : 'Adverb'}
+              </span>
               {group.title}
             </h2>
             <ul class="writing-list">
@@ -340,7 +404,7 @@ const groups: WritingGroup[] = [
 
 <script>
   const root = document.getElementById('writing-tools-root');
-  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-writing-filter]');
+  const buttons = document.querySelectorAll('[data-writing-filter]');
 
   function setFilter(value: string) {
     if (!root) return;
@@ -426,10 +490,13 @@ const groups: WritingGroup[] = [
     flex-shrink: 0;
   }
   .writing-legend-swatch--all {
-    background: linear-gradient(135deg, #1e5a7a 50%, #c9a84c 50%);
+    background: linear-gradient(90deg, #1e5a7a 0 33%, #4a6b4e 33% 66%, #8b4d6b 66% 100%);
   }
   .writing-legend-swatch--adverb {
     background: #1e5a7a;
+  }
+  .writing-legend-swatch--phrase {
+    background: #4a6b4e;
   }
   .writing-legend-swatch--verb {
     background: #8b4d6b;
@@ -456,6 +523,10 @@ const groups: WritingGroup[] = [
     background: linear-gradient(to right, #f5eaef 0%, #fff 12%);
     border-left: 4px solid #8b4d6b;
   }
+  .writing-group--phrase {
+    background: linear-gradient(to right, #eef4ee 0%, #fff 12%);
+    border-left: 4px solid #4a6b4e;
+  }
   .writing-group-title {
     font-family: var(--font-serif);
     font-size: 1.05rem;
@@ -474,6 +545,10 @@ const groups: WritingGroup[] = [
   }
   .writing-group--verb .writing-group-title {
     color: #5c2840;
+  }
+  .writing-group--phrase .writing-group-title {
+    color: #2d4a32;
+    text-transform: none;
   }
   .writing-kind-badge {
     display: inline-block;
@@ -494,6 +569,10 @@ const groups: WritingGroup[] = [
     background: #e8d0da;
     color: #5c2840;
   }
+  .writing-group--phrase .writing-kind-badge {
+    background: #d4e5d6;
+    color: #2d4a32;
+  }
   .writing-list {
     margin: 0;
     padding-left: 1.15rem;
@@ -508,10 +587,16 @@ const groups: WritingGroup[] = [
     margin-bottom: 0;
   }
 
-  .writing-page[data-filter='verbs'] .writing-group--adverb {
+  .writing-page[data-filter='verbs'] .writing-group--adverb,
+  .writing-page[data-filter='verbs'] .writing-group--phrase {
     display: none;
   }
-  .writing-page[data-filter='adverbs'] .writing-group--verb {
+  .writing-page[data-filter='adverbs'] .writing-group--verb,
+  .writing-page[data-filter='adverbs'] .writing-group--phrase {
+    display: none;
+  }
+  .writing-page[data-filter='phrases'] .writing-group--adverb,
+  .writing-page[data-filter='phrases'] .writing-group--verb {
     display: none;
   }
 </style>
