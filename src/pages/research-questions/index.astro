@@ -1,75 +1,86 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import researchQuestions from '../../data/research-questions.json';
 
-type RQ = { id: string; version: string; question: string; comments?: string; date: string; dateLabel: string; status: string };
-const sorted = ([...researchQuestions] as RQ[]).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-const latestRq = sorted[0];
+const base = import.meta.env.BASE_URL;
 ---
 
-<BaseLayout title="Research Questions" description="RQ evolution - versions, changes, supervisory feedback">
-  <h1>Research Questions</h1>
-  <p class="page-desc">Track the evolution of your research questions, why they changed, and supervisory feedback.</p>
+<BaseLayout
+  title="Research questions"
+  description="Track your RQ versions and guidance on conceptualising a strong research question."
+>
+  <h1>Research questions</h1>
+  <p class="page-desc">
+    Your question timeline, plus structured notes on how to sharpen and justify a research question.
+  </p>
 
-  <div class="rq-timeline">
-    {sorted.map((rq: RQ) => (
-      <article class={`rq-card ${rq.status}`}>
-        <div class="rq-header">
-          <span class="rq-version">RQ {rq.version}</span>
-          {rq.dateLabel && <time class="rq-date" datetime={rq.date}>{rq.dateLabel}</time>}
-          <span class="rq-status-badge">{rq.status}</span>
-        </div>
-        <h2>{rq.question}</h2>
-        {rq.comments && (
-          <section>
-            <h3>Comments</h3>
-            <p>{rq.comments}</p>
-          </section>
-        )}
-        {rq.whyChanged && (
-          <section>
-            <h3>Why changed</h3>
-            <p>{rq.whyChanged}</p>
-          </section>
-        )}
-        {rq.supervisoryFeedback && (
-          <section class="feedback">
-            <h3>Supervisory feedback</h3>
-            <p>{rq.supervisoryFeedback}</p>
-          </section>
-        )}
-      </article>
-    ))}
+  <div class="rq-hub-grid">
+    <a href={`${base}research-questions/questions/`} class="rq-hub-card">
+      <span class="rq-hub-icon" aria-hidden="true">❓</span>
+      <h2 class="rq-hub-title">Questions</h2>
+      <p class="rq-hub-desc">Versions of your research question, status, comments, and supervisory feedback.</p>
+      <span class="rq-hub-link">Open questions →</span>
+    </a>
+    <a href={`${base}research-questions/must-dos/`} class="rq-hub-card">
+      <span class="rq-hub-icon" aria-hidden="true">✓</span>
+      <h2 class="rq-hub-title">10 must do&rsquo;s</h2>
+      <p class="rq-hub-desc">Must-do aspects for conceptualising a research question (building up over time).</p>
+      <span class="rq-hub-link">Open 10 must do&rsquo;s →</span>
+    </a>
   </div>
 </BaseLayout>
 
 <style>
-  .page-desc { color: var(--color-ink-muted); margin-bottom: 2rem; }
-
-  .rq-timeline { display: flex; flex-direction: column; gap: 1.5rem; }
-
-  .rq-card {
-    padding: 1.5rem;
-    background: white;
+  .page-desc {
+    color: var(--color-ink-muted);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+    max-width: 40rem;
+  }
+  .rq-hub-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+  .rq-hub-card {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    background: #fff;
     border: 1px solid var(--color-border);
-    border-radius: 8px;
-    border-left: 4px solid var(--color-border);
+    border-radius: 12px;
+    border-left: 4px solid var(--color-maroon);
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
   }
-
-  .rq-card.current { border-left-color: var(--color-accent); }
-
-  .rq-header { display: flex; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.5rem; }
-  .rq-version { font-weight: 600; color: var(--color-accent); }
-  .rq-date { font-size: 0.875rem; color: var(--color-ink-muted); }
-  .rq-status-badge {
-    padding: 0.2rem 0.5rem;
-    font-size: 0.75rem;
-    background: var(--color-bg-alt);
-    border-radius: 4px;
+  .rq-hub-card:hover {
+    border-color: var(--color-maroon-muted);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    text-decoration: none;
+    color: inherit;
   }
-
-  .rq-card h2 { font-size: 1.15rem; margin: 0.5rem 0; }
-  .rq-card section { margin-top: 1rem; }
-  .rq-card h3 { font-size: 0.95rem; margin-bottom: 0.25rem; }
-  .rq-card .feedback { padding: 1rem; background: var(--color-bg-alt); border-radius: 6px; }
+  .rq-hub-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+  }
+  .rq-hub-title {
+    font-family: var(--font-serif);
+    font-size: 1.35rem;
+    margin: 0 0 0.5rem 0;
+    color: var(--color-maroon);
+  }
+  .rq-hub-desc {
+    flex: 1;
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--color-ink);
+  }
+  .rq-hub-link {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-maroon);
+  }
 </style>

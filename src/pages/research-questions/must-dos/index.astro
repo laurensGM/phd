@@ -1,0 +1,427 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const base = import.meta.env.BASE_URL;
+const imgGap = `${base}research-questions/gap-current-desired.png`;
+const imgObstacles = `${base}research-questions/gap-obstacles-path.png`;
+const imgStakeholders = `${base}research-questions/stakeholder-power-interest.png`;
+const imgNarrativeFlow = `${base}research-questions/narrative-context-flow.png`;
+const imgInvertedPyramid = `${base}research-questions/inverted-pyramid-context.png`;
+---
+
+<BaseLayout
+  title="10 must do's"
+  description="Must-do aspects for conceptualising a research question: itch, making others care, context (narrative and inverted pyramid), audience, and evidence."
+>
+  <div class="mustdos-layout">
+    <nav class="mustdos-toc" aria-label="On this page">
+      <h2 class="mustdos-toc-title">On this page</h2>
+      <ol class="mustdos-toc-list">
+        <li><a href="#intro">Introduction</a></li>
+        <li><a href="#must-do-1">Must do #1: Find a personal itch</a></li>
+        <li>
+          <a href="#must-do-2">Must do #2: Make others care</a>
+          <ol>
+            <li><a href="#audience">Identify your audience</a></li>
+            <li><a href="#explain-problem">Explain the nature of the problem</a></li>
+            <li><a href="#support-claim">Support the claim</a></li>
+          </ol>
+        </li>
+        <li>
+          <a href="#must-do-3">Must do #3: Provide the context</a>
+          <ol>
+            <li><a href="#context-narrative">Narrative</a></li>
+            <li><a href="#context-pyramid">Inverted pyramid</a></li>
+          </ol>
+        </li>
+      </ol>
+    </nav>
+
+    <article class="mustdos-article">
+      <p class="back-link"><a href={`${base}research-questions/`}>← Research questions</a></p>
+      <h1 id="intro">10 must do&rsquo;s</h1>
+      <p class="mustdos-lead">
+        Research within economics and business sciences often begins when someone asks a specific question that has no
+        obvious answer. Such questions need further analysis to pinpoint their exact nature and scope. Often questions
+        are merely <strong>phrased</strong> poorly and ambiguously, and with some rephrasing can be answered easily. Other
+        questions may be stated clearly but have no clear, direct answer, and should be investigated further.
+      </p>
+      <p class="mustdos-lead">
+        In this reading, &ldquo;must do&rdquo; aspects for conceptualising a research question are discussed. In
+        reality the process is rarely linear: you may need to revisit earlier steps as clarity grows. When that
+        happens, it is usually a good sign that the question is becoming more focused.
+      </p>
+
+      <section id="must-do-1" class="mustdos-section">
+        <h2>Must do #1: Find a personal itch</h2>
+        <p>
+          While reviewing topic options, find at least one thing that makes you itch to do research on it—something
+          worth knowing more about. You need a problem or issue you <strong>care about</strong>. Problems researchers
+          care about tend to be more focused, stir emotion, and the work is more likely to make a real difference.
+        </p>
+        <p>
+          In undergraduate study you often work on what others deem important. In postgraduate research you can choose
+          what <em>you</em> think matters. Are there problems in a discipline that have always interested you? Issues that
+          make you angry or excited? Good research is seldom emotionless; people often do their best work on topics that
+          stir strong feelings. Notice which issues pull you in during lectures, or what you keep talking and reading
+          about.
+        </p>
+        <p>
+          It is important to find something you care about before moving on. Research is hard, and you need a pull that
+          gets you through difficult stretches. Caring about the problem helps a great deal.
+        </p>
+      </section>
+
+      <section id="must-do-2" class="mustdos-section">
+        <h2>Must do #2: Make others care</h2>
+        <p>
+          Research is done in the hope that it can make a positive difference in the real world. That means writing for
+          other people: if they do not read it, the work changes nothing. You must get others to care about the itch you
+          identified. If you cannot, you risk the biggest insult a researcher can hear: <strong>&ldquo;So what?&rdquo;</strong>
+        </p>
+        <p>
+          The best way to make others care is to create a <strong>problem</strong> for them. The word comes from the
+          Greek <em>problema</em>, meaning an obstacle to action. In most disciplines a problem is tied to the real
+          world: you must act when there is a <strong>gap</strong> between where you are and where you want to be, as in
+          the diagram below. Where you are can be bad or merely &ldquo;good enough&rdquo;; where you want to be should
+          be better.
+        </p>
+
+        <figure class="mustdos-figure">
+          <img src={imgGap} alt="Diagram: Bad or OK current state labelled Where we are, desired Better state labelled Where we want to be, with a vertical arrow and GAP between them." loading="lazy" />
+          <figcaption>Gap between current situation and desired goal.</figcaption>
+        </figure>
+
+        <p>
+          The bigger the gap, the bigger the problem. Closing the gap requires <strong>action</strong>; if that action is
+          hard, you have a problem—for example wanting to pass a course when you have only just started and success looks
+          difficult.
+        </p>
+        <p>
+          What makes it difficult is that real-world <strong>obstacles</strong> block action and keep the gap open, as in
+          the next figure. Obstacles might include lack of funding, wrong incentives, poor time management, and many
+          others. Because we deal with people and things in the real world, highlight obstacles that are genuinely
+          real-world.
+        </p>
+
+        <figure class="mustdos-figure">
+          <img
+            src={imgObstacles}
+            alt="Diagram: same Where we are and Where we want to be bars; the gap contains blue circles as obstacles and an orange zigzag path through them to the goal."
+            loading="lazy"
+          />
+          <figcaption>Obstacles in the gap make closing it harder.</figcaption>
+        </figure>
+
+        <p>
+          In South Africa, mothers below a certain income can receive a government grant per child. That policy creates
+          several problems: the grant may be too small, or it may create incentives for some young women to become
+          pregnant for income. Framed as a gap: we want the grant to reduce poverty, but the current situation may be
+          that the grant keeps people in poverty. Why not close the gap? Because real-world obstacles stand in the
+          way—for example the social and political disruption that could follow from redesigning the system.
+        </p>
+
+        <h3 id="audience">i) Identify your audience</h3>
+        <p>
+          A problem is always a problem <em>for someone</em>. You need a group in mind when you build the problem. Show
+          that your itch is their problem too; that focus sharpens your writing. Like a text message or a report, research
+          should be written with someone in mind—otherwise it drifts.
+        </p>
+        <p>
+          Think carefully <em>for whom</em> you are creating the problem. To make a difference you must convince people
+          with both the <strong>power</strong> and the <strong>interest</strong> to act. Many groups may care; often only
+          one has real power. That is the group you should write for—the <strong>high power, high interest</strong>
+          quadrant in the diagram below.
+        </p>
+
+        <figure class="mustdos-figure mustdos-figure--wide">
+          <img
+            src={imgStakeholders}
+            alt="Stakeholder matrix: four quadrants for combinations of high and low power and interest."
+            loading="lazy"
+          />
+          <figcaption>Power and interest: prioritise high power and high interest when you need action.</figcaption>
+        </figure>
+
+        <p>
+          In the grant example, many groups are affected: government, taxpayers, parents, children, social workers, and
+          more. Taxpayers, parents, and social workers may have high interest but little power to remove obstacles;
+          children may sit in the low power, low interest quadrant. If the problem is in the <em>design</em> of the grant,
+          the department responsible for that design has the greatest power—so you write with government in mind. That
+          does not erase other stakeholders: convincing government can improve life for everyone else. You cannot write
+          equally to all audiences; social workers and ministers need different framing.
+        </p>
+        <p>
+          In short: list who cares, then choose the group with the greatest power to address the issue. Next, frame the
+          problem for them so they care enough to act.
+        </p>
+
+        <h3 id="explain-problem">ii) Explain the nature of the real-world problem</h3>
+        <p>
+          For that audience, explain what they want in the real world versus what they have now. Use facts from
+          scientific sources and credible data to show the gap is large.
+        </p>
+        <p>
+          Explain why the problem is hard to solve: what are the main obstacles, and how do they block action? For
+          example, South Africa wants less poverty but also wants to limit abuse of assistance. Removing the grant would
+          stop one kind of abuse but worsen poverty; keeping it may create dependency. That dilemma is an obstacle that
+          forces a rethink of grant design—especially when funding to continue the programme in its current form is
+          tight.
+        </p>
+
+        <h3 id="support-claim">iii) Support the claim</h3>
+        <p>
+          Use scientific sources and credible data to support every claim about the problem. Without evidence, it is
+          hard to convince a busy audience that your problem deserves attention among many competing demands.
+        </p>
+        <p>
+          After you have described the problem, plan how you will introduce it in context for that audience. Must do #3
+          turns to how you <strong>provide that context</strong> before you state the problem in full.
+        </p>
+      </section>
+
+      <section id="must-do-3" class="mustdos-section">
+        <h2>Must do #3: Provide the context</h2>
+        <p>
+          When you communicate the problem, not everyone will agree that it matters—or even that it exists. If readers
+          disagree with you early on, it becomes much harder to win them over. That is a key reason to provide
+          <strong>context</strong> first.
+        </p>
+        <p>
+          Context gives the broad background or the story that led to the problem. Usually there is little in it that
+          readers can disagree with, because you have not yet explained the problem as such. It builds common ground,
+          and from there you can lead them toward the problem. There are two main techniques; aim for one or two
+          paragraphs at most.
+        </p>
+
+        <h3 id="context-narrative">i) Narrative</h3>
+        <p>
+          Relate the chain of events from just before the problem emerged to the moment it became visible. Speed
+          matters—do not lose the reader in a long history lesson.
+        </p>
+        <p>
+          Continuing the grant example: you might start with the period just before the policy, when poverty was at
+          severe levels, especially among women and children. In 1994 the government changed; the new administration
+          considered many options. One was a small grant per child for poor mothers. Then reports began to emerge of
+          teenagers becoming pregnant in order to qualify for the grant. When you tell this story, anchor it in data and
+          facts from credible sources so it is hard to dispute, and move step by step toward the problem you want taken
+          seriously, as in the diagram below.
+        </p>
+
+        <figure class="mustdos-figure mustdos-figure--flow">
+          <img
+            src={imgNarrativeFlow}
+            alt="Three horizontal orange arrows in sequence: high poverty among women, new government considers grants, then disturbing reports emerge."
+            loading="lazy"
+          />
+          <figcaption>Narrative chain: from background through policy to the emergence of the problem.</figcaption>
+        </figure>
+
+        <p>
+          Narrative is often the easiest and most persuasive way to set context, because it rests on historical facts
+          and because people tend to be less critical when they follow a story. It works best when there was a clear
+          &ldquo;before&rdquo; and &ldquo;after.&rdquo; If the problem has always existed, use the next technique instead.
+        </p>
+
+        <h3 id="context-pyramid">ii) Inverted pyramid</h3>
+        <p>
+          Start very broad and narrow step by step until you reach the specific problem—like an upside-down pyramid,
+          from general to particular, as in the diagram below. Again, keep it tight: long stretches of vague generality
+          will lose the reader.
+        </p>
+        <p>
+          The grant case fits this pattern too: begin with poverty as a worldwide issue, then show it is especially
+          severe in South Africa; note that governments consider various tools against poverty, and that South Africa chose
+          the child grant; then show that after implementation, a new problem appeared&hellip;
+        </p>
+
+        <figure class="mustdos-figure mustdos-figure--wide">
+          <img
+            src={imgInvertedPyramid}
+            alt="Inverted blue pyramid divided into horizontal bands labelled Poverty worldwide, Poverty in SA, Solutions, Grants, and But… at the tip."
+            loading="lazy"
+          />
+          <figcaption>Inverted pyramid: from broad topic to the specific tension (&ldquo;But…&rdquo;).</figcaption>
+        </figure>
+
+        <p>
+          Because you begin broadly, you build common ground: sweeping statements backed by data are harder to dispute.
+          Both techniques help readers orient themselves and see where you are coming from. We do this in stories—we
+          rarely open with the climax, but with &ldquo;once upon a time.&rdquo; We do it in film—often an establishing view
+          of the city before the camera zooms to where the action is.
+        </p>
+        <p>
+          Context also serves a psychological purpose: if readers agree with you at the start, they are more likely to
+          agree later. The familiar (if grim) analogy is boiling a frog: you do not throw it into hot water or it will jump
+          out. You put it in pleasantly cool water where it can swim; then you turn up the heat gradually so it does not
+          notice and falls asleep as the water heats. The point for writing is to warm your audience to your view in stages—not through
+          deception, but through a sequence of shared premises before you ask for the hard commitment.
+        </p>
+        <p>
+          Salespeople use the same rhythm. A life-insurance salesperson will not open with &ldquo;Do you want to buy an
+          education policy from me?&rdquo;—too easy to say no. Instead they ask a series of questions to which you will
+          tend to say yes: &ldquo;Do you love your children?&rdquo; Yes. &ldquo;So you want the best for them?&rdquo;
+          Yes. &ldquo;And to give them the best, is it important that they get a good university education?&rdquo;
+          Yes&hellip; until &ldquo;Do you want to buy an education policy?&rdquo; is more likely to meet with
+          &ldquo;Yes, of course.&rdquo; In the same way you are &ldquo;selling&rdquo; your research to readers so they will
+          care: start with statements they can agree with, then lead them to the real-world problem.
+        </p>
+      </section>
+    </article>
+  </div>
+</BaseLayout>
+
+<style>
+  .back-link {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  .back-link a {
+    color: var(--color-maroon);
+  }
+
+  .mustdos-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: start;
+    max-width: 1100px;
+  }
+
+  @media (min-width: 900px) {
+    .mustdos-layout {
+      grid-template-columns: min(240px, 26%) 1fr;
+    }
+  }
+
+  .mustdos-toc {
+    position: sticky;
+    top: 5.5rem;
+    z-index: 1;
+    padding: 1rem 1.1rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    border-left: 4px solid var(--color-maroon);
+    font-size: 0.88rem;
+    line-height: 1.45;
+    max-height: calc(100vh - 6rem);
+    overflow-y: auto;
+  }
+
+  .mustdos-toc-title {
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-ink-muted);
+    margin: 0 0 0.65rem 0;
+  }
+
+  .mustdos-toc-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .mustdos-toc-list > li {
+    margin-bottom: 0.45rem;
+  }
+
+  .mustdos-toc-list ol {
+    margin: 0.35rem 0 0.5rem 0;
+    padding-left: 1rem;
+    list-style: none;
+    border-left: 2px solid var(--color-border);
+  }
+
+  .mustdos-toc-list ol li {
+    margin-bottom: 0.3rem;
+  }
+
+  .mustdos-toc a {
+    color: var(--color-maroon);
+    text-decoration: none;
+  }
+
+  .mustdos-toc a:hover {
+    text-decoration: underline;
+  }
+
+  .mustdos-article {
+    min-width: 0;
+  }
+
+  .mustdos-article h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(1.45rem, 3vw, 1.85rem);
+    color: var(--color-maroon);
+    margin: 0 0 1rem 0;
+    scroll-margin-top: 5.5rem;
+  }
+
+  .mustdos-lead {
+    margin: 0 0 1rem 0;
+    line-height: 1.7;
+    color: var(--color-ink);
+    max-width: 42rem;
+  }
+
+  .mustdos-section {
+    margin-top: 2.25rem;
+    scroll-margin-top: 5.5rem;
+  }
+
+  .mustdos-section > h2 {
+    font-family: var(--font-serif);
+    font-size: 1.35rem;
+    color: var(--color-maroon);
+    margin: 0 0 1rem 0;
+    line-height: 1.3;
+    scroll-margin-top: 5.5rem;
+  }
+
+  .mustdos-section h3 {
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    color: var(--color-ink);
+    margin: 1.75rem 0 0.75rem 0;
+    scroll-margin-top: 5.5rem;
+  }
+
+  .mustdos-section p {
+    margin: 0 0 1rem 0;
+    line-height: 1.7;
+    color: var(--color-ink);
+    max-width: 42rem;
+  }
+
+  .mustdos-figure {
+    margin: 1.25rem 0 1.5rem 0;
+    max-width: min(100%, 480px);
+  }
+
+  .mustdos-figure--wide {
+    max-width: min(100%, 560px);
+  }
+
+  .mustdos-figure--flow {
+    max-width: min(100%, 720px);
+  }
+
+  .mustdos-figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+  }
+
+  .mustdos-figure figcaption {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--color-ink-muted);
+    line-height: 1.45;
+  }
+</style>
