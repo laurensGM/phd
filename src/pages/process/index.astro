@@ -1,0 +1,552 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout
+  title="Process"
+  description="End-to-end PhD workflow: discover papers, read efficiently, save high-value snippets, structure ideas, build claims, and synthesize into paragraphs."
+>
+  <article class="process-page">
+    <header class="process-header">
+      <h1 id="top">Process</h1>
+      <p class="process-lead">
+        End-to-end workflow from screening literature to writing—aligned with how this app is meant to be used.
+      </p>
+    </header>
+
+    <nav class="process-toc" aria-label="Phases">
+      <span class="process-toc-label">Jump to</span>
+      <ol>
+        <li><a href="#phase-1">Phase 1 — Discover &amp; screen</a></li>
+        <li><a href="#phase-2">Phase 2 — Read efficiently</a></li>
+        <li><a href="#phase-3">Phase 3 — Save snippets</a></li>
+        <li><a href="#phase-4">Phase 4 — Light structuring</a></li>
+        <li><a href="#phase-5">Phase 5 — Build claims</a></li>
+        <li><a href="#phase-6">Phase 6 — Synthesize</a></li>
+      </ol>
+    </nav>
+
+    <section id="phase-1" class="process-phase">
+      <h2>Phase 1 — Discover &amp; screen papers</h2>
+      <p class="phase-goal"><strong>Goal:</strong> decide fast what&rsquo;s worth your time.</p>
+
+      <h3 class="process-subh">Process</h3>
+      <div class="flow" aria-label="Screening flow">
+        <div class="flow-block">Search (EBSCO, Web of Science, Scopus)</div>
+        <span class="flow-arrow" aria-hidden="true">↓</span>
+        <div class="flow-block">Open paper (PDF)</div>
+        <span class="flow-arrow" aria-hidden="true">↓</span>
+        <div class="flow-block flow-block--wide">
+          <span class="flow-block-title">Use Jenni → ask:</span>
+          <ul>
+            <li>&ldquo;What is this paper about?&rdquo;</li>
+            <li>&ldquo;Key constructs?&rdquo;</li>
+            <li>&ldquo;Main findings?&rdquo;</li>
+          </ul>
+        </div>
+        <span class="flow-arrow" aria-hidden="true">↓</span>
+        <div class="flow-block flow-block--wide">
+          <span class="flow-block-title">Decision</span>
+          <ul class="flow-decisions">
+            <li><strong>Relevant</strong> → Save + generate summary with ChatGPT</li>
+            <li><strong>Not relevant</strong> → Skip</li>
+          </ul>
+        </div>
+      </div>
+
+      <aside class="in-app">
+        <h3 class="in-app-title">In your system</h3>
+        <ul>
+          <li>Save paper (<a href={`${base}papers/`}>Papers</a> — DOI auto-fill where available)</li>
+          <li>Status = <strong>to read</strong></li>
+        </ul>
+      </aside>
+    </section>
+
+    <section id="phase-2" class="process-phase">
+      <h2>Phase 2 — Read efficiently (not linearly)</h2>
+      <p class="phase-goal"><strong>Goal:</strong> extract insight, not read everything.</p>
+
+      <h3 class="process-subh">Process</h3>
+      <div class="flow" aria-label="Reading flow">
+        <div class="flow-block">Skim structure (abstract, model, results)</div>
+        <span class="flow-arrow" aria-hidden="true">↓</span>
+        <div class="flow-block flow-block--wide">
+          <span class="flow-block-title">Use Jenni to zoom</span>
+          <ul>
+            <li>&ldquo;What predicts continuance intention?&rdquo;</li>
+            <li>&ldquo;How is satisfaction defined?&rdquo;</li>
+          </ul>
+        </div>
+        <span class="flow-arrow" aria-hidden="true">↓</span>
+        <div class="flow-block">Jump to relevant sections only</div>
+      </div>
+    </section>
+
+    <section id="phase-3" class="process-phase">
+      <h2>Phase 3 — Save high-value snippets (critical step)</h2>
+
+      <div class="callout callout--rule">
+        <h3 class="callout-title">Rule</h3>
+        <p class="callout-lead">Only save what you will <strong>reuse in writing</strong>.</p>
+      </div>
+
+      <div class="two-col">
+        <div class="panel panel--do">
+          <h3 class="panel-title">Save only</h3>
+          <ul>
+            <li>Definitions</li>
+            <li>Strong empirical findings</li>
+            <li>Construct relationships</li>
+            <li>Key theoretical claims</li>
+          </ul>
+        </div>
+        <div class="panel panel--dont">
+          <h3 class="panel-title">Do not save</h3>
+          <ul>
+            <li>Generic explanations</li>
+            <li>Long paragraphs</li>
+            <li>Things you &ldquo;kind of understand&rdquo;</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3 class="process-subh">Each snippet should include</h3>
+      <dl class="snippet-fields">
+        <div><dt>Snippet text</dt><dd>Raw quote or paraphrase</dd></div>
+        <div><dt>Construct</dt><dd>e.g. Satisfaction</dd></div>
+        <div><dt>Model</dt><dd>e.g. ECM</dd></div>
+        <div>
+          <dt>Type</dt>
+          <dd>
+            <ul class="inline-type-list">
+              <li>Definition</li>
+              <li>Relationship</li>
+              <li>Finding</li>
+            </ul>
+          </dd>
+        </div>
+        <div><dt>Paper</dt><dd>Link to paper / ID</dd></div>
+      </dl>
+
+      <p class="callout callout--highlight">
+        <span class="callout-emoji" aria-hidden="true">👉</span>
+        This is what turns your system into a <strong>knowledge graph</strong>, not a notebook. Use{' '}
+        <a href={`${base}snippets/`}>Snippets</a> with constructs and models so links stay traceable.
+      </p>
+    </section>
+
+    <section id="phase-4" class="process-phase">
+      <h2>Phase 4 — Light structuring (ongoing, not heavy)</h2>
+      <p class="phase-goal">As you go—no need for a heavy taxonomy up front.</p>
+
+      <div class="flow" aria-label="Structuring flow">
+        <div class="flow-block">Group snippets by construct</div>
+        <span class="flow-arrow" aria-hidden="true">↓</span>
+        <div class="flow-block flow-block--wide">
+          <span class="flow-block-title">Notice patterns</span>
+          <ul>
+            <li>&ldquo;Satisfaction keeps appearing&rdquo;</li>
+            <li>&ldquo;PU often weaker than satisfaction&rdquo;</li>
+          </ul>
+        </div>
+      </div>
+      <p>You are already starting to form arguments.</p>
+    </section>
+
+    <section id="phase-5" class="process-phase">
+      <h2>Phase 5 — Build claims (PhD thinking)</h2>
+      <p class="phase-goal">A <strong>claim</strong> is a statement you want to defend in your thesis.</p>
+
+      <figure class="example-claim">
+        <figcaption>Example</figcaption>
+        <blockquote>
+          &ldquo;Satisfaction is the strongest predictor of continuance intention.&rdquo;
+        </blockquote>
+      </figure>
+
+      <h3 class="process-subh">How to create a claim</h3>
+      <div class="flow" aria-label="Claim-building flow">
+        <div class="flow-block">Look at 5–10 snippets</div>
+        <span class="flow-arrow" aria-hidden="true">↓</span>
+        <div class="flow-block">Ask: &ldquo;What do these collectively say?&rdquo;</div>
+        <span class="flow-arrow" aria-hidden="true">↓</span>
+        <div class="flow-block">Write the claim in your own words</div>
+      </div>
+
+      <h3 class="process-subh">Store (when you track claims)</h3>
+      <ul class="store-list">
+        <li>Claim text</li>
+        <li>Linked snippet IDs</li>
+        <li>Confidence level (optional)</li>
+      </ul>
+    </section>
+
+    <section id="phase-6" class="process-phase">
+      <h2>Phase 6 — Synthesize into paragraphs</h2>
+      <p class="phase-goal">Move from <strong>data → argument → writing</strong>.</p>
+
+      <h3 class="process-subh">Workflow</h3>
+      <div class="flow" aria-label="Writing synthesis flow">
+        <div class="flow-block"><strong>Filter</strong> — e.g. construct = Continuance intention</div>
+        <span class="flow-arrow" aria-hidden="true">↓</span>
+        <div class="flow-block">Select ~5–15 <strong>best</strong> snippets (not 40)</div>
+        <span class="flow-arrow" aria-hidden="true">↓</span>
+        <div class="flow-block">Review them yourself</div>
+        <span class="flow-arrow" aria-hidden="true">↓</span>
+        <div class="flow-block">Write a rough paragraph manually</div>
+        <span class="flow-arrow" aria-hidden="true">↓</span>
+        <div class="flow-block flow-block--muted"><strong>Optional:</strong> use AI to refine clarity</div>
+      </div>
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .process-page {
+    max-width: 44rem;
+  }
+
+  .process-header h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(1.5rem, 3vw, 1.9rem);
+    color: var(--color-maroon);
+    margin: 0 0 0.5rem 0;
+    scroll-margin-top: 5.5rem;
+  }
+
+  .process-lead {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--color-ink-muted);
+    max-width: 38rem;
+  }
+
+  .process-toc {
+    margin-bottom: 2.25rem;
+    padding: 1rem 1.15rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    border-left: 4px solid var(--color-maroon);
+    font-size: 0.9rem;
+  }
+
+  .process-toc-label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-ink-muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .process-toc ol {
+    margin: 0;
+    padding-left: 1.2rem;
+    line-height: 1.55;
+  }
+
+  .process-toc li {
+    margin-bottom: 0.25rem;
+  }
+
+  .process-toc a {
+    color: var(--color-maroon);
+    text-decoration: none;
+  }
+
+  .process-toc a:hover {
+    text-decoration: underline;
+  }
+
+  .process-phase {
+    margin-bottom: 2.75rem;
+    scroll-margin-top: 5.5rem;
+  }
+
+  .process-phase h2 {
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    color: var(--color-maroon);
+    margin: 0 0 0.65rem 0;
+    line-height: 1.3;
+  }
+
+  .phase-goal {
+    margin: 0 0 1.25rem 0;
+    line-height: 1.65;
+    color: var(--color-ink);
+    font-size: 0.98rem;
+  }
+
+  .process-subh {
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-ink-muted);
+    margin: 1.25rem 0 0.65rem 0;
+  }
+
+  .flow {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    margin: 0 0 1.25rem 0;
+  }
+
+  .flow-block {
+    padding: 0.75rem 1rem;
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--color-ink);
+  }
+
+  .flow-block--wide ul {
+    margin: 0.4rem 0 0 0;
+    padding-left: 1.2rem;
+  }
+
+  .flow-block--wide li {
+    margin-bottom: 0.2rem;
+  }
+
+  .flow-block-title {
+    display: block;
+    font-weight: 600;
+    color: var(--color-ink);
+    margin-bottom: 0.15rem;
+  }
+
+  .flow-block--muted {
+    opacity: 0.92;
+    border-style: dashed;
+  }
+
+  .flow-decisions {
+    margin: 0.35rem 0 0 0;
+    padding-left: 1.2rem;
+  }
+
+  .flow-arrow {
+    display: block;
+    text-align: center;
+    padding: 0.15rem 0;
+    color: var(--color-maroon-muted);
+    font-size: 1.1rem;
+    line-height: 1;
+  }
+
+  .in-app {
+    margin-top: 1.25rem;
+    padding: 1rem 1.15rem;
+    background: rgba(122, 0, 25, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(122, 0, 25, 0.15);
+  }
+
+  .in-app-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    color: var(--color-maroon);
+  }
+
+  .in-app ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    line-height: 1.55;
+    font-size: 0.95rem;
+  }
+
+  .in-app a {
+    color: var(--color-maroon);
+  }
+
+  .callout {
+    margin: 1rem 0 1.25rem 0;
+    padding: 1rem 1.15rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .callout--rule {
+    background: rgba(212, 175, 55, 0.12);
+    border: 1px solid rgba(212, 175, 55, 0.45);
+  }
+
+  .callout-title {
+    margin: 0 0 0.35rem 0;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-ink);
+  }
+
+  .callout-lead {
+    margin: 0;
+  }
+
+  .callout--highlight {
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-left: 4px solid var(--color-gold);
+    margin-top: 1.5rem;
+  }
+
+  .callout-emoji {
+    flex-shrink: 0;
+    font-size: 1.25rem;
+    line-height: 1.3;
+  }
+
+  .callout--highlight a {
+    color: var(--color-maroon);
+    font-weight: 600;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin: 1rem 0 1.25rem 0;
+  }
+
+  @media (min-width: 560px) {
+    .two-col {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .panel {
+    padding: 1rem 1.1rem;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    font-size: 0.92rem;
+  }
+
+  .panel--do {
+    background: rgba(46, 125, 50, 0.06);
+    border-color: rgba(46, 125, 50, 0.25);
+  }
+
+  .panel--dont {
+    background: rgba(183, 28, 28, 0.05);
+    border-color: rgba(183, 28, 28, 0.2);
+  }
+
+  .panel-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-ink);
+  }
+
+  .panel ul {
+    margin: 0;
+    padding-left: 1.15rem;
+    line-height: 1.55;
+  }
+
+  .panel li {
+    margin-bottom: 0.25rem;
+  }
+
+  .snippet-fields {
+    margin: 0.5rem 0 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .snippet-fields > div {
+    display: grid;
+    grid-template-columns: minmax(5.5rem, 28%) 1fr;
+    gap: 0.35rem 1rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 420px) {
+    .snippet-fields > div {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .snippet-fields > div:last-child {
+    border-bottom: none;
+  }
+
+  .snippet-fields dt {
+    margin: 0;
+    font-weight: 600;
+    color: var(--color-maroon);
+  }
+
+  .snippet-fields dd {
+    margin: 0;
+    color: var(--color-ink);
+  }
+
+  .inline-type-list {
+    margin: 0;
+    padding-left: 1.1rem;
+  }
+
+  .example-claim {
+    margin: 1rem 0 1.25rem 0;
+    padding: 0;
+    border: none;
+  }
+
+  .example-claim figcaption {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-ink-muted);
+    margin-bottom: 0.35rem;
+  }
+
+  .example-claim blockquote {
+    margin: 0;
+    padding: 0.85rem 1rem;
+    font-style: italic;
+    background: var(--color-bg-alt);
+    border-left: 4px solid var(--color-maroon);
+    border-radius: 0 8px 8px 0;
+    font-size: 0.98rem;
+    line-height: 1.55;
+  }
+
+  .store-list {
+    margin: 0.25rem 0 0 0;
+    padding-left: 1.2rem;
+    line-height: 1.6;
+    font-size: 0.95rem;
+  }
+
+  .process-phase > p:last-child {
+    margin-top: 0.75rem;
+    line-height: 1.65;
+    color: var(--color-ink);
+    font-size: 0.95rem;
+  }
+</style>
