@@ -1,0 +1,9 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ClaimDetailPage from '../../../components/ClaimDetailPage';
+import '../../../styles/claims.css';
+---
+
+<BaseLayout title="Claim detail" description="View a saved claim, linked snippets, and export actions.">
+  <ClaimDetailPage client:load />
+</BaseLayout>

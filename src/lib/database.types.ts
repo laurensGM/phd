@@ -388,6 +388,78 @@ export interface Database {
           updated_at?: string;
         };
       };
+      claims: {
+        Row: {
+          id: string;
+          title: string;
+          claim_text: string;
+          constructs_involved: string[];
+          relationship_type: string | null;
+          confidence_level: string;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          title?: string;
+          claim_text: string;
+          constructs_involved?: string[];
+          relationship_type?: string | null;
+          confidence_level?: string;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          title?: string;
+          claim_text?: string;
+          constructs_involved?: string[];
+          relationship_type?: string | null;
+          confidence_level?: string;
+          notes?: string | null;
+          updated_at?: string;
+        };
+      };
+      claim_snippets: {
+        Row: {
+          id: string;
+          claim_id: string;
+          snippet_id: string;
+          role: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          claim_id: string;
+          snippet_id: string;
+          role?: string;
+          created_at?: string;
+        };
+        Update: {
+          claim_id?: string;
+          snippet_id?: string;
+          role?: string;
+        };
+      };
+      claim_versions: {
+        Row: {
+          id: string;
+          claim_id: string;
+          version_text: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          claim_id: string;
+          version_text: string;
+          created_at?: string;
+        };
+        Update: {
+          claim_id?: string;
+          version_text?: string;
+        };
+      };
     };
   };
 }

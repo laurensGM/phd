@@ -1,0 +1,9 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ClaimsBuilderPage from '../../../components/ClaimsBuilderPage';
+import '../../../styles/claims.css';
+---
+
+<BaseLayout title="Create claim" description="Guided claim builder: constructs, snippets, roles, and save.">
+  <ClaimsBuilderPage client:load />
+</BaseLayout>

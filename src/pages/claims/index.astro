@@ -1,0 +1,9 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ClaimsListPage from '../../components/ClaimsListPage';
+import '../../styles/claims.css';
+---
+
+<BaseLayout title="Claims" description="Build evidence-linked claims from your snippets.">
+  <ClaimsListPage client:load />
+</BaseLayout>
