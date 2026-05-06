@@ -82,6 +82,11 @@ export default function ClaimsBuilderPage() {
     return m;
   }, [candidates]);
 
+  /** Construct names chosen in step 1 — used to label the snippet filter in step 2. */
+  const constructFilterSummary = useMemo(() => {
+    return [primaryConstruct, relatedConstruct].filter(Boolean).map((id) => constructName(id));
+  }, [primaryConstruct, relatedConstruct]);
+
   const snippetByIdRef = useRef(snippetById);
   snippetByIdRef.current = snippetById;
 
@@ -329,9 +334,20 @@ export default function ClaimsBuilderPage() {
       {step === 2 && (
         <section className="claims-panel">
           <h2>Step 2 — Suggested snippets</h2>
+          {constructFilterSummary.length > 0 && (
+            <div className="claims-filter-banner" role="status">
+              <span className="claims-filter-banner-label">Showing only snippets tagged with</span>{' '}
+              <strong className="claims-filter-banner-constructs">{constructFilterSummary.join(' · ')}</strong>
+              <span className="claims-filter-banner-tail">
+                {' '}
+                (from step 1). Snippets must include at least one of these constructs in their construct tags.
+              </span>
+            </div>
+          )}
           <p className="claims-hint">
-            Showing snippets that tag your construct(s), prioritising theory &amp; empirical findings.
-            Select <strong>5–15</strong> for a focused claim.
+            Types included: theory, empirical findings, and untyped snippets
+            {includeDefinitions ? '; definitions are included' : ''}. Select <strong>5–15</strong> for a focused claim.
+            Full snippet text is shown below.
           </p>
           <label className="claims-check">
             <input
@@ -344,7 +360,11 @@ export default function ClaimsBuilderPage() {
           {loadingSnippets ? (
             <p className="claims-muted">Loading…</p>
           ) : candidates.length === 0 ? (
-            <p className="claims-muted">No matching snippets. Tag snippets with these constructs or widen filters.</p>
+            <p className="claims-muted">
+              No matching snippets for{' '}
+              <strong>{constructFilterSummary.join(' · ') || 'the selected constructs'}</strong>. Tag snippets with those
+              constructs (or adjust step 1).
+            </p>
           ) : (
             <ul className="claims-snippet-pick-list">
               {candidates.map((s) => {
@@ -357,7 +377,7 @@ export default function ClaimsBuilderPage() {
                       <span className="claims-snippet-pick-body">
                         <span className="claims-snippet-pick-paper">{p?.title ?? 'Paper'}</span>
                         <span className="claims-snippet-pick-type">{s.snippet_type ?? '—'}</span>
-                        <span className="claims-snippet-pick-text">{s.content.slice(0, 220)}{s.content.length > 220 ? '…' : ''}</span>
+                        <span className="claims-snippet-pick-text">{s.content}</span>
                       </span>
                     </label>
                   </li>
@@ -383,14 +403,14 @@ export default function ClaimsBuilderPage() {
         <section className="claims-panel">
           <h2>Step 3 — Confirm evidence set</h2>
           <p>You have selected {nSel} snippet{nSel === 1 ? '' : 's'}. Continue to draft wording with an external LLM.</p>
-          <ul className="claims-mini-list">
+          <ul className="claims-confirm-list">
             {selectedIds.map((id) => {
               const s = snippetById.get(id);
               const p = s ? papersById.get(s.paper_id) : undefined;
               return (
-                <li key={id}>
-                  <strong>{p?.title ?? 'Paper'}</strong> — {s?.content.slice(0, 120)}
-                  {s && s.content.length > 120 ? '…' : ''}
+                <li key={id} className="claims-confirm-item">
+                  <div className="claims-confirm-paper">{p?.title ?? 'Paper'}</div>
+                  <div className="claims-confirm-snippet">{s?.content ?? '—'}</div>
                 </li>
               );
             })}
@@ -502,7 +522,7 @@ export default function ClaimsBuilderPage() {
                   <tr key={id}>
                     <td>
                       <div className="claims-role-paper">{p?.title ?? '—'}</div>
-                      <div className="claims-role-snippet">{s?.content.slice(0, 160)}{s && s.content.length > 160 ? '…' : ''}</div>
+                      <div className="claims-role-snippet">{s?.content ?? '—'}</div>
                     </td>
                     <td>
                       <select
