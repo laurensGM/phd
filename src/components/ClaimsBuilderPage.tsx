@@ -38,8 +38,10 @@ function constructName(id: string): string {
 }
 
 function overlapsConstructs(snippet: Snippet, ids: string[]): boolean {
+  const wanted = ids.filter(Boolean);
   const set = new Set((snippet.construct_ids ?? []).filter(Boolean));
-  return ids.some((id) => id && set.has(id));
+  if (wanted.length <= 1) return wanted.some((id) => set.has(id));
+  return wanted.every((id) => set.has(id));
 }
 
 function snippetMatchesEvidenceFilter(s: Snippet, includeDefinitions: boolean): boolean {
@@ -340,7 +342,7 @@ export default function ClaimsBuilderPage() {
               <strong className="claims-filter-banner-constructs">{constructFilterSummary.join(' · ')}</strong>
               <span className="claims-filter-banner-tail">
                 {' '}
-                (from step 1). Snippets must include at least one of these constructs in their construct tags.
+                (from step 1). If both constructs are selected, snippets must contain both tags; with one construct, snippets must contain that tag.
               </span>
             </div>
           )}
