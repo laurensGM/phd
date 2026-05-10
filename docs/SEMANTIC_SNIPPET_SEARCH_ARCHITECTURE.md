@@ -54,13 +54,12 @@ Semantic search adds a vector retrieval layer so the app behaves as a personal l
 - On snippet create and update, frontend attempts non-blocking local embedding sync:
   - generate vector locally
   - update snippet row `embedding`
-- If local embedding service is unavailable, snippet save/edit still succeeds; semantic index can be backfilled later.
+- If local embedding service is unavailable, snippet save/edit still succeeds; that row simply has no vector until a later edit on localhost (or manual DB update).
 
 ## Implemented Components
 
 - Migration: `supabase/migrations/033_snippets_semantic_search.sql`
 - Local embedding helper: `src/lib/localEmbeddings.ts`
-- Backfill script: `scripts/backfill-snippet-embeddings.mjs`
 - Snippet UI integration:
   - Search mode toggle (`Keyword` / `Semantic`)
   - Semantic retrieval path + ranking
@@ -76,22 +75,15 @@ Semantic search adds a vector retrieval layer so the app behaves as a personal l
 4. Optional env vars (if not using defaults):
    - `PUBLIC_OLLAMA_BASE_URL`
    - `PUBLIC_LOCAL_EMBED_MODEL`
-   - `SNIPPET_EMBED_BATCH_SIZE` (optional; default `50`)
-5. Backfill historical snippets:
-   - `npm run semantic:backfill`
-   - required env vars:
-     - `PUBLIC_SUPABASE_URL`
-     - `SUPABASE_SERVICE_ROLE_KEY`
 
 ## Limitations / Current Trade-offs
 
 - Query embedding is generated in browser context (local call to Ollama), so semantic mode depends on local service availability.
-- Existing historical snippets need embedding backfill to be searchable semantically.
+- Snippets created or edited only without a working local embedder may lack vectors and won’t appear in semantic results until edited again with Ollama available.
 - Current ranking is pure vector similarity; hybrid reranking (keyword + vector) is not yet implemented.
 
 ## Suggested Next Steps
 
-1. Add a backfill utility to embed all snippets missing vectors.
-2. Add “Hybrid” mode (vector + keyword signal).
-3. Add optional similarity score display for debugging.
-4. Add telemetry/logging for semantic retrieval failures and latency.
+1. Add “Hybrid” mode (vector + keyword signal).
+2. Add optional similarity score display for debugging.
+3. Add telemetry/logging for semantic retrieval failures and latency.

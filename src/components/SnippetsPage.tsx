@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useCallback } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useState, useCallback, useRef } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import constructsData from '../data/constructs.json';
 import modelsData from '../data/models.json';
@@ -267,13 +267,10 @@ export default function SnippetsPage() {
   const [editSnippetType, setEditSnippetType] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [expandedSnippetIds, setExpandedSnippetIds] = useState<string[]>([]);
+  const [viewportSnippetIds, setViewportSnippetIds] = useState<ReadonlySet<string>>(() => new Set());
+  const snippetCardElRef = useRef<Map<string, HTMLElement>>(new Map());
+  const filteredSnippetIdsRef = useRef<Set<string>>(new Set());
   const [togglingProcessedId, setTogglingProcessedId] = useState<string | null>(null);
-  const [backfillEmbeddingRunning, setBackfillEmbeddingRunning] = useState(false);
-  const [backfillEmbeddingProgress, setBackfillEmbeddingProgress] = useState<{
-    done: number;
-    total: number;
-    failed: number;
-  } | null>(null);
 
   const [promptMode, setPromptMode] = useState(false);
   const [selectedSnippetIds, setSelectedSnippetIds] = useState<string[]>([]);
@@ -530,6 +527,73 @@ export default function SnippetsPage() {
       .sort((a, b) => (order.get(a.id) ?? Number.MAX_SAFE_INTEGER) - (order.get(b.id) ?? Number.MAX_SAFE_INTEGER));
   }, [filteredSnippetsBase, searchMode, search, semanticIdsOrdered]);
 
+  filteredSnippetIdsRef.current = new Set(filteredSnippets.map((s) => s.id));
+
+  useLayoutEffect(() => {
+    const allowed = filteredSnippetIdsRef.current;
+    setViewportSnippetIds((prev) => {
+      const next = new Set<string>();
+      for (const id of prev) {
+        if (allowed.has(id)) next.add(id);
+      }
+      return next;
+    });
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        setViewportSnippetIds((prev) => {
+          const next = new Set(prev);
+          const ok = filteredSnippetIdsRef.current;
+          for (const entry of entries) {
+            const id = (entry.target as HTMLElement).dataset.snippetId;
+            if (!id || !ok.has(id)) continue;
+            if (entry.isIntersecting) next.add(id);
+            else next.delete(id);
+          }
+          return next;
+        });
+      },
+      { root: null, rootMargin: '0px', threshold: [0, 0.05, 0.15] }
+    );
+
+    for (const s of filteredSnippets) {
+      const el = snippetCardElRef.current.get(s.id);
+      if (el) io.observe(el);
+    }
+
+    return () => io.disconnect();
+  }, [filteredSnippets]);
+
+  const viewportExpandableSnippets = useMemo(() => {
+    return filteredSnippets.filter(
+      (s) => s.content.length > SNIPPET_PREVIEW_LENGTH && viewportSnippetIds.has(s.id)
+    );
+  }, [filteredSnippets, viewportSnippetIds]);
+
+  const allViewportExpandablesExpanded = useMemo(() => {
+    if (viewportExpandableSnippets.length === 0) return false;
+    return viewportExpandableSnippets.every((s) => expandedSnippetIds.includes(s.id));
+  }, [viewportExpandableSnippets, expandedSnippetIds]);
+
+  const toggleExpandAllInViewport = useCallback(() => {
+    const expandables = filteredSnippets.filter(
+      (s) => s.content.length > SNIPPET_PREVIEW_LENGTH && viewportSnippetIds.has(s.id)
+    );
+    if (expandables.length === 0) return;
+    const idSet = new Set(expandables.map((x) => x.id));
+    setExpandedSnippetIds((prev) => {
+      const allOn = expandables.every((s) => prev.includes(s.id));
+      if (allOn) return prev.filter((id) => !idSet.has(id));
+      return [...new Set([...prev, ...idSet])];
+    });
+  }, [filteredSnippets, viewportSnippetIds]);
+
+  const setSnippetCardEl = useCallback((id: string, el: HTMLElement | null) => {
+    const map = snippetCardElRef.current;
+    if (el) map.set(id, el);
+    else map.delete(id);
+  }, []);
+
   useEffect(() => {
     if (!localEmbeddingsAvailable) {
       setSemanticIdsOrdered([]);
@@ -585,42 +649,9 @@ export default function SnippetsPage() {
       const embedding = await getLocalEmbedding(content);
       await (supabase as any).from('snippets').update({ embedding }).eq('id', snippetId);
     } catch {
-      // Non-blocking by design; semantic backfill can recover missing vectors.
+      // Non-blocking; snippet save still succeeds without a vector.
     }
   }, []);
-
-  const backfillMissingEmbeddings = useCallback(async () => {
-    if (!localEmbeddingsAvailable) {
-      setSemanticSearchError('UI backfill is disabled on deployed sites. Run on localhost or use the CLI backfill script.');
-      return;
-    }
-    if (!supabase || !isSupabaseConfigured()) return;
-    const candidates = snippets.filter((s) => !Array.isArray((s as any).embedding) || (s as any).embedding.length === 0);
-    const total = candidates.length;
-    setBackfillEmbeddingProgress({ done: 0, total, failed: 0 });
-    if (total === 0) return;
-
-    setBackfillEmbeddingRunning(true);
-    let done = 0;
-    let failed = 0;
-    try {
-      for (const s of candidates) {
-        try {
-          const embedding = await getLocalEmbedding(s.content);
-          const { error } = await (supabase as any).from('snippets').update({ embedding }).eq('id', s.id);
-          if (error) throw error;
-          setSnippets((prev) => prev.map((item) => (item.id === s.id ? { ...item, embedding } : item)));
-        } catch {
-          failed += 1;
-        } finally {
-          done += 1;
-          setBackfillEmbeddingProgress({ done, total, failed });
-        }
-      }
-    } finally {
-      setBackfillEmbeddingRunning(false);
-    }
-  }, [snippets, localEmbeddingsAvailable]);
 
   const handleAddSnippet = useCallback(
     async (e: React.FormEvent) => {
@@ -983,15 +1014,6 @@ export default function SnippetsPage() {
           >
             Add snippet
           </button>
-          <button
-            type="button"
-            className="snippets-backfill-btn"
-            onClick={backfillMissingEmbeddings}
-            disabled={backfillEmbeddingRunning || !localEmbeddingsAvailable}
-            title="Generate missing semantic embeddings for currently loaded snippets"
-          >
-            {backfillEmbeddingRunning ? 'Backfilling embeddings…' : 'Backfill embeddings'}
-          </button>
         </div>
         <div className="snippets-top-tabs" role="tablist" aria-label="Snippets sections">
           <button
@@ -1014,14 +1036,8 @@ export default function SnippetsPage() {
           </button>
         </div>
         {!localEmbeddingsAvailable && (
-          <p className="snippets-backfill-status">
-            Semantic mode and in-app backfill are disabled on deployed sites. Run locally to connect to Ollama.
-          </p>
-        )}
-        {backfillEmbeddingProgress && (
-          <p className="snippets-backfill-status">
-            Embedding backfill: {backfillEmbeddingProgress.done}/{backfillEmbeddingProgress.total}
-            {backfillEmbeddingProgress.failed > 0 ? ` (${backfillEmbeddingProgress.failed} failed)` : ''}
+          <p className="snippets-semantic-local-note">
+            Semantic search is disabled on deployed sites. Use localhost with Ollama to run semantic mode.
           </p>
         )}
       </header>
@@ -1458,9 +1474,28 @@ export default function SnippetsPage() {
       )}
 
         <section className="snippets-list-section">
-        <h2 className="snippets-section-title">
-          Snippets ({filteredSnippets.length})
-        </h2>
+        <div className="snippets-list-section-head">
+          <h2 className="snippets-section-title">
+            Snippets ({filteredSnippets.length})
+          </h2>
+          {filteredSnippets.length > 0 && (
+            <button
+              type="button"
+              className="snippets-expand-viewport-btn"
+              disabled={viewportExpandableSnippets.length === 0}
+              onClick={toggleExpandAllInViewport}
+              title={
+                viewportExpandableSnippets.length === 0
+                  ? 'No truncatable snippets in the current view'
+                  : allViewportExpandablesExpanded
+                    ? 'Collapse full text for every snippet card currently on screen'
+                    : 'Show full text for every truncatable snippet card currently on screen'
+              }
+            >
+              {allViewportExpandablesExpanded ? '▲ Less (on screen)' : '▼ More (on screen)'}
+            </button>
+          )}
+        </div>
         {filteredSnippets.length === 0 && (
           <p className="snippets-empty">No snippets match the current filters.</p>
         )}
@@ -1478,6 +1513,8 @@ export default function SnippetsPage() {
             return (
               <article
                 key={s.id}
+                ref={(el) => setSnippetCardEl(s.id, el)}
+                data-snippet-id={s.id}
                 className={`snippets-card${promptMode ? ' snippets-card-selectable' : ''}${
                   used ? ' snippets-card--used' : ''
                 }`}

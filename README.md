@@ -39,22 +39,6 @@ npm run build
 
 Output in `dist/`.
 
-## Semantic Snippet Backfill (Local Embeddings)
-
-After applying semantic migration `033` and starting local Ollama, backfill embeddings for existing snippets:
-
-```bash
-PUBLIC_SUPABASE_URL=... \
-SUPABASE_SERVICE_ROLE_KEY=... \
-npm run semantic:backfill
-```
-
-Optional:
-
-- `PUBLIC_OLLAMA_BASE_URL` (default `http://localhost:11434`)
-- `PUBLIC_LOCAL_EMBED_MODEL` (default `nomic-embed-text`)
-- `SNIPPET_EMBED_BATCH_SIZE` (default `50`)
-
 ## Deploy to GitHub Pages
 
 1. Create a repo and push the code.
