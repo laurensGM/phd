@@ -31,6 +31,7 @@ export default function HomeDashboard() {
   const [papersCount, setPapersCount] = useState<number>(0);
   const [statusCounts, setStatusCounts] = useState<StatusCount[]>([]);
   const [snippetsCount, setSnippetsCount] = useState<number>(0);
+  const [snippetsProcessedCount, setSnippetsProcessedCount] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -77,6 +78,7 @@ export default function HomeDashboard() {
       setLoading(false);
       setPapersCount(0);
       setSnippetsCount(0);
+      setSnippetsProcessedCount(0);
       setStatusCounts(PAPER_STATUSES.map((s) => ({ status: s.label, count: 0 })));
       return;
     }
@@ -118,6 +120,11 @@ export default function HomeDashboard() {
           setSnippetsCount(0);
         } else {
           setSnippetsCount((snippetsRes.data ?? []).length);
+        }
+        if (processedRes.error) {
+          setSnippetsProcessedCount(0);
+        } else {
+          setSnippetsProcessedCount(processedRes.count ?? 0);
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -168,6 +175,10 @@ export default function HomeDashboard() {
         <a href={`${base}snippets/`} className="home-stat-card home-stat-snippets">
           <span className="home-stat-value">{snippetsCount}</span>
           <span className="home-stat-label">snippets extracted</span>
+        </a>
+        <a href={`${base}snippets/`} className="home-stat-card home-stat-snippets-processed">
+          <span className="home-stat-value">{snippetsProcessedCount}</span>
+          <span className="home-stat-label">snippets processed</span>
         </a>
         <a href={`${base}constructs/`} className="home-stat-card home-stat-constructs">
           <span className="home-stat-value">{constructsCount}</span>

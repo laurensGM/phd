@@ -1045,6 +1045,21 @@ export default function SnippetsPage() {
           </div>
         )}
         <section className="snippets-filters">
+          <div className="snippets-filters-pinned">
+          <div className="snippets-filter-row">
+            <label>
+              Processed (used in writing)
+              <select
+                className="snippets-input"
+                value={filterProcessed}
+                onChange={(e) => setFilterProcessed(e.target.value as FilterProcessed)}
+              >
+                <option value="">All ({snippets.length})</option>
+                <option value="processed">Processed ({processedSnippetCount})</option>
+                <option value="unprocessed">Not processed ({unprocessedSnippetCount})</option>
+              </select>
+            </label>
+          </div>
           <div className="snippets-filter-row">
             <label className="snippets-search-label">
               Search
@@ -1158,6 +1173,8 @@ export default function SnippetsPage() {
               </p>
             </>
           )}
+          </div>
+          <div className="snippets-filters-scroll">
           <div className="snippets-filter-row">
             <label>
               Paper
@@ -1278,20 +1295,6 @@ export default function SnippetsPage() {
           </div>
           <div className="snippets-filter-row">
             <label>
-              Processed (used in writing)
-              <select
-                className="snippets-input"
-                value={filterProcessed}
-                onChange={(e) => setFilterProcessed(e.target.value as FilterProcessed)}
-              >
-                <option value="">All ({snippets.length})</option>
-                <option value="processed">Processed ({processedSnippetCount})</option>
-                <option value="unprocessed">Not processed ({unprocessedSnippetCount})</option>
-              </select>
-            </label>
-          </div>
-          <div className="snippets-filter-row">
-            <label>
               Tag
               <select
                 className="snippets-input"
@@ -1306,6 +1309,7 @@ export default function SnippetsPage() {
                 ))}
               </select>
             </label>
+          </div>
           </div>
         </section>
 
