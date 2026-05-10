@@ -483,7 +483,26 @@ export default function ClaimsBuilderPage() {
       {step === 5 && (
         <section className="claims-panel">
           <h2>Step 5 — Refine claim (critical)</h2>
-          <p className="claims-hint">Edit in your own words so the claim is original and accurate.</p>
+          <p className="claims-hint">
+            Edit in your own words so the claim is original and accurate. Your suggested options from step 4 stay
+            visible here for reference.
+          </p>
+          {(optionA.trim() || optionB.trim()) && (
+            <div className="claims-options">
+              {optionA.trim() && (
+                <button type="button" className="claims-option-card" onClick={() => setClaimText(optionA)}>
+                  <span className="claims-option-label">Option A</span>
+                  <span>{optionA}</span>
+                </button>
+              )}
+              {optionB.trim() && (
+                <button type="button" className="claims-option-card" onClick={() => setClaimText(optionB)}>
+                  <span className="claims-option-label">Option B</span>
+                  <span>{optionB}</span>
+                </button>
+              )}
+            </div>
+          )}
           <label className="claims-field">
             Claim
             <textarea

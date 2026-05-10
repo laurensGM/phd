@@ -6,7 +6,7 @@ const base = import.meta.env.BASE_URL;
 
 <BaseLayout
   title="Process"
-  description="End-to-end PhD workflow: discover papers, read efficiently, save high-value snippets, structure ideas, build claims, and synthesize into paragraphs."
+  description="End-to-end PhD workflow: discover papers, read efficiently, save snippets, build claims, synthesize paragraphs, and refine writing in your voice with a dedicated Claude project."
 >
   <article class="process-page">
     <header class="process-header">
@@ -16,16 +16,27 @@ const base = import.meta.env.BASE_URL;
       </p>
     </header>
 
-    <nav class="process-toc" aria-label="Phases">
-      <span class="process-toc-label">Jump to</span>
-      <ol>
-        <li><a href="#phase-1">Phase 1 — Discover &amp; screen</a></li>
-        <li><a href="#phase-2">Phase 2 — Read efficiently</a></li>
-        <li><a href="#phase-3">Phase 3 — Save snippets</a></li>
-        <li><a href="#phase-4">Phase 4 — Light structuring</a></li>
-        <li><a href="#phase-5">Phase 5 — Build claims</a></li>
-        <li><a href="#phase-6">Phase 6 — Synthesize</a></li>
-      </ol>
+    <nav class="process-tabs" aria-label="Process phases">
+      <div class="process-tabs-inner">
+        <a class="process-tab" href="#phase-1"
+          ><span class="process-tab-num">1</span><span class="process-tab-label">Discover</span></a
+        >
+        <a class="process-tab" href="#phase-2"
+          ><span class="process-tab-num">2</span><span class="process-tab-label">Read</span></a
+        >
+        <a class="process-tab" href="#phase-3"
+          ><span class="process-tab-num">3</span><span class="process-tab-label">Snippets</span></a
+        >
+        <a class="process-tab" href="#phase-4"
+          ><span class="process-tab-num">4</span><span class="process-tab-label">Claims</span></a
+        >
+        <a class="process-tab" href="#phase-5"
+          ><span class="process-tab-num">5</span><span class="process-tab-label">Synthesize</span></a
+        >
+        <a class="process-tab" href="#phase-6"
+          ><span class="process-tab-num">6</span><span class="process-tab-label">Writing</span></a
+        >
+      </div>
     </nav>
 
     <section id="phase-1" class="process-phase">
@@ -139,25 +150,7 @@ const base = import.meta.env.BASE_URL;
     </section>
 
     <section id="phase-4" class="process-phase">
-      <h2>Phase 4 — Light structuring (ongoing, not heavy)</h2>
-      <p class="phase-goal">As you go—no need for a heavy taxonomy up front.</p>
-
-      <div class="flow" aria-label="Structuring flow">
-        <div class="flow-block">Group snippets by construct</div>
-        <span class="flow-arrow" aria-hidden="true">↓</span>
-        <div class="flow-block flow-block--wide">
-          <span class="flow-block-title">Notice patterns</span>
-          <ul>
-            <li>&ldquo;Satisfaction keeps appearing&rdquo;</li>
-            <li>&ldquo;PU often weaker than satisfaction&rdquo;</li>
-          </ul>
-        </div>
-      </div>
-      <p>You are already starting to form arguments.</p>
-    </section>
-
-    <section id="phase-5" class="process-phase">
-      <h2>Phase 5 — Build claims (PhD thinking)</h2>
+      <h2>Phase 4 — Build claims (PhD thinking)</h2>
       <p class="phase-goal">A <strong>claim</strong> is a statement you want to defend in your thesis.</p>
 
       <figure class="example-claim">
@@ -184,8 +177,8 @@ const base = import.meta.env.BASE_URL;
       </ul>
     </section>
 
-    <section id="phase-6" class="process-phase">
-      <h2>Phase 6 — Synthesize into paragraphs</h2>
+    <section id="phase-5" class="process-phase">
+      <h2>Phase 5 — Synthesize into paragraphs</h2>
       <p class="phase-goal">Move from <strong>data → argument → writing</strong>.</p>
 
       <h3 class="process-subh">Workflow</h3>
@@ -201,8 +194,155 @@ const base = import.meta.env.BASE_URL;
         <div class="flow-block flow-block--muted"><strong>Optional:</strong> use AI to refine clarity</div>
       </div>
     </section>
+
+    <section id="phase-6" class="process-phase">
+      <h2>Phase 6 — Improve writing</h2>
+      <p class="phase-goal">
+        <strong>Goal:</strong> refine rough drafts in <strong>your authentic voice</strong>, not generic academic AI prose.
+      </p>
+
+      <h3 class="process-subh">One dedicated Claude project or chat</h3>
+      <p>
+        Create <strong>one</strong> Claude project (or long-lived chat) whose sole purpose is:
+      </p>
+      <blockquote class="process-pullquote">
+        Rewrite and refine my academic writing in my authentic voice.
+      </blockquote>
+      <p>
+        <strong>Continuity matters.</strong> Over many turns, the model gradually adapts to how you write: phrasing,
+        typical sentence length, how you weave in citations, how direct or cautious you sound, and your natural
+        &ldquo;imperfection level.&rdquo; Quality often improves noticeably after roughly <strong>10–20</strong> focused
+        interactions—especially if you feed it real samples of your work early on.
+      </p>
+
+      <h3 class="process-subh">System prompt (toggle to view)</h3>
+      <p class="process-hint">
+        Paste this into the project system instructions (or your first message), then expand below whenever you need to
+        copy or review it.
+      </p>
+      <details class="process-prompt-details">
+        <summary class="process-prompt-summary">System prompt — PhD writing assistant (voice-preserving)</summary>
+        <pre class="process-prompt-block">You are assisting me with PhD-level academic writing in Information Systems and business sciences.
+
+Your role is NOT to generate generic academic prose.
+Your role is to help me refine and rewrite my existing drafts while preserving my intellectual ownership, argumentation structure, and writing style.
+
+I will provide:
+- samples of my previous academic writing
+- rough literature review drafts
+- paragraphs built from literature snippets
+- claims and supporting evidence
+
+Your tasks:
+- analyze and adapt to my writing voice
+- preserve my natural sentence rhythm and paragraph structure
+- maintain my normal level of directness and complexity
+- improve clarity and coherence where needed
+- preserve all citations and meaning
+- avoid repetitive or overly polished AI-style phrasing
+- avoid adding unsupported claims or fabricated references
+- preserve nuance and uncertainty where present in the literature
+
+Important constraints:
+- Do NOT sound like a generic academic AI writer
+- Do NOT overuse transition words or overly smooth phrasing
+- Do NOT make every paragraph perfectly balanced or symmetrical
+- Do NOT inflate vocabulary unnecessarily
+- Do NOT change my argument structure unless explicitly requested
+- Do NOT remove critical nuance or hedging language
+
+When rewriting:
+- prioritize authenticity over polish
+- preserve disciplinary academic tone
+- keep writing human and slightly imperfect where natural
+- preserve the distinction between synthesis and original claims
+
+If my draft is weak or unclear, improve it conservatively rather than fully rewriting it from scratch.</pre>
+      </details>
+
+      <h3 class="process-subh">Prompt to establish &amp; lock in your style</h3>
+      <p>
+        Use this (or a variant) once you have enough of your own text in the thread so Claude can internalize a style
+        profile without you having to re-explain every time:
+      </p>
+      <details class="process-prompt-details">
+        <summary class="process-prompt-summary">Style analysis prompt (toggle to view / copy)</summary>
+        <pre class="process-prompt-block">Analyze my writing style.
+
+Focus on:
+- sentence rhythm
+- paragraph flow
+- citation integration
+- vocabulary level
+- use of hedging
+- level of directness
+- how I synthesize literature
+
+Create a concise internal style profile and use it consistently in future rewrites.
+Do not output the profile unless I ask for it.</pre>
+      </details>
+
+      <h3 class="process-subh">Division of labour</h3>
+      <div class="two-col process-you-claude">
+        <div class="panel panel--do">
+          <h3 class="panel-title">You</h3>
+          <ul>
+            <li>Draft rough text</li>
+            <li>Combine snippets</li>
+            <li>
+              Build claims — e.g. in{' '}
+              <a href={`${base}claims/`}>Claims</a>{' '}after Phase 4–5 so evidence stays traceable
+            </li>
+          </ul>
+        </div>
+        <div class="panel panel--muted">
+          <h3 class="panel-title">Claude (dedicated thread)</h3>
+          <ul>
+            <li>Refines tone and readability</li>
+            <li>Preserves your voice and argument</li>
+            <li>Keeps citations and nuance intact</li>
+          </ul>
+        </div>
+      </div>
+      <p class="process-sweetspot">
+        That split—<strong>you own structure and claims</strong>, <strong>Claude sharpens prose</strong>—is usually the
+        sweet spot.
+      </p>
+
+      <aside class="callout callout--warning">
+        <h3 class="callout-title">Long chats: drift happens</h3>
+        <p class="callout-lead">
+          Claude handles long context well, but after <strong>very long</strong> conversations it can slowly slip toward
+          more generic, polished &ldquo;Claude-like&rdquo; academic prose. Every few days (or whenever the voice feels
+          off), <strong>re-anchor</strong> with fresh excerpts of your own writing (past papers, approved thesis sections, or
+          paragraphs you like). That resets the voice and beats slow style drift.
+        </p>
+      </aside>
+    </section>
   </article>
 </BaseLayout>
+
+<script>
+  function syncProcessTabs() {
+    const tabs = document.querySelectorAll<HTMLAnchorElement>('.process-tab');
+    const hash = window.location.hash || '#phase-1';
+    tabs.forEach((a) => {
+      const active = a.getAttribute('href') === hash;
+      a.classList.toggle('is-active', active);
+      if (active) a.setAttribute('aria-current', 'page');
+      else a.removeAttribute('aria-current');
+    });
+  }
+  syncProcessTabs();
+  window.addEventListener('hashchange', syncProcessTabs);
+</script>
+
+<style is:global>
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 6.75rem;
+  }
+</style>
 
 <style>
   .process-page {
@@ -225,43 +365,78 @@ const base = import.meta.env.BASE_URL;
     max-width: 38rem;
   }
 
-  .process-toc {
-    margin-bottom: 2.25rem;
-    padding: 1rem 1.15rem;
-    background: #fff;
-    border: 1px solid var(--color-border);
-    border-radius: 10px;
-    border-left: 4px solid var(--color-maroon);
-    font-size: 0.9rem;
+  .process-tabs {
+    position: sticky;
+    top: 3.35rem;
+    z-index: 90;
+    margin: 0 0 1.75rem 0;
+    padding: 0.4rem 0;
+    background: var(--color-bg);
+    border-bottom: 1px solid var(--color-border);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
   }
 
-  .process-toc-label {
-    display: block;
+  .process-tabs-inner {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.2rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    padding-bottom: 0.1rem;
+  }
+
+  .process-tab {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1rem;
+    min-width: 4.25rem;
+    padding: 0.4rem 0.55rem 0.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--color-ink-muted);
     font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1.15;
+    border: 1px solid transparent;
+    transition:
+      color 0.15s ease,
+      background 0.15s ease,
+      border-color 0.15s ease;
+  }
+
+  .process-tab:hover {
+    color: var(--color-maroon);
+    background: rgba(113, 32, 56, 0.06);
+  }
+
+  .process-tab.is-active {
+    color: var(--color-maroon);
+    background: #fff;
+    border-color: var(--color-border);
+    box-shadow: 0 1px 0 0 #fff;
+    margin-bottom: -1px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-color: #fff;
+  }
+
+  .process-tab-num {
+    font-size: 0.65rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--color-ink-muted);
-    margin-bottom: 0.5rem;
+    letter-spacing: 0.06em;
+    opacity: 0.85;
   }
 
-  .process-toc ol {
-    margin: 0;
-    padding-left: 1.2rem;
-    line-height: 1.55;
+  .process-tab.is-active .process-tab-num {
+    opacity: 1;
   }
 
-  .process-toc li {
-    margin-bottom: 0.25rem;
-  }
-
-  .process-toc a {
-    color: var(--color-maroon);
-    text-decoration: none;
-  }
-
-  .process-toc a:hover {
-    text-decoration: underline;
+  .process-tab-label {
+    white-space: nowrap;
   }
 
   .process-phase {
@@ -548,5 +723,96 @@ const base = import.meta.env.BASE_URL;
     line-height: 1.65;
     color: var(--color-ink);
     font-size: 0.95rem;
+  }
+
+  .process-pullquote {
+    margin: 1rem 0;
+    padding: 0.85rem 1rem;
+    font-style: italic;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-left: 4px solid var(--color-maroon);
+    background: var(--color-bg-alt);
+    border-radius: 0 8px 8px 0;
+  }
+
+  .process-hint {
+    margin: -0.25rem 0 0.75rem 0;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--color-ink-muted);
+  }
+
+  .process-prompt-details {
+    margin: 0 0 1.25rem 0;
+    padding: 0.65rem 1rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+  }
+
+  .process-prompt-summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--color-maroon);
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .process-prompt-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .process-prompt-summary::before {
+    content: '▸';
+    font-size: 0.85rem;
+    transition: transform 0.15s ease;
+  }
+
+  .process-prompt-details[open] .process-prompt-summary::before {
+    transform: rotate(90deg);
+  }
+
+  .process-prompt-block {
+    margin: 0.85rem 0 0 0;
+    padding: 0.75rem 0.85rem;
+    background: var(--color-bg-alt);
+    border-radius: 6px;
+    border: 1px solid var(--color-border);
+    font-family: ui-monospace, monospace;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-x: auto;
+  }
+
+  .process-you-claude {
+    margin-top: 0.75rem;
+  }
+
+  .panel--muted {
+    background: rgba(113, 32, 56, 0.04);
+    border-color: rgba(113, 32, 56, 0.2);
+  }
+
+  .process-sweetspot {
+    margin: 1rem 0 0 0;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--color-ink);
+  }
+
+  .callout--warning {
+    margin-top: 1.75rem;
+    background: rgba(234, 88, 12, 0.08);
+    border: 1px solid rgba(234, 88, 12, 0.35);
+  }
+
+  .callout--warning .callout-lead {
+    margin: 0;
   }
 </style>
