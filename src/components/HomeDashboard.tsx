@@ -89,7 +89,7 @@ export default function HomeDashboard() {
       try {
         const [papersRes, snippetsRes] = await Promise.all([
           supabase.from('saved_papers').select('id, status'),
-          supabase.from('snippets').select('id'),
+          supabase.from('snippets').select('id, used_in_writing'),
         ]);
         if (cancelled) return;
         if (papersRes.error) {
@@ -118,13 +118,13 @@ export default function HomeDashboard() {
         if (snippetsRes.error) {
           setError((e) => e ?? snippetsRes.error.message);
           setSnippetsCount(0);
-        } else {
-          setSnippetsCount((snippetsRes.data ?? []).length);
-        }
-        if (processedRes.error) {
           setSnippetsProcessedCount(0);
         } else {
-          setSnippetsProcessedCount(processedRes.count ?? 0);
+          const snippetRows = (snippetsRes.data ?? []) as { id: string; used_in_writing?: boolean }[];
+          setSnippetsCount(snippetRows.length);
+          setSnippetsProcessedCount(
+            snippetRows.filter((row) => Boolean(row.used_in_writing)).length
+          );
         }
       } finally {
         if (!cancelled) setLoading(false);
