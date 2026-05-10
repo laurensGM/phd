@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useMemo, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import constructsData from '../data/constructs.json';
 import modelsData from '../data/models.json';
@@ -267,9 +267,6 @@ export default function SnippetsPage() {
   const [editSnippetType, setEditSnippetType] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [expandedSnippetIds, setExpandedSnippetIds] = useState<string[]>([]);
-  const [viewportSnippetIds, setViewportSnippetIds] = useState<ReadonlySet<string>>(() => new Set());
-  const snippetCardElRef = useRef<Map<string, HTMLElement>>(new Map());
-  const filteredSnippetIdsRef = useRef<Set<string>>(new Set());
   const [togglingProcessedId, setTogglingProcessedId] = useState<string | null>(null);
 
   const [promptMode, setPromptMode] = useState(false);
@@ -527,72 +524,25 @@ export default function SnippetsPage() {
       .sort((a, b) => (order.get(a.id) ?? Number.MAX_SAFE_INTEGER) - (order.get(b.id) ?? Number.MAX_SAFE_INTEGER));
   }, [filteredSnippetsBase, searchMode, search, semanticIdsOrdered]);
 
-  filteredSnippetIdsRef.current = new Set(filteredSnippets.map((s) => s.id));
+  const truncatableSnippets = useMemo(
+    () => filteredSnippets.filter((s) => s.content.length > SNIPPET_PREVIEW_LENGTH),
+    [filteredSnippets]
+  );
 
-  useLayoutEffect(() => {
-    const allowed = filteredSnippetIdsRef.current;
-    setViewportSnippetIds((prev) => {
-      const next = new Set<string>();
-      for (const id of prev) {
-        if (allowed.has(id)) next.add(id);
-      }
-      return next;
-    });
+  const allTruncatableExpanded = useMemo(() => {
+    if (truncatableSnippets.length === 0) return false;
+    return truncatableSnippets.every((s) => expandedSnippetIds.includes(s.id));
+  }, [truncatableSnippets, expandedSnippetIds]);
 
-    const io = new IntersectionObserver(
-      (entries) => {
-        setViewportSnippetIds((prev) => {
-          const next = new Set(prev);
-          const ok = filteredSnippetIdsRef.current;
-          for (const entry of entries) {
-            const id = (entry.target as HTMLElement).dataset.snippetId;
-            if (!id || !ok.has(id)) continue;
-            if (entry.isIntersecting) next.add(id);
-            else next.delete(id);
-          }
-          return next;
-        });
-      },
-      { root: null, rootMargin: '0px', threshold: [0, 0.05, 0.15] }
-    );
-
-    for (const s of filteredSnippets) {
-      const el = snippetCardElRef.current.get(s.id);
-      if (el) io.observe(el);
-    }
-
-    return () => io.disconnect();
-  }, [filteredSnippets]);
-
-  const viewportExpandableSnippets = useMemo(() => {
-    return filteredSnippets.filter(
-      (s) => s.content.length > SNIPPET_PREVIEW_LENGTH && viewportSnippetIds.has(s.id)
-    );
-  }, [filteredSnippets, viewportSnippetIds]);
-
-  const allViewportExpandablesExpanded = useMemo(() => {
-    if (viewportExpandableSnippets.length === 0) return false;
-    return viewportExpandableSnippets.every((s) => expandedSnippetIds.includes(s.id));
-  }, [viewportExpandableSnippets, expandedSnippetIds]);
-
-  const toggleExpandAllInViewport = useCallback(() => {
-    const expandables = filteredSnippets.filter(
-      (s) => s.content.length > SNIPPET_PREVIEW_LENGTH && viewportSnippetIds.has(s.id)
-    );
-    if (expandables.length === 0) return;
-    const idSet = new Set(expandables.map((x) => x.id));
+  const toggleExpandAllTruncatable = useCallback(() => {
+    if (truncatableSnippets.length === 0) return;
+    const idSet = new Set(truncatableSnippets.map((x) => x.id));
     setExpandedSnippetIds((prev) => {
-      const allOn = expandables.every((s) => prev.includes(s.id));
+      const allOn = truncatableSnippets.every((s) => prev.includes(s.id));
       if (allOn) return prev.filter((id) => !idSet.has(id));
       return [...new Set([...prev, ...idSet])];
     });
-  }, [filteredSnippets, viewportSnippetIds]);
-
-  const setSnippetCardEl = useCallback((id: string, el: HTMLElement | null) => {
-    const map = snippetCardElRef.current;
-    if (el) map.set(id, el);
-    else map.delete(id);
-  }, []);
+  }, [truncatableSnippets]);
 
   useEffect(() => {
     if (!localEmbeddingsAvailable) {
@@ -1481,18 +1431,18 @@ export default function SnippetsPage() {
           {filteredSnippets.length > 0 && (
             <button
               type="button"
-              className="snippets-expand-viewport-btn"
-              disabled={viewportExpandableSnippets.length === 0}
-              onClick={toggleExpandAllInViewport}
+              className="snippets-expand-all-btn"
+              disabled={truncatableSnippets.length === 0}
+              onClick={toggleExpandAllTruncatable}
               title={
-                viewportExpandableSnippets.length === 0
-                  ? 'No truncatable snippets in the current view'
-                  : allViewportExpandablesExpanded
-                    ? 'Collapse full text for every snippet card currently on screen'
-                    : 'Show full text for every truncatable snippet card currently on screen'
+                truncatableSnippets.length === 0
+                  ? 'No truncatable snippets in the current list (all are short)'
+                  : allTruncatableExpanded
+                    ? 'Collapse full text for every truncatable snippet in the list'
+                    : 'Show full text for every truncatable snippet in the list'
               }
             >
-              {allViewportExpandablesExpanded ? '▲ Less (on screen)' : '▼ More (on screen)'}
+              {allTruncatableExpanded ? '▲ Less (all)' : '▼ More (all)'}
             </button>
           )}
         </div>
@@ -1513,8 +1463,6 @@ export default function SnippetsPage() {
             return (
               <article
                 key={s.id}
-                ref={(el) => setSnippetCardEl(s.id, el)}
-                data-snippet-id={s.id}
                 className={`snippets-card${promptMode ? ' snippets-card-selectable' : ''}${
                   used ? ' snippets-card--used' : ''
                 }`}
