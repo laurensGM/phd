@@ -308,6 +308,7 @@ export interface Database {
           tags: string[];
           page_number: number | null;
           snippet_type: string | null;
+          used_in_writing: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -322,6 +323,7 @@ export interface Database {
           tags?: string[];
           page_number?: number | null;
           snippet_type?: string | null;
+          used_in_writing?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -335,6 +337,7 @@ export interface Database {
           tags?: string[];
           page_number?: number | null;
           snippet_type?: string | null;
+          used_in_writing?: boolean;
           created_at?: string;
           updated_at?: string;
         };

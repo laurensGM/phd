@@ -34,10 +34,16 @@ function snippetTypeLabel(value: string | null | undefined): string {
   return SNIPPET_TYPE_LABEL_BY_VALUE.get(canonical) ?? (value ?? '').trim();
 }
 
+function isSnippetUsedInWriting(s: Snippet): boolean {
+  return Boolean((s as { used_in_writing?: boolean }).used_in_writing);
+}
+
 const SNIPPET_PREVIEW_LENGTH = 140;
 type SearchMode = 'keyword' | 'semantic';
 type SnippetsTab = 'snippets' | 'saved-prompts';
 type PromptStrategy = 'paragraph' | 'analysis';
+/** Snippet “processed” filter: used in writing vs still in queue. */
+type FilterProcessed = '' | 'processed' | 'unprocessed';
 const DEFAULT_SEMANTIC_MATCH_COUNT = 50;
 const DEFAULT_SEMANTIC_MIN_SIMILARITY = 0.55;
 
@@ -143,6 +149,8 @@ interface Snippet {
   tags: string[];
   page_number: number | null;
   snippet_type: string | null;
+  /** Marked on the snippets page when incorporated into a draft / thesis. */
+  used_in_writing?: boolean;
   created_at: string;
 }
 
@@ -231,6 +239,7 @@ export default function SnippetsPage() {
   const [filterModelIds, setFilterModelIds] = useState<string[]>([]);
   const [filterTag, setFilterTag] = useState('');
   const [filterSnippetType, setFilterSnippetType] = useState('');
+  const [filterProcessed, setFilterProcessed] = useState<FilterProcessed>('');
   const [search, setSearch] = useState('');
   const [searchMode, setSearchMode] = useState<SearchMode>('keyword');
   const [activeTab, setActiveTab] = useState<SnippetsTab>('snippets');
@@ -258,6 +267,7 @@ export default function SnippetsPage() {
   const [editSnippetType, setEditSnippetType] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [expandedSnippetIds, setExpandedSnippetIds] = useState<string[]>([]);
+  const [togglingProcessedId, setTogglingProcessedId] = useState<string | null>(null);
   const [backfillEmbeddingRunning, setBackfillEmbeddingRunning] = useState(false);
   const [backfillEmbeddingProgress, setBackfillEmbeddingProgress] = useState<{
     done: number;
@@ -428,6 +438,12 @@ export default function SnippetsPage() {
     return map;
   }, [snippets]);
 
+  const processedSnippetCount = useMemo(
+    () => snippets.reduce((n, s) => n + (isSnippetUsedInWriting(s) ? 1 : 0), 0),
+    [snippets]
+  );
+  const unprocessedSnippetCount = snippets.length - processedSnippetCount;
+
   const filteredSnippetsBase = useMemo(() => {
     return snippets.filter((s) => {
       if (filterPaperId && s.paper_id !== filterPaperId) return false;
@@ -468,6 +484,8 @@ export default function SnippetsPage() {
         const st = canonicalSnippetType((s as any).snippet_type);
         if (st !== filterSnippetType) return false;
       }
+      if (filterProcessed === 'processed' && !isSnippetUsedInWriting(s)) return false;
+      if (filterProcessed === 'unprocessed' && isSnippetUsedInWriting(s)) return false;
       if (filterTag) {
         const tags = Array.isArray(s.tags) ? s.tags : [];
         if (!tags.some((t) => t.toLowerCase() === filterTag.toLowerCase())) return false;
@@ -486,7 +504,20 @@ export default function SnippetsPage() {
       }
       return true;
     });
-  }, [snippets, filterPaperId, filterJournalNames, filterConstructIds, filterUmbrellaConstructId, filterModelIds, filterSnippetType, filterTag, search, searchMode, paperById]);
+  }, [
+    snippets,
+    filterPaperId,
+    filterJournalNames,
+    filterConstructIds,
+    filterUmbrellaConstructId,
+    filterModelIds,
+    filterSnippetType,
+    filterProcessed,
+    filterTag,
+    search,
+    searchMode,
+    paperById,
+  ]);
 
   const filteredSnippets = useMemo(() => {
     if (searchMode !== 'semantic' || !search.trim()) return filteredSnippetsBase;
@@ -679,6 +710,30 @@ export default function SnippetsPage() {
     } else {
       setSnippets((prev) => prev.filter((s) => s.id !== id));
       setSelectedSnippetIds((prev) => prev.filter((x) => x !== id));
+    }
+  }, []);
+
+  const setSnippetProcessed = useCallback(async (snippet: Snippet, usedInWriting: boolean) => {
+    if (!supabase || !isSupabaseConfigured()) return;
+    setError(null);
+    setTogglingProcessedId(snippet.id);
+    const { data, error: upErr } = await supabase
+      .from('snippets')
+      .update({
+        used_in_writing: usedInWriting,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', snippet.id)
+      .select('*')
+      .single();
+    setTogglingProcessedId(null);
+    if (upErr) {
+      setError(upErr.message);
+      return;
+    }
+    if (data) {
+      const updated = data as Snippet;
+      setSnippets((prev) => prev.map((x) => (x.id === updated.id ? updated : x)));
     }
   }, []);
 
@@ -1040,6 +1095,7 @@ export default function SnippetsPage() {
                 setFilterUmbrellaConstructId('');
                 setFilterModelIds([]);
                 setFilterSnippetType('');
+                setFilterProcessed('');
                 setFilterTag('');
                 setSearch('');
               }}
@@ -1222,6 +1278,20 @@ export default function SnippetsPage() {
           </div>
           <div className="snippets-filter-row">
             <label>
+              Processed (used in writing)
+              <select
+                className="snippets-input"
+                value={filterProcessed}
+                onChange={(e) => setFilterProcessed(e.target.value as FilterProcessed)}
+              >
+                <option value="">All ({snippets.length})</option>
+                <option value="processed">Processed ({processedSnippetCount})</option>
+                <option value="unprocessed">Not processed ({unprocessedSnippetCount})</option>
+              </select>
+            </label>
+          </div>
+          <div className="snippets-filter-row">
+            <label>
               Tag
               <select
                 className="snippets-input"
@@ -1399,8 +1469,15 @@ export default function SnippetsPage() {
               canExpand && !isExpanded
                 ? `${s.content.slice(0, SNIPPET_PREVIEW_LENGTH)}…`
                 : s.content;
+            const used = isSnippetUsedInWriting(s);
+            const toggling = togglingProcessedId === s.id;
             return (
-              <article key={s.id} className={`snippets-card${promptMode ? ' snippets-card-selectable' : ''}`}>
+              <article
+                key={s.id}
+                className={`snippets-card${promptMode ? ' snippets-card-selectable' : ''}${
+                  used ? ' snippets-card--used' : ''
+                }`}
+              >
                 <header className="snippets-card-header">
                   {promptMode && (
                     <label className="snippets-card-checkbox-wrap">
@@ -1427,11 +1504,14 @@ export default function SnippetsPage() {
                       </button>
                     )}
                   </div>
-                  {canonicalSnippetType((s as any).snippet_type) && (
-                    <span className="snippets-card-type">
-                      {snippetTypeLabel((s as any).snippet_type)}
-                    </span>
-                  )}
+                  <div className="snippets-card-badges">
+                    {canonicalSnippetType((s as any).snippet_type) && (
+                      <span className="snippets-card-type">
+                        {snippetTypeLabel((s as any).snippet_type)}
+                      </span>
+                    )}
+                    {used && <span className="snippets-card-used-badge">Processed</span>}
+                  </div>
                   <div className="snippets-card-links">
                     {(() => {
                       const constructIds = getSnippetConstructIds(s);
@@ -1563,6 +1643,25 @@ export default function SnippetsPage() {
                         {new Date(s.created_at).toLocaleDateString()}
                       </span>
                       <div className="snippets-card-actions">
+                        {used ? (
+                          <button
+                            type="button"
+                            className="snippets-processed-btn snippets-processed-btn--unmark"
+                            disabled={toggling}
+                            onClick={() => setSnippetProcessed(s, false)}
+                          >
+                            {toggling ? '…' : 'Unmark processed'}
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            className="snippets-processed-btn"
+                            disabled={toggling}
+                            onClick={() => setSnippetProcessed(s, true)}
+                          >
+                            {toggling ? '…' : 'Mark processed'}
+                          </button>
+                        )}
                         <button
                           type="button"
                           className="snippets-edit-save-btn"
@@ -1614,6 +1713,25 @@ export default function SnippetsPage() {
                         {new Date(s.created_at).toLocaleDateString()}
                       </span>
                       <div className="snippets-card-actions">
+                        {used ? (
+                          <button
+                            type="button"
+                            className="snippets-processed-btn snippets-processed-btn--unmark"
+                            disabled={toggling}
+                            onClick={() => setSnippetProcessed(s, false)}
+                          >
+                            {toggling ? '…' : 'Unmark processed'}
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            className="snippets-processed-btn"
+                            disabled={toggling}
+                            onClick={() => setSnippetProcessed(s, true)}
+                          >
+                            {toggling ? '…' : 'Mark processed'}
+                          </button>
+                        )}
                         <button
                           type="button"
                           className="snippets-edit-btn"
