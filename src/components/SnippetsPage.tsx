@@ -34,6 +34,60 @@ function snippetTypeLabel(value: string | null | undefined): string {
   return SNIPPET_TYPE_LABEL_BY_VALUE.get(canonical) ?? (value ?? '').trim();
 }
 
+/** First token before comma, or last word (typical surname). */
+function authorSurname(author: string): string {
+  const trimmed = author.trim();
+  if (!trimmed) return '';
+  if (trimmed.includes(',')) return trimmed.split(',')[0].trim();
+  const words = trimmed.split(/\s+/).filter(Boolean);
+  return words.length > 0 ? words[words.length - 1]! : trimmed;
+}
+
+function parseAuthorList(authorsRaw: string): string[] {
+  return authorsRaw
+    .split(/[,;]|\s+and\s+|\s*&\s*/i)
+    .map((a) => a.trim())
+    .filter(Boolean);
+}
+
+/** e.g. Venkatesh et al. 2003 p. 200 */
+function formatSnippetSourceLine(paper: PaperSummary | undefined, pageNumber: number | null): string {
+  const bits: string[] = [];
+  const authorsRaw = paper?.authors?.trim();
+  if (authorsRaw) {
+    const authors = parseAuthorList(authorsRaw);
+    if (authors.length === 1) {
+      bits.push(authorSurname(authors[0]!));
+    } else if (authors.length === 2) {
+      bits.push(`${authorSurname(authors[0]!)} & ${authorSurname(authors[1]!)}`);
+    } else if (authors.length > 2) {
+      bits.push(`${authorSurname(authors[0]!)} et al.`);
+    }
+  }
+  const year = paper?.year?.trim();
+  if (year) {
+    const yr = year.match(/\d{4}/)?.[0] ?? year;
+    bits.push(yr);
+  }
+  let line = bits.join(' ');
+  if (pageNumber != null) {
+    line = line ? `${line} p. ${pageNumber}` : `p. ${pageNumber}`;
+  }
+  return line || 'Unknown source';
+}
+
+function buildFilteredSnippetsExportText(
+  snippets: Snippet[],
+  paperById: Map<string, PaperSummary>
+): string {
+  return snippets
+    .map((s) => {
+      const source = formatSnippetSourceLine(paperById.get(s.paper_id), s.page_number);
+      return `${s.content.trim()}\n\n${source}`;
+    })
+    .join('\n\n');
+}
+
 function isSnippetUsedInWriting(s: Snippet): boolean {
   return Boolean((s as { used_in_writing?: boolean }).used_in_writing);
 }
@@ -543,6 +597,22 @@ export default function SnippetsPage() {
       return [...new Set([...prev, ...idSet])];
     });
   }, [truncatableSnippets]);
+
+  const exportFilteredSnippetsTxt = useCallback(() => {
+    if (filteredSnippets.length === 0) return;
+    const text = buildFilteredSnippetsExportText(filteredSnippets, paperById);
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const stamp = new Date().toISOString().slice(0, 10);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `snippets-${stamp}.txt`;
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }, [filteredSnippets, paperById]);
 
   useEffect(() => {
     if (!localEmbeddingsAvailable) {
@@ -1429,11 +1499,20 @@ export default function SnippetsPage() {
             Snippets ({filteredSnippets.length})
           </h2>
           {filteredSnippets.length > 0 && (
-            <button
-              type="button"
-              className="snippets-expand-all-btn"
-              disabled={truncatableSnippets.length === 0}
-              onClick={toggleExpandAllTruncatable}
+            <>
+              <button
+                type="button"
+                className="snippets-export-txt-btn"
+                onClick={exportFilteredSnippetsTxt}
+                title="Download filtered snippets as plain text (content + author/year/page only)"
+              >
+                Export .txt
+              </button>
+              <button
+                type="button"
+                className="snippets-expand-all-btn"
+                disabled={truncatableSnippets.length === 0}
+                onClick={toggleExpandAllTruncatable}
               title={
                 truncatableSnippets.length === 0
                   ? 'No truncatable snippets in the current list (all are short)'
@@ -1444,6 +1523,7 @@ export default function SnippetsPage() {
             >
               {allTruncatableExpanded ? '▲ Less (all)' : '▼ More (all)'}
             </button>
+            </>
           )}
         </div>
         {filteredSnippets.length === 0 && (

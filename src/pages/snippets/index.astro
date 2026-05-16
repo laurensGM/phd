@@ -282,6 +282,7 @@ import SnippetsPage from '../../components/SnippetsPage';
     flex: 1;
     min-width: 0;
   }
+  :global(.snippets-export-txt-btn),
   :global(.snippets-expand-all-btn) {
     flex-shrink: 0;
     padding: 0.4rem 0.85rem;
@@ -294,6 +295,7 @@ import SnippetsPage from '../../components/SnippetsPage';
     cursor: pointer;
     white-space: nowrap;
   }
+  :global(.snippets-export-txt-btn:hover:not(:disabled)),
   :global(.snippets-expand-all-btn:hover:not(:disabled)) {
     background: rgba(113, 32, 56, 0.08);
     border-color: var(--color-maroon);
