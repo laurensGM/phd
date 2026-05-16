@@ -1,0 +1,105 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout
+  title="Humanize"
+  description="Practical tips to make academic writing read less like AI-generated prose: citations, rhythm, voice, and structure."
+>
+  <p class="back-link"><a href={`${base}writing/`}>← Writing</a></p>
+  <h1>Humanize</h1>
+  <p class="page-desc">
+    Small, deliberate choices that help a literature review or thesis chapter sound like a human scholar wrote it—not a
+    single pass from a model.
+  </p>
+
+  <article class="humanize-content">
+    <h2 class="humanize-main-title">Other tips to humanize the document</h2>
+
+    <ol class="humanize-tips">
+      <li>
+        <strong>Vary your citation placement.</strong> Right now citations almost always appear mid-sentence or at the
+        end of every sentence. Human writers sometimes make a claim across two or three sentences and only cite at the
+        end of the thought, or open a paragraph with a citation as the subject: &ldquo;Bhattacherjee and Weber&rsquo;s
+        (2001) foundational study showed&hellip;&rdquo; rather than &ldquo;&hellip;as demonstrated by Bhattacherjee and
+        Weber (2001).&rdquo;
+      </li>
+      <li>
+        <strong>Introduce one or two short sentences.</strong> The document has almost no sentence under 20 words.
+        Academic prose varies. A short declarative sentence after a dense passage signals a human making a rhetorical
+        choice, not a model completing a pattern. For example, after a long ECM-IS explanation: &ldquo;The implication
+        is straightforward: users don&rsquo;t continue because they adopted — they continue because they were
+        satisfied.&rdquo;
+      </li>
+      <li>
+        <strong>Add one moment of authorial voice.</strong> Somewhere — ideally near the research gap — use first person
+        or a direct evaluative claim without hedging: &ldquo;This distinction is, in my view, the central theoretical
+        justification for the present study&rdquo; or &ldquo;What the literature has not yet asked is&hellip;&rdquo; AI-generated
+        text almost never does this.
+      </li>
+      <li>
+        <strong>Break one section with a transitional sentence instead of a heading.</strong> Between two closely related
+        subsections (e.g. TTF and PU flowing into TTF and Confirmation), drop the subheading and use a bridging sentence
+        instead: &ldquo;This shaping of perceived usefulness is not TTF&rsquo;s only upstream effect — it also conditions
+        whether users feel their expectations were met.&rdquo; This makes the review read as a coherent argument rather
+        than a series of module outputs.
+      </li>
+      <li>
+        <strong>Let one citation be mildly contested.</strong> Every claim is currently presented as settled. A phrase
+        like &ldquo;though Goodhue and Thompson (1995) themselves acknowledged the evidence here was ambiguous&rdquo; —
+        which is actually true and already in your document — could be elevated more prominently as a moment of critical
+        engagement rather than buried.
+      </li>
+      <li>
+        <strong>Check your paragraph openers.</strong> Run a quick scan: if more than three consecutive sections open
+        with &ldquo;The [construct]&hellip;&rdquo; or &ldquo;[Author] [verb] that&hellip;&rdquo;, rewrite the openers to
+        vary the grammatical subject — start with a context clause, a year, a question, or a contrast.
+      </li>
+    </ol>
+  </article>
+</BaseLayout>
+
+<style>
+  .back-link {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  .back-link a {
+    color: var(--color-maroon);
+  }
+  .page-desc {
+    color: var(--color-ink-muted);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+    max-width: 42rem;
+  }
+  .humanize-content {
+    max-width: 720px;
+  }
+  .humanize-main-title {
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    color: var(--color-maroon);
+    margin: 0 0 1.25rem 0;
+    line-height: 1.35;
+  }
+  .humanize-tips {
+    margin: 0;
+    padding-left: 1.35rem;
+    line-height: 1.65;
+    color: var(--color-ink);
+    font-size: 0.98rem;
+  }
+  .humanize-tips li {
+    margin-bottom: 1.35rem;
+    padding-left: 0.25rem;
+  }
+  .humanize-tips li:last-child {
+    margin-bottom: 0;
+  }
+  .humanize-tips strong {
+    color: var(--color-ink);
+  }
+</style>

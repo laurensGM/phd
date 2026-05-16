@@ -6,11 +6,11 @@ const base = import.meta.env.BASE_URL;
 
 <BaseLayout
   title="Writing"
-  description="Words, argumentation, layered revision, and systematic literature review guidance."
+  description="Words, argumentation, humanizing prose, layered revision, and systematic literature review guidance."
 >
   <h1>Writing</h1>
   <p class="page-desc">
-    Quick links to word lists, academic argument, layered revision, and your SLR notes and process.
+    Quick links to word lists, academic argument, humanizing your draft, layered revision, and your SLR notes and process.
   </p>
 
   <div class="writing-hub-grid">
@@ -31,6 +31,12 @@ const base = import.meta.env.BASE_URL;
       <h2 class="writing-hub-title">Argument</h2>
       <p class="writing-hub-desc">Talk-show metaphor, Toulmin elements, counterarguments, and writing steps.</p>
       <span class="writing-hub-link">Open argument →</span>
+    </a>
+    <a href={`${base}writing/humanize/`} class="writing-hub-card">
+      <span class="writing-hub-icon" aria-hidden="true">📝</span>
+      <h2 class="writing-hub-title">Humanize</h2>
+      <p class="writing-hub-desc">Citation rhythm, short sentences, authorial voice, and other anti-AI-prose checks.</p>
+      <span class="writing-hub-link">Open humanize →</span>
     </a>
     <a href={`${base}slr/`} class="writing-hub-card">
       <span class="writing-hub-icon" aria-hidden="true">📋</span>
