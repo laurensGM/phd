@@ -60,17 +60,24 @@ export default function HomeDashboard() {
     }));
   }, []);
 
-  const daysUntilPrelim = useMemo(() => {
-    const items = outlineData as OutlineItem[];
-    const prelim =
-      items.find((m) => m.id === 'preliminary-literature-review') ??
-      items.find((m) => m.title.toLowerCase().includes('preliminary literature review'));
-    if (!prelim) return null;
+  const nextMilestoneCountdown = useMemo(() => {
+    const items = (outlineData as OutlineItem[]).slice().sort((a, b) => a.date.localeCompare(b.date));
     const today = new Date();
-    const target = new Date(prelim.date + 'T00:00:00');
-    const diffMs = target.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-    return diffDays < 0 ? 0 : diffDays;
+    today.setHours(0, 0, 0, 0);
+    const todayStr = today.toISOString().slice(0, 10);
+
+    for (const m of items) {
+      if (m.date < todayStr) continue;
+      const target = new Date(m.date + 'T00:00:00');
+      const diffMs = target.getTime() - today.getTime();
+      const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+      return {
+        days: diffDays < 0 ? 0 : diffDays,
+        title: m.title,
+        id: m.id,
+      };
+    }
+    return null;
   }, []);
 
   useEffect(() => {
@@ -162,11 +169,13 @@ export default function HomeDashboard() {
     <div className="home-dashboard">
       {error && <p className="home-dashboard-error">{error}</p>}
       <div className="home-stats-grid">
-        {daysUntilPrelim !== null && (
-          <div className="home-stat-card home-stat-deadline">
-            <span className="home-stat-value">{daysUntilPrelim}</span>
-            <span className="home-stat-label">days before literature review</span>
-          </div>
+        {nextMilestoneCountdown !== null && (
+          <a href={`${base}outline/`} className="home-stat-card home-stat-deadline">
+            <span className="home-stat-value">{nextMilestoneCountdown.days}</span>
+            <span className="home-stat-label">
+              days before {nextMilestoneCountdown.title.toLowerCase()}
+            </span>
+          </a>
         )}
         <a href={`${base}papers/`} className="home-stat-card home-stat-papers">
           <span className="home-stat-value">{papersCount}</span>
