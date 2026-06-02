@@ -1,0 +1,42 @@
+[
+  {
+    "id": "po-v1",
+    "type": "primary",
+    "version": "v1",
+    "objective": "To examine the relationship between task-technology fit and continuance intention to use agritech information systems in Sub-Saharan Africa.",
+    "comments": "Aligned to current RQ and core post-adoption focus.",
+    "date": "2026-06-02",
+    "dateLabel": "2 June 2026",
+    "status": "current"
+  },
+  {
+    "id": "so-v1-1",
+    "type": "secondary",
+    "version": "v1",
+    "objective": "To identify the task and technology characteristics that contribute to task-technology fit.",
+    "comments": "Decomposes TTF into measurable antecedents.",
+    "date": "2026-06-02",
+    "dateLabel": "2 June 2026",
+    "status": "current"
+  },
+  {
+    "id": "so-v1-2",
+    "type": "secondary",
+    "version": "v1",
+    "objective": "To explore the role of user satisfaction in the relationship between task-technology fit and continuance intention.",
+    "comments": "Captures potential mediation through satisfaction.",
+    "date": "2026-06-02",
+    "dateLabel": "2 June 2026",
+    "status": "current"
+  },
+  {
+    "id": "so-v1-3",
+    "type": "secondary",
+    "version": "v1",
+    "objective": "To examine the influence of facilitating conditions on users' ability to continue using agritech information systems.",
+    "comments": "Adds contextual conditions relevant to SSA settings.",
+    "date": "2026-06-02",
+    "dateLabel": "2 June 2026",
+    "status": "current"
+  }
+]

@@ -5,20 +5,26 @@ const base = import.meta.env.BASE_URL;
 ---
 
 <BaseLayout
-  title="Research questions"
-  description="Track your RQ versions and guidance on conceptualising a strong research question."
+  title="Research design"
+  description="Track your research questions and objectives, plus guidance on conceptualising a strong research question."
 >
-  <h1>Research questions</h1>
+  <h1>Research design</h1>
   <p class="page-desc">
-    Your question timeline, plus structured notes on how to sharpen and justify a research question.
+    Your research question and objective timelines, plus structured notes on how to sharpen and justify your research design.
   </p>
 
   <div class="rq-hub-grid">
     <a href={`${base}research-questions/questions/`} class="rq-hub-card">
       <span class="rq-hub-icon" aria-hidden="true">❓</span>
-      <h2 class="rq-hub-title">Questions</h2>
+      <h2 class="rq-hub-title">Research questions</h2>
       <p class="rq-hub-desc">Versions of your research question, status, comments, and supervisory feedback.</p>
-      <span class="rq-hub-link">Open questions →</span>
+      <span class="rq-hub-link">Open research questions →</span>
+    </a>
+    <a href={`${base}research-questions/objectives/`} class="rq-hub-card">
+      <span class="rq-hub-icon" aria-hidden="true">🎯</span>
+      <h2 class="rq-hub-title">Research objectives</h2>
+      <p class="rq-hub-desc">Primary and secondary objectives with versioning, status, and timeline tracking.</p>
+      <span class="rq-hub-link">Open research objectives →</span>
     </a>
     <a href={`${base}research-questions/must-dos/`} class="rq-hub-card">
       <span class="rq-hub-icon" aria-hidden="true">✓</span>

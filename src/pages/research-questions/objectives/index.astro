@@ -1,0 +1,176 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import researchObjectives from '../../../data/research-objectives.json';
+
+const base = import.meta.env.BASE_URL;
+
+type Objective = {
+  id: string;
+  type: 'primary' | 'secondary';
+  version: string;
+  objective: string;
+  comments?: string;
+  date: string;
+  dateLabel: string;
+  status: string;
+  whyChanged?: string;
+  supervisoryFeedback?: string;
+};
+
+const sorted = ([...researchObjectives] as Objective[]).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+const primaryObjectives = sorted.filter((o) => o.type === 'primary');
+const secondaryObjectives = sorted.filter((o) => o.type === 'secondary');
+---
+
+<BaseLayout title="Research objectives" description="Primary and secondary objective evolution - versions, changes, supervisory feedback">
+  <p class="back-link"><a href={`${base}research-questions/`}>← Research design</a></p>
+  <h1>Research objectives</h1>
+  <p class="page-desc">
+    Track the evolution of your primary and secondary research objectives, including status, rationale for changes, and supervisory feedback.
+  </p>
+
+  <section class="objectives-section">
+    <h2>Primary research objective</h2>
+    <div class="objectives-timeline">
+      {primaryObjectives.map((objective: Objective) => (
+        <article class={`objective-card ${objective.status}`}>
+          <div class="objective-header">
+            <span class="objective-version">Primary {objective.version.toUpperCase()}</span>
+            {objective.dateLabel && <time class="objective-date" datetime={objective.date}>{objective.dateLabel}</time>}
+            <span class="objective-status-badge">{objective.status}</span>
+          </div>
+          <p class="objective-text">{objective.objective}</p>
+          {objective.comments && (
+            <section>
+              <h3>Comments</h3>
+              <p>{objective.comments}</p>
+            </section>
+          )}
+          {objective.whyChanged && (
+            <section>
+              <h3>Why changed</h3>
+              <p>{objective.whyChanged}</p>
+            </section>
+          )}
+          {objective.supervisoryFeedback && (
+            <section class="feedback">
+              <h3>Supervisory feedback</h3>
+              <p>{objective.supervisoryFeedback}</p>
+            </section>
+          )}
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="objectives-section">
+    <h2>Secondary research objectives</h2>
+    <div class="objectives-timeline">
+      {secondaryObjectives.map((objective: Objective) => (
+        <article class={`objective-card ${objective.status}`}>
+          <div class="objective-header">
+            <span class="objective-version">Secondary {objective.version.toUpperCase()}</span>
+            {objective.dateLabel && <time class="objective-date" datetime={objective.date}>{objective.dateLabel}</time>}
+            <span class="objective-status-badge">{objective.status}</span>
+          </div>
+          <p class="objective-text">{objective.objective}</p>
+          {objective.comments && (
+            <section>
+              <h3>Comments</h3>
+              <p>{objective.comments}</p>
+            </section>
+          )}
+          {objective.whyChanged && (
+            <section>
+              <h3>Why changed</h3>
+              <p>{objective.whyChanged}</p>
+            </section>
+          )}
+          {objective.supervisoryFeedback && (
+            <section class="feedback">
+              <h3>Supervisory feedback</h3>
+              <p>{objective.supervisoryFeedback}</p>
+            </section>
+          )}
+        </article>
+      ))}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .back-link {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  .back-link a {
+    color: var(--color-maroon);
+  }
+  .page-desc {
+    color: var(--color-ink-muted);
+    margin-bottom: 2rem;
+  }
+
+  .objectives-section + .objectives-section {
+    margin-top: 2.5rem;
+  }
+
+  .objectives-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .objective-card {
+    padding: 1.5rem;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    border-left: 4px solid var(--color-border);
+  }
+
+  .objective-card.current {
+    border-left-color: var(--color-accent);
+  }
+
+  .objective-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  .objective-version {
+    font-weight: 600;
+    color: var(--color-accent);
+  }
+  .objective-date {
+    font-size: 0.875rem;
+    color: var(--color-ink-muted);
+  }
+  .objective-status-badge {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.75rem;
+    background: var(--color-bg-alt);
+    border-radius: 4px;
+  }
+
+  .objective-text {
+    margin: 0.5rem 0 0 0;
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+
+  .objective-card section {
+    margin-top: 1rem;
+  }
+  .objective-card h3 {
+    font-size: 0.95rem;
+    margin-bottom: 0.25rem;
+  }
+  .objective-card .feedback {
+    padding: 1rem;
+    background: var(--color-bg-alt);
+    border-radius: 6px;
+  }
+</style>
