@@ -8,6 +8,7 @@ type Objective = {
   id: string;
   type: 'primary' | 'secondary';
   version: string;
+  secondaryNumber?: number;
   objective: string;
   comments?: string;
   date: string;
@@ -19,7 +20,20 @@ type Objective = {
 
 const sorted = ([...researchObjectives] as Objective[]).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
 const primaryObjectives = sorted.filter((o) => o.type === 'primary');
-const secondaryObjectives = sorted.filter((o) => o.type === 'secondary');
+const secondaryObjectives = sorted
+  .filter((o) => o.type === 'secondary')
+  .sort((a, b) => {
+    const dateCmp = (b.date || '').localeCompare(a.date || '');
+    if (dateCmp !== 0) return dateCmp;
+    return (a.secondaryNumber ?? 0) - (b.secondaryNumber ?? 0);
+  });
+
+function secondaryLabel(objective: Objective): string {
+  if (objective.secondaryNumber != null) {
+    return `Secondary objective ${objective.secondaryNumber} (${objective.version.toUpperCase()})`;
+  }
+  return `Secondary ${objective.version.toUpperCase()}`;
+}
 ---
 
 <BaseLayout title="Objectives" description="Primary and secondary objective evolution - versions, changes, supervisory feedback">
@@ -69,7 +83,7 @@ const secondaryObjectives = sorted.filter((o) => o.type === 'secondary');
       {secondaryObjectives.map((objective: Objective) => (
         <article class={`objective-card ${objective.status}`}>
           <div class="objective-header">
-            <span class="objective-version">Secondary {objective.version.toUpperCase()}</span>
+            <span class="objective-version">{secondaryLabel(objective)}</span>
             {objective.dateLabel && <time class="objective-date" datetime={objective.date}>{objective.dateLabel}</time>}
             <span class="objective-status-badge">{objective.status}</span>
           </div>

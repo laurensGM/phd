@@ -1,42 +1,99 @@
 [
   {
+    "id": "po-v2",
+    "type": "primary",
+    "version": "v2",
+    "objective": "To explore how task-technology fit influences continuance intention to use digital agricultural information systems among users of CGIAR agricultural information systems in Sub-Saharan Africa.",
+    "comments": "Refines v1: exploratory framing, CGIAR / digital agricultural IS context, aligned with RQ v4.",
+    "date": "2026-06-03",
+    "dateLabel": "3 June 2026",
+    "status": "current"
+  },
+  {
     "id": "po-v1",
     "type": "primary",
     "version": "v1",
     "objective": "To examine the relationship between task-technology fit and continuance intention to use agritech information systems in Sub-Saharan Africa.",
-    "comments": "Aligned to current RQ and core post-adoption focus.",
+    "comments": "Aligned to earlier RQ and core post-adoption focus.",
     "date": "2026-06-02",
     "dateLabel": "2 June 2026",
+    "status": "superseded"
+  },
+  {
+    "id": "so-v2-1",
+    "type": "secondary",
+    "version": "v2",
+    "secondaryNumber": 1,
+    "objective": "To explore how users evaluate the fit between digital agricultural information systems and the tasks they are required to perform.",
+    "comments": "Captures task characteristics, technology characteristics, and task–technology fit; allows themes to emerge naturally rather than forcing a predefined TTF measurement model.",
+    "date": "2026-06-03",
+    "dateLabel": "3 June 2026",
+    "status": "current"
+  },
+  {
+    "id": "so-v2-2",
+    "type": "secondary",
+    "version": "v2",
+    "secondaryNumber": 2,
+    "objective": "To examine how task-technology fit shapes users' post-adoption perceptions, including confirmation of expectations, perceived usefulness, and satisfaction.",
+    "comments": "ECM enters here. Theoretical logic: TTF → Confirmation → Perceived Usefulness → Satisfaction. Directly justifies integrating TTF into ECM.",
+    "date": "2026-06-03",
+    "dateLabel": "3 June 2026",
+    "status": "current"
+  },
+  {
+    "id": "so-v2-3",
+    "type": "secondary",
+    "version": "v2",
+    "secondaryNumber": 3,
+    "objective": "To investigate how satisfaction influences users' intention to continue using digital agricultural information systems.",
+    "comments": "Core ECM relationship: Satisfaction → Continuance Intention. Reinforces why ECM remains the primary theory.",
+    "date": "2026-06-03",
+    "dateLabel": "3 June 2026",
+    "status": "current"
+  },
+  {
+    "id": "so-v2-4",
+    "type": "secondary",
+    "version": "v2",
+    "secondaryNumber": 4,
+    "objective": "To identify contextual factors that facilitate or constrain the continued use of digital agricultural information systems.",
+    "comments": "Facilitating conditions. Examples may include connectivity, device availability, training, organizational support, management expectations, and project requirements.",
+    "date": "2026-06-03",
+    "dateLabel": "3 June 2026",
     "status": "current"
   },
   {
     "id": "so-v1-1",
     "type": "secondary",
     "version": "v1",
+    "secondaryNumber": 1,
     "objective": "To identify the task and technology characteristics that contribute to task-technology fit.",
     "comments": "Decomposes TTF into measurable antecedents.",
     "date": "2026-06-02",
     "dateLabel": "2 June 2026",
-    "status": "current"
+    "status": "superseded"
   },
   {
     "id": "so-v1-2",
     "type": "secondary",
     "version": "v1",
+    "secondaryNumber": 2,
     "objective": "To explore the role of user satisfaction in the relationship between task-technology fit and continuance intention.",
     "comments": "Captures potential mediation through satisfaction.",
     "date": "2026-06-02",
     "dateLabel": "2 June 2026",
-    "status": "current"
+    "status": "superseded"
   },
   {
     "id": "so-v1-3",
     "type": "secondary",
     "version": "v1",
+    "secondaryNumber": 3,
     "objective": "To examine the influence of facilitating conditions on users' ability to continue using agritech information systems.",
     "comments": "Adds contextual conditions relevant to SSA settings.",
     "date": "2026-06-02",
     "dateLabel": "2 June 2026",
-    "status": "current"
+    "status": "superseded"
   }
 ]
