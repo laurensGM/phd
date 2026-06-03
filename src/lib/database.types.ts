@@ -217,6 +217,27 @@ export interface Database {
           updated_at?: string;
         };
       };
+      tool_faqs: {
+        Row: {
+          id: string;
+          question: string;
+          answer: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          question: string;
+          answer?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          question?: string;
+          answer?: string;
+          updated_at?: string;
+        };
+      };
       model_notes: {
         Row: {
           id: string;

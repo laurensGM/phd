@@ -1,0 +1,286 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import FaqPage from '../../../components/FaqPage';
+
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout title="FAQ" description="Your personal PhD FAQ — questions and answers">
+  <p class="back-link"><a href={`${base}tools/`}>← Tools</a></p>
+  <h1>FAQ</h1>
+  <p class="page-desc">
+    Keep questions and answers you revisit during your PhD. Answers stay collapsed until you expand them.
+  </p>
+
+  <FaqPage client:load />
+</BaseLayout>
+
+<style>
+  .back-link {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  .back-link a {
+    color: var(--color-maroon);
+  }
+  .page-desc {
+    color: var(--color-ink-muted);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+    max-width: 40rem;
+  }
+
+  :global(.faq-page) {
+    max-width: 720px;
+  }
+
+  :global(.faq-setup),
+  :global(.faq-loading),
+  :global(.faq-empty) {
+    color: var(--color-ink-muted);
+  }
+
+  :global(.faq-setup) {
+    padding: 1.5rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    border-left: 4px solid var(--color-gold);
+  }
+
+  :global(.faq-setup code) {
+    font-size: 0.85rem;
+    background: var(--color-bg-alt);
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+  }
+
+  :global(.faq-error) {
+    color: var(--color-maroon);
+    padding: 0.75rem;
+    background: rgba(113, 32, 56, 0.08);
+    border-radius: 6px;
+    margin-bottom: 1rem;
+  }
+
+  :global(.faq-add-form) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 2.5rem;
+    padding: 1.5rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    border-left: 4px solid var(--color-maroon);
+  }
+
+  :global(.faq-form-title),
+  :global(.faq-list-title) {
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    color: var(--color-maroon);
+    margin: 0;
+  }
+
+  :global(.faq-list-title) {
+    margin-bottom: 1rem;
+  }
+
+  :global(.faq-count) {
+    font-weight: 400;
+    font-size: 0.95rem;
+    color: var(--color-ink-muted);
+  }
+
+  :global(.faq-field) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  :global(.faq-field label) {
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  :global(.faq-input),
+  :global(.faq-textarea) {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--color-border);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: var(--font-sans);
+    box-sizing: border-box;
+  }
+
+  :global(.faq-textarea) {
+    line-height: 1.5;
+    resize: vertical;
+  }
+
+  :global(.faq-input:focus),
+  :global(.faq-textarea:focus) {
+    outline: none;
+    border-color: var(--color-maroon);
+  }
+
+  :global(.faq-format-hint) {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--color-ink-muted);
+  }
+
+  :global(.faq-format-hint code) {
+    font-size: 0.8rem;
+    padding: 0.1rem 0.35rem;
+    background: var(--color-bg-alt);
+    border-radius: 4px;
+  }
+
+  :global(.faq-submit) {
+    align-self: flex-start;
+    padding: 0.55rem 1.1rem;
+    background: var(--color-maroon);
+    color: #fff;
+    border: 2px solid var(--color-gold);
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--font-sans);
+  }
+
+  :global(.faq-submit:hover:not(:disabled)) {
+    background: var(--color-maroon-dark);
+  }
+
+  :global(.faq-submit:disabled) {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  :global(.faq-list) {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  :global(.faq-item) {
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  :global(.faq-item-header) {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.5rem 0.5rem 0.5rem 0;
+  }
+
+  :global(.faq-toggle) {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.65rem 0.75rem;
+    border: none;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-ink);
+    line-height: 1.45;
+  }
+
+  :global(.faq-toggle:hover) {
+    color: var(--color-maroon);
+  }
+
+  :global(.faq-chevron) {
+    flex-shrink: 0;
+    width: 1.25rem;
+    font-size: 0.7rem;
+    color: var(--color-maroon);
+    margin-top: 0.2rem;
+  }
+
+  :global(.faq-question-text) {
+    flex: 1;
+  }
+
+  :global(.faq-answer) {
+    padding: 0 1rem 1rem 2.5rem;
+    color: var(--color-ink-muted);
+    line-height: 1.6;
+    font-size: 0.95rem;
+    border-top: 1px solid var(--color-border);
+    margin: 0 0.75rem;
+    padding-top: 0.85rem;
+    padding-bottom: 1rem;
+  }
+
+  :global(.faq-answer strong) {
+    color: var(--color-ink);
+    font-weight: 700;
+  }
+
+  :global(.faq-answer-empty) {
+    font-style: italic;
+  }
+
+  :global(.faq-edit) {
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  :global(.faq-item-actions) {
+    display: flex;
+    flex-shrink: 0;
+    gap: 0.4rem;
+    padding: 0.5rem 0.75rem 0.5rem 0;
+  }
+
+  :global(.faq-btn) {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    border: 1px solid var(--color-border);
+    background: #fff;
+    color: var(--color-ink);
+  }
+
+  :global(.faq-btn-primary) {
+    background: var(--color-maroon);
+    color: #fff;
+    border-color: var(--color-gold);
+  }
+
+  :global(.faq-btn-secondary:hover) {
+    border-color: var(--color-maroon-muted);
+    background: rgba(113, 32, 56, 0.06);
+  }
+
+  :global(.faq-btn-delete:hover:not(:disabled)) {
+    border-color: var(--color-maroon);
+    color: var(--color-maroon);
+  }
+
+  :global(.faq-btn:disabled) {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+</style>
