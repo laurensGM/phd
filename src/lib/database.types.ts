@@ -199,6 +199,24 @@ export interface Database {
           updated_at?: string;
         };
       };
+      research_contributions: {
+        Row: {
+          id: string;
+          content: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          content: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          content?: string;
+          updated_at?: string;
+        };
+      };
       model_notes: {
         Row: {
           id: string;

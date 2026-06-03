@@ -18,9 +18,9 @@ type RQ = {
 const sorted = ([...researchQuestions] as RQ[]).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
 ---
 
-<BaseLayout title="Research questions" description="RQ evolution - versions, changes, supervisory feedback">
+<BaseLayout title="Questions" description="RQ evolution - versions, changes, supervisory feedback">
   <p class="back-link"><a href={`${base}research-questions/`}>← Research design</a></p>
-  <h1>Research questions</h1>
+  <h1>Questions</h1>
   <p class="page-desc">Track the evolution of your research questions, why they changed, and supervisory feedback.</p>
 
   <div class="rq-timeline">

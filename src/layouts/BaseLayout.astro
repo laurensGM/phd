@@ -60,10 +60,16 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
           </li>
           <li><a href={`${base}methods/`}>Methods</a></li>
           <li class="nav-dropdown-wrap">
-            <span class="nav-dropdown-trigger" tabindex="0" aria-haspopup="true" aria-expanded="false" id="rq-trigger">Research design</span>
+            <a
+              href={`${base}research-questions/`}
+              class="nav-dropdown-trigger"
+              id="rq-trigger"
+              aria-haspopup="true"
+            >Research design</a>
             <ul class="nav-dropdown" aria-labelledby="rq-trigger">
-              <li><a href={`${base}research-questions/questions/`}>Research questions</a></li>
-              <li><a href={`${base}research-questions/objectives/`}>Research objectives</a></li>
+              <li><a href={`${base}research-questions/questions/`}>Questions</a></li>
+              <li><a href={`${base}research-questions/objectives/`}>Objectives</a></li>
+              <li><a href={`${base}research-questions/contribution/`}>Contribution</a></li>
               <li><a href={`${base}research-questions/must-dos/`}>10 must do&rsquo;s</a></li>
             </ul>
           </li>
@@ -244,6 +250,13 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
     cursor: pointer;
     transition: color 0.2s ease, background 0.2s ease;
     user-select: none;
+    text-decoration: none;
+  }
+
+  a.nav-dropdown-trigger:hover {
+    text-decoration: none;
+    color: var(--color-gold-light);
+    background: rgba(255, 255, 255, 0.12);
   }
 
   .nav-dropdown-wrap:hover .nav-dropdown-trigger,
