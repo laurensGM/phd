@@ -117,7 +117,7 @@ export const CURATED_FACTS: CuratedFact[] = [
     id: 'rq-ttf-ci',
     statement: 'Your current research question links task–technology fit to continuance intention in an Agritech / SSA context.',
     correct: true,
-    explanation: 'RQ v3: relationship between task technology fit and continuance intention to use Agritech IS in Sub-Saharan Africa.',
+    explanation: 'RQ v4: relationship between task-technology fit and continuance intention to use digital agricultural information systems in Sub-Saharan Africa.',
     source: 'Research questions',
     focus: 'ci',
   },

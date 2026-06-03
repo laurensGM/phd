@@ -79,6 +79,21 @@ import DiaryPage from '../../components/DiaryPage';
     margin-bottom: 0;
     flex-shrink: 0;
   }
+
+  :global(.diary-page .diary-format-hint) {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--color-ink-muted);
+    line-height: 1.45;
+  }
+
+  :global(.diary-page .diary-format-hint code) {
+    font-size: 0.8rem;
+    padding: 0.1rem 0.35rem;
+    background: var(--color-bg-alt);
+    border-radius: 4px;
+  }
+
   :global(.diary-page .diary-form-field label),
   :global(.diary-page .diary-form-label) {
     font-size: 0.9rem;
@@ -255,6 +270,12 @@ import DiaryPage from '../../components/DiaryPage';
     color: var(--color-ink-muted);
     line-height: 1.6;
     font-size: 0.95rem;
+  }
+
+  :global(.diary-page .entry-reflection strong),
+  :global(.diary-page .entry-summary strong) {
+    font-weight: 700;
+    color: var(--color-ink);
   }
   :global(.diary-page .entry-constructs) {
     font-size: 0.9rem;

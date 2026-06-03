@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import { FormatDiaryText } from '../lib/formatDiaryText';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 interface DiaryEntry {
@@ -179,6 +180,10 @@ export default function DiaryPage() {
 
             <div className="diary-form-field diary-form-field-details">
               <label htmlFor="diary-details">Details</label>
+              <p className="diary-format-hint">
+                Line breaks are kept as you type them. Wrap text in <code>**double asterisks**</code> to make it{' '}
+                <strong>bold</strong> when displayed.
+              </p>
               <textarea
                 id="diary-details"
                 value={formData.detailedReflection}
@@ -281,9 +286,13 @@ export default function DiaryPage() {
                 ))}
               </div>
             </div>
-            <h4>{entry.summary}</h4>
+            <h4 className="entry-summary">
+              <FormatDiaryText text={entry.summary} />
+            </h4>
             {entry.detailedReflection && (
-              <p className="entry-reflection">{entry.detailedReflection}</p>
+              <div className="entry-reflection">
+                <FormatDiaryText text={entry.detailedReflection} />
+              </div>
             )}
             {entry.linkedConstructs?.length > 0 && (
               <p className="entry-constructs">
