@@ -35,8 +35,8 @@
     "type": "secondary",
     "version": "v2",
     "secondaryNumber": 2,
-    "objective": "To examine how task-technology fit shapes users' post-adoption perceptions, including confirmation of expectations, perceived usefulness, and satisfaction.",
-    "comments": "ECM enters here. Theoretical logic: TTF → Confirmation → Perceived Usefulness → Satisfaction. Directly justifies integrating TTF into ECM.",
+    "objective": "To examine how task-technology fit influences users' post-adoption perceptions, including confirmation of expectations, perceived usefulness, satisfaction, and continuance intention.",
+    "comments": "Merged former secondary objectives 2 and 3. ECM integration: TTF shapes confirmation, perceived usefulness, and satisfaction, through to continuance intention.",
     "date": "2026-06-03",
     "dateLabel": "3 June 2026",
     "status": "current"
@@ -46,19 +46,31 @@
     "type": "secondary",
     "version": "v2",
     "secondaryNumber": 3,
-    "objective": "To investigate how satisfaction influences users' intention to continue using digital agricultural information systems.",
-    "comments": "Core ECM relationship: Satisfaction → Continuance Intention. Reinforces why ECM remains the primary theory.",
+    "objective": "To explore how task-technology fit and user satisfaction jointly shape continuance intention to use digital agricultural information systems.",
+    "comments": "Brings TTF and satisfaction together as joint antecedents of continuance intention, linking the TPC/TTF stream with ECM.",
     "date": "2026-06-03",
     "dateLabel": "3 June 2026",
-    "status": "current"
+    "status": "superseded",
+    "whyChanged": "Merged into secondary objective 2 (v2), which now covers post-adoption perceptions through continuance intention."
   },
   {
     "id": "so-v2-4",
     "type": "secondary",
     "version": "v2",
-    "secondaryNumber": 4,
+    "secondaryNumber": 3,
     "objective": "To identify contextual factors that facilitate or constrain the continued use of digital agricultural information systems.",
     "comments": "Facilitating conditions. Examples may include connectivity, device availability, training, organizational support, management expectations, and project requirements.",
+    "date": "2026-06-03",
+    "dateLabel": "3 June 2026",
+    "status": "current"
+  },
+  {
+    "id": "so-v2-5",
+    "type": "secondary",
+    "version": "v2",
+    "secondaryNumber": 4,
+    "objective": "To develop a conceptual framework explaining continuance intention in digital agricultural information systems within the CGIAR context.",
+    "comments": "Synthesises objectives 1–3 into an integrated framework for continuance intention in CGIAR digital agricultural IS settings.",
     "date": "2026-06-03",
     "dateLabel": "3 June 2026",
     "status": "current"
