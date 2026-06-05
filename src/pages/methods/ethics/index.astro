@@ -1,0 +1,55 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout title="Ethics" description="Ethical clearance — risk, participant protection, and data handling">
+  <p class="back-link"><a href={`${base}methods/`}>← Methods</a></p>
+  <h1>Ethics</h1>
+
+  <section class="methods-section">
+    <p>
+      <strong>Ethical clearance is very important.</strong> Do not collect primary data before you have clearance.
+    </p>
+    <p>There is a lot to consider in the ethical clearance process.</p>
+    <ul>
+      <li>For the university: what is the <strong>level of risk</strong> associated with the study?</li>
+      <li>Am I bringing those people to some level of risk?</li>
+      <li>How will you <strong>protect the data</strong>?</li>
+      <li>How will you ensure <strong>anonymity</strong>?</li>
+      <li>What measures will you take?</li>
+    </ul>
+  </section>
+</BaseLayout>
+
+<style>
+  .back-link {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  .back-link a {
+    color: var(--color-maroon);
+  }
+  .methods-section {
+    max-width: 720px;
+  }
+  .methods-section p {
+    margin: 0 0 1rem 0;
+    line-height: 1.65;
+    color: var(--color-ink);
+    font-size: 1.05rem;
+  }
+  .methods-section ul {
+    margin: 0;
+    padding-left: 1.5rem;
+    line-height: 1.75;
+    color: var(--color-ink);
+  }
+  .methods-section li {
+    margin-bottom: 0.65rem;
+  }
+  .methods-section li:last-child {
+    margin-bottom: 0;
+  }
+</style>

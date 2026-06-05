@@ -13,10 +13,11 @@ const base = import.meta.env.BASE_URL;
   </p>
   <p class="methods-note"><strong>Data is always contextual. Not theory (content).</strong></p>
 
-  <section class="methods-literature" aria-label="Seminal works and recency">
-    <h2 class="methods-literature-title">Seminal and most cited</h2>
+  <section class="methods-literature" aria-label="What sources to include">
+    <h2 class="methods-literature-title">What sources to include?</h2>
     <p>
-      Seminal works deal with fundamental concepts — the papers cited most often. Academics also look at <strong>recency</strong>.
+      <strong>Seminal and most cited.</strong> Seminal works deal with fundamental concepts — the papers cited most often.
+      Academics also look at <strong>recency</strong>.
       Why are so many papers slightly dated? You need far more references from the <strong>last five years</strong>.
     </p>
     <p>
@@ -54,6 +55,15 @@ const base = import.meta.env.BASE_URL;
         data yourself.
       </p>
       <span class="methods-hub-link">Open secondary data →</span>
+    </a>
+    <a href={`${base}methods/ethics/`} class="methods-hub-card">
+      <span class="methods-hub-icon" aria-hidden="true">⚖️</span>
+      <h2 class="methods-hub-title">Ethics</h2>
+      <p class="methods-hub-desc">
+        Ethical clearance before primary data collection — risk level, participant protection, anonymity, and data
+        security.
+      </p>
+      <span class="methods-hub-link">Open ethics →</span>
     </a>
   </div>
 </BaseLayout>
