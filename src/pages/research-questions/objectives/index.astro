@@ -43,6 +43,18 @@ function secondaryLabel(objective: Objective): string {
     Track the evolution of your primary and secondary research objectives, including status, rationale for changes, and supervisory feedback.
   </p>
 
+  <aside class="objectives-guidance" aria-label="Guidance on research objectives">
+    <h2 class="objectives-guidance-title">How to think about objectives</h2>
+    <p>
+      <strong>Research objective:</strong> one carefully crafted sentence — fairly high level and generic. You have one main
+      objective, with secondary objectives beneath it.
+    </p>
+    <p>
+      <strong>Secondary research objectives</strong> should link to the activities you will actually do. It helps to tie each
+      secondary objective to clear data collection and analysis activities.
+    </p>
+  </aside>
+
   <section class="objectives-section">
     <h2>Primary research objective</h2>
     <div class="objectives-timeline">
@@ -122,7 +134,35 @@ function secondaryLabel(objective: Objective): string {
   }
   .page-desc {
     color: var(--color-ink-muted);
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .objectives-guidance {
+    max-width: 40rem;
+    margin-bottom: 2.5rem;
+    padding: 1.25rem 1.5rem;
+    background: rgba(113, 32, 56, 0.06);
+    border: 1px solid var(--color-border);
+    border-left: 4px solid var(--color-maroon);
+    border-radius: 8px;
+  }
+
+  .objectives-guidance-title {
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    color: var(--color-maroon);
+    margin: 0 0 0.75rem 0;
+  }
+
+  .objectives-guidance p {
+    margin: 0 0 0.75rem 0;
+    line-height: 1.6;
+    color: var(--color-ink);
+    font-size: 0.95rem;
+  }
+
+  .objectives-guidance p:last-child {
+    margin-bottom: 0;
   }
 
   .objectives-section + .objectives-section {

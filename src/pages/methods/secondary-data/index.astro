@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout title="Secondary data" description="Using secondary data sources — World Bank, IMF, company data, and more">
+  <p class="back-link"><a href={`${base}methods/`}>← Methods</a></p>
+  <h1>Secondary data</h1>
+
+  <section class="methods-section">
+    <p>
+      Secondary data is a rich source of data. You may not need to collect primary data at all. Sources such as the World
+      Bank, the IMF, and company performance data are secondary — and very valid.
+    </p>
+    <p>You may not do everything by yourself.</p>
+  </section>
+</BaseLayout>
+
+<style>
+  .back-link {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  .back-link a {
+    color: var(--color-maroon);
+  }
+  .methods-section {
+    max-width: 720px;
+  }
+  .methods-section p {
+    margin: 0 0 1rem 0;
+    line-height: 1.65;
+    color: var(--color-ink);
+    font-size: 1.05rem;
+  }
+  .methods-section p:last-child {
+    margin-bottom: 0;
+  }
+</style>

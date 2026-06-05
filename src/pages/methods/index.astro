@@ -1,125 +1,114 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const base = import.meta.env.BASE_URL;
 ---
 
-<BaseLayout title="Methods" description="Data collection and analysis - secondary and primary data, quantitative and qualitative">
+<BaseLayout title="Methods" description="Data collection and analysis — quantitative and qualitative approaches">
   <h1>Methods</h1>
-  <p class="methods-intro">The Method implies getting data and using data (analysis). There are 2 types of data: numerical data and non numerical data (words). Your research objective dictates whether you need numbers or words or both. There are 3 different ways of getting the data.<br /><strong>Data is always contextual. Not theory (content).</strong></p>
+  <p class="page-desc">
+    The method implies getting data and using data (analysis). There are two types of data: numerical and
+    non-numerical (words). Your research objective dictates whether you need numbers, words, or both. There are three
+    different ways of getting the data.
+  </p>
+  <p class="methods-note"><strong>Data is always contextual. Not theory (content).</strong></p>
 
-  <section class="methods-section">
-    <h2>1. Secondary data. Quantitative.</h2>
-    <p>The getting data is short (easier), the using data part is long and hard. Secondary data is readily available to analyze. F.e. you can copy columns from Worldbank. The data context refers to the country and a time frame.</p>
-
-    <h3>1.1 Data sources</h3>
-    <ul>
-      <li><strong>Public domain data</strong>: easy for ethical clearance. You have to specify and name it.</li>
-      <li><strong>Private data</strong>: f.e. Bloomberg</li>
-      <li><strong>Company data</strong>: requires NDA.</li>
-    </ul>
-    <p>Whatever data you collect, you have to argue <strong>WHY</strong> this data and not other data. You need a reference for it. Every decision you make must come with a reference.</p>
-    <p>Then you must <strong>operationalise the data</strong>: to match theory with variables. There may be different variables for the same construct. There will be multiple variables for 1 thing: which one do you pick? Must be informed from literature.</p>
-    <p>You must create a table with columns <strong>"variable"</strong>, <strong>"dataset"</strong> and <strong>"operationalised (variable in the dataset)"</strong>. Examples of variables column are Y, X, c (constants, covariants, …). The dataset column could contain the URL to the dataset. One example row could be "poverty", "url" and "gini coefficient".</p>
-
-    <h3>1.2 Method, data analysis (use data)</h3>
-    <p>This is the hard part for secondary data. They call it <strong>model specification</strong>. Ideally put into some formula: y = a + bx + c.</p>
-    <p>This will be something new from my thesis. Not done before. But parts of it will be done before. A good theory is always summarized in a math formula.</p>
-    <p>Needs a minimum of 40 rows.</p>
-  </section>
-
-  <section class="methods-section">
-    <h2>2. Primary data. Quantitative.</h2>
-    <p>Numerical data. Long on the getting the data part. Shorter on the using of the data. Dataset with numbers only.</p>
-
-    <h3>2.1 Method</h3>
-    <p><strong>Techniques:</strong></p>
-    <ul>
-      <li><strong>Survey</strong>. Survey always uses questionnaire measurement</li>
-      <li><strong>Experiment</strong>: P/P (pre vs post), quasi and PF</li>
-      <li><strong>Observation</strong>: for example eye tracker, scanner. Could be machine observation, structured, counting how many (camera).</li>
-    </ul>
-
-    <h3>2.2 Measurement instrument</h3>
-    <p>Questionnaire. NOT always survey.</p>
-
-    <h3>2.3 Sampling</h3>
-    <p>Target population. No one gives you the population. You need to define this yourself.</p>
-
-    <h3>2.4 Data analysis</h3>
-    <p>Descriptive or inferential (conceptual model testing).</p>
-    <p>For 1 construct, you need at least <strong>5 items</strong>. 5 questions to measure 1 thing. Question items. For latent variables. For those 5 questions, you need a reference. You need to find the items in literature. This becomes a master doc of items which will be an annex to the PhD. Could be 20 pages of items. The mother doc. Mostly deal with latent variables. F.e. motivation. Every X and Y needs at least 5 items. Start finding them already now. Don't come up with your own questions.</p>
-    <p>For every item questions, you need at least <strong>5 people</strong>. The final questionnaire can not be longer than <strong>3 pages</strong> or <strong>7 to 10 minutes</strong>. You need references for all X and Y.</p>
-  </section>
-
-  <section class="methods-section">
-    <h2>3. Primary data. Qualitative.</h2>
-    <p>Qualitative data is to help understand, to give meaning.</p>
-
-    <h3>3.1 Method</h3>
-    <p><strong>Interviews:</strong></p>
-    <ul>
-      <li><strong>Semi structured</strong>: somewhat experts, 30 minutes. Not probing, 12 questions. You need &gt;12 × 3. ×3 because of triangulation. Need to repeat 3 times to ensure it's credible.</li>
-      <li><strong>In depth</strong>: with experts, 60 to 90 minutes. 5 questions: allow for follow up, probing. Needs &gt;7 × 3, also need to repeat 3 times.</li>
-    </ul>
-    <p><strong>Focus groups</strong>: 6–8 people online. 10–12 people in person. Need to run 3 to 5 focus groups.</p>
-    <p><strong>Observation</strong>: camera, to see HOW they behave (not count how many). Can also be document analysis.</p>
-    <p><strong>Themes</strong>: content analysis, coding into themes. Also narrative analysis leading to themes. Themes lead to a conceptual model.</p>
-    <p><strong>Projective technique</strong>: would you recommend X to someone else?</p>
-    <p><strong>Sentence completion</strong>: I love X because …</p>
-
-    <h3>3.2 Measurement</h3>
-    <p>Interviewer manual</p>
-
-    <h3>3.3 Sampling</h3>
-    <p>Target population</p>
-
-    <h3>3.4 Data analysis</h3>
-  </section>
+  <div class="methods-hub-grid">
+    <a href={`${base}methods/quant/`} class="methods-hub-card">
+      <span class="methods-hub-icon" aria-hidden="true">📊</span>
+      <h2 class="methods-hub-title">Quant</h2>
+      <p class="methods-hub-desc">
+        Secondary and primary quantitative data — sources, operationalisation, model specification, surveys,
+        experiments, measurement items, and inferential analysis.
+      </p>
+      <span class="methods-hub-link">Open quant →</span>
+    </a>
+    <a href={`${base}methods/qual/`} class="methods-hub-card">
+      <span class="methods-hub-icon" aria-hidden="true">💬</span>
+      <h2 class="methods-hub-title">Qual</h2>
+      <p class="methods-hub-desc">
+        Primary qualitative data — interviews, focus groups, observation, document analysis, coding, and thematic
+        analysis.
+      </p>
+      <span class="methods-hub-link">Open qual →</span>
+    </a>
+    <a href={`${base}methods/secondary-data/`} class="methods-hub-card">
+      <span class="methods-hub-icon" aria-hidden="true">🗄️</span>
+      <h2 class="methods-hub-title">Secondary data</h2>
+      <p class="methods-hub-desc">
+        World Bank, IMF, company performance data, and other existing sources — a valid alternative to collecting primary
+        data yourself.
+      </p>
+      <span class="methods-hub-link">Open secondary data →</span>
+    </a>
+  </div>
 </BaseLayout>
 
 <style>
-  .methods-intro {
-    color: var(--color-ink);
-    line-height: 1.65;
-    margin-bottom: 2.5rem;
-    font-size: 1.05rem;
+  .page-desc {
+    color: var(--color-ink-muted);
+    margin-bottom: 1rem;
+    line-height: 1.6;
+    max-width: 40rem;
   }
 
-  .methods-section {
-    margin-bottom: 2.5rem;
-    padding-bottom: 2rem;
-    border-bottom: 1px solid var(--color-border);
+  .methods-note {
+    margin: 0 0 2rem 0;
+    max-width: 40rem;
+    line-height: 1.6;
   }
 
-  .methods-section:last-of-type {
-    border-bottom: none;
+  .methods-hub-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
   }
 
-  .methods-section h2 {
+  .methods-hub-card {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    border-left: 4px solid var(--color-maroon);
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  }
+
+  .methods-hub-card:hover {
+    border-color: var(--color-maroon-muted);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .methods-hub-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .methods-hub-title {
     font-family: var(--font-serif);
     font-size: 1.35rem;
+    margin: 0 0 0.5rem 0;
     color: var(--color-maroon);
-    margin: 0 0 1rem 0;
   }
 
-  .methods-section h3 {
-    font-size: 1.1rem;
-    color: var(--color-ink);
-    margin: 1.5rem 0 0.75rem 0;
-  }
-
-  .methods-section p {
-    margin: 0 0 1rem 0;
-    line-height: 1.65;
+  .methods-hub-desc {
+    flex: 1;
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.55;
     color: var(--color-ink);
   }
 
-  .methods-section ul {
-    margin: 0 0 1rem 0;
-    padding-left: 1.5rem;
-    line-height: 1.75;
-  }
-
-  .methods-section li {
-    margin-bottom: 0.5rem;
+  .methods-hub-link {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-maroon);
   }
 </style>

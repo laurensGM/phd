@@ -1,0 +1,85 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout title="Qual" description="Qualitative methods — interviews, focus groups, observation, and thematic analysis">
+  <p class="back-link"><a href={`${base}methods/`}>← Methods</a></p>
+  <h1>Qual</h1>
+  <p class="methods-intro">
+    Non-numerical data (words): interviews, focus groups, observation, and document analysis to understand meaning and
+    build themes. <strong>Data is always contextual. Not theory (content).</strong>
+  </p>
+
+  <section class="methods-section">
+    <h2>Primary data. Qualitative.</h2>
+    <p>Qualitative data is to help understand, to give meaning.</p>
+
+    <h3>Method</h3>
+    <p><strong>Interviews:</strong></p>
+    <ul>
+      <li><strong>Semi structured</strong>: somewhat experts, 30 minutes. Not probing, 12 questions. You need &gt;12 × 3. ×3 because of triangulation. Need to repeat 3 times to ensure it's credible.</li>
+      <li><strong>In depth</strong>: with experts, 60 to 90 minutes. 5 questions: allow for follow up, probing. Needs &gt;7 × 3, also need to repeat 3 times.</li>
+    </ul>
+    <p><strong>Focus groups</strong>: 6–8 people online. 10–12 people in person. Need to run 3 to 5 focus groups.</p>
+    <p><strong>Observation</strong>: camera, to see HOW they behave (not count how many). Can also be document analysis.</p>
+    <p><strong>Themes</strong>: content analysis, coding into themes. Also narrative analysis leading to themes. Themes lead to a conceptual model.</p>
+    <p><strong>Projective technique</strong>: would you recommend X to someone else?</p>
+    <p><strong>Sentence completion</strong>: I love X because …</p>
+
+    <h3>Measurement</h3>
+    <p>Interviewer manual</p>
+
+    <h3>Sampling</h3>
+    <p>Target population</p>
+
+    <h3>Data analysis</h3>
+    <p>Content and narrative analysis — coding into themes that can inform a conceptual model.</p>
+  </section>
+</BaseLayout>
+
+<style>
+  .back-link {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  .back-link a {
+    color: var(--color-maroon);
+  }
+  .methods-intro {
+    color: var(--color-ink-muted);
+    line-height: 1.65;
+    margin-bottom: 2.5rem;
+    max-width: 40rem;
+  }
+  .methods-section {
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    max-width: 720px;
+  }
+  .methods-section h2 {
+    font-family: var(--font-serif);
+    font-size: 1.35rem;
+    color: var(--color-maroon);
+    margin: 0 0 1rem 0;
+  }
+  .methods-section h3 {
+    font-size: 1.1rem;
+    color: var(--color-ink);
+    margin: 1.5rem 0 0.75rem 0;
+  }
+  .methods-section p {
+    margin: 0 0 1rem 0;
+    line-height: 1.65;
+    color: var(--color-ink);
+  }
+  .methods-section ul {
+    margin: 0 0 1rem 0;
+    padding-left: 1.5rem;
+    line-height: 1.75;
+  }
+  .methods-section li {
+    margin-bottom: 0.5rem;
+  }
+</style>
