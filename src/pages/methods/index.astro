@@ -13,6 +13,20 @@ const base = import.meta.env.BASE_URL;
   </p>
   <p class="methods-note"><strong>Data is always contextual. Not theory (content).</strong></p>
 
+  <section class="methods-literature" aria-label="Seminal works and recency">
+    <h2 class="methods-literature-title">Seminal and most cited</h2>
+    <p>
+      Seminal works deal with fundamental concepts — the papers cited most often. Academics also look at <strong>recency</strong>.
+      Why are so many papers slightly dated? You need far more references from the <strong>last five years</strong>.
+    </p>
+    <p>
+      You want some fundamental works, but <strong>err on the side of recency</strong>. For methods and techniques too: what
+      have people done in the last five years? Academics are very interested in what is <strong>new</strong> and what is
+      <strong>evolving</strong>. Recency matters — spend a lot of time in recent work. Or you may find that people still do
+      it the same way.
+    </p>
+  </section>
+
   <div class="methods-hub-grid">
     <a href={`${base}methods/quant/`} class="methods-hub-card">
       <span class="methods-hub-icon" aria-hidden="true">📊</span>
@@ -53,9 +67,37 @@ const base = import.meta.env.BASE_URL;
   }
 
   .methods-note {
-    margin: 0 0 2rem 0;
+    margin: 0 0 1.5rem 0;
     max-width: 40rem;
     line-height: 1.6;
+  }
+
+  .methods-literature {
+    max-width: 40rem;
+    margin-bottom: 2.5rem;
+    padding: 1.25rem 1.5rem;
+    background: rgba(113, 32, 56, 0.06);
+    border: 1px solid var(--color-border);
+    border-left: 4px solid var(--color-maroon);
+    border-radius: 8px;
+  }
+
+  .methods-literature-title {
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    color: var(--color-maroon);
+    margin: 0 0 0.75rem 0;
+  }
+
+  .methods-literature p {
+    margin: 0 0 0.75rem 0;
+    line-height: 1.6;
+    color: var(--color-ink);
+    font-size: 0.95rem;
+  }
+
+  .methods-literature p:last-child {
+    margin-bottom: 0;
   }
 
   .methods-hub-grid {
