@@ -13,6 +13,27 @@ const base = import.meta.env.BASE_URL;
   </p>
   <p class="methods-note"><strong>Data is always contextual. Not theory (content).</strong></p>
 
+  <section class="methods-literature" aria-label="The scientific method">
+    <h2 class="methods-literature-title">The scientific method</h2>
+    <ul class="methods-scientific-list">
+      <li>
+        Science and the application of the scientific method provide for a{' '}
+        <strong>robust, systematic, and objective approach to addressing inquiries</strong> where{' '}
+        <strong>decisions made within the process are justified and based on evidence.</strong>
+      </li>
+      <li>
+        Information and/or data that are:
+        <ol class="methods-scientific-criteria">
+          <li>Transparent</li>
+          <li>Replicable</li>
+          <li>Reliable (i.e. the degree to which an execution produces the same results)</li>
+          <li>Valid (i.e. whether what was attempted to be measured was measured).</li>
+          <li>Open to scrutiny</li>
+        </ol>
+      </li>
+    </ul>
+  </section>
+
   <section class="methods-literature" aria-label="What sources to include">
     <h2 class="methods-literature-title">What sources to include?</h2>
     <p>
@@ -107,6 +128,36 @@ const base = import.meta.env.BASE_URL;
   }
 
   .methods-literature p:last-child {
+    margin-bottom: 0;
+  }
+
+  .methods-scientific-list {
+    margin: 0;
+    padding-left: 1.25rem;
+    line-height: 1.6;
+    color: var(--color-ink);
+    font-size: 0.95rem;
+  }
+
+  .methods-scientific-list > li {
+    margin-bottom: 0.75rem;
+  }
+
+  .methods-scientific-list > li:last-child {
+    margin-bottom: 0;
+  }
+
+  .methods-scientific-criteria {
+    margin: 0.5rem 0 0 0;
+    padding-left: 1.25rem;
+    line-height: 1.55;
+  }
+
+  .methods-scientific-criteria li {
+    margin-bottom: 0.35rem;
+  }
+
+  .methods-scientific-criteria li:last-child {
     margin-bottom: 0;
   }
 
