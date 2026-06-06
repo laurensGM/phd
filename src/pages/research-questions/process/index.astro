@@ -2,33 +2,107 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 
 const base = import.meta.env.BASE_URL;
+
+const steps = [
+  { id: 'choose-topic', title: 'Choose topic' },
+  { id: 'literature', title: 'Review literature / theories' },
+  { id: 'define-problem', title: 'Define the problem — researchable questions or hypothesis' },
+  { id: 'methodology', title: 'Methodology and design — rigour, reliability, contribution', emphasis: true },
+  { id: 'ethical-clearance', title: 'Ethical clearance' },
+  { id: 'data-gathering', title: 'Data gathering' },
+  { id: 'analysis', title: 'Analysis' },
+  { id: 'reporting', title: 'Reporting' },
+];
 ---
 
 <BaseLayout title="Process" description="Research process — from topic choice through reporting">
-  <p class="back-link"><a href={`${base}research-questions/`}>← Research</a></p>
-  <h1>Research process</h1>
-  <p class="page-desc">
-    Standard research workflow (Stellenbosch Business School). Work through these stages in order as your study takes shape.
-  </p>
+  <div class="process-layout">
+    <nav class="process-toc" aria-label="On this page">
+      <h2 class="process-toc-title">On this page</h2>
+      <ol class="process-toc-list">
+        <li><a href="#intro">Introduction</a></li>
+        {steps.map((step) => (
+          <li>
+            <a href={`#${step.id}`} class:list={[{ 'process-toc-emphasis': step.emphasis }]}>
+              {step.title}
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
 
-  <section class="research-process">
-    <h2 class="research-process-heading">Research process</h2>
-    <ol class="research-process-list">
-      <li>Choose topic</li>
-      <li>Review literature / theories</li>
-      <li>Define the problem — researchable questions or hypothesis</li>
-      <li class="research-process-emphasis">Methodology and design — rigour, reliability, contribution</li>
-      <li>Ethical clearance</li>
-      <li>Data gathering</li>
-      <li>Analysis</li>
-      <li>Reporting</li>
-    </ol>
-    <p class="research-process-note">
-      See also <a href={`${base}methods/ethics/`}>Methods → Ethics</a> for ethical clearance notes, and{' '}
-      <a href={`${base}writing/lr-process/`}>Writing → LR process</a> for the literature-review workflow in this app.
-    </p>
-  </section>
+    <article class="process-article">
+      <p class="back-link"><a href={`${base}research-questions/`}>← Research</a></p>
+      <h1 id="intro">Research process</h1>
+      <p class="process-lead">
+        Standard research workflow (Stellenbosch Business School). Work through these stages in order as your study
+        takes shape.
+      </p>
+
+      <section id="choose-topic" class="process-section">
+        <h2>Choose topic</h2>
+      </section>
+
+      <section id="literature" class="process-section">
+        <h2>Review literature / theories</h2>
+      </section>
+
+      <section id="define-problem" class="process-section">
+        <h2>Define the problem — researchable questions or hypothesis</h2>
+      </section>
+
+      <section id="methodology" class="process-section process-section--emphasis">
+        <h2>Methodology and design — rigour, reliability, contribution</h2>
+      </section>
+
+      <section id="ethical-clearance" class="process-section">
+        <h2>Ethical clearance</h2>
+        <p>
+          See <a href={`${base}methods/ethics/`}>Methods → Ethics</a> for notes on ethical clearance before primary data
+          collection.
+        </p>
+      </section>
+
+      <section id="data-gathering" class="process-section">
+        <h2>Data gathering</h2>
+      </section>
+
+      <section id="analysis" class="process-section">
+        <h2>Analysis</h2>
+        <h3 class="process-subheading">Analyze data</h3>
+        <p>
+          Look at an example of how someone else has done it: look at a paper from a renowned academic and see how they
+          did it. This can be an example for you to replicate. Look at one I like.
+        </p>
+        <p>
+          There is a TON of options for analyzing data. The amount of tooling is insane. Look for papers in the last 3
+          years — how people combine academic rigour with modern tooling that is well grounded and justified. That
+          makes it easier for you. It also makes it novel!
+        </p>
+        <p>
+          <strong>Don&rsquo;t</strong> consult textbooks or consulting firms. Don&rsquo;t reference a McKinsey paper.
+          Reference peer-reviewed articles only. Choose something you&rsquo;re interested in.
+        </p>
+      </section>
+
+      <section id="reporting" class="process-section">
+        <h2>Reporting</h2>
+      </section>
+
+      <p class="process-note">
+        See also <a href={`${base}writing/lr-process/`}>Writing → LR process</a> for the literature-review workflow in
+        this app.
+      </p>
+    </article>
+  </div>
 </BaseLayout>
+
+<style is:global>
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+  }
+</style>
 
 <style>
   .back-link {
@@ -38,59 +112,133 @@ const base = import.meta.env.BASE_URL;
   .back-link a {
     color: var(--color-maroon);
   }
-  .page-desc {
-    color: var(--color-ink-muted);
-    margin-bottom: 2rem;
-    line-height: 1.6;
-    max-width: 40rem;
+
+  .process-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: start;
+    max-width: 1100px;
   }
 
-  .research-process {
-    max-width: 40rem;
-    padding: 1.5rem 1.75rem;
+  @media (min-width: 900px) {
+    .process-layout {
+      grid-template-columns: min(260px, 28%) 1fr;
+    }
+  }
+
+  .process-toc {
+    position: sticky;
+    top: 5.5rem;
+    z-index: 1;
+    padding: 1rem 1.1rem;
     background: #fff;
     border: 1px solid var(--color-border);
-    border-radius: 8px;
+    border-radius: 10px;
     border-left: 4px solid var(--color-maroon);
+    font-size: 0.88rem;
+    line-height: 1.45;
+    max-height: calc(100vh - 6rem);
+    overflow-y: auto;
   }
 
-  .research-process-heading {
-    font-family: var(--font-serif);
-    font-size: 1.25rem;
-    color: var(--color-maroon);
-    margin: 0 0 1.25rem 0;
-  }
-
-  .research-process-list {
-    margin: 0;
-    padding-left: 1.5rem;
-    line-height: 1.85;
-    font-size: 1.05rem;
-    color: var(--color-ink);
-  }
-
-  .research-process-list li {
-    margin-bottom: 0.65rem;
-    padding-left: 0.25rem;
-  }
-
-  .research-process-list li:last-child {
-    margin-bottom: 0;
-  }
-
-  .research-process-emphasis {
+  .process-toc-title {
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
     font-weight: 700;
-    color: var(--color-maroon);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-ink-muted);
+    margin: 0 0 0.65rem 0;
   }
 
-  .research-process-note {
-    margin: 1.5rem 0 0 0;
+  .process-toc-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .process-toc-list > li {
+    margin-bottom: 0.45rem;
+  }
+
+  .process-toc a {
+    color: var(--color-maroon);
+    text-decoration: none;
+  }
+
+  .process-toc a:hover {
+    text-decoration: underline;
+  }
+
+  .process-toc-emphasis {
+    font-weight: 700;
+  }
+
+  .process-article {
+    min-width: 0;
+  }
+
+  .process-article h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(1.45rem, 3vw, 1.85rem);
+    color: var(--color-maroon);
+    margin: 0 0 1rem 0;
+    scroll-margin-top: 5.5rem;
+  }
+
+  .process-lead {
+    margin: 0 0 1.5rem 0;
+    line-height: 1.7;
+    color: var(--color-ink-muted);
+    max-width: 42rem;
+  }
+
+  .process-section {
+    margin-top: 2rem;
+    scroll-margin-top: 5.5rem;
+  }
+
+  .process-section > h2 {
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    color: var(--color-maroon);
+    margin: 0 0 0.75rem 0;
+    line-height: 1.35;
+    scroll-margin-top: 5.5rem;
+  }
+
+  .process-section--emphasis > h2 {
+    font-weight: 700;
+  }
+
+  .process-subheading {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-ink);
+    margin: 0 0 0.75rem 0;
+  }
+
+  .process-section p {
+    margin: 0 0 1rem 0;
+    line-height: 1.7;
+    color: var(--color-ink);
+    max-width: 42rem;
+  }
+
+  .process-section a {
+    font-weight: 600;
+  }
+
+  .process-note {
+    margin: 2.5rem 0 0 0;
     font-size: 0.9rem;
     line-height: 1.55;
     color: var(--color-ink-muted);
+    max-width: 42rem;
   }
 
-  .research-process-note a {
+  .process-note a {
     font-weight: 600;
   }
 </style>

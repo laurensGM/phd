@@ -84,6 +84,13 @@
     "url": "https://www.vosviewer.com"
   },
   {
+    "id": "sage-research-methods",
+    "name": "SAGE Research Methods",
+    "category": "databases",
+    "description": "Guides, cases, and datasets on qualitative and quantitative research methods. To access: go to SBS library, go to Databases, go to Find, then find SAGE Research Methods.",
+    "url": "https://methods-sagepub-com.ez.sun.ac.za/"
+  },
+  {
     "id": "phd-comics",
     "name": "PhD Comics",
     "category": "memes",
