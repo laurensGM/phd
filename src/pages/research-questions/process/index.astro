@@ -1,0 +1,96 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout title="Process" description="Research process — from topic choice through reporting">
+  <p class="back-link"><a href={`${base}research-questions/`}>← Research</a></p>
+  <h1>Research process</h1>
+  <p class="page-desc">
+    Standard research workflow (Stellenbosch Business School). Work through these stages in order as your study takes shape.
+  </p>
+
+  <section class="research-process">
+    <h2 class="research-process-heading">Research process</h2>
+    <ol class="research-process-list">
+      <li>Choose topic</li>
+      <li>Review literature / theories</li>
+      <li>Define the problem — researchable questions or hypothesis</li>
+      <li class="research-process-emphasis">Methodology and design — rigour, reliability, contribution</li>
+      <li>Ethical clearance</li>
+      <li>Data gathering</li>
+      <li>Analysis</li>
+      <li>Reporting</li>
+    </ol>
+    <p class="research-process-note">
+      See also <a href={`${base}methods/ethics/`}>Methods → Ethics</a> for ethical clearance notes, and{' '}
+      <a href={`${base}writing/lr-process/`}>Writing → LR process</a> for the literature-review workflow in this app.
+    </p>
+  </section>
+</BaseLayout>
+
+<style>
+  .back-link {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  .back-link a {
+    color: var(--color-maroon);
+  }
+  .page-desc {
+    color: var(--color-ink-muted);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+    max-width: 40rem;
+  }
+
+  .research-process {
+    max-width: 40rem;
+    padding: 1.5rem 1.75rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    border-left: 4px solid var(--color-maroon);
+  }
+
+  .research-process-heading {
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    color: var(--color-maroon);
+    margin: 0 0 1.25rem 0;
+  }
+
+  .research-process-list {
+    margin: 0;
+    padding-left: 1.5rem;
+    line-height: 1.85;
+    font-size: 1.05rem;
+    color: var(--color-ink);
+  }
+
+  .research-process-list li {
+    margin-bottom: 0.65rem;
+    padding-left: 0.25rem;
+  }
+
+  .research-process-list li:last-child {
+    margin-bottom: 0;
+  }
+
+  .research-process-emphasis {
+    font-weight: 700;
+    color: var(--color-maroon);
+  }
+
+  .research-process-note {
+    margin: 1.5rem 0 0 0;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--color-ink-muted);
+  }
+
+  .research-process-note a {
+    font-weight: 600;
+  }
+</style>

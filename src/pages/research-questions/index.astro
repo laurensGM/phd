@@ -5,15 +5,21 @@ const base = import.meta.env.BASE_URL;
 ---
 
 <BaseLayout
-  title="Research design"
-  description="Track your research questions and objectives, plus guidance on conceptualising a strong research question."
+  title="Research"
+  description="Research process, questions, objectives, contribution, and guidance on conceptualising your study."
 >
-  <h1>Research design</h1>
+  <h1>Research</h1>
   <p class="page-desc">
-    Your research question and objective timelines, plus structured notes on how to sharpen and justify your research design.
+    Your research process, question and objective timelines, plus structured notes on how to sharpen and justify your study.
   </p>
 
   <div class="rq-hub-grid">
+    <a href={`${base}research-questions/process/`} class="rq-hub-card">
+      <span class="rq-hub-icon" aria-hidden="true">🔬</span>
+      <h2 class="rq-hub-title">Process</h2>
+      <p class="rq-hub-desc">Standard research workflow — topic, literature, design, ethics, data, analysis, reporting.</p>
+      <span class="rq-hub-link">Open process →</span>
+    </a>
     <a href={`${base}research-questions/questions/`} class="rq-hub-card">
       <span class="rq-hub-icon" aria-hidden="true">❓</span>
       <h2 class="rq-hub-title">Questions</h2>

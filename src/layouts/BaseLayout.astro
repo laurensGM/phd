@@ -56,6 +56,7 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
               <li><a href={`${base}writing/argument/`}>Argument</a></li>
               <li><a href={`${base}writing/humanize/`}>Humanize</a></li>
               <li><a href={`${base}slr/`}>SLR</a></li>
+              <li><a href={`${base}writing/lr-process/`}>LR process</a></li>
             </ul>
           </li>
           <li class="nav-dropdown-wrap">
@@ -78,8 +79,9 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
               class="nav-dropdown-trigger"
               id="rq-trigger"
               aria-haspopup="true"
-            >Research design</a>
+            >Research</a>
             <ul class="nav-dropdown" aria-labelledby="rq-trigger">
+              <li><a href={`${base}research-questions/process/`}>Process</a></li>
               <li><a href={`${base}research-questions/questions/`}>Questions</a></li>
               <li><a href={`${base}research-questions/objectives/`}>Objectives</a></li>
               <li><a href={`${base}research-questions/contribution/`}>Contribution</a></li>
@@ -102,7 +104,6 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
             <ul class="nav-dropdown" aria-labelledby="phd-manager-trigger">
               <li><a href={`${base}outline/`}>PhD milestones</a></li>
               <li><a href={`${base}phd-outline/`}>PhD outline</a></li>
-              <li><a href={`${base}process/`}>Process</a></li>
               <li><a href={`${base}diary/`}>Diary</a></li>
               <li><a href={`${base}tasks/`}>Tasks</a></li>
               <li><a href={`${base}meeting-notes/`}>Meeting notes</a></li>
