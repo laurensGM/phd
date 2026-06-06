@@ -1,0 +1,8 @@
+[
+  { "question": "How do you measure it?" },
+  { "question": "What is the academic construct?" },
+  { "question": "What is your outcome variable and how do you measure it?" },
+  { "question": "What is your unit of analysis?" },
+  { "question": "Is your outcome variable not a biased measure?" },
+  { "question": "Are your factor and outcome variable not correlated?" }
+]

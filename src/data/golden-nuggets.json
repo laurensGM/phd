@@ -1,12 +1,4 @@
 {
-  "faq": [
-    { "question": "How do you measure it?", "author": "C. Gerber" },
-    { "question": "What is the academic construct?", "author": "C. Gerber" },
-    { "question": "What is your outcome variable and how do you measure it?", "author": "C. Gerber" },
-    { "question": "What is your unit of analysis?", "author": "C. Gerber" },
-    { "question": "Is your outcome variable not a biased measure?", "author": "C. Gerber" },
-    { "question": "Are your factor and outcome variable not correlated?", "author": "C. Gerber" }
-  ],
   "quotes": [
     { "text": "Answer your own research question. If multiple answers, pick the one you like most, link it to literature and repeat.", "author": "C. Gerber" },
     { "text": "If the results in WoS are more than 500, it's too much.", "author": "C. Gerber" },

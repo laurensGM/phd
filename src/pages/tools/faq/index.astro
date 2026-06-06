@@ -1,8 +1,10 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import FaqPage from '../../../components/FaqPage';
+import faqSeed from '../../../data/faq-seed.json';
 
 const base = import.meta.env.BASE_URL;
+const staticQuestions = faqSeed as { question: string }[];
 ---
 
 <BaseLayout title="FAQ" description="Your personal PhD FAQ — questions and answers">
@@ -12,7 +14,7 @@ const base = import.meta.env.BASE_URL;
     Keep questions and answers you revisit during your PhD. Answers stay collapsed until you expand them.
   </p>
 
-  <FaqPage client:load />
+  <FaqPage client:load staticQuestions={staticQuestions} />
 </BaseLayout>
 
 <style>
@@ -61,6 +63,31 @@ const base = import.meta.env.BASE_URL;
     background: rgba(113, 32, 56, 0.08);
     border-radius: 6px;
     margin-bottom: 1rem;
+  }
+
+  :global(.faq-import-bar) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.25rem;
+    background: rgba(113, 32, 56, 0.06);
+    border: 1px solid var(--color-maroon-muted);
+    border-radius: 8px;
+  }
+
+  :global(.faq-import-text) {
+    flex: 1;
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--color-ink);
+  }
+
+  :global(.faq-setup) {
+    color: var(--color-ink-muted);
+    margin-bottom: 1.5rem;
   }
 
   :global(.faq-add-form) {
