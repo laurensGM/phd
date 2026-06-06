@@ -1,0 +1,486 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const base = import.meta.env.BASE_URL;
+
+const secondaryCriteria = [
+  'Complete',
+  'Precise',
+  'Accurate',
+  'Timely',
+  'Relevant',
+  'Consistent',
+  'Transparent',
+];
+---
+
+<BaseLayout
+  title="Qual vs Quant"
+  description="Qualitative vs quantitative research — definitions, distinctions, and quality criteria"
+>
+  <p class="back-link"><a href={`${base}methods/`}>← Methods</a></p>
+  <h1>Qual vs Quant</h1>
+  <p class="page-desc">
+    A side-by-side comparison of qualitative and quantitative approaches — without the detail covered on the{' '}
+    <a href={`${base}methods/qual/`}>Qual</a> and <a href={`${base}methods/quant/`}>Quant</a> pages.
+  </p>
+
+  <section class="qvq-section" aria-label="Definitions">
+    <h2 class="qvq-heading">Qualitative data and quantitative data</h2>
+    <p class="qvq-prose">
+      Quantitative research refers to research methods applied to gather data that can be analysed using mathematical
+      analysis to test hypotheses to ultimately reveal statistically significant differences or relations, whereas
+      qualitative data is research data that are not subjected to quantification or quantitative analysis.
+    </p>
+    <figure class="qvq-figure">
+      <img
+        src={`${base}methods/qual-quant-definition.png`}
+        alt="Slide comparing qualitative and quantitative data with illustrative cartoons"
+        width="960"
+        height="540"
+        loading="lazy"
+      />
+      <figcaption>
+        <div class="qvq-cartoons">
+          <blockquote class="qvq-cartoon-caption">
+            <strong>Qualitative:</strong> &ldquo;Look here, McGinnis&mdash;hundreds of bright copper kettles, warm woolen
+            mittens, brown paper packages tied up with string&hellip; Someone was after a few of this guy&rsquo;s favorite
+            things.&rdquo;
+          </blockquote>
+          <blockquote class="qvq-cartoon-caption">
+            <strong>Quantitative:</strong> &ldquo;Einstein discovers that time is actually money.&rdquo;
+          </blockquote>
+        </div>
+      </figcaption>
+    </figure>
+  </section>
+
+  <section class="qvq-section" aria-label="Key distinctions">
+    <h2 class="qvq-heading">Key qualitative and quantitative distinctions</h2>
+    <div class="qvq-table-wrap">
+      <table class="qvq-table">
+        <thead>
+          <tr>
+            <th scope="col" class="qvq-table-corner">
+              <span class="qvq-table-axis">Analysis</span>
+              <span class="qvq-table-axis qvq-table-axis--data">Data</span>
+            </th>
+            <th scope="col">Quantitative (data)</th>
+            <th scope="col">Qualitative (data)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Quantitative (analysis)</th>
+            <td>Statistical and mathematical analysis of the numerical data as presented</td>
+            <td>
+              Assigning meaning of words based on scoring system. E.g. content analysis, word counts, free lists, pile
+              sorts
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">Qualitative (analysis)</th>
+            <td>Search for and presentation of meaning in results of quantitative processing</td>
+            <td>Interpretative test studies. E.g. hermeneutics, grounded theory, phenomenology</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="qvq-credit">&copy; J. Loke 2014</p>
+  </section>
+
+  <section class="qvq-section" aria-label="Quality criteria">
+    <div class="qvq-quality-grid">
+      <div class="qvq-quality-col">
+        <h2 class="qvq-heading">Quantitative data (numbers)</h2>
+        <p class="qvq-subheading">Reliability and validity</p>
+        <div class="qvq-targets">
+          <figure class="qvq-target">
+            <div class="qvq-target-ring" aria-hidden="true">
+              <span class="qvq-dot" style="--x: 68%; --y: 32%"></span>
+              <span class="qvq-dot" style="--x: 72%; --y: 38%"></span>
+              <span class="qvq-dot" style="--x: 65%; --y: 42%"></span>
+              <span class="qvq-dot" style="--x: 70%; --y: 28%"></span>
+            </div>
+            <figcaption>Reliable, not valid</figcaption>
+            <p class="qvq-target-note">Consistent shots, but off target.</p>
+          </figure>
+          <figure class="qvq-target">
+            <div class="qvq-target-ring" aria-hidden="true">
+              <span class="qvq-dot" style="--x: 38%; --y: 55%"></span>
+              <span class="qvq-dot" style="--x: 62%; --y: 44%"></span>
+              <span class="qvq-dot" style="--x: 48%; --y: 62%"></span>
+              <span class="qvq-dot" style="--x: 55%; --y: 35%"></span>
+            </div>
+            <figcaption>Valid, not reliable</figcaption>
+            <p class="qvq-target-note">On target on average, but scattered.</p>
+          </figure>
+          <figure class="qvq-target">
+            <div class="qvq-target-ring" aria-hidden="true">
+              <span class="qvq-dot" style="--x: 18%; --y: 22%"></span>
+              <span class="qvq-dot" style="--x: 78%; --y: 70%"></span>
+              <span class="qvq-dot" style="--x: 30%; --y: 75%"></span>
+              <span class="qvq-dot" style="--x: 82%; --y: 25%"></span>
+            </div>
+            <figcaption>Neither reliable nor valid</figcaption>
+            <p class="qvq-target-note">Scattered and off target.</p>
+          </figure>
+          <figure class="qvq-target">
+            <div class="qvq-target-ring" aria-hidden="true">
+              <span class="qvq-dot" style="--x: 49%; --y: 49%"></span>
+              <span class="qvq-dot" style="--x: 52%; --y: 47%"></span>
+              <span class="qvq-dot" style="--x: 47%; --y: 52%"></span>
+              <span class="qvq-dot" style="--x: 51%; --y: 51%"></span>
+            </div>
+            <figcaption>Both reliable &amp; valid</figcaption>
+            <p class="qvq-target-note">Tight cluster in the bullseye.</p>
+          </figure>
+        </div>
+      </div>
+
+      <div class="qvq-quality-col">
+        <h2 class="qvq-heading">Qualitative data (words)</h2>
+        <p class="qvq-subheading">Credible and trustworthy</p>
+        <div class="qvq-rigour">
+          <p class="qvq-rigour-title">Rigour in qualitative research</p>
+          <div class="qvq-rigour-grid">
+            <div class="qvq-rigour-block">
+              <h3 class="qvq-rigour-label">Internal</h3>
+              <ul class="qvq-rigour-list">
+                <li class="qvq-rigour-emphasis">Credibility</li>
+                <li>Neutrality</li>
+                <li>Confirmability</li>
+              </ul>
+            </div>
+            <div class="qvq-rigour-block">
+              <h3 class="qvq-rigour-label">External</h3>
+              <ul class="qvq-rigour-list">
+                <li class="qvq-rigour-emphasis">Dependability</li>
+              </ul>
+            </div>
+          </div>
+          <div class="qvq-trustworthiness">
+            <h3 class="qvq-trustworthiness-label">Trustworthiness</h3>
+            <ul class="qvq-trustworthiness-list">
+              <li>Consistency</li>
+              <li>Dependability</li>
+              <li>Applicability</li>
+              <li>Transferability</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="qvq-secondary">
+      <h3 class="qvq-secondary-title">Secondary data set(s) should be:</h3>
+      <ul class="qvq-checklist">
+        {secondaryCriteria.map((item) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .back-link {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  .back-link a {
+    color: var(--color-maroon);
+  }
+
+  .page-desc {
+    color: var(--color-ink-muted);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+    max-width: 44rem;
+  }
+
+  .page-desc a {
+    font-weight: 600;
+  }
+
+  .qvq-section {
+    max-width: 52rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem 1.75rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    border-left: 4px solid var(--color-maroon);
+  }
+
+  .qvq-heading {
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    color: var(--color-maroon);
+    margin: 0 0 0.85rem 0;
+  }
+
+  .qvq-subheading {
+    margin: 0 0 1rem 0;
+    font-weight: 600;
+    color: var(--color-ink);
+    font-size: 0.95rem;
+  }
+
+  .qvq-prose {
+    margin: 0 0 1.25rem 0;
+    line-height: 1.65;
+    color: var(--color-ink);
+    font-size: 0.98rem;
+  }
+
+  .qvq-figure {
+    margin: 0;
+  }
+
+  .qvq-figure img {
+    width: 100%;
+    height: auto;
+    border-radius: 6px;
+    border: 1px solid var(--color-border);
+  }
+
+  .qvq-cartoons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .qvq-cartoon-caption {
+    margin: 0;
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--color-ink-muted);
+    background: rgba(113, 32, 56, 0.04);
+    border-radius: 6px;
+    border-left: 3px solid var(--color-maroon-muted);
+  }
+
+  .qvq-table-wrap {
+    overflow-x: auto;
+    margin-bottom: 0.75rem;
+  }
+
+  .qvq-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  .qvq-table th,
+  .qvq-table td {
+    border: 1px solid var(--color-border);
+    padding: 0.75rem 0.85rem;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .qvq-table thead th {
+    background: rgba(113, 32, 56, 0.08);
+    color: var(--color-maroon);
+    font-weight: 700;
+  }
+
+  .qvq-table tbody th {
+    background: rgba(113, 32, 56, 0.05);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .qvq-table-corner {
+    min-width: 7rem;
+    position: relative;
+  }
+
+  .qvq-table-axis {
+    display: block;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .qvq-table-axis--data {
+    margin-top: 0.35rem;
+    text-align: right;
+  }
+
+  .qvq-credit {
+    margin: 0;
+    text-align: right;
+    font-size: 0.82rem;
+    color: var(--color-ink-muted);
+  }
+
+  .qvq-quality-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .qvq-targets {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .qvq-target {
+    margin: 0;
+    text-align: center;
+  }
+
+  .qvq-target-ring {
+    position: relative;
+    width: 5.5rem;
+    height: 5.5rem;
+    margin: 0 auto 0.5rem;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+    background:
+      radial-gradient(circle at center, #c44 0%, #c44 12%, transparent 13%),
+      radial-gradient(circle at center, transparent 28%, #999 29%, #999 32%, transparent 33%),
+      radial-gradient(circle at center, transparent 48%, #999 49%, #999 52%, transparent 53%),
+      #f8f8f8;
+  }
+
+  .qvq-dot {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: 0.45rem;
+    height: 0.45rem;
+    margin: -0.225rem 0 0 -0.225rem;
+    border-radius: 50%;
+    background: #222;
+  }
+
+  .qvq-target figcaption {
+    font-weight: 600;
+    font-size: 0.82rem;
+    color: var(--color-ink);
+  }
+
+  .qvq-target-note {
+    margin: 0.2rem 0 0 0;
+    font-size: 0.75rem;
+    color: var(--color-ink-muted);
+    line-height: 1.35;
+  }
+
+  .qvq-rigour {
+    padding: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: rgba(113, 32, 56, 0.03);
+  }
+
+  .qvq-rigour-title {
+    margin: 0 0 0.85rem 0;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-align: center;
+    color: var(--color-ink);
+  }
+
+  .qvq-rigour-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .qvq-rigour-block {
+    padding: 0.65rem 0.75rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+  }
+
+  .qvq-rigour-label {
+    margin: 0 0 0.4rem 0;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--color-maroon);
+  }
+
+  .qvq-rigour-list {
+    margin: 0;
+    padding-left: 1.1rem;
+    font-size: 0.85rem;
+    line-height: 1.55;
+  }
+
+  .qvq-rigour-emphasis {
+    font-weight: 700;
+    color: var(--color-maroon);
+  }
+
+  .qvq-trustworthiness {
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--color-maroon-muted);
+    border-radius: 999px;
+    text-align: center;
+  }
+
+  .qvq-trustworthiness-label {
+    margin: 0 0 0.35rem 0;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--color-maroon);
+  }
+
+  .qvq-trustworthiness-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.35rem 0.75rem;
+    font-size: 0.82rem;
+    color: var(--color-ink);
+  }
+
+  .qvq-secondary {
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .qvq-secondary-title {
+    margin: 0 0 0.85rem 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-ink);
+  }
+
+  .qvq-checklist {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+    gap: 0.5rem 1.5rem;
+  }
+
+  .qvq-checklist li::before {
+    content: '✓ ';
+    color: var(--color-maroon);
+    font-weight: 700;
+  }
+
+  @media (max-width: 720px) {
+    .qvq-cartoons,
+    .qvq-quality-grid,
+    .qvq-rigour-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
