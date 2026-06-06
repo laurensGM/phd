@@ -55,6 +55,64 @@ const secondaryCriteria = [
     </figure>
   </section>
 
+  <section class="qvq-section" aria-label="Qualitative vs quantitative vs mixed methods">
+    <h2 class="qvq-heading">Qualitative vs quantitative vs mixed methods</h2>
+    <div class="qvq-methods-grid">
+      <div class="qvq-methods-col qvq-methods-col--qual">
+        <h3 class="qvq-methods-title">Qualitative research</h3>
+        <p class="qvq-methods-def">
+          Research that <strong>leads</strong> observations <strong>into</strong> a theory.
+        </p>
+        <dl class="qvq-methods-dl">
+          <dt>Approach</dt>
+          <dd>Inductive*</dd>
+          <dt>Goal</dt>
+          <dd>Depth, generate hypotheses</dd>
+          <dt>Setting</dt>
+          <dd>Natural</dd>
+          <dt>Sampling</dt>
+          <dd>Purposeful</dd>
+          <dt>Data collection</dt>
+          <dd>Interview guides, observation tools</dd>
+          <dt>Data analysis</dt>
+          <dd>Iterative interpretation</dd>
+        </dl>
+        <p class="qvq-methods-footnote">*From Latin <em>inducere</em> = to lead into</p>
+      </div>
+
+      <div class="qvq-methods-col qvq-methods-col--mixed">
+        <h3 class="qvq-methods-title">Mixed methods</h3>
+        <ul class="qvq-methods-mixed-list">
+          <li>Integrates both approaches</li>
+          <li>Enhances depth and generalizability</li>
+          <li>Useful for triangulation and validation</li>
+        </ul>
+      </div>
+
+      <div class="qvq-methods-col qvq-methods-col--quant">
+        <h3 class="qvq-methods-title">Quantitative research</h3>
+        <p class="qvq-methods-def">
+          Research that <strong>leads from</strong> established theory down to test cases.
+        </p>
+        <dl class="qvq-methods-dl">
+          <dt>Approach</dt>
+          <dd>Deductive*</dd>
+          <dt>Goal</dt>
+          <dd>Breadth, test hypotheses</dd>
+          <dt>Setting</dt>
+          <dd>Experimental / quasi</dd>
+          <dt>Sampling</dt>
+          <dd>Random</dd>
+          <dt>Data collection</dt>
+          <dd>Surveys, data</dd>
+          <dt>Data analysis</dt>
+          <dd>Statistical tests, modeling</dd>
+        </dl>
+        <p class="qvq-methods-footnote">*From Latin <em>deducere</em> = to lead down/away</p>
+      </div>
+    </div>
+  </section>
+
   <section class="qvq-section" aria-label="Key distinctions">
     <h2 class="qvq-heading">Key qualitative and quantitative distinctions</h2>
     <div class="qvq-table-wrap">
@@ -87,6 +145,51 @@ const secondaryCriteria = [
       </table>
     </div>
     <p class="qvq-credit">&copy; J. Loke 2014</p>
+  </section>
+
+  <section class="qvq-section" aria-label="The necessity of the researcher's voice">
+    <h2 class="qvq-heading">The necessity of the researcher&rsquo;s voice</h2>
+    <div class="qvq-table-wrap">
+      <table class="qvq-table qvq-voice-table">
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">Traditional quantitative stance</th>
+            <th scope="col" class="qvq-voice-qual-col">Strong qualitative stance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Goal</th>
+            <td>Objectivity and detachment</td>
+            <td class="qvq-voice-qual-col">Reflexivity and authenticity</td>
+          </tr>
+          <tr>
+            <th scope="row">Format</th>
+            <td>Third-person narrative</td>
+            <td class="qvq-voice-qual-col">First-person narrative</td>
+          </tr>
+          <tr>
+            <th scope="row">Focus</th>
+            <td>Numbers, charts, and isolating variables</td>
+            <td class="qvq-voice-qual-col">The interaction between the researcher and the phenomenon</td>
+          </tr>
+          <tr>
+            <th scope="row">Role</th>
+            <td>The researcher is removed from the text</td>
+            <td class="qvq-voice-qual-col">The researcher&rsquo;s role in outcomes is acknowledged and highly visible</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="qvq-voice-note">
+      Qualitative data cannot be easily reduced. The reader experiences the &ldquo;Aha!&rdquo; moment through the
+      researcher&rsquo;s eyes.
+    </p>
+    <p class="qvq-credit">
+      Bansal, P. and Corley, K. (2011). The coming of age for qualitative research: Embracing the diversity of
+      qualitative methods. <em>Academy of Management Journal</em>, 54(2), 233&ndash;237.
+    </p>
   </section>
 
   <section class="qvq-section" aria-label="Quality criteria">
@@ -263,6 +366,92 @@ const secondaryCriteria = [
     border-left: 3px solid var(--color-maroon-muted);
   }
 
+  .qvq-methods-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+    align-items: start;
+  }
+
+  .qvq-methods-col {
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .qvq-methods-col--qual {
+    background: rgba(113, 32, 56, 0.06);
+    border-top: 3px solid var(--color-maroon-muted);
+  }
+
+  .qvq-methods-col--mixed {
+    background: rgba(230, 160, 90, 0.12);
+    border-top: 3px solid #d4985a;
+  }
+
+  .qvq-methods-col--quant {
+    background: rgba(140, 160, 80, 0.1);
+    border-top: 3px solid #8a9a50;
+  }
+
+  .qvq-methods-title {
+    font-family: var(--font-serif);
+    font-size: 1rem;
+    color: var(--color-maroon);
+    margin: 0 0 0.65rem 0;
+  }
+
+  .qvq-methods-def {
+    margin: 0 0 0.85rem 0;
+    line-height: 1.55;
+    color: var(--color-ink);
+  }
+
+  .qvq-methods-dl {
+    margin: 0;
+  }
+
+  .qvq-methods-dl dt {
+    font-weight: 700;
+    color: var(--color-ink);
+    margin-top: 0.55rem;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  .qvq-methods-dl dt:first-child {
+    margin-top: 0;
+  }
+
+  .qvq-methods-dl dd {
+    margin: 0.15rem 0 0 0;
+    color: var(--color-ink);
+  }
+
+  .qvq-methods-footnote {
+    margin: 0.85rem 0 0 0;
+    font-size: 0.78rem;
+    color: var(--color-ink-muted);
+    font-style: italic;
+  }
+
+  .qvq-methods-mixed-list {
+    margin: 0;
+    padding-left: 1.15rem;
+    color: var(--color-ink);
+  }
+
+  .qvq-methods-mixed-list li {
+    margin-bottom: 0.5rem;
+  }
+
+  .qvq-methods-mixed-list li:last-child {
+    margin-bottom: 0;
+  }
+
   .qvq-table-wrap {
     overflow-x: auto;
     margin-bottom: 0.75rem;
@@ -317,6 +506,22 @@ const secondaryCriteria = [
     text-align: right;
     font-size: 0.82rem;
     color: var(--color-ink-muted);
+  }
+
+  .qvq-voice-qual-col {
+    background: rgba(255, 220, 100, 0.2);
+  }
+
+  .qvq-voice-note {
+    margin: 1rem 0 0.75rem 0;
+    padding: 0.85rem 1rem;
+    line-height: 1.6;
+    font-size: 0.92rem;
+    color: var(--color-ink);
+    background: rgba(255, 220, 100, 0.12);
+    border-left: 3px solid rgba(200, 160, 40, 0.6);
+    border-radius: 0 6px 6px 0;
+    max-width: 36rem;
   }
 
   .qvq-quality-grid {
@@ -479,7 +684,8 @@ const secondaryCriteria = [
   @media (max-width: 720px) {
     .qvq-cartoons,
     .qvq-quality-grid,
-    .qvq-rigour-grid {
+    .qvq-rigour-grid,
+    .qvq-methods-grid {
       grid-template-columns: 1fr;
     }
   }

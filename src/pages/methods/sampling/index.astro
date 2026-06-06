@@ -1,0 +1,65 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const base = import.meta.env.BASE_URL;
+
+const probabilityMethods = ['Simple random', 'Stratified', 'Cluster', 'Systematic', 'Multistage'];
+
+const nonProbabilityMethods = ['Convenience', 'Judgement', 'Quota', 'Snowball', 'Multistage'];
+---
+
+<BaseLayout title="Sampling" description="Probability and non-probability sampling methods">
+  <p class="back-link"><a href={`${base}methods/`}>← Methods</a></p>
+  <h1>Sampling</h1>
+
+  <section class="sampling-section">
+    <h2>Probability sampling</h2>
+    <ul>
+      {probabilityMethods.map((method) => (
+        <li>{method}</li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="sampling-section">
+    <h2>Non-probability sampling</h2>
+    <ul>
+      {nonProbabilityMethods.map((method) => (
+        <li>{method}</li>
+      ))}
+    </ul>
+  </section>
+</BaseLayout>
+
+<style>
+  .back-link {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  .back-link a {
+    color: var(--color-maroon);
+  }
+
+  .sampling-section {
+    max-width: 42rem;
+    margin-bottom: 2rem;
+  }
+
+  .sampling-section h2 {
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    color: var(--color-maroon);
+    margin: 0 0 0.75rem 0;
+  }
+
+  .sampling-section ul {
+    margin: 0;
+    padding-left: 1.5rem;
+    line-height: 1.85;
+    color: var(--color-ink);
+  }
+
+  .sampling-section li {
+    margin-bottom: 0.4rem;
+  }
+</style>
