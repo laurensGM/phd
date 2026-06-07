@@ -3,50 +3,36 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 
 const base = import.meta.env.BASE_URL;
 
-type RigourRow = {
-  critical: string;
-  criteria: string;
-  strategies: string[];
-  techniques: string[];
-};
-
-const interviewRigour: RigourRow[] = [
+const qualMethods = [
   {
-    critical: 'Credibility',
-    criteria: 'Truth value',
-    strategies: ['Field notes/memo', 'Tape recorder', 'Thematic log', 'Auditing transcript'],
-    techniques: [
-      'Purposeful/theoretical',
-      'Negative/deviant case',
-      'Constant comparison',
-      'Member checking',
-      'Triangulation',
-      'Audit trial',
-    ],
+    href: `${base}methods/qual/interviews/`,
+    title: 'Interviews',
+    desc: 'Semi-structured and in-depth interviews, plus rigour criteria.',
   },
   {
-    critical: 'Transferability',
-    criteria: 'Applicability',
-    strategies: ['Data display', 'Simultaneous', 'Field notes/memo'],
-    techniques: ['Purposeful/theoretical', 'Thick description'],
+    href: `${base}methods/qual/focus-groups/`,
+    title: 'Focus groups',
+    desc: 'Group size, number of sessions, and shared-experience insights.',
   },
   {
-    critical: 'Dependability',
-    criteria: 'Consistency',
-    strategies: [
-      'Tape recorder',
-      'Thematic log',
-      'Auditing transcript',
-      "Researcher's story",
-      'Reflexivity',
-    ],
-    techniques: ['Negative/deviant case', 'Member checking', 'Triangulation', 'Audit trial'],
+    href: `${base}methods/qual/observation/`,
+    title: 'Observation',
+    desc: 'Behavior in natural settings, document analysis, and cultural context.',
   },
   {
-    critical: 'Confirmability',
-    criteria: 'Neutrality',
-    strategies: ['Field notes/memo'],
-    techniques: ['Audit trial'],
+    href: `${base}methods/qual/themes/`,
+    title: 'Themes',
+    desc: 'Content and narrative analysis, coding into themes and conceptual models.',
+  },
+  {
+    href: `${base}methods/qual/projective-technique/`,
+    title: 'Projective technique',
+    desc: 'Indirect questioning — e.g. would you recommend X to someone else?',
+  },
+  {
+    href: `${base}methods/qual/sentence-completion/`,
+    title: 'Sentence completion',
+    desc: 'Structured prompts — e.g. I love X because …',
   },
 ];
 ---
@@ -60,12 +46,9 @@ const interviewRigour: RigourRow[] = [
         <li>
           <a href="#method">Method</a>
           <ol>
-            <li><a href="#interviews">Interviews</a></li>
-            <li><a href="#focus-groups">Focus groups</a></li>
-            <li><a href="#observation">Observation</a></li>
-            <li><a href="#themes">Themes</a></li>
-            <li><a href="#projective-technique">Projective technique</a></li>
-            <li><a href="#sentence-completion">Sentence completion</a></li>
+            {qualMethods.map((item) => (
+              <li><a href={item.href}>{item.title}</a></li>
+            ))}
           </ol>
         </li>
         <li><a href="#measurement">Measurement</a></li>
@@ -157,88 +140,17 @@ const interviewRigour: RigourRow[] = [
 
       <section id="method" class="qual-section">
         <h2>Method</h2>
-        <p>Primary qualitative data collection techniques covered below.</p>
-
-        <section id="interviews" class="qual-subsection">
-          <h3>Interviews</h3>
-          <p><strong>Semi structured:</strong> somewhat experts, 30 minutes. Not probing, 12 questions. You need &gt;12 ×
-          3. ×3 because of triangulation. Need to repeat 3 times to ensure it&rsquo;s credible.</p>
-          <p>
-            <strong>In depth:</strong> with experts, 60 to 90 minutes. 5 questions: allow for follow up, probing. Needs
-            &gt;7 × 3, also need to repeat 3 times. Explore individual experiences and perceptions in rich detail.
-          </p>
-
-          <h4 class="qual-table-heading">Interviews (primary, qualitative)</h4>
-          <div class="qual-table-wrap">
-            <table class="qual-rigour-table">
-              <thead>
-                <tr>
-                  <th scope="col">Rigour critical</th>
-                  <th scope="col">Criteria for rigour</th>
-                  <th scope="col">Research strategy</th>
-                  <th scope="col">Techniques to insure rigour</th>
-                </tr>
-              </thead>
-              <tbody>
-                {interviewRigour.map((row) => (
-                  <tr>
-                    <th scope="row">{row.critical}</th>
-                    <td>{row.criteria}</td>
-                    <td>
-                      <ul>
-                        {row.strategies.map((item) => (
-                          <li>{item}</li>
-                        ))}
-                      </ul>
-                    </td>
-                    <td>
-                      <ul>
-                        {row.techniques.map((item) => (
-                          <li>{item}</li>
-                        ))}
-                      </ul>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <p class="qual-source">Liamputtong and Ezzy (2009)</p>
-        </section>
-
-        <section id="focus-groups" class="qual-subsection">
-          <h3>Focus groups</h3>
-          <p>
-            6&ndash;8 people online. 10&ndash;12 people in person. Need to run 3 to 5 focus groups. Generate unique
-            insights into shared experiences and social norms.
-          </p>
-        </section>
-
-        <section id="observation" class="qual-subsection">
-          <h3>Observation</h3>
-          <p>
-            Camera, to see <em>how</em> they behave (not count how many). Can also be document analysis. Learn about
-            behaviors and interactions in natural settings. Study cultural aspects of a setting of particular context.
-          </p>
-        </section>
-
-        <section id="themes" class="qual-subsection">
-          <h3>Themes</h3>
-          <p>
-            Content analysis, coding into themes. Also narrative analysis leading to themes. Themes lead to a conceptual
-            model.
-          </p>
-        </section>
-
-        <section id="projective-technique" class="qual-subsection">
-          <h3>Projective technique</h3>
-          <p>Would you recommend X to someone else?</p>
-        </section>
-
-        <section id="sentence-completion" class="qual-subsection">
-          <h3>Sentence completion</h3>
-          <p>I love X because &hellip;</p>
-        </section>
+        <p>Primary qualitative data collection techniques — open each for full detail.</p>
+        <ul class="qual-method-nav">
+          {qualMethods.map((item) => (
+            <li>
+              <a href={item.href} class="qual-method-nav-link">
+                <span class="qual-method-nav-title">{item.title}</span>
+                <span class="qual-method-nav-desc">{item.desc}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
       </section>
 
       <section id="measurement" class="qual-section">
@@ -452,19 +364,46 @@ const interviewRigour: RigourRow[] = [
     scroll-margin-top: 5.5rem;
   }
 
-  .qual-subsection > h3 {
-    font-family: var(--font-serif);
-    font-size: 1.1rem;
-    color: var(--color-ink);
-    margin: 0 0 0.75rem 0;
-    scroll-margin-top: 5.5rem;
+  .qual-method-nav {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    max-width: 42rem;
   }
 
-  .qual-table-heading {
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--color-ink);
-    margin: 1.5rem 0 0.75rem 0;
+  .qual-method-nav-link {
+    display: block;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    border-left: 3px solid var(--color-maroon);
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .qual-method-nav-link:hover {
+    border-color: var(--color-maroon-muted);
+    box-shadow: var(--shadow-md);
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .qual-method-nav-title {
+    display: block;
+    font-weight: 700;
+    color: var(--color-maroon);
+    margin-bottom: 0.2rem;
+  }
+
+  .qual-method-nav-desc {
+    display: block;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--color-ink-muted);
   }
 
   .qual-subheading {
@@ -491,59 +430,5 @@ const interviewRigour: RigourRow[] = [
 
   .qual-analysis-steps li {
     margin-bottom: 0.65rem;
-  }
-
-  .qual-table-wrap {
-    overflow-x: auto;
-    margin: 0 0 0.5rem 0;
-    max-width: 100%;
-  }
-
-  .qual-rigour-table {
-    width: 100%;
-    min-width: 36rem;
-    border-collapse: collapse;
-    font-size: 0.88rem;
-    line-height: 1.45;
-  }
-
-  .qual-rigour-table th,
-  .qual-rigour-table td {
-    border: 1px solid var(--color-border);
-    padding: 0.65rem 0.75rem;
-    text-align: left;
-    vertical-align: top;
-  }
-
-  .qual-rigour-table thead th {
-    background: rgba(113, 32, 56, 0.08);
-    color: var(--color-maroon);
-    font-weight: 700;
-  }
-
-  .qual-rigour-table tbody th {
-    background: rgba(113, 32, 56, 0.05);
-    font-weight: 600;
-    white-space: nowrap;
-  }
-
-  .qual-rigour-table ul {
-    margin: 0;
-    padding-left: 1.1rem;
-  }
-
-  .qual-rigour-table li {
-    margin-bottom: 0.25rem;
-  }
-
-  .qual-rigour-table li:last-child {
-    margin-bottom: 0;
-  }
-
-  .qual-source {
-    margin: 0;
-    font-size: 0.85rem;
-    color: var(--color-ink-muted);
-    font-style: italic;
   }
 </style>

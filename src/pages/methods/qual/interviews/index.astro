@@ -1,0 +1,498 @@
+---
+import QualMethodLayout from '../../../../components/QualMethodLayout.astro';
+import { interviewRigour } from '../../../../data/qual-interview-rigour';
+
+const interviewProbes = [
+  { type: 'Silent', description: 'Nod slowly; tilt head' },
+  { type: 'Echo', description: 'Repeat the last sentence statement and ask respondent to continue' },
+  { type: 'Neutral', description: 'Encouraging "I see" or "uh-huh"' },
+  { type: 'Direct', description: 'Tell me more' },
+  { type: 'Phased assertion', description: 'Imply you already know something or encourage respondent to speak' },
+  { type: 'Detail', description: 'Who, where, what, when, how' },
+  { type: 'Clarifying', description: 'You said "x", please describe what you meant by that' },
+];
+
+const veganQuotes = [
+  { id: 'A', text: 'I always thought about the animals. They suffer a lot when we actually eat meat.' },
+  { id: 'B', text: 'Why should some animal die for us? We can very well live without meat.' },
+  { id: 'C', text: 'I think we have to act consciously. We cannot just think about ourselves.' },
+  { id: 'D', text: 'It seems to be a health trend.' },
+  { id: 'E', text: 'It just suits my lifestyle. And I want to turn really old.' },
+  { id: 'F', text: 'Everyone is doing it right now. So why not trying it out! It is like a hipster thing.' },
+  { id: 'G', text: 'Eating this much meat takes resources away from developing countries!' },
+];
+
+const firstOrderCodes = [
+  { code: 'Animal rights', quotes: ['A', 'B'] },
+  { code: 'Other people', quotes: ['C', 'G'] },
+  { code: 'Hipster trend', quotes: ['D', 'F'] },
+  { code: 'Health trend', quotes: ['D', 'E'] },
+];
+
+const secondOrderCodes = [
+  { theme: 'Ethical reasons', codes: ['Animal rights', 'Other people'] },
+  { theme: 'Trend', codes: ['Hipster trend', 'Health trend'] },
+];
+---
+
+<QualMethodLayout title="Interviews" description="Qualitative interviews — semi-structured, in-depth, probes, and rigour">
+  <h1>Interviews</h1>
+  <p>
+    <strong>Semi structured:</strong> somewhat experts, 30 minutes. Not probing, 12 questions. You need &gt;12 × 3. ×3
+    because of triangulation. Need to repeat 3 times to ensure it&rsquo;s credible.
+  </p>
+  <p>
+    <strong>In depth:</strong> with experts, 60 to 90 minutes. 5 questions: allow for follow up, probing. Needs &gt;7 ×
+    3, also need to repeat 3 times. Explore individual experiences and perceptions in rich detail.
+  </p>
+
+  <section class="interviews-section">
+    <h2>In-depth interviewing (common method)</h2>
+    <ul class="interviews-list">
+      <li>Use an interview guide &ldquo;guided conversation&rdquo;</li>
+      <li>
+        Semi-structured format &mdash; the researcher can deviate to explore interesting points or explore a new idea
+        <ul>
+          <li>Keep notes</li>
+        </ul>
+      </li>
+      <li>
+        Interactive process
+        <ul>
+          <li>You are allowed to change questions as long as it does not change the ethics approval</li>
+        </ul>
+      </li>
+      <li>
+        Prepare and refine the interview protocol
+        <ul>
+          <li>Change &ldquo;value&rdquo; to &ldquo;benefit&rdquo;</li>
+          <li>Change order of questions</li>
+          <li>Add new questions based on previous interviews &mdash; <strong>ITERATIVE</strong></li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+
+  <section class="interviews-section">
+    <h2>Example of an interview guide</h2>
+    <p class="interviews-note">
+      At the start of the study, a flow diagram of questions was constructed. After a number of interviews, it was evident
+      that such an initial structure is of great value, but that it was too wide.
+    </p>
+
+    <div class="interview-guide">
+      <h3 class="interview-guide-heading">Opening</h3>
+      <ol class="interview-guide-steps">
+        <li>Explain what the study is looking at.</li>
+        <li>For the record, state your organisation and your position.</li>
+        <li>Which environmental problems do you see as the biggest risk to your business?</li>
+        <li>What opportunities do you see around environmental aspects?</li>
+        <li>
+          Do you believe companies in your industry should work together on environmental projects?
+          <span class="interview-guide-prompt">Why?</span>
+        </li>
+      </ol>
+
+      <h3 class="interview-guide-heading">Core question</h3>
+      <p class="interview-guide-core">
+        Is the company you work for collaborating with competitors on environmental aspects?
+      </p>
+
+      <div class="interview-guide-branches">
+        <div class="interview-guide-branch">
+          <h4>If no (N)</h4>
+          <ol>
+            <li>Why do you believe this is?</li>
+            <li>What other barriers do you see?</li>
+            <li>What are the three biggest barriers in your view?</li>
+            <li>
+              What do you believe would be the consequences if you and your competitors do not collaborate on environmental
+              issues in the future?
+            </li>
+          </ol>
+        </div>
+        <div class="interview-guide-branch">
+          <h4>If yes (Y)</h4>
+          <ol>
+            <li>Please provide an example of environmental collaboration?</li>
+            <li>Can you explain when and how this example came about?</li>
+            <li>How has this example benefited your organisation?</li>
+            <li>How has the example benefited society?</li>
+            <li>What did you learn from this experience, both positive and negative?</li>
+            <li>Are there any other examples you can think of?</li>
+            <li>Which stakeholders are exerting the most pressure for you to collaborate?</li>
+            <li>Are there any competitors you prefer to collaborate with? Why?</li>
+          </ol>
+        </div>
+      </div>
+
+      <h3 class="interview-guide-heading">Follow-up</h3>
+      <p class="interview-guide-core">
+        Is your company collaborating with competitors in other respects? Please elaborate.
+      </p>
+      <div class="interview-guide-branches">
+        <div class="interview-guide-branch">
+          <h4>If yes (Y)</h4>
+          <p>Please provide examples.</p>
+        </div>
+        <div class="interview-guide-branch">
+          <h4>If no (N)</h4>
+          <ol>
+            <li>What role should government play in encouraging competitors to work together on environmental aspects?</li>
+            <li>
+              What role do other third parties play in facilitating environmental cooperation in your industry?
+              <ul class="interview-guide-nested">
+                <li>
+                  <strong>If yes:</strong> Under which conditions? What other factors would facilitate environmental
+                  competition beyond its current level? What do you believe determines the level of environmental
+                  cooperation in different industries?
+                </li>
+                <li><strong>If no:</strong> Why not?</li>
+              </ul>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="interviews-section">
+    <h2>Why do people go vegan?</h2>
+    <p class="interviews-note">
+      Example of coding interview transcripts: quotes &rarr; first-order codes &rarr; second-order themes.
+    </p>
+    <div class="coding-flow" role="img" aria-label="Interview analysis flow from transcripts to ethical reasons and trend themes">
+      <div class="coding-stage">
+        <h3 class="coding-stage-title">Interview transcripts</h3>
+        <div class="coding-transcripts" aria-hidden="true">
+          <span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+      <div class="coding-arrow" aria-hidden="true">&rarr;</div>
+      <div class="coding-stage">
+        <h3 class="coding-stage-title">Quotes / paragraphs</h3>
+        <ul class="coding-quotes">
+          {veganQuotes.map((quote) => (
+            <li>
+              <strong>Quote {quote.id}:</strong> &ldquo;{quote.text}&rdquo;
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div class="coding-arrow" aria-hidden="true">&rarr;</div>
+      <div class="coding-stage">
+        <h3 class="coding-stage-title">First-order codes</h3>
+        <ul class="coding-codes">
+          {firstOrderCodes.map((item) => (
+            <li>
+              <strong>{item.code}</strong>
+              <span class="coding-links">
+                ({item.quotes.map((q) => `Quote ${q}`).join(', ')})
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div class="coding-arrow" aria-hidden="true">&rarr;</div>
+      <div class="coding-stage">
+        <h3 class="coding-stage-title">Second-order codes</h3>
+        <ul class="coding-codes">
+          {secondOrderCodes.map((item) => (
+            <li>
+              <strong>{item.theme}</strong>
+              <span class="coding-links">({item.codes.join(', ')})</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="interviews-section">
+    <h2>Common probes in interviews*</h2>
+    <div class="qual-table-wrap">
+      <table class="qual-rigour-table interviews-probes-table">
+        <thead>
+          <tr>
+            <th scope="col">Probe</th>
+            <th scope="col">Description / example</th>
+          </tr>
+        </thead>
+        <tbody>
+          {interviewProbes.map((probe) => (
+            <tr>
+              <th scope="row">{probe.type}</th>
+              <td>{probe.description}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="interviews-section">
+    <h2 class="qual-table-heading">Interviews (primary, qualitative)</h2>
+    <div class="qual-table-wrap">
+      <table class="qual-rigour-table">
+        <thead>
+          <tr>
+            <th scope="col">Rigour critical</th>
+            <th scope="col">Criteria for rigour</th>
+            <th scope="col">Research strategy</th>
+            <th scope="col">Techniques to insure rigour</th>
+          </tr>
+        </thead>
+        <tbody>
+          {interviewRigour.map((row) => (
+            <tr>
+              <th scope="row">{row.critical}</th>
+              <td>{row.criteria}</td>
+              <td>
+                <ul>
+                  {row.strategies.map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ul>
+              </td>
+              <td>
+                <ul>
+                  {row.techniques.map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ul>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="qual-source">Liamputtong and Ezzy (2009)</p>
+  </section>
+</QualMethodLayout>
+
+<style>
+  .interviews-section {
+    margin-top: 2rem;
+  }
+
+  .interviews-section > h2 {
+    font-family: var(--font-serif);
+    font-size: 1.15rem;
+    color: var(--color-maroon);
+    margin: 0 0 0.85rem 0;
+  }
+
+  h2.qual-table-heading {
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+    color: var(--color-ink);
+  }
+
+  .interviews-list {
+    margin: 0;
+    padding-left: 1.5rem;
+    line-height: 1.75;
+    color: var(--color-ink);
+  }
+
+  .interviews-list li {
+    margin-bottom: 0.5rem;
+  }
+
+  .interviews-note {
+    font-size: 0.92rem;
+    color: var(--color-ink-muted);
+    font-style: italic;
+  }
+
+  .interview-guide {
+    padding: 1.25rem 1.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: rgba(113, 32, 56, 0.03);
+  }
+
+  .interview-guide-heading {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--color-maroon);
+    margin: 1.25rem 0 0.65rem 0;
+  }
+
+  .interview-guide-heading:first-child {
+    margin-top: 0;
+  }
+
+  .interview-guide-steps {
+    margin: 0;
+    padding-left: 1.5rem;
+    line-height: 1.7;
+  }
+
+  .interview-guide-steps li {
+    margin-bottom: 0.4rem;
+  }
+
+  .interview-guide-prompt {
+    display: inline-block;
+    margin-left: 0.35rem;
+    font-weight: 600;
+    color: var(--color-maroon);
+  }
+
+  .interview-guide-core {
+    margin: 0 0 0.85rem 0;
+    font-weight: 600;
+    line-height: 1.6;
+  }
+
+  .interview-guide-branches {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  @media (max-width: 640px) {
+    .interview-guide-branches {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .interview-guide-branch {
+    padding: 0.85rem 1rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+  }
+
+  .interview-guide-branch h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.88rem;
+    color: var(--color-maroon);
+  }
+
+  .interview-guide-branch ol {
+    margin: 0;
+    padding-left: 1.25rem;
+    line-height: 1.65;
+    font-size: 0.9rem;
+  }
+
+  .interview-guide-branch p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.65;
+  }
+
+  .interview-guide-nested {
+    margin: 0.5rem 0 0 0;
+    padding-left: 1.1rem;
+    line-height: 1.6;
+  }
+
+  .interviews-probes-table {
+    min-width: 24rem;
+  }
+
+  .coding-flow {
+    display: grid;
+    grid-template-columns: minmax(5rem, 0.7fr) auto minmax(10rem, 1.4fr) auto minmax(8rem, 1fr) auto minmax(7rem, 0.9fr);
+    gap: 0.5rem 0.35rem;
+    align-items: start;
+    padding: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: #fafafa;
+    overflow-x: auto;
+  }
+
+  @media (max-width: 900px) {
+    .coding-flow {
+      grid-template-columns: 1fr;
+    }
+
+    .coding-arrow {
+      text-align: center;
+      transform: rotate(90deg);
+      margin: 0.25rem auto;
+    }
+  }
+
+  .coding-stage {
+    min-width: 0;
+    padding: 0.65rem 0.75rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+  }
+
+  .coding-stage-title {
+    margin: 0 0 0.6rem 0;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--color-maroon);
+    text-align: center;
+  }
+
+  .coding-arrow {
+    align-self: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-maroon-muted);
+    padding-top: 1.5rem;
+  }
+
+  .coding-transcripts {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    align-items: center;
+    padding: 0.5rem 0;
+  }
+
+  .coding-transcripts span {
+    display: block;
+    width: 2.5rem;
+    height: 1.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: 2px;
+    background: #fff;
+    position: relative;
+  }
+
+  .coding-transcripts span::before {
+    content: '“';
+    position: absolute;
+    top: 0.1rem;
+    left: 0.25rem;
+    font-size: 0.7rem;
+    color: var(--color-ink-muted);
+  }
+
+  .coding-quotes,
+  .coding-codes {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.78rem;
+    line-height: 1.45;
+  }
+
+  .coding-quotes li,
+  .coding-codes li {
+    margin-bottom: 0.45rem;
+  }
+
+  .coding-quotes li:last-child,
+  .coding-codes li:last-child {
+    margin-bottom: 0;
+  }
+
+  .coding-links {
+    display: block;
+    margin-top: 0.15rem;
+    font-size: 0.72rem;
+    color: var(--color-ink-muted);
+  }
+</style>

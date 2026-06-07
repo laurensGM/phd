@@ -1,0 +1,115 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout title={title} description={description}>
+  <article class="qual-method-article">
+    <p class="qual-method-breadcrumb">
+      <a href={`${base}methods/`}>Methods</a>
+      <span aria-hidden="true"> / </span>
+      <a href={`${base}methods/qual/`}>Qual</a>
+      <span aria-hidden="true"> / </span>
+      <span>{title}</span>
+    </p>
+    <slot />
+  </article>
+</BaseLayout>
+
+<style>
+  .qual-method-article {
+    max-width: 44rem;
+  }
+
+  .qual-method-breadcrumb {
+    margin-bottom: 1.25rem;
+    font-size: 0.9rem;
+    color: var(--color-ink-muted);
+  }
+
+  .qual-method-breadcrumb a {
+    color: var(--color-maroon);
+    text-decoration: none;
+  }
+
+  .qual-method-breadcrumb a:hover {
+    text-decoration: underline;
+  }
+
+  .qual-method-article :global(h1) {
+    font-family: var(--font-serif);
+    font-size: clamp(1.35rem, 3vw, 1.75rem);
+    color: var(--color-maroon);
+    margin: 0 0 1.25rem 0;
+  }
+
+  .qual-method-article :global(p) {
+    margin: 0 0 1rem 0;
+    line-height: 1.7;
+    color: var(--color-ink);
+  }
+
+  .qual-method-article :global(.qual-table-heading) {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-ink);
+    margin: 1.5rem 0 0.75rem 0;
+  }
+
+  .qual-method-article :global(.qual-table-wrap) {
+    overflow-x: auto;
+    margin: 0 0 0.5rem 0;
+    max-width: 100%;
+  }
+
+  .qual-method-article :global(.qual-rigour-table) {
+    width: 100%;
+    min-width: 36rem;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    line-height: 1.45;
+  }
+
+  .qual-method-article :global(.qual-rigour-table th),
+  .qual-method-article :global(.qual-rigour-table td) {
+    border: 1px solid var(--color-border);
+    padding: 0.65rem 0.75rem;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .qual-method-article :global(.qual-rigour-table thead th) {
+    background: rgba(113, 32, 56, 0.08);
+    color: var(--color-maroon);
+    font-weight: 700;
+  }
+
+  .qual-method-article :global(.qual-rigour-table tbody th) {
+    background: rgba(113, 32, 56, 0.05);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .qual-method-article :global(.qual-rigour-table ul) {
+    margin: 0;
+    padding-left: 1.1rem;
+  }
+
+  .qual-method-article :global(.qual-rigour-table li) {
+    margin-bottom: 0.25rem;
+  }
+
+  .qual-method-article :global(.qual-source) {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--color-ink-muted);
+    font-style: italic;
+  }
+</style>
