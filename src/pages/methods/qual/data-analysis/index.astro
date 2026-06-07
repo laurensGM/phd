@@ -1,0 +1,673 @@
+---
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import { qualAnalysisSteps } from '../../../../data/qual-data-analysis-steps';
+
+const base = import.meta.env.BASE_URL;
+
+const iterativeSteps = [
+  'ALWAYS read transcript freely before coding',
+  'Create initial codes and properties',
+  'Code 2–3 transcripts, negotiate, revise',
+  'Code 3–5 transcripts, negotiate, revise',
+  'Create final code structure, apply to all',
+];
+---
+
+<BaseLayout
+  title="Data analysis"
+  description="Qualitative data analysis — coding, categories, themes, and the constant comparative method"
+>
+  <div class="da-layout">
+    <nav class="da-toc" aria-label="On this page">
+      <h2 class="da-toc-title">On this page</h2>
+      <ol class="da-toc-list">
+        <li><a href="#overview">Analysis process overview</a></li>
+        <li><a href="#coding">Analyzing data / coding</a></li>
+        <li><a href="#categories-themes">Categories and themes</a></li>
+        <li><a href="#constant-comparative">Constant comparative method</a></li>
+        <li><a href="#ten-steps">Ten-step process</a></li>
+        <li><a href="#iterative-coding">Iterative coding</a></li>
+        <li><a href="#write-up">Structuring the write-up</a></li>
+      </ol>
+    </nav>
+
+    <article class="da-article">
+      <p class="da-breadcrumb">
+        <a href={`${base}methods/`}>Methods</a>
+        <span aria-hidden="true"> / </span>
+        <a href={`${base}methods/qual/`}>Qual</a>
+        <span aria-hidden="true"> / </span>
+        <span>Data analysis</span>
+      </p>
+
+      <h1>Data analysis</h1>
+      <p class="da-lead">
+        Content and narrative analysis — coding into themes that can inform a conceptual model.
+      </p>
+
+      <section id="overview" class="da-section">
+        <h2>The analysis process — overview</h2>
+
+        <h3 class="da-subheading">From raw data to themes</h3>
+        <ul class="da-list">
+          <li>
+            <strong>Contraction:</strong> Environmental behaviours&hellip; collecting &ldquo;quotes&rdquo; and they become
+            many in one theme (e.g. <em>Env_beh</em>).
+          </li>
+          <li>
+            <strong>Expansion:</strong> Looking at all the <em>Env_beh</em> codes, sub-themes emerge (e.g.
+            recycling / meat-free / reducing consumption, or water / food / energy).
+          </li>
+        </ul>
+
+        <div class="da-contraction-diagram" role="img" aria-label="Contraction groups many quotes into one theme; expansion splits one theme into sub-themes">
+          <div class="da-diagram-block">
+            <span class="da-diagram-label">Many quotes</span>
+            <div class="da-quote-grid">
+              <span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+          <div class="da-diagram-arrow" aria-hidden="true">⇄</div>
+          <div class="da-diagram-block da-diagram-theme">
+            <span class="da-diagram-label">Theme</span>
+            <strong>Env_beh</strong>
+          </div>
+          <div class="da-diagram-arrow" aria-hidden="true">⇄</div>
+          <div class="da-diagram-block">
+            <span class="da-diagram-label">Sub-themes</span>
+            <ul class="da-subtheme-list">
+              <li>Recycling</li>
+              <li>Meat-free</li>
+              <li>Reducing consumption</li>
+              <li>Water / food / energy</li>
+            </ul>
+          </div>
+        </div>
+
+        <p><strong>Iterative and dynamic.</strong> Analysis moves back and forth between contraction and expansion.</p>
+        <p>
+          A <a href="#ten-steps">suggested 10-step process</a> (Babchuk, 2019) structures the work from assembling
+          materials through to reporting and limitations.
+        </p>
+
+        <h3 class="da-subheading">The constant comparative method</h3>
+        <p>
+          The &lsquo;constant comparative method&rsquo; lies at the root of all qualitative data analysis and does
+          exactly what it says, relying on constantly comparing and contrasting (similar, different):
+        </p>
+        <ul class="da-list">
+          <li>Inside interview</li>
+          <li>Between interviews</li>
+          <li>Codes</li>
+        </ul>
+
+        <div class="da-compare-diagram" role="img" aria-label="One data unit compared against multiple coded segments">
+          <div class="da-compare-single"></div>
+          <div class="da-compare-arrow" aria-hidden="true">⇄</div>
+          <div class="da-compare-grid">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </section>
+
+      <section id="coding" class="da-section">
+        <h2>Analyzing qualitative data / coding</h2>
+        <p><strong>Time-consuming!</strong></p>
+        <p>A good transcription will make this step easier to handle.</p>
+        <p>Using computers can be helpful for supporting qualitative analysis in two cases in particular:</p>
+        <ul class="da-list">
+          <li>If you are already experienced with the software</li>
+          <li>If you have a bigger corpus of data</li>
+        </ul>
+
+        <h3 class="da-subheading">Common problems</h3>
+        <ul class="da-list">
+          <li>An unclear research question</li>
+          <li>
+            Your data actually do not include those statements or issues you discover as important for your analysis in
+            later stages
+          </li>
+        </ul>
+
+        <ul class="da-list">
+          <li>Assign codes/labels to data</li>
+          <li>Codes are constructed to capture meaning</li>
+          <li>Grounded theory: initial + focused coding</li>
+          <li>Keep codes short, simple, active</li>
+          <li>Use software tools</li>
+        </ul>
+      </section>
+
+      <section id="categories-themes" class="da-section">
+        <h2>Generating categories and themes</h2>
+
+        <h3 class="da-subheading">Codes</h3>
+        <ul class="da-list">
+          <li>A word or short phrase that represents the essence or key attribute of narrative/verbal information</li>
+          <li>Used to codify or categorize the data</li>
+          <li>Coding is the process of organizing the data into &ldquo;chunks&rdquo; that are alike</li>
+          <li>Codes develop into a code structure (<em>codebook</em>)</li>
+        </ul>
+
+        <p class="da-flow-line"><strong>Codes</strong> &rarr; <strong>Categories</strong> &rarr; <strong>Themes</strong></p>
+        <p>Themes emerge during the analysis phase. Use visuals such as tables and figures to represent the data.</p>
+
+        <figure class="da-example">
+          <blockquote>
+            <p>
+              &ldquo;I cannot remember if it was at Labach, but one of the guys told me that&rsquo;s what they do with
+              mealybugs, yes. We have no problem when we need advice. We went to Labach exactly on such a day and he
+              showed us what they are doing there.&rdquo;
+            </p>
+            <footer>(Interviewee W20)</footer>
+          </blockquote>
+          <p class="da-example-note">
+            Narrative excerpts like this are coded, grouped into categories, and summarized in tables or matrices that
+            support the thematic story (e.g. a competition value matrix).
+          </p>
+        </figure>
+      </section>
+
+      <section id="constant-comparative" class="da-section">
+        <h2>The constant comparative method</h2>
+        <p>
+          The &lsquo;constant comparative method&rsquo; lies at the root of all qualitative data analysis and does
+          exactly what it says, relying on constantly comparing and contrasting.
+        </p>
+
+        <h3 class="da-subheading">Hints on identifying patterns</h3>
+        <ul class="da-list">
+          <li>
+            You should constantly re-visit your transcripts and think about <strong>revising your coding</strong> frame as
+            you are <strong>alerted to new distinctions or categories</strong>.
+          </li>
+          <li>Ask yourself <strong>who is saying what?</strong></li>
+          <li>
+            Why might similarities and differences occur?
+            <ul>
+              <li>
+                Is this related to characteristics of individuals, the different settings, or even the different context
+                in which data has been generated (i.e. through observational fieldwork, interviews, or focus groups)?
+              </li>
+            </ul>
+          </li>
+          <li>
+            Are there <strong>stark differences between respondents or groups</strong> or is there a continuum of
+            views/perspective?
+          </li>
+          <li>
+            What distinctions do respondents make? Might these be helpful avenues to pursue in{' '}
+            <strong>terms of identifying patterns?</strong>
+          </li>
+          <li>
+            What <strong>surprises you</strong> as a researcher? Does this provide any useful insights?
+          </li>
+        </ul>
+      </section>
+
+      <section id="ten-steps" class="da-section">
+        <h2>Ten steps and procedures for qualitative data analysis</h2>
+        <div class="da-table-wrap">
+          <table class="da-steps-table">
+            <thead>
+              <tr>
+                <th scope="col">Step</th>
+                <th scope="col">Procedure</th>
+              </tr>
+            </thead>
+            <tbody>
+              {qualAnalysisSteps.map((row) => (
+                <tr>
+                  <th scope="row">{row.step}</th>
+                  <td>{row.procedure}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="da-source">
+          Babchuk, W. A. (2019). Fundamentals of qualitative analysis in family medicine.{' '}
+          <em>Family medicine and community health</em>, 7(2).
+        </p>
+      </section>
+
+      <section id="iterative-coding" class="da-section">
+        <h2>Coding is an iterative process</h2>
+        <div class="da-iterative-flow" role="img" aria-label="Iterative coding workflow from free reading through final code structure">
+          <div class="da-iterative-entry" aria-hidden="true">&rarr;</div>
+          <ol class="da-iterative-steps">
+            {iterativeSteps.map((step, index) => (
+              <li class={`da-iterative-step da-iterative-step-${index + 1}`}>
+                <span class="da-iterative-box">{step}</span>
+                {index === 3 && <span class="da-iterative-loop" aria-hidden="true" title="Iterate">↻</span>}
+              </li>
+            ))}
+          </ol>
+          <div class="da-iterative-exit" aria-hidden="true">&rarr;</div>
+        </div>
+      </section>
+
+      <section id="write-up" class="da-section">
+        <h2>Structuring the write-up</h2>
+        <p>Work through the analysis in this order when reporting:</p>
+        <ol class="da-list da-ordered">
+          <li>
+            <strong>Describe sample</strong> &mdash; describe the realised sample that took part in the study.
+          </li>
+          <li>
+            <strong>Discuss themes</strong> &mdash; identify themes in the data, then discuss them using direct quotes
+            from participants as the primary source of evidence.
+          </li>
+          <li>
+            <strong>Draw conclusion</strong> &mdash; draw conclusions from the sample description and thematic
+            discussion.
+          </li>
+        </ol>
+        <p>
+          At the heart of the analysis: <strong>describe the realised sample</strong> and{' '}
+          <strong>identify themes</strong> before you move on to interpretation and conclusions.
+        </p>
+      </section>
+    </article>
+  </div>
+</BaseLayout>
+
+<style is:global>
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+  }
+</style>
+
+<style>
+  .da-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: start;
+    max-width: 1100px;
+  }
+
+  @media (min-width: 900px) {
+    .da-layout {
+      grid-template-columns: min(240px, 26%) 1fr;
+    }
+  }
+
+  .da-toc {
+    position: sticky;
+    top: 5.5rem;
+    z-index: 1;
+    padding: 1rem 1.1rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    border-left: 4px solid var(--color-maroon);
+    font-size: 0.88rem;
+    line-height: 1.45;
+    max-height: calc(100vh - 6rem);
+    overflow-y: auto;
+  }
+
+  .da-toc-title {
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-ink-muted);
+    margin: 0 0 0.65rem 0;
+  }
+
+  .da-toc-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .da-toc-list li {
+    margin-bottom: 0.4rem;
+  }
+
+  .da-toc a {
+    color: var(--color-maroon);
+    text-decoration: none;
+  }
+
+  .da-toc a:hover {
+    text-decoration: underline;
+  }
+
+  .da-article {
+    min-width: 0;
+  }
+
+  .da-breadcrumb {
+    margin-bottom: 1.25rem;
+    font-size: 0.9rem;
+    color: var(--color-ink-muted);
+  }
+
+  .da-breadcrumb a {
+    color: var(--color-maroon);
+    text-decoration: none;
+  }
+
+  .da-breadcrumb a:hover {
+    text-decoration: underline;
+  }
+
+  .da-article h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(1.35rem, 3vw, 1.75rem);
+    color: var(--color-maroon);
+    margin: 0 0 1rem 0;
+    scroll-margin-top: 5.5rem;
+  }
+
+  .da-lead {
+    margin: 0 0 1.25rem 0;
+    line-height: 1.7;
+    color: var(--color-ink);
+    max-width: 44rem;
+  }
+
+  .da-section {
+    margin-top: 2.25rem;
+    scroll-margin-top: 5.5rem;
+  }
+
+  .da-section > h2 {
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    color: var(--color-maroon);
+    margin: 0 0 1rem 0;
+  }
+
+  .da-subheading {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-ink);
+    margin: 1.25rem 0 0.65rem 0;
+  }
+
+  .da-section p {
+    margin: 0 0 1rem 0;
+    line-height: 1.7;
+    color: var(--color-ink);
+    max-width: 44rem;
+  }
+
+  .da-list {
+    margin: 0 0 1rem 0;
+    padding-left: 1.35rem;
+    line-height: 1.7;
+    max-width: 44rem;
+  }
+
+  .da-list li {
+    margin-bottom: 0.45rem;
+  }
+
+  .da-list ul {
+    margin-top: 0.35rem;
+  }
+
+  .da-ordered {
+    list-style: decimal;
+  }
+
+  .da-flow-line {
+    font-size: 1.05rem;
+    padding: 0.65rem 0.85rem;
+    border-left: 3px solid var(--color-maroon-muted);
+    background: rgba(113, 32, 56, 0.04);
+    border-radius: 0 6px 6px 0;
+  }
+
+  .da-contraction-diagram {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    margin: 1rem 0 1.25rem 0;
+    padding: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: #fafafa;
+  }
+
+  .da-diagram-block {
+    flex: 1 1 7rem;
+    min-width: 6rem;
+    padding: 0.65rem 0.75rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    font-size: 0.82rem;
+  }
+
+  .da-diagram-label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--color-maroon);
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .da-diagram-arrow {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-maroon-muted);
+  }
+
+  .da-quote-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.25rem;
+  }
+
+  .da-quote-grid span {
+    height: 1.25rem;
+    background: rgba(113, 32, 56, 0.15);
+    border-radius: 2px;
+  }
+
+  .da-diagram-theme {
+    text-align: center;
+    color: var(--color-maroon);
+  }
+
+  .da-subtheme-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.78rem;
+    line-height: 1.4;
+  }
+
+  .da-subtheme-list li {
+    margin-bottom: 0.2rem;
+  }
+
+  .da-compare-diagram {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 1rem 0;
+    padding: 1rem;
+    max-width: 16rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: #fafafa;
+  }
+
+  .da-compare-single {
+    width: 3.5rem;
+    height: 2.5rem;
+    background: rgba(113, 32, 56, 0.25);
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  .da-compare-arrow {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-maroon-muted);
+  }
+
+  .da-compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.3rem;
+    flex: 1;
+  }
+
+  .da-compare-grid span {
+    height: 1.1rem;
+    background: rgba(113, 32, 56, 0.2);
+    border-radius: 2px;
+  }
+
+  .da-example {
+    margin: 1.25rem 0 0 0;
+    max-width: 44rem;
+  }
+
+  .da-example blockquote {
+    margin: 0 0 0.75rem 0;
+    padding: 0.75rem 1rem;
+    border-left: 3px solid var(--color-maroon-muted);
+    background: rgba(113, 32, 56, 0.04);
+    border-radius: 0 6px 6px 0;
+  }
+
+  .da-example blockquote p {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.92rem;
+  }
+
+  .da-example footer {
+    font-size: 0.82rem;
+    color: var(--color-ink-muted);
+    font-style: italic;
+  }
+
+  .da-example-note {
+    font-size: 0.88rem;
+    color: var(--color-ink-muted);
+  }
+
+  .da-table-wrap {
+    overflow-x: auto;
+    margin: 0 0 0.75rem 0;
+  }
+
+  .da-steps-table {
+    width: 100%;
+    min-width: 36rem;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    line-height: 1.45;
+  }
+
+  .da-steps-table th,
+  .da-steps-table td {
+    border: 1px solid var(--color-border);
+    padding: 0.65rem 0.75rem;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .da-steps-table thead th {
+    background: rgba(113, 32, 56, 0.08);
+    color: var(--color-maroon);
+    font-weight: 700;
+  }
+
+  .da-steps-table tbody th {
+    background: rgba(113, 32, 56, 0.05);
+    font-weight: 600;
+    white-space: nowrap;
+    width: 28%;
+  }
+
+  .da-source {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--color-ink-muted);
+    font-style: italic;
+  }
+
+  .da-iterative-flow {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.5rem;
+    align-items: center;
+    margin-top: 1rem;
+    padding: 1.25rem;
+    background: rgba(113, 32, 56, 0.06);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    max-width: 28rem;
+  }
+
+  .da-iterative-entry,
+  .da-iterative-exit {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-maroon);
+  }
+
+  .da-iterative-exit {
+    transform: scaleX(-1);
+  }
+
+  .da-iterative-steps {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .da-iterative-step {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .da-iterative-box {
+    display: block;
+    flex: 1;
+    padding: 0.6rem 0.75rem;
+    background: rgba(113, 32, 56, 0.18);
+    border: 1px solid rgba(113, 32, 56, 0.35);
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--color-ink);
+  }
+
+  .da-iterative-loop {
+    font-size: 1.35rem;
+    color: var(--color-maroon);
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 520px) {
+    .da-contraction-diagram {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .da-diagram-arrow {
+      text-align: center;
+    }
+  }
+</style>
