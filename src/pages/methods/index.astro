@@ -99,7 +99,11 @@ type OnionLabel = {
   y: number;
   kind: 'title' | 'item';
   fontSize?: number;
+  textAnchor?: 'start' | 'middle' | 'end';
 };
+
+/** Stagger ring titles on the upper-left arc — avoids stacking on the horizontal midline (angle −90). */
+const titleAngles = [-46, -54, -62, -70, -78];
 
 function itemAngles(count: number, fullCircle: boolean) {
   if (fullCircle) {
@@ -114,8 +118,14 @@ const onionLabels: OnionLabel[] = [];
 
 onionRings.forEach((ring, index) => {
   const inner = index < onionRings.length - 1 ? onionRings[index + 1] : onionCore;
-  const titlePos = bandPoint(-90, ring.rx, ring.ry, inner.rx, inner.ry, 'title');
-  onionLabels.push({ text: ring.title, x: titlePos.x, y: titlePos.y, kind: 'title' });
+  const titlePos = bandPoint(titleAngles[index], ring.rx, ring.ry, inner.rx, inner.ry, 'title');
+  onionLabels.push({
+    text: ring.title,
+    x: titlePos.x,
+    y: titlePos.y,
+    kind: 'title',
+    textAnchor: 'end',
+  });
 
   const fullCircle = ring.items.length >= 6;
   const angles = itemAngles(ring.items.length, fullCircle);
@@ -200,7 +210,7 @@ onionRings.forEach((ring, index) => {
           <text
             x={label.x}
             y={label.y}
-            text-anchor="middle"
+            text-anchor={label.textAnchor ?? 'middle'}
             dominant-baseline="middle"
             class:list={[
               label.kind === 'title' ? 'onion-layer-title' : 'onion-layer-items',
@@ -211,8 +221,9 @@ onionRings.forEach((ring, index) => {
             {label.text}
           </text>
         ))}
-        <text x={onionCx} y={onionCy} text-anchor="middle" dominant-baseline="middle" class="onion-core-title">
-          {onionCore.label}
+        <text x={onionCx} y={onionCy - 6} text-anchor="middle" dominant-baseline="middle" class="onion-core-title">
+          <tspan x={onionCx} dy="0">Data collection</tspan>
+          <tspan x={onionCx} dy="1.15em">and analysis</tspan>
         </text>
       </svg>
       <figcaption class="methods-onion-caption">Adapted from Saunders, Lewis &amp; Thornhill, <em>Research Methods for Business Students</em>.</figcaption>
