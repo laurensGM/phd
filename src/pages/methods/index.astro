@@ -49,6 +49,120 @@ const base = import.meta.env.BASE_URL;
     </p>
   </section>
 
+  <section class="methods-onion-section" aria-label="Research onion">
+    <h2 class="methods-literature-title">Research onion</h2>
+    <p class="methods-onion-intro">
+      Saunders et al.&rsquo;s research onion — layers from research philosophy inward to data collection and analysis.
+    </p>
+    <figure class="methods-onion-figure">
+      <svg
+        class="methods-onion-svg"
+        viewBox="0 0 820 900"
+        role="img"
+        aria-label="Research onion: research philosophy, approach, methodological choice, strategy, time horizon, and data collection and analysis"
+      >
+        <defs>
+          <marker id="onion-arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8 Z" fill="#712038" />
+          </marker>
+        </defs>
+
+        <!-- Layer 1: Research philosophy -->
+        <ellipse cx="410" cy="470" rx="370" ry="410" fill="#e8e8e8" stroke="#c8c8c8" stroke-width="1.5" />
+        <text x="410" y="88" text-anchor="middle" class="onion-layer-title">Research philosophy</text>
+        <text x="410" y="118" text-anchor="middle" class="onion-layer-items">
+          Positivism · Critical realism · Interpretivism · Postmodernism · Pragmatism
+        </text>
+        <path
+          d="M 280 130 Q 260 150 250 175"
+          fill="none"
+          stroke="#712038"
+          stroke-width="2.5"
+          marker-end="url(#onion-arrow)"
+        />
+
+        <!-- Layer 2: Research approach -->
+        <ellipse cx="410" cy="470" rx="310" ry="345" fill="#ebe3d4" stroke="#d4c8b4" stroke-width="1.5" />
+        <text x="410" y="158" text-anchor="middle" class="onion-layer-title">Research approach</text>
+        <text x="410" y="186" text-anchor="middle" class="onion-layer-items">Inductive · Deductive · Abductive</text>
+        <path
+          d="M 295 198 Q 278 215 268 238"
+          fill="none"
+          stroke="#712038"
+          stroke-width="2.5"
+          marker-end="url(#onion-arrow)"
+        />
+
+        <!-- Layer 3: Methodological choice -->
+        <ellipse cx="410" cy="470" rx="252" ry="282" fill="#dce8cc" stroke="#c0d4a8" stroke-width="1.5" />
+        <text x="410" y="222" text-anchor="middle" class="onion-layer-title">Methodological choice</text>
+        <text x="410" y="250" text-anchor="middle" class="onion-layer-items">
+          Qualitative · Mixed methods · Quantitative
+        </text>
+        <path
+          d="M 310 262 Q 296 278 288 300"
+          fill="none"
+          stroke="#712038"
+          stroke-width="2.5"
+          marker-end="url(#onion-arrow)"
+        />
+
+        <!-- Layer 4: Research strategy -->
+        <ellipse cx="410" cy="470" rx="196" ry="220" fill="#b8d4a4" stroke="#9ec088" stroke-width="1.5" />
+        <text x="410" y="284" text-anchor="middle" class="onion-layer-title">Research strategy</text>
+        <text x="410" y="306" text-anchor="middle" class="onion-layer-items onion-layer-items--small">
+          Experimental · Survey · Case study · Ethnography
+        </text>
+        <text x="410" y="324" text-anchor="middle" class="onion-layer-items onion-layer-items--small">
+          Narrative · Grounded theory · Action research · Archival research
+        </text>
+        <path
+          d="M 325 336 Q 314 352 308 372"
+          fill="none"
+          stroke="#712038"
+          stroke-width="2.5"
+          marker-end="url(#onion-arrow)"
+        />
+
+        <!-- Layer 5: Time horizon -->
+        <ellipse cx="410" cy="470" rx="142" ry="160" fill="#c8deb8" stroke="#aac894" stroke-width="1.5" />
+        <text x="410" y="358" text-anchor="middle" class="onion-layer-title">Time horizon</text>
+        <text x="410" y="386" text-anchor="middle" class="onion-layer-items">Cross-sectional · Longitudinal</text>
+        <path
+          d="M 340 398 Q 332 414 328 432"
+          fill="none"
+          stroke="#712038"
+          stroke-width="2.5"
+          marker-end="url(#onion-arrow)"
+        />
+
+        <!-- Layer 6: Data collection and analysis -->
+        <ellipse cx="410" cy="470" rx="88" ry="98" fill="#d4e0ea" stroke="#a8bcc8" stroke-width="1.5" />
+        <text x="410" y="462" text-anchor="middle" class="onion-core-title">Data collection</text>
+        <text x="410" y="482" text-anchor="middle" class="onion-core-title">and analysis</text>
+
+        <!-- Large directional arrows (slide style) -->
+        <path
+          d="M 40 520 L 220 420"
+          fill="none"
+          stroke="#712038"
+          stroke-width="5"
+          stroke-linecap="round"
+          marker-end="url(#onion-arrow)"
+        />
+        <path
+          d="M 40 620 L 330 500"
+          fill="none"
+          stroke="#712038"
+          stroke-width="5"
+          stroke-linecap="round"
+          marker-end="url(#onion-arrow)"
+        />
+      </svg>
+      <figcaption class="methods-onion-caption">Adapted from Saunders, Lewis &amp; Thornhill, <em>Research Methods for Business Students</em>.</figcaption>
+    </figure>
+  </section>
+
   <div class="methods-hub-grid">
     <a href={`${base}methods/qual-vs-quant/`} class="methods-hub-card">
       <span class="methods-hub-icon" aria-hidden="true">⚖️</span>
@@ -175,6 +289,67 @@ const base = import.meta.env.BASE_URL;
 
   .methods-scientific-criteria li:last-child {
     margin-bottom: 0;
+  }
+
+  .methods-onion-section {
+    max-width: 52rem;
+    margin-bottom: 2.5rem;
+    padding: 1.25rem 1.5rem;
+    background: rgba(113, 32, 56, 0.04);
+    border: 1px solid var(--color-border);
+    border-left: 4px solid var(--color-maroon);
+    border-radius: 8px;
+  }
+
+  .methods-onion-intro {
+    margin: 0 0 1.25rem 0;
+    line-height: 1.6;
+    color: var(--color-ink-muted);
+    font-size: 0.95rem;
+    max-width: 40rem;
+  }
+
+  .methods-onion-figure {
+    margin: 0;
+  }
+
+  .methods-onion-svg {
+    display: block;
+    width: 100%;
+    max-width: 680px;
+    height: auto;
+    margin: 0 auto;
+  }
+
+  .methods-onion-svg :global(.onion-layer-title) {
+    font-family: var(--font-serif);
+    font-size: 15px;
+    font-weight: 700;
+    fill: var(--color-maroon);
+  }
+
+  .methods-onion-svg :global(.onion-layer-items) {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    fill: var(--color-ink);
+  }
+
+  .methods-onion-svg :global(.onion-layer-items--small) {
+    font-size: 10.5px;
+  }
+
+  .methods-onion-svg :global(.onion-core-title) {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 700;
+    fill: var(--color-ink);
+  }
+
+  .methods-onion-caption {
+    margin-top: 0.75rem;
+    font-size: 0.82rem;
+    color: var(--color-ink-muted);
+    text-align: center;
   }
 
   .methods-hub-grid {

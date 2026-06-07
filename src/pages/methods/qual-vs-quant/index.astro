@@ -32,27 +32,6 @@ const secondaryCriteria = [
       analysis to test hypotheses to ultimately reveal statistically significant differences or relations, whereas
       qualitative data is research data that are not subjected to quantification or quantitative analysis.
     </p>
-    <figure class="qvq-figure">
-      <img
-        src={`${base}methods/qual-quant-definition.png`}
-        alt="Slide comparing qualitative and quantitative data with illustrative cartoons"
-        width="960"
-        height="540"
-        loading="lazy"
-      />
-      <figcaption>
-        <div class="qvq-cartoons">
-          <blockquote class="qvq-cartoon-caption">
-            <strong>Qualitative:</strong> &ldquo;Look here, McGinnis&mdash;hundreds of bright copper kettles, warm woolen
-            mittens, brown paper packages tied up with string&hellip; Someone was after a few of this guy&rsquo;s favorite
-            things.&rdquo;
-          </blockquote>
-          <blockquote class="qvq-cartoon-caption">
-            <strong>Quantitative:</strong> &ldquo;Einstein discovers that time is actually money.&rdquo;
-          </blockquote>
-        </div>
-      </figcaption>
-    </figure>
   </section>
 
   <section class="qvq-section" aria-label="Qualitative vs quantitative vs mixed methods">
@@ -331,39 +310,10 @@ const secondaryCriteria = [
   }
 
   .qvq-prose {
-    margin: 0 0 1.25rem 0;
+    margin: 0;
     line-height: 1.65;
     color: var(--color-ink);
     font-size: 0.98rem;
-  }
-
-  .qvq-figure {
-    margin: 0;
-  }
-
-  .qvq-figure img {
-    width: 100%;
-    height: auto;
-    border-radius: 6px;
-    border: 1px solid var(--color-border);
-  }
-
-  .qvq-cartoons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-top: 1rem;
-  }
-
-  .qvq-cartoon-caption {
-    margin: 0;
-    padding: 0.75rem 1rem;
-    font-size: 0.85rem;
-    line-height: 1.5;
-    color: var(--color-ink-muted);
-    background: rgba(113, 32, 56, 0.04);
-    border-radius: 6px;
-    border-left: 3px solid var(--color-maroon-muted);
   }
 
   .qvq-methods-grid {
@@ -682,7 +632,6 @@ const secondaryCriteria = [
   }
 
   @media (max-width: 720px) {
-    .qvq-cartoons,
     .qvq-quality-grid,
     .qvq-rigour-grid,
     .qvq-methods-grid {
