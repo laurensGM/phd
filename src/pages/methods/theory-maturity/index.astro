@@ -1,0 +1,525 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const base = import.meta.env.BASE_URL;
+
+const continuum = [
+  {
+    id: 'nascent',
+    title: 'Nascent theory',
+    text: 'Proposes tentative answers to novel questions of how and why. Merely suggests new connections among phenomena. Little to no previous formal theorizing.',
+    visual: 'nascent',
+  },
+  {
+    id: 'intermediate',
+    title: 'Intermediate theory',
+    text: 'Presents provisional explanations. Introduces new constructs and proposes relationships between new and established variables.',
+    visual: 'intermediate',
+  },
+  {
+    id: 'mature',
+    title: 'Mature theory',
+    text: 'Well-developed constructs and precise models studied over time. Represents cumulative knowledge and broad scientific agreement.',
+    visual: 'mature',
+  },
+];
+
+const alignmentMatrix = {
+  columns: ['Nascent', 'Intermediate', 'Mature'],
+  rows: [
+    {
+      label: 'Research question',
+      cells: ['Open-ended inquiry.', 'Proposed relationships.', 'Focused hypotheses.'],
+    },
+    {
+      label: 'Data collection',
+      cells: [
+        'Qualitative (interviews, observation).',
+        'Hybrid (mixed methods).',
+        'Quantitative (surveys, measures).',
+      ],
+      progression: true,
+    },
+    {
+      label: 'Goal of analysis',
+      cells: ['Pattern identification.', 'Exploratory testing.', 'Formal statistical testing.'],
+    },
+    {
+      label: 'Theoretical contribution',
+      cells: [
+        'A suggestive theory inviting further work.',
+        'A provisional theory integrating work.',
+        'A supported theory adding specificity.',
+      ],
+    },
+  ],
+};
+
+const nascentStudies = {
+  columns: ['Gersick (1988)', 'Barker (1993)', 'Maznevski and Chudoba (2000)'],
+  rows: [
+    {
+      label: 'Nature of the research question',
+      cells: [
+        'Exploring how short-term project groups develop over time and how developmental shifts in groups are triggered.',
+        'Exploring how the control systems of self-managed teams emerge, are experienced by team members, and differ from bureaucratic control systems.',
+        'Exploring factors and processes that allow global virtual teams to operate effectively.',
+      ],
+    },
+    {
+      label: 'Primary method of data collection',
+      cells: [
+        'Observation of all group meetings, supplemented by interviews of half the study sample, that yielded qualitative data about group task strategies, actions, changes, and task completion; longitudinal data collection (ranging from seven days to six months).',
+        'Observation, conversations, and in-depth interviews that yielded qualitative data about team interactions and control system development; longitudinal data collection (over two years).',
+        'Observation of meetings, semi-structured and unstructured interviews, communication logs, questionnaires, and access to company documentation that yielded qualitative data about team interaction methods, timing, and communication content; longitudinal data collection (twenty-one months).',
+      ],
+    },
+    {
+      label: 'Data analysis',
+      cells: [
+        'Iterative, exploratory content analysis.',
+        'Iterative, exploratory content analysis.',
+        'Iterative, exploratory content analysis.',
+      ],
+    },
+    {
+      label: 'Contribution',
+      cells: [
+        'An importation of a new construct—punctuated equilibrium—and a suggestive model of the temporary project group life cycle.',
+        'A new construct—concertive control—and a suggestive model of how teams move from values to norms to rules that become binding, limiting, and invisible.',
+        'A suggestive model of how virtual teams manage social interactions and a new emphasis on the rhythmic pacing of team member encounters over time to create effective outcomes.',
+      ],
+    },
+  ],
+};
+
+const nascentDots = [
+  [18, 22], [32, 18], [48, 28], [62, 14], [74, 26], [28, 38], [44, 42], [58, 36], [72, 44],
+  [22, 52], [38, 58], [54, 50], [68, 56], [82, 48], [30, 68], [46, 72], [60, 64], [76, 70],
+  [40, 82], [56, 78], [70, 84], [50, 30], [64, 62], [34, 46], [78, 32],
+];
+---
+
+<BaseLayout
+  title="Theory maturity"
+  description="Theory maturity continuum, methodological fit, and alignment — Edmondson and McManus (2007)"
+>
+  <div class="tm-layout">
+    <nav class="tm-toc" aria-label="On this page">
+      <h2 class="tm-toc-title">On this page</h2>
+      <ol class="tm-toc-list">
+        <li><a href="#intro">Introduction</a></li>
+        <li><a href="#continuum">The continuum of theory</a></li>
+        <li><a href="#alignment">The master matrix of alignment</a></li>
+        <li><a href="#methodological-fit">Methodological fit</a></li>
+        <li><a href="#nascent-studies">Nascent theory studies</a></li>
+      </ol>
+    </nav>
+
+    <article class="tm-article">
+      <p class="back-link"><a href={`${base}methods/`}>← Methods</a></p>
+      <h1 id="intro">Theory maturity</h1>
+      <p class="tm-lead">
+        Purpose, questions, approach, data collection, and analysis should align with the maturity of theory in your
+        field — supporting project coherence (Edmondson &amp; McManus, 2007).
+      </p>
+
+      <section id="continuum" class="tm-section">
+        <h2>The continuum of theory</h2>
+        <div class="tm-continuum-grid">
+          {continuum.map((stage) => (
+            <div class="tm-continuum-card">
+              <div class="tm-continuum-visual" aria-hidden="true">
+                {stage.visual === 'nascent' && (
+                  <svg viewBox="0 0 100 100" class="tm-visual-svg">
+                    {nascentDots.map(([cx, cy]) => (
+                      <circle cx={cx} cy={cy} r="3.2" fill="#555" />
+                    ))}
+                  </svg>
+                )}
+                {stage.visual === 'intermediate' && (
+                  <svg viewBox="0 0 100 100" class="tm-visual-svg">
+                    {nascentDots.map(([cx, cy]) => (
+                      <circle cx={cx} cy={cy} r="3" fill="#555" />
+                    ))}
+                    <g stroke="#888" stroke-width="0.8" stroke-dasharray="2 2" fill="none">
+                      <line x1="18" y1="22" x2="48" y2="28" />
+                      <line x1="32" y1="18" x2="62" y2="14" />
+                      <line x1="48" y1="28" x2="74" y2="26" />
+                      <line x1="28" y1="38" x2="44" y2="42" />
+                      <line x1="44" y1="42" x2="58" y2="36" />
+                      <line x1="58" y1="36" x2="72" y2="44" />
+                      <line x1="22" y1="52" x2="38" y2="58" />
+                      <line x1="38" y1="58" x2="54" y2="50" />
+                      <line x1="54" y1="50" x2="68" y2="56" />
+                      <line x1="30" y1="68" x2="46" y2="72" />
+                      <line x1="46" y1="72" x2="60" y2="64" />
+                      <line x1="60" y1="64" x2="76" y2="70" />
+                      <line x1="18" y1="22" x2="30" y2="68" />
+                      <line x1="74" y1="26" x2="82" y2="48" />
+                      <line x1="50" y1="30" x2="70" y2="84" />
+                    </g>
+                  </svg>
+                )}
+                {stage.visual === 'mature' && (
+                  <svg viewBox="0 0 100 100" class="tm-visual-svg">
+                    <g stroke="#b8860b" stroke-width="1.2" fill="none">
+                      <path d="M35 25 L65 25 L75 45 L55 65 L25 65 L15 45 Z" />
+                      <path d="M35 25 L55 65" />
+                      <path d="M65 25 L25 65" />
+                      <path d="M15 45 L75 45" />
+                      <path d="M35 25 L15 45" />
+                      <path d="M65 25 L75 45" />
+                      <path d="M25 65 L55 65" />
+                      <path d="M50 25 L50 65" opacity="0.6" />
+                    </g>
+                  </svg>
+                )}
+              </div>
+              <h3>{stage.title}</h3>
+              <p>{stage.text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="alignment" class="tm-section">
+        <h2>The master matrix of alignment</h2>
+        <div class="tm-table-wrap">
+          <table class="tm-table tm-matrix-table">
+            <thead>
+              <tr>
+                <th scope="col"></th>
+                {alignmentMatrix.columns.map((col) => (
+                  <th scope="col">{col}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {alignmentMatrix.rows.map((row) => (
+                <tr class:list={[{ 'tm-progression-row': row.progression }]}>
+                  <th scope="row">{row.label}</th>
+                  {row.cells.map((cell) => (
+                    <td>{cell}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="tm-note">
+          Data collection typically shifts from qualitative → hybrid → quantitative as theory matures along the continuum.
+        </p>
+      </section>
+
+      <section id="methodological-fit" class="tm-section">
+        <h2>Methodological fit as a mean tendency</h2>
+        <figure class="tm-fit-figure">
+          <svg viewBox="0 0 520 380" class="tm-fit-svg" role="img" aria-label="Theory maturity from nascent to mature aligned with qualitative to quantitative data">
+            <rect x="70" y="40" width="400" height="280" fill="#fafafa" stroke="#ccc" stroke-width="1.5" />
+            <text x="270" y="340" text-anchor="middle" class="tm-fit-axis-label">Theory</text>
+            <text x="28" y="185" text-anchor="middle" transform="rotate(-90 28 185)" class="tm-fit-axis-label">Data</text>
+
+            <text x="130" y="325" text-anchor="middle" class="tm-fit-tick">Nascent</text>
+            <text x="270" y="325" text-anchor="middle" class="tm-fit-tick">Intermediate</text>
+            <text x="410" y="325" text-anchor="middle" class="tm-fit-tick">Mature</text>
+
+            <text x="52" y="285" text-anchor="end" class="tm-fit-tick">Qualitative</text>
+            <text x="52" y="185" text-anchor="end" class="tm-fit-tick">Hybrid</text>
+            <text x="52" y="85" text-anchor="end" class="tm-fit-tick">Quantitative</text>
+
+            <ellipse cx="270" cy="185" rx="175" ry="42" fill="rgba(160,160,160,0.35)" transform="rotate(-38 270 185)" />
+            <text x="270" y="188" text-anchor="middle" transform="rotate(-38 270 188)" class="tm-fit-tendency">
+              The mean tendency
+            </text>
+
+            <text x="145" y="95" class="tm-fit-warning">Fishing expeditions</text>
+            <text x="355" y="265" class="tm-fit-warning">Danger: Reinvent the wheel</text>
+            <text x="355" y="285" class="tm-fit-opportunity">Opportunity: Room for creative questions.</text>
+          </svg>
+        </figure>
+      </section>
+
+      <section id="nascent-studies" class="tm-section">
+        <h2>Table 4: Similarities among nascent theory studies</h2>
+        <div class="tm-table-wrap">
+          <table class="tm-table tm-studies-table">
+            <thead>
+              <tr>
+                <th scope="col">Element</th>
+                {nascentStudies.columns.map((col) => (
+                  <th scope="col">{col}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {nascentStudies.rows.map((row) => (
+                <tr>
+                  <th scope="row">{row.label}</th>
+                  {row.cells.map((cell) => (
+                    <td>{cell}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <p class="tm-reference">
+        Edmondson, A. C., &amp; McManus, S. E. (2007). Methodological fit in management field research.{' '}
+        <em>Academy of Management Review</em>, 32(4), 1246&ndash;1264.
+      </p>
+    </article>
+  </div>
+</BaseLayout>
+
+<style is:global>
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+  }
+</style>
+
+<style>
+  .back-link {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  .back-link a {
+    color: var(--color-maroon);
+  }
+
+  .tm-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: start;
+    max-width: 1100px;
+  }
+
+  @media (min-width: 900px) {
+    .tm-layout {
+      grid-template-columns: min(220px, 24%) 1fr;
+    }
+  }
+
+  .tm-toc {
+    position: sticky;
+    top: 5.5rem;
+    z-index: 1;
+    padding: 1rem 1.1rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    border-left: 4px solid var(--color-maroon);
+    font-size: 0.88rem;
+    line-height: 1.45;
+    max-height: calc(100vh - 6rem);
+    overflow-y: auto;
+  }
+
+  .tm-toc-title {
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-ink-muted);
+    margin: 0 0 0.65rem 0;
+  }
+
+  .tm-toc-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .tm-toc-list li {
+    margin-bottom: 0.45rem;
+  }
+
+  .tm-toc a {
+    color: var(--color-maroon);
+    text-decoration: none;
+  }
+
+  .tm-toc a:hover {
+    text-decoration: underline;
+  }
+
+  .tm-article {
+    min-width: 0;
+  }
+
+  .tm-article h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(1.45rem, 3vw, 1.85rem);
+    color: var(--color-maroon);
+    margin: 0 0 1rem 0;
+    scroll-margin-top: 5.5rem;
+  }
+
+  .tm-lead {
+    margin: 0 0 1.5rem 0;
+    line-height: 1.7;
+    color: var(--color-ink);
+    max-width: 44rem;
+  }
+
+  .tm-section {
+    margin-top: 2.5rem;
+    scroll-margin-top: 5.5rem;
+  }
+
+  .tm-section > h2 {
+    font-family: var(--font-serif);
+    font-size: 1.3rem;
+    color: var(--color-maroon);
+    margin: 0 0 1rem 0;
+  }
+
+  .tm-continuum-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .tm-continuum-card {
+    padding: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  .tm-continuum-visual {
+    height: 110px;
+    margin-bottom: 0.85rem;
+    background: #f4f4f4;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .tm-visual-svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .tm-continuum-card h3 {
+    font-size: 1rem;
+    margin: 0 0 0.5rem 0;
+    color: var(--color-maroon);
+  }
+
+  .tm-continuum-card p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--color-ink);
+  }
+
+  .tm-table-wrap {
+    overflow-x: auto;
+    margin-bottom: 0.75rem;
+  }
+
+  .tm-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .tm-table th,
+  .tm-table td {
+    border: 1px solid var(--color-border);
+    padding: 0.65rem 0.75rem;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .tm-table thead th {
+    background: rgba(113, 32, 56, 0.1);
+    color: var(--color-maroon);
+    font-weight: 700;
+  }
+
+  .tm-table tbody th {
+    background: rgba(113, 32, 56, 0.06);
+    font-weight: 600;
+    white-space: nowrap;
+    min-width: 9rem;
+  }
+
+  .tm-progression-row td {
+    background: rgba(255, 220, 100, 0.08);
+  }
+
+  .tm-note {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--color-ink-muted);
+    font-style: italic;
+  }
+
+  .tm-fit-figure {
+    margin: 0;
+    max-width: 32rem;
+  }
+
+  .tm-fit-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .tm-fit-svg :global(.tm-fit-axis-label) {
+    font-family: var(--font-serif);
+    font-size: 14px;
+    font-weight: 700;
+    fill: var(--color-ink);
+  }
+
+  .tm-fit-svg :global(.tm-fit-tick) {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    fill: var(--color-ink);
+  }
+
+  .tm-fit-svg :global(.tm-fit-tendency) {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 600;
+    fill: var(--color-ink);
+  }
+
+  .tm-fit-svg :global(.tm-fit-warning) {
+    font-family: var(--font-sans);
+    font-size: 10.5px;
+    font-weight: 600;
+    fill: #b03030;
+  }
+
+  .tm-fit-svg :global(.tm-fit-opportunity) {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    fill: #2a6a35;
+  }
+
+  .tm-studies-table {
+    min-width: 48rem;
+  }
+
+  .tm-studies-table td {
+    min-width: 14rem;
+  }
+
+  .tm-reference {
+    margin: 2.5rem 0 0 0;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--color-ink-muted);
+    max-width: 44rem;
+  }
+</style>

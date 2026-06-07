@@ -2,6 +2,129 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
 const base = import.meta.env.BASE_URL;
+
+const onionCx = 410;
+const onionCy = 470;
+
+type OnionRing = {
+  rx: number;
+  ry: number;
+  fill: string;
+  stroke: string;
+  title: string;
+  items: string[];
+  itemFontSize?: number;
+};
+
+const onionRings: OnionRing[] = [
+  {
+    rx: 370,
+    ry: 410,
+    fill: '#e8e8e8',
+    stroke: '#c8c8c8',
+    title: 'Research philosophy',
+    items: ['Positivism', 'Critical realism', 'Interpretivism', 'Postmodernism', 'Pragmatism'],
+  },
+  {
+    rx: 310,
+    ry: 345,
+    fill: '#ebe3d4',
+    stroke: '#d4c8b4',
+    title: 'Research approach',
+    items: ['Inductive', 'Deductive', 'Abductive'],
+  },
+  {
+    rx: 252,
+    ry: 282,
+    fill: '#dce8cc',
+    stroke: '#c0d4a8',
+    title: 'Methodological choice',
+    items: ['Qualitative', 'Mixed methods', 'Quantitative'],
+  },
+  {
+    rx: 196,
+    ry: 220,
+    fill: '#b8d4a4',
+    stroke: '#9ec088',
+    title: 'Research strategy',
+    items: [
+      'Experimental',
+      'Survey',
+      'Case study',
+      'Ethnography',
+      'Narrative',
+      'Grounded theory',
+      'Action research',
+      'Archival research',
+    ],
+    itemFontSize: 10,
+  },
+  {
+    rx: 142,
+    ry: 160,
+    fill: '#c8deb8',
+    stroke: '#aac894',
+    title: 'Time horizon',
+    items: ['Cross-sectional', 'Longitudinal'],
+  },
+];
+
+const onionCore = { rx: 88, ry: 98, fill: '#d4e0ea', stroke: '#a8bcc8', label: 'Data collection and analysis' };
+
+function bandPoint(
+  angleDeg: number,
+  rxOuter: number,
+  ryOuter: number,
+  rxInner: number,
+  ryInner: number,
+  bias: 'mid' | 'outer' | 'title' = 'mid',
+) {
+  const biasMap = { mid: 0.5, outer: 0.72, title: 0.84 };
+  const t = biasMap[bias];
+  const rx = rxInner + (rxOuter - rxInner) * t;
+  const ry = ryInner + (ryOuter - ryInner) * t;
+  const rad = ((angleDeg - 90) * Math.PI) / 180;
+  return { x: onionCx + rx * Math.cos(rad), y: onionCy + ry * Math.sin(rad) };
+}
+
+function spreadAngles(count: number, startDeg: number, endDeg: number) {
+  if (count <= 1) return [(startDeg + endDeg) / 2];
+  const step = (endDeg - startDeg) / (count - 1);
+  return Array.from({ length: count }, (_, i) => startDeg + step * i);
+}
+
+type OnionLabel = {
+  text: string;
+  x: number;
+  y: number;
+  kind: 'title' | 'item';
+  fontSize?: number;
+};
+
+function itemAngles(count: number, fullCircle: boolean) {
+  if (fullCircle) {
+    const step = 360 / count;
+    const offset = -90 + step / 2;
+    return Array.from({ length: count }, (_, i) => offset + step * i);
+  }
+  return spreadAngles(count, -165, 20);
+}
+
+const onionLabels: OnionLabel[] = [];
+
+onionRings.forEach((ring, index) => {
+  const inner = index < onionRings.length - 1 ? onionRings[index + 1] : onionCore;
+  const titlePos = bandPoint(-90, ring.rx, ring.ry, inner.rx, inner.ry, 'title');
+  onionLabels.push({ text: ring.title, x: titlePos.x, y: titlePos.y, kind: 'title' });
+
+  const fullCircle = ring.items.length >= 6;
+  const angles = itemAngles(ring.items.length, fullCircle);
+
+  ring.items.forEach((item, itemIndex) => {
+    const pos = bandPoint(angles[itemIndex], ring.rx, ring.ry, inner.rx, inner.ry, 'mid');
+    onionLabels.push({ text: item, x: pos.x, y: pos.y, kind: 'item', fontSize: ring.itemFontSize });
+  });
+});
 ---
 
 <BaseLayout title="Methods" description="Data collection and analysis — quantitative and qualitative approaches">
@@ -61,103 +184,36 @@ const base = import.meta.env.BASE_URL;
         role="img"
         aria-label="Research onion: research philosophy, approach, methodological choice, strategy, time horizon, and data collection and analysis"
       >
-        <defs>
-          <marker id="onion-arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-            <path d="M0,0 L8,4 L0,8 Z" fill="#712038" />
-          </marker>
-        </defs>
-
-        <!-- Layer 1: Research philosophy -->
-        <ellipse cx="410" cy="470" rx="370" ry="410" fill="#e8e8e8" stroke="#c8c8c8" stroke-width="1.5" />
-        <text x="410" y="88" text-anchor="middle" class="onion-layer-title">Research philosophy</text>
-        <text x="410" y="118" text-anchor="middle" class="onion-layer-items">
-          Positivism · Critical realism · Interpretivism · Postmodernism · Pragmatism
+        {onionRings.map((ring) => (
+          <ellipse cx={onionCx} cy={onionCy} rx={ring.rx} ry={ring.ry} fill={ring.fill} stroke={ring.stroke} stroke-width="1.5" />
+        ))}
+        <ellipse
+          cx={onionCx}
+          cy={onionCy}
+          rx={onionCore.rx}
+          ry={onionCore.ry}
+          fill={onionCore.fill}
+          stroke={onionCore.stroke}
+          stroke-width="1.5"
+        />
+        {onionLabels.map((label) => (
+          <text
+            x={label.x}
+            y={label.y}
+            text-anchor="middle"
+            dominant-baseline="middle"
+            class:list={[
+              label.kind === 'title' ? 'onion-layer-title' : 'onion-layer-items',
+              label.fontSize ? 'onion-layer-items--small' : null,
+            ]}
+            font-size={label.fontSize}
+          >
+            {label.text}
+          </text>
+        ))}
+        <text x={onionCx} y={onionCy} text-anchor="middle" dominant-baseline="middle" class="onion-core-title">
+          {onionCore.label}
         </text>
-        <path
-          d="M 280 130 Q 260 150 250 175"
-          fill="none"
-          stroke="#712038"
-          stroke-width="2.5"
-          marker-end="url(#onion-arrow)"
-        />
-
-        <!-- Layer 2: Research approach -->
-        <ellipse cx="410" cy="470" rx="310" ry="345" fill="#ebe3d4" stroke="#d4c8b4" stroke-width="1.5" />
-        <text x="410" y="158" text-anchor="middle" class="onion-layer-title">Research approach</text>
-        <text x="410" y="186" text-anchor="middle" class="onion-layer-items">Inductive · Deductive · Abductive</text>
-        <path
-          d="M 295 198 Q 278 215 268 238"
-          fill="none"
-          stroke="#712038"
-          stroke-width="2.5"
-          marker-end="url(#onion-arrow)"
-        />
-
-        <!-- Layer 3: Methodological choice -->
-        <ellipse cx="410" cy="470" rx="252" ry="282" fill="#dce8cc" stroke="#c0d4a8" stroke-width="1.5" />
-        <text x="410" y="222" text-anchor="middle" class="onion-layer-title">Methodological choice</text>
-        <text x="410" y="250" text-anchor="middle" class="onion-layer-items">
-          Qualitative · Mixed methods · Quantitative
-        </text>
-        <path
-          d="M 310 262 Q 296 278 288 300"
-          fill="none"
-          stroke="#712038"
-          stroke-width="2.5"
-          marker-end="url(#onion-arrow)"
-        />
-
-        <!-- Layer 4: Research strategy -->
-        <ellipse cx="410" cy="470" rx="196" ry="220" fill="#b8d4a4" stroke="#9ec088" stroke-width="1.5" />
-        <text x="410" y="284" text-anchor="middle" class="onion-layer-title">Research strategy</text>
-        <text x="410" y="306" text-anchor="middle" class="onion-layer-items onion-layer-items--small">
-          Experimental · Survey · Case study · Ethnography
-        </text>
-        <text x="410" y="324" text-anchor="middle" class="onion-layer-items onion-layer-items--small">
-          Narrative · Grounded theory · Action research · Archival research
-        </text>
-        <path
-          d="M 325 336 Q 314 352 308 372"
-          fill="none"
-          stroke="#712038"
-          stroke-width="2.5"
-          marker-end="url(#onion-arrow)"
-        />
-
-        <!-- Layer 5: Time horizon -->
-        <ellipse cx="410" cy="470" rx="142" ry="160" fill="#c8deb8" stroke="#aac894" stroke-width="1.5" />
-        <text x="410" y="358" text-anchor="middle" class="onion-layer-title">Time horizon</text>
-        <text x="410" y="386" text-anchor="middle" class="onion-layer-items">Cross-sectional · Longitudinal</text>
-        <path
-          d="M 340 398 Q 332 414 328 432"
-          fill="none"
-          stroke="#712038"
-          stroke-width="2.5"
-          marker-end="url(#onion-arrow)"
-        />
-
-        <!-- Layer 6: Data collection and analysis -->
-        <ellipse cx="410" cy="470" rx="88" ry="98" fill="#d4e0ea" stroke="#a8bcc8" stroke-width="1.5" />
-        <text x="410" y="462" text-anchor="middle" class="onion-core-title">Data collection</text>
-        <text x="410" y="482" text-anchor="middle" class="onion-core-title">and analysis</text>
-
-        <!-- Large directional arrows (slide style) -->
-        <path
-          d="M 40 520 L 220 420"
-          fill="none"
-          stroke="#712038"
-          stroke-width="5"
-          stroke-linecap="round"
-          marker-end="url(#onion-arrow)"
-        />
-        <path
-          d="M 40 620 L 330 500"
-          fill="none"
-          stroke="#712038"
-          stroke-width="5"
-          stroke-linecap="round"
-          marker-end="url(#onion-arrow)"
-        />
       </svg>
       <figcaption class="methods-onion-caption">Adapted from Saunders, Lewis &amp; Thornhill, <em>Research Methods for Business Students</em>.</figcaption>
     </figure>
@@ -206,6 +262,14 @@ const base = import.meta.env.BASE_URL;
         Probability and non-probability sampling — simple random, stratified, convenience, snowball, and more.
       </p>
       <span class="methods-hub-link">Open sampling →</span>
+    </a>
+    <a href={`${base}methods/theory-maturity/`} class="methods-hub-card">
+      <span class="methods-hub-icon" aria-hidden="true">📐</span>
+      <h2 class="methods-hub-title">Theory maturity</h2>
+      <p class="methods-hub-desc">
+        Nascent, intermediate, and mature theory — alignment of questions, data, analysis, and contribution.
+      </p>
+      <span class="methods-hub-link">Open theory maturity →</span>
     </a>
     <a href={`${base}methods/ethics/`} class="methods-hub-card">
       <span class="methods-hub-icon" aria-hidden="true">⚖️</span>
@@ -323,24 +387,24 @@ const base = import.meta.env.BASE_URL;
 
   .methods-onion-svg :global(.onion-layer-title) {
     font-family: var(--font-serif);
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 700;
     fill: var(--color-maroon);
   }
 
   .methods-onion-svg :global(.onion-layer-items) {
     font-family: var(--font-sans);
-    font-size: 12px;
+    font-size: 11.5px;
     fill: var(--color-ink);
   }
 
   .methods-onion-svg :global(.onion-layer-items--small) {
-    font-size: 10.5px;
+    font-size: 10px;
   }
 
   .methods-onion-svg :global(.onion-core-title) {
     font-family: var(--font-sans);
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
     fill: var(--color-ink);
   }
