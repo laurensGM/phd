@@ -1,0 +1,91 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const base = import.meta.env.BASE_URL;
+
+const uoaExamples = [
+  {
+    label: 'Individuals',
+    text: 'A study examining the experiences of individuals living with a particular condition (e.g. ADHD).',
+  },
+  {
+    label: 'Groups',
+    text: 'Research on the dynamics within a specific family or community.',
+  },
+  {
+    label: 'Organizations',
+    text: 'Studies on the culture or practices of a particular company or institution.',
+  },
+  {
+    label: 'Social interactions',
+    text: 'Research on communication patterns or conflict resolution in specific settings.',
+  },
+  {
+    label: 'Artifacts',
+    text: 'Analysis of documents, media content, or other material objects.',
+  },
+];
+---
+
+<BaseLayout title="UoA" description="Unit of analysis — the primary subject or entity being studied">
+  <p class="back-link"><a href={`${base}methods/`}>← Methods</a></p>
+  <h1>UoA</h1>
+  <p class="uoa-subtitle">Data collection overview: Unit of analysis</p>
+
+  <section class="uoa-section">
+    <p>
+      The &ldquo;unit of analysis&rdquo; refers to the <strong>primary subject or entity that is being studied.</strong>
+    </p>
+    <p><strong>Unit of analysis is important.</strong></p>
+    <ul class="uoa-list">
+      {uoaExamples.map((item) => (
+        <li>
+          <strong>{item.label}:</strong> {item.text}
+        </li>
+      ))}
+    </ul>
+  </section>
+</BaseLayout>
+
+<style>
+  .back-link {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  .back-link a {
+    color: var(--color-maroon);
+  }
+
+  .uoa-subtitle {
+    margin: -0.25rem 0 1.5rem 0;
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    color: var(--color-maroon);
+    line-height: 1.4;
+  }
+
+  .uoa-section {
+    max-width: 42rem;
+  }
+
+  .uoa-section p {
+    margin: 0 0 1rem 0;
+    line-height: 1.7;
+    color: var(--color-ink);
+  }
+
+  .uoa-list {
+    margin: 0;
+    padding-left: 1.5rem;
+    line-height: 1.75;
+    color: var(--color-ink);
+  }
+
+  .uoa-list li {
+    margin-bottom: 0.65rem;
+  }
+
+  .uoa-list li:last-child {
+    margin-bottom: 0;
+  }
+</style>

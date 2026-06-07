@@ -6,30 +6,209 @@ const base = import.meta.env.BASE_URL;
 const probabilityMethods = ['Simple random', 'Stratified', 'Cluster', 'Systematic', 'Multistage'];
 
 const nonProbabilityMethods = ['Convenience', 'Judgement', 'Quota', 'Snowball', 'Multistage'];
+
+const newCodesBars = [
+  { range: '1–6', value: 80 },
+  { range: '7–12', value: 20 },
+  { range: '13–18', value: 5 },
+  { range: '19–24', value: 2 },
+  { range: '25–30', value: 2 },
+  { range: '31–36', value: 2 },
+  { range: '37–42', value: 0 },
+  { range: '43–48', value: 1 },
+  { range: '49–54', value: 1 },
+  { range: '55–60', value: 1 },
+];
+
+const saturationCurve = [
+  { interviews: 10, studies: 12, quality: 15 },
+  { interviews: 15, studies: 35, quality: 40 },
+  { interviews: 20, studies: 62, quality: 68 },
+  { interviews: 25, studies: 82, quality: 85 },
+  { interviews: 30, studies: 95, quality: 96 },
+  { interviews: 35, studies: 100, quality: 100 },
+  { interviews: 40, studies: 88, quality: 92 },
+  { interviews: 45, studies: 72, quality: 78 },
+];
 ---
 
-<BaseLayout title="Sampling" description="Probability and non-probability sampling methods">
-  <p class="back-link"><a href={`${base}methods/`}>← Methods</a></p>
-  <h1>Sampling</h1>
+<BaseLayout title="Sampling" description="Probability and non-probability sampling, purposeful sampling, and sample size">
+  <div class="sampling-layout">
+    <nav class="sampling-toc" aria-label="On this page">
+      <h2 class="sampling-toc-title">On this page</h2>
+      <ol class="sampling-toc-list">
+        <li><a href="#probability">Probability sampling</a></li>
+        <li><a href="#non-probability">Non-probability sampling</a></li>
+        <li><a href="#purposeful">Purposeful sampling</a></li>
+        <li><a href="#considerations">Considerations in sampling</a></li>
+        <li><a href="#sample-size">Sample size</a></li>
+      </ol>
+    </nav>
 
-  <section class="sampling-section">
-    <h2>Probability sampling</h2>
-    <ul>
-      {probabilityMethods.map((method) => (
-        <li>{method}</li>
-      ))}
-    </ul>
-  </section>
+    <article class="sampling-article">
+      <p class="back-link"><a href={`${base}methods/`}>← Methods</a></p>
+      <h1>Sampling</h1>
 
-  <section class="sampling-section">
-    <h2>Non-probability sampling</h2>
-    <ul>
-      {nonProbabilityMethods.map((method) => (
-        <li>{method}</li>
-      ))}
-    </ul>
-  </section>
+      <section id="probability" class="sampling-section">
+        <h2>Probability sampling</h2>
+        <ul>
+          {probabilityMethods.map((method) => (
+            <li>{method}</li>
+          ))}
+        </ul>
+      </section>
+
+      <section id="non-probability" class="sampling-section">
+        <h2>Non-probability sampling</h2>
+        <ul>
+          {nonProbabilityMethods.map((method) => (
+            <li>{method}</li>
+          ))}
+        </ul>
+      </section>
+
+      <section id="purposeful" class="sampling-section">
+        <h2>Data collection overview: Sampling</h2>
+        <h3 class="sampling-subheading">Purposeful sampling</h3>
+        <p>
+          Collection of <strong>deliberately selected cases</strong>, materials or events for constructing a corpus of
+          empirical examples for studying the phenomenon of interest in the most instructive way.
+        </p>
+        <p>
+          <strong>Breadth rather than representativeness</strong>
+        </p>
+      </section>
+
+      <section id="considerations" class="sampling-section">
+        <h3 class="sampling-subheading">Considerations in sampling</h3>
+        <ul class="sampling-prose-list">
+          <li>
+            <strong>Purposively extreme or deviant cases.</strong> If you study processes of coping with a chronic
+            illness, you might look for cases that are most successful in integrating their illness in their everyday life
+            and for those who have the biggest problems in adapting to the illness in their day-to-day practice and compare
+            both.
+          </li>
+          <li>
+            Particularly <strong>typical cases</strong>, i.e. those cases in which success and failure are particularly
+            typical for the average or the majority of the cases.
+          </li>
+          <li>
+            <strong>Maximal variation in the sample.</strong> This means that you try to integrate only a few cases, but
+            those that are as different as possible.
+          </li>
+          <li>
+            <strong>Intensity</strong> with which the interesting features, processes, experiences, etc., are given or
+            assumed in them. Cases in which <strong>the experiences or processes</strong> to be studied become{' '}
+            <strong>especially clear</strong>.
+          </li>
+          <li class="sampling-caution">
+            <strong>Convenience</strong>, which refers to the selection of those cases that are the easiest to access
+            under given conditions. However, this is <strong>not really a suggestion for how to plan a sampling but rather
+            a second-best choice</strong>, if none of the more desirable alternatives can be applied.
+          </li>
+          <li>
+            <strong>Snowball sampling</strong> &mdash; &ldquo;ballerinas in business&rdquo; &mdash; when there is little
+            other choice.
+          </li>
+        </ul>
+      </section>
+
+      <section id="sample-size" class="sampling-section">
+        <h2>Data collection overview: Sample size</h2>
+        <ul class="sampling-prose-list">
+          <li>Not aiming for representation, rather understanding the phenomenon.</li>
+          <li>
+            <strong>Theoretical saturation</strong>
+            <ul>
+              <li>
+                No new concepts emerge from the data: <em>n</em>+1 interview no longer brings anything new than the{' '}
+                <em>n</em>th interview.
+              </li>
+            </ul>
+          </li>
+          <li>
+            Typical sample sizes varies between 1 and 40, but can be much higher in some cases where the research question
+            is very focused (shorter texts).
+          </li>
+        </ul>
+
+        <div class="sampling-charts">
+          <figure class="sampling-chart">
+            <figcaption class="sampling-chart-title">Number of new codes by interview range</figcaption>
+            <svg viewBox="0 0 420 260" class="sampling-chart-svg" role="img" aria-label="Bar chart showing diminishing new codes across interview ranges">
+              <line x1="48" y1="28" x2="48" y2="200" stroke="#ccc" stroke-width="1" />
+              <line x1="48" y1="200" x2="400" y2="200" stroke="#ccc" stroke-width="1" />
+              <text x="18" y="118" transform="rotate(-90 18 118)" class="sampling-chart-axis">Number of new codes</text>
+              <text x="224" y="232" text-anchor="middle" class="sampling-chart-axis">Interviews</text>
+              {[0, 20, 40, 60, 80].map((tick, i) => (
+                <g>
+                  <line x1="42" y1={200 - i * 43} x2="48" y2={200 - i * 43} stroke="#ccc" />
+                  <text x="38" y={204 - i * 43} text-anchor="end" class="sampling-chart-tick">{tick}</text>
+                </g>
+              ))}
+              {newCodesBars.map((bar, i) => {
+                const barW = 30;
+                const gap = 6;
+                const x = 58 + i * (barW + gap);
+                const h = bar.value * 2.15;
+                return (
+                  <g>
+                    <rect x={x} y={200 - h} width={barW} height={h} fill="var(--color-maroon-muted)" opacity="0.85" />
+                    <text x={x + barW / 2} y="216" text-anchor="middle" class="sampling-chart-tick">{bar.range}</text>
+                  </g>
+                );
+              })}
+              <text x="155" y="248" text-anchor="middle" class="sampling-chart-region">Ghana</text>
+              <text x="330" y="248" text-anchor="middle" class="sampling-chart-region">Nigeria</text>
+            </svg>
+          </figure>
+
+          <figure class="sampling-chart">
+            <figcaption class="sampling-chart-title">Theoretical saturation and study quality</figcaption>
+            <svg viewBox="0 0 420 260" class="sampling-chart-svg" role="img" aria-label="Curve showing studies and quality peaking around theoretical saturation near 30 interviews">
+              <line x1="48" y1="28" x2="48" y2="200" stroke="#ccc" stroke-width="1" />
+              <line x1="48" y1="200" x2="400" y2="200" stroke="#ccc" stroke-width="1" />
+              <line x1="400" y1="28" x2="400" y2="200" stroke="#ccc" stroke-width="1" />
+              <text x="18" y="118" transform="rotate(-90 18 118)" class="sampling-chart-axis"># of studies</text>
+              <text x="408" y="118" transform="rotate(90 408 118)" class="sampling-chart-axis">Study quality</text>
+              <text x="224" y="232" text-anchor="middle" class="sampling-chart-axis">Number of interviews per study</text>
+              {saturationCurve.map((point, i) => {
+                if (i === 0) return null;
+                const prev = saturationCurve[i - 1];
+                const x1 = 58 + (prev.interviews - 10) * 8.2;
+                const y1s = 200 - prev.studies * 1.7;
+                const x2 = 58 + (point.interviews - 10) * 8.2;
+                const y2s = 200 - point.studies * 1.7;
+                const y1q = 200 - prev.quality * 1.7;
+                const y2q = 200 - point.quality * 1.7;
+                return (
+                  <g>
+                    <line x1={x1} y1={y1s} x2={x2} y2={y2s} stroke="var(--color-maroon)" stroke-width="2" />
+                    <line x1={x1} y1={y1q} x2={x2} y2={y2q} stroke="#5a8a50" stroke-width="2" stroke-dasharray="4 3" />
+                  </g>
+                );
+              })}
+              <line x1="222" y1="28" x2="222" y2="200" stroke="#712038" stroke-width="1.5" stroke-dasharray="5 4" />
+              <text x="222" y="22" text-anchor="middle" class="sampling-chart-saturation">Theoretical saturation</text>
+              {[10, 15, 20, 25, 30, 35, 40, 45].map((tick) => (
+                <text x={58 + (tick - 10) * 8.2} y="216" text-anchor="middle" class="sampling-chart-tick">
+                  {tick}
+                </text>
+              ))}
+            </svg>
+          </figure>
+        </div>
+      </section>
+    </article>
+  </div>
 </BaseLayout>
+
+<style is:global>
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+  }
+</style>
 
 <style>
   .back-link {
@@ -40,15 +219,85 @@ const nonProbabilityMethods = ['Convenience', 'Judgement', 'Quota', 'Snowball', 
     color: var(--color-maroon);
   }
 
+  .sampling-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: start;
+    max-width: 1100px;
+  }
+
+  @media (min-width: 900px) {
+    .sampling-layout {
+      grid-template-columns: min(200px, 22%) 1fr;
+    }
+  }
+
+  .sampling-toc {
+    position: sticky;
+    top: 5.5rem;
+    z-index: 1;
+    padding: 1rem 1.1rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    border-left: 4px solid var(--color-maroon);
+    font-size: 0.88rem;
+    line-height: 1.45;
+    max-height: calc(100vh - 6rem);
+    overflow-y: auto;
+  }
+
+  .sampling-toc-title {
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-ink-muted);
+    margin: 0 0 0.65rem 0;
+  }
+
+  .sampling-toc-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .sampling-toc-list li {
+    margin-bottom: 0.45rem;
+  }
+
+  .sampling-toc a {
+    color: var(--color-maroon);
+    text-decoration: none;
+  }
+
+  .sampling-toc a:hover {
+    text-decoration: underline;
+  }
+
+  .sampling-article {
+    min-width: 0;
+  }
+
   .sampling-section {
-    max-width: 42rem;
-    margin-bottom: 2rem;
+    max-width: 44rem;
+    margin-bottom: 2.25rem;
+    scroll-margin-top: 5.5rem;
   }
 
   .sampling-section h2 {
     font-family: var(--font-serif);
     font-size: 1.25rem;
     color: var(--color-maroon);
+    margin: 0 0 0.85rem 0;
+  }
+
+  .sampling-subheading {
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+    color: var(--color-ink);
     margin: 0 0 0.75rem 0;
   }
 
@@ -61,5 +310,85 @@ const nonProbabilityMethods = ['Convenience', 'Judgement', 'Quota', 'Snowball', 
 
   .sampling-section li {
     margin-bottom: 0.4rem;
+  }
+
+  .sampling-prose-list {
+    list-style: disc;
+  }
+
+  .sampling-prose-list ul {
+    margin-top: 0.35rem;
+  }
+
+  .sampling-section p {
+    margin: 0 0 0.85rem 0;
+    line-height: 1.7;
+    color: var(--color-ink);
+  }
+
+  .sampling-caution {
+    color: #9a4a28;
+  }
+
+  .sampling-charts {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+    max-width: 52rem;
+  }
+
+  @media (min-width: 760px) {
+    .sampling-charts {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .sampling-chart {
+    margin: 0;
+    padding: 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: #fafafa;
+  }
+
+  .sampling-chart-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--color-ink);
+    text-align: center;
+  }
+
+  .sampling-chart-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .sampling-chart-svg :global(.sampling-chart-axis) {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    fill: var(--color-ink-muted);
+  }
+
+  .sampling-chart-svg :global(.sampling-chart-tick) {
+    font-family: var(--font-sans);
+    font-size: 8px;
+    fill: var(--color-ink-muted);
+  }
+
+  .sampling-chart-svg :global(.sampling-chart-region) {
+    font-family: var(--font-sans);
+    font-size: 9px;
+    font-weight: 600;
+    fill: var(--color-ink);
+  }
+
+  .sampling-chart-svg :global(.sampling-chart-saturation) {
+    font-family: var(--font-sans);
+    font-size: 9px;
+    font-weight: 600;
+    fill: var(--color-maroon);
   }
 </style>
