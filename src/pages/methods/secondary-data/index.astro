@@ -1,40 +1,925 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { secondaryDataForms } from '../../../data/secondary-data-forms';
+import { methodologyNuances } from '../../../data/secondary-data-methodology-nuances';
+import { proposalPitfalls } from '../../../data/secondary-data-pitfalls';
+import { inclusionExamples } from '../../../data/secondary-data-inclusion-examples';
+import { exclusionRules } from '../../../data/secondary-data-exclusion';
+import { documentaryRisks } from '../../../data/secondary-data-risks';
+import {
+  searchToLogWorkflow,
+  sourceLogFieldGroups,
+  suggestedFolders,
+} from '../../../data/secondary-data-workflow';
 
 const base = import.meta.env.BASE_URL;
+
+const proposalSteps = [
+  {
+    step: '1',
+    title: 'Clarify the question',
+    prompt: 'What exactly do I want to know?',
+  },
+  {
+    step: '2',
+    title: 'Identify the evidence need',
+    prompt: 'What concept must be measured, observed or interpreted?',
+  },
+  {
+    step: '3',
+    title: 'Choose the source route',
+    prompt:
+      'Dataset, documents, archive, administrative records, digital traces or mixed design?',
+  },
+  {
+    step: '4',
+    title: 'Evaluate the source',
+    prompt: 'Who produced it? What does it cover? What does it miss? Can I access and cite it?',
+  },
+  {
+    step: '5',
+    title: 'Draft the proposal wording',
+    prompt:
+      'Explain the source, fit, limitation, mitigation and appropriate level of claim.',
+  },
+];
+
+const inclusionTests = [
+  {
+    title: 'Institutional standing',
+    criterion:
+      'The document must have a clear institutional author with policy, regulatory, supervisory, standard-setting, or architecture-design authority.',
+    examples: 'G20/GPFI, World Bank, BIS/CPMI, AFI, central banks, financial regulators, national treasuries.',
+  },
+  {
+    title: 'Substantive domain fit',
+    criterion:
+      'The document must deal substantively with digital financial inclusion, DPI, identity, instant payments, interoperability, data sharing, open finance, consumer protection, or data governance.',
+    examples: 'A passing mention of fintech or promotional material is not enough.',
+  },
+  {
+    title: 'Analysable evidence',
+    criterion:
+      'The document must contain evidence on how inclusion is defined, which infrastructures are necessary, or how responsibility is allocated among states, regulators, platforms, and financial institutions.',
+    examples: '',
+  },
+];
 ---
 
-<BaseLayout title="Secondary data" description="Using secondary data sources — World Bank, IMF, company data, and more">
-  <p class="back-link"><a href={`${base}methods/`}>← Methods</a></p>
-  <h1>Secondary data</h1>
+<BaseLayout
+  title="Secondary data"
+  description="Using secondary data — datasets, documents, archives, corpus design, and proposal writing"
+>
+  <div class="sd-layout">
+    <nav class="sd-toc" aria-label="On this page">
+      <h2 class="sd-toc-title">On this page</h2>
+      <ol class="sd-toc-list">
+        <li><a href="#intro">Introduction</a></li>
+        <li><a href="#forms">Forms of secondary data</a></li>
+        <li><a href="#datasets">Datasets in practice</a></li>
+        <li><a href="#methodology-reading">Reading methodology sections</a></li>
+        <li><a href="#documents">Documents as data</a></li>
+        <li><a href="#proposal-studio">Proposal design studio</a></li>
+        <li><a href="#writing">Writing the data section</a></li>
+        <li><a href="#pitfalls">Common pitfalls</a></li>
+        <li>
+          <a href="#documentary">Documentary analysis</a>
+          <ol>
+            <li><a href="#corpus-design">Corpus design</a></li>
+            <li><a href="#inclusion">Inclusion logic</a></li>
+            <li><a href="#exclusion">Exclusion logic</a></li>
+            <li><a href="#risks">Risks and limits</a></li>
+            <li><a href="#workflow">Search to source log</a></li>
+            <li><a href="#archive">Folders and filenames</a></li>
+            <li><a href="#source-log">Source log fields</a></li>
+          </ol>
+        </li>
+      </ol>
+    </nav>
 
-  <section class="methods-section">
-    <p>
-      Secondary data is a rich source of data. You may not need to collect primary data at all. Sources such as the World
-      Bank, the IMF, and company performance data are secondary — and very valid.
-    </p>
-    <p>You may not do everything by yourself.</p>
-  </section>
+    <article class="sd-article">
+      <p class="sd-breadcrumb">
+        <a href={`${base}methods/`}>Methods</a>
+        <span aria-hidden="true"> / </span>
+        <span>Secondary data</span>
+      </p>
+
+      <h1 id="intro">Secondary data</h1>
+      <p class="sd-lead">
+        Secondary data is a rich source of evidence. You may not need to collect primary data at all. Sources such as the
+        World Bank, the IMF, and company performance data are secondary — and very valid. You may not do everything by
+        yourself.
+      </p>
+      <p>
+        Using secondary data well means documenting your source logic early: what you include, what you exclude, how you
+        access and archive materials, and how each source helps answer your research question.
+      </p>
+
+      <section id="forms" class="sd-section">
+        <h2>Forms of secondary data</h2>
+        <p>A minimal typology. Which of these source types are most likely to contain evidence for your RQ?</p>
+        <ul class="sd-type-list">
+          {secondaryDataForms.map((item) => (
+            <li>
+              <strong>{item.type}:</strong> {item.description}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section id="datasets" class="sd-section">
+        <h2>Secondary datasets in practice</h2>
+        <p>Using secondary data does not mean simply downloading variables.</p>
+        <p>
+          Before using a dataset, understand how key indicators are defined, constructed and interpreted.
+        </p>
+        <p>
+          <strong>Cevik and Jalles (2023)</strong> do not merely say they use &ldquo;ND-GAIN data&rdquo;. A good
+          proposal explains what the dataset measures, how the indicator is constructed, how it should be interpreted,
+          and what limitations remain.
+        </p>
+      </section>
+
+      <section id="methodology-reading" class="sd-section">
+        <h2>Read the methodology section for data-use nuances</h2>
+        <div class="sd-table-wrap">
+          <table class="sd-table">
+            <thead>
+              <tr>
+                <th scope="col">What to look for</th>
+                <th scope="col">Example from Cevik &amp; Jalles (2023)</th>
+                <th scope="col">Why it matters</th>
+              </tr>
+            </thead>
+            <tbody>
+              {methodologyNuances.map((row) => (
+                <tr>
+                  <th scope="row">{row.lookFor}</th>
+                  <td>{row.example}</td>
+                  <td>{row.whyItMatters}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="documents" class="sd-section">
+        <h2>Documents can also be data</h2>
+        <p>
+          Documents are not just background reading. In some studies they are the primary evidence: corporate reports,
+          policy documents, press releases, regulatory reports, industry reports, platform examples, public statements.
+        </p>
+        <p>
+          <strong>Atal and Mondliwa (2025)</strong> — a qualitative, mixed-source study of South African digital
+          finance — does not rely on a conventional statistical dataset. It constructs a qualitative evidence base from
+          interviews, corporate/policy documents, public statements, regulatory materials, and platform examples.
+        </p>
+        <p>Documents become research evidence only when the researcher explains:</p>
+        <ul class="sd-list">
+          <li><strong>Source corpus</strong> — what documents were collected</li>
+          <li><strong>Selection logic</strong> — why these documents were chosen</li>
+          <li><strong>Time period</strong> — the chronological scope</li>
+          <li><strong>Analysis procedure</strong> — how documents were processed and interpreted</li>
+        </ul>
+      </section>
+
+      <section id="proposal-studio" class="sd-section">
+        <h2>Proposal design studio</h2>
+        <p>From research idea to source strategy — five steps.</p>
+        <ol class="sd-steps">
+          {proposalSteps.map((item) => (
+            <li class="sd-step-card">
+              <span class="sd-step-num">Step {item.step}</span>
+              <strong class="sd-step-title">{item.title}</strong>
+              <p>{item.prompt}</p>
+            </li>
+          ))}
+        </ol>
+        <div class="sd-callout">
+          <strong>Final output:</strong> a one-page secondary-data feasibility note + one draft methodology paragraph.
+        </div>
+      </section>
+
+      <section id="writing" class="sd-section">
+        <h2>Writing the data section</h2>
+        <p>Move from source naming to source justification.</p>
+        <div class="sd-compare">
+          <div class="sd-compare-box sd-compare-weak">
+            <h3 class="sd-compare-label">Weak version</h3>
+            <p>
+              &ldquo;This study will use secondary data from WDI and company reports to analyse the topic.&rdquo;
+            </p>
+          </div>
+          <div class="sd-compare-box sd-compare-strong">
+            <h3 class="sd-compare-label">Stronger version</h3>
+            <p>
+              &ldquo;This study will use <strong>[source name, producer, version and years]</strong> because it
+              provides evidence on <strong>[concept]</strong> at the level of <strong>[unit]</strong>. Its suitability
+              rests on <strong>[coverage/comparability/relevance]</strong>. Key limitations include{' '}
+              <strong>[risk]</strong>, which will be addressed through <strong>[mitigation]</strong>.&rdquo;
+            </p>
+          </div>
+        </div>
+        <p class="sd-flow">
+          <strong>Template logic:</strong> source &rarr; concept &rarr; unit &rarr; period &rarr; fit &rarr; limitation
+          &rarr; mitigation &rarr; citation/access details.
+        </p>
+      </section>
+
+      <section id="pitfalls" class="sd-section">
+        <h2>Common proposal pitfalls</h2>
+        <p>Most weaknesses are avoidable if students document their source logic early.</p>
+        <div class="sd-table-wrap">
+          <table class="sd-table">
+            <thead>
+              <tr>
+                <th scope="col">Pitfall</th>
+                <th scope="col">What to do instead</th>
+              </tr>
+            </thead>
+            <tbody>
+              {proposalPitfalls.map((row) => (
+                <tr>
+                  <th scope="row">{row.pitfall}</th>
+                  <td>{row.solution}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="documentary" class="sd-section">
+        <h2>Documentary analysis</h2>
+        <p>
+          When documents are your empirical corpus, methodology must explain corpus design, inclusion and exclusion,
+          archiving, and what documents can and cannot show.
+        </p>
+
+        <section id="corpus-design" class="sd-subsection">
+          <h3>Corpus design</h3>
+          <p>The corpus is not a loose list of reports. It is structured around the claim being investigated.</p>
+          <div class="sd-tier-grid">
+            <div class="sd-tier sd-tier-global">
+              <h4>Global policy core</h4>
+              <p>Transnational policy and standard-setting texts.</p>
+              <p class="sd-tier-focus">
+                Defines digital financial inclusion, DPI, digital identity, payments, open finance, and governance.
+              </p>
+            </div>
+            <div class="sd-tier sd-tier-regional">
+              <h4>Regulatory-architecture core</h4>
+              <p>Africa country-level documents.</p>
+              <p class="sd-tier-focus">
+                Shows how global scripts are translated into national payment systems, open finance, consumer protection,
+                and inclusion strategies.
+              </p>
+            </div>
+            <div class="sd-tier sd-tier-supplementary">
+              <h4>Supplementary corpus</h4>
+              <p>Contextual materials: consultation papers, speeches, implementation notes, and updates.</p>
+              <p class="sd-tier-focus">Used to refine interpretation.</p>
+            </div>
+          </div>
+          <p>
+            <strong>Design choice:</strong> use a two-tier corpus — core documents are systematically coded;
+            supplementary documents provide context and help interpret shifts, silences or implementation detail.
+          </p>
+          <p class="sd-note">
+            Academic literature is treated separately as conceptual synthesis, not as part of the empirical documentary
+            corpus, except where commissioned or circulated as formal policy guidance.
+          </p>
+        </section>
+
+        <section id="inclusion" class="sd-subsection">
+          <h3>Inclusion logic: three tests</h3>
+          <p>
+            A document should enter the corpus only when it passes all three tests: who produced it? Does it directly
+            address the topic? Can it help answer the research question?
+          </p>
+          <ol class="sd-test-list">
+            {inclusionTests.map((test) => (
+              <li>
+                <strong>{test.title}</strong>
+                <p>{test.criterion}</p>
+                {test.examples && <p class="sd-test-examples">{test.examples}</p>}
+              </li>
+            ))}
+          </ol>
+          <p class="sd-rule">
+            <strong>Inclusion rule:</strong> the document must help answer the research question, not merely be
+            interesting or related to the topic.
+          </p>
+
+          <h4 class="sd-subheading">Inclusion examples</h4>
+          <p>The inclusion logic should be operationalised before collection starts.</p>
+          <div class="sd-table-wrap">
+            <table class="sd-table">
+              <thead>
+                <tr>
+                  <th scope="col">Include documents that&hellip;</th>
+                  <th scope="col">Example</th>
+                  <th scope="col">Evidence value</th>
+                </tr>
+              </thead>
+              <tbody>
+                {inclusionExamples.map((row) => (
+                  <tr>
+                    <th scope="row">{row.include}</th>
+                    <td>{row.example}</td>
+                    <td>{row.evidenceValue}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p class="sd-note">
+            <strong>Example:</strong> an open banking directive is relevant not simply because it mentions digital
+            finance, but because it specifies data-sharing rights, consent mechanisms, responsible actors and
+            implementation architecture.
+          </p>
+        </section>
+
+        <section id="exclusion" class="sd-subsection">
+          <h3>Exclusion logic</h3>
+          <p>Exclusion decisions are part of the method, not an afterthought.</p>
+          <div class="sd-table-wrap">
+            <table class="sd-table">
+              <thead>
+                <tr>
+                  <th scope="col">Exclusion code</th>
+                  <th scope="col">Exclude when&hellip;</th>
+                  <th scope="col">Example</th>
+                </tr>
+              </thead>
+              <tbody>
+                {exclusionRules.map((row) => (
+                  <tr>
+                    <th scope="row">{row.code}</th>
+                    <td>{row.excludeWhen}</td>
+                    <td>{row.example}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p class="sd-rule">
+            <strong>Special rule:</strong> do not exclude older documents that mark a conceptual turning point or remain
+            cited by later texts.
+          </p>
+        </section>
+
+        <section id="risks" class="sd-subsection">
+          <h3>Risks and limits of the documentary corpus</h3>
+          <p>
+            A strong methodology names what documents can and cannot show. Documents are not neutral windows into
+            reality.
+          </p>
+          <div class="sd-table-wrap">
+            <table class="sd-table">
+              <thead>
+                <tr>
+                  <th scope="col">Risk / limitation</th>
+                  <th scope="col">Why it matters</th>
+                  <th scope="col">Mitigation</th>
+                </tr>
+              </thead>
+              <tbody>
+                {documentaryRisks.map((row) => (
+                  <tr>
+                    <th scope="row">{row.risk}</th>
+                    <td>{row.whyItMatters}</td>
+                    <td>{row.mitigation}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="workflow" class="sd-subsection">
+          <h3>Procedure: from search to source log</h3>
+          <p>
+            The source log is both a corpus register and an audit trail. Do not just download to a folder.
+          </p>
+          <div class="sd-table-wrap">
+            <table class="sd-table">
+              <thead>
+                <tr>
+                  <th scope="col">Step</th>
+                  <th scope="col">Action</th>
+                  <th scope="col">What to record</th>
+                </tr>
+              </thead>
+              <tbody>
+                {searchToLogWorkflow.map((row) => (
+                  <tr>
+                    <th scope="row">{row.step}</th>
+                    <td>{row.action}</td>
+                    <td>{row.record}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p class="sd-note">
+            <strong>Practical output:</strong> one master spreadsheet should show every included, excluded and
+            &ldquo;hold&rdquo; document with a short decision note.
+          </p>
+        </section>
+
+        <section id="archive" class="sd-subsection">
+          <h3>Procedure: folders, filenames and web pages</h3>
+          <p>Practical data management. Documentary analysis becomes easier when the archive is organised from the start.</p>
+
+          <h4 class="sd-subheading">Suggested folders</h4>
+          <ul class="sd-folder-list">
+            {suggestedFolders.map((folder) => (
+              <li><code>{folder}</code></li>
+            ))}
+          </ul>
+
+          <h4 class="sd-subheading">Filename convention</h4>
+          <p>
+            <code>[tier]_[scope]_[institution]_[year]_[short-title]_[doctype]_[version]_[access-date].pdf</code>
+          </p>
+          <p class="sd-note">
+            Example: <code>CORE_AFRICA_SA_SARB_2023_Digital-Payments-Roadmap_roadmap_final_2026-05-27.pdf</code>
+          </p>
+
+          <h4 class="sd-subheading">For web pages</h4>
+          <ul class="sd-list">
+            <li>Do not rely only on a live URL.</li>
+            <li>Save HTML/MHTML where possible.</li>
+            <li>Print-to-PDF for stable citation and annotation.</li>
+            <li>Record page title, URL, access date, and &ldquo;last updated&rdquo; information.</li>
+            <li>Use screenshots for dynamic or changing pages.</li>
+          </ul>
+        </section>
+
+        <section id="source-log" class="sd-subsection">
+          <h3>Source log: fields worth capturing</h3>
+          <p>
+            The source log explains what each document is, why it is there, and how it was used. A source log is not just
+            a reference list — it is a record of documentary-analysis decisions.
+          </p>
+          <div class="sd-field-grid">
+            {sourceLogFieldGroups.map((group) => (
+              <div class="sd-field-group">
+                <h4>{group.group}</h4>
+                <ul>
+                  {group.fields.map((field) => (
+                    <li>{field}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+          <p class="sd-note">
+            Example Doc_ID: <code>CORE_GLOBAL_GPFI_2016_HLP_DFI</code>
+          </p>
+        </section>
+      </section>
+    </article>
+  </div>
 </BaseLayout>
 
-<style>
-  .back-link {
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
+<style is:global>
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
   }
-  .back-link a {
+</style>
+
+<style>
+  .sd-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: start;
+    max-width: 1100px;
+  }
+
+  @media (min-width: 900px) {
+    .sd-layout {
+      grid-template-columns: min(240px, 26%) 1fr;
+    }
+  }
+
+  .sd-toc {
+    position: sticky;
+    top: 5.5rem;
+    z-index: 1;
+    padding: 1rem 1.1rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    border-left: 4px solid var(--color-maroon);
+    font-size: 0.88rem;
+    line-height: 1.45;
+    max-height: calc(100vh - 6rem);
+    overflow-y: auto;
+  }
+
+  .sd-toc-title {
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-ink-muted);
+    margin: 0 0 0.65rem 0;
+  }
+
+  .sd-toc-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .sd-toc-list > li {
+    margin-bottom: 0.4rem;
+  }
+
+  .sd-toc-list ol {
+    margin: 0.35rem 0 0.5rem 0;
+    padding-left: 1rem;
+    list-style: none;
+    border-left: 2px solid var(--color-border);
+  }
+
+  .sd-toc-list ol li {
+    margin-bottom: 0.3rem;
+  }
+
+  .sd-toc a {
+    color: var(--color-maroon);
+    text-decoration: none;
+  }
+
+  .sd-toc a:hover {
+    text-decoration: underline;
+  }
+
+  .sd-article {
+    min-width: 0;
+  }
+
+  .sd-breadcrumb {
+    margin-bottom: 1.25rem;
+    font-size: 0.9rem;
+    color: var(--color-ink-muted);
+  }
+
+  .sd-breadcrumb a {
+    color: var(--color-maroon);
+    text-decoration: none;
+  }
+
+  .sd-breadcrumb a:hover {
+    text-decoration: underline;
+  }
+
+  .sd-article h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(1.45rem, 3vw, 1.85rem);
+    color: var(--color-maroon);
+    margin: 0 0 1rem 0;
+    scroll-margin-top: 5.5rem;
+  }
+
+  .sd-lead {
+    margin: 0 0 1rem 0;
+    line-height: 1.7;
+    color: var(--color-ink);
+    max-width: 44rem;
+  }
+
+  .sd-section {
+    margin-top: 2.5rem;
+    scroll-margin-top: 5.5rem;
+  }
+
+  .sd-section > h2 {
+    font-family: var(--font-serif);
+    font-size: 1.3rem;
+    color: var(--color-maroon);
+    margin: 0 0 1rem 0;
+  }
+
+  .sd-subsection {
+    margin-top: 2rem;
+    scroll-margin-top: 5.5rem;
+  }
+
+  .sd-subsection > h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-maroon);
+    margin: 0 0 0.75rem 0;
+  }
+
+  .sd-subheading {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--color-ink);
+    margin: 1.25rem 0 0.65rem 0;
+  }
+
+  .sd-section p,
+  .sd-subsection p {
+    margin: 0 0 1rem 0;
+    line-height: 1.7;
+    color: var(--color-ink);
+    max-width: 44rem;
+  }
+
+  .sd-list,
+  .sd-type-list {
+    margin: 0 0 1rem 0;
+    padding-left: 1.35rem;
+    line-height: 1.7;
+    max-width: 44rem;
+  }
+
+  .sd-list li,
+  .sd-type-list li {
+    margin-bottom: 0.45rem;
+  }
+
+  .sd-steps {
+    margin: 0 0 1rem 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    max-width: 44rem;
+  }
+
+  .sd-step-card {
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-maroon);
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  .sd-step-num {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-ink-muted);
+    margin-bottom: 0.25rem;
+  }
+
+  .sd-step-title {
+    display: block;
+    color: var(--color-maroon);
+    margin-bottom: 0.35rem;
+  }
+
+  .sd-step-card p {
+    margin: 0;
+    font-size: 0.92rem;
+  }
+
+  .sd-callout {
+    padding: 0.85rem 1rem;
+    background: rgba(113, 32, 56, 0.06);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    max-width: 44rem;
+    line-height: 1.6;
+  }
+
+  .sd-compare {
+    display: grid;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    max-width: 44rem;
+  }
+
+  @media (min-width: 640px) {
+    .sd-compare {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .sd-compare-box {
+    padding: 0.85rem 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+  }
+
+  .sd-compare-weak {
+    background: #f5f0e8;
+  }
+
+  .sd-compare-strong {
+    background: #e8f0f5;
+  }
+
+  .sd-compare-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--color-ink-muted);
+    margin: 0 0 0.5rem 0;
+  }
+
+  .sd-compare-box p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    max-width: none;
+  }
+
+  .sd-flow {
+    font-size: 0.92rem;
+    padding: 0.65rem 0.85rem;
+    border-left: 3px solid var(--color-maroon-muted);
+    background: rgba(113, 32, 56, 0.04);
+    border-radius: 0 6px 6px 0;
+    max-width: 44rem;
+  }
+
+  .sd-table-wrap {
+    overflow-x: auto;
+    margin: 0 0 1rem 0;
+  }
+
+  .sd-table {
+    width: 100%;
+    min-width: 32rem;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    line-height: 1.45;
+  }
+
+  .sd-table th,
+  .sd-table td {
+    border: 1px solid var(--color-border);
+    padding: 0.65rem 0.75rem;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .sd-table thead th {
+    background: rgba(113, 32, 56, 0.08);
+    color: var(--color-maroon);
+    font-weight: 700;
+  }
+
+  .sd-table tbody th {
+    background: rgba(113, 32, 56, 0.05);
+    font-weight: 600;
+  }
+
+  .sd-tier-grid {
+    display: grid;
+    gap: 0.75rem;
+    margin: 1rem 0;
+    max-width: 44rem;
+  }
+
+  @media (min-width: 700px) {
+    .sd-tier-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .sd-tier {
+    padding: 0.85rem 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  .sd-tier h4 {
+    margin: 0 0 0.4rem 0;
+    font-size: 0.9rem;
     color: var(--color-maroon);
   }
-  .methods-section {
-    max-width: 720px;
+
+  .sd-tier p {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.85rem;
+    max-width: none;
   }
-  .methods-section p {
+
+  .sd-tier-focus {
+    color: var(--color-ink-muted);
+    font-size: 0.82rem !important;
+  }
+
+  .sd-tier-global {
+    background: #e8f0f8;
+  }
+
+  .sd-tier-regional {
+    background: #f8efe8;
+  }
+
+  .sd-tier-supplementary {
+    background: #f0f0f0;
+  }
+
+  .sd-test-list {
     margin: 0 0 1rem 0;
-    line-height: 1.65;
-    color: var(--color-ink);
-    font-size: 1.05rem;
+    padding-left: 1.35rem;
+    max-width: 44rem;
   }
-  .methods-section p:last-child {
-    margin-bottom: 0;
+
+  .sd-test-list li {
+    margin-bottom: 0.85rem;
+  }
+
+  .sd-test-list p {
+    margin: 0.35rem 0 0 0;
+    font-size: 0.92rem;
+    max-width: none;
+  }
+
+  .sd-test-examples {
+    color: var(--color-ink-muted);
+    font-style: italic;
+  }
+
+  .sd-rule {
+    padding: 0.75rem 1rem;
+    border-left: 3px solid var(--color-maroon);
+    background: rgba(113, 32, 56, 0.05);
+    border-radius: 0 6px 6px 0;
+    max-width: 44rem;
+    font-size: 0.92rem;
+  }
+
+  .sd-note {
+    font-size: 0.88rem;
+    color: var(--color-ink-muted);
+    max-width: 44rem;
+  }
+
+  .sd-folder-list {
+    margin: 0 0 1rem 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+    gap: 0.35rem 0.75rem;
+    max-width: 44rem;
+  }
+
+  .sd-folder-list code {
+    font-size: 0.82rem;
+  }
+
+  .sd-field-grid {
+    display: grid;
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+
+  @media (min-width: 700px) {
+    .sd-field-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .sd-field-group {
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: #fafafa;
+    font-size: 0.82rem;
+  }
+
+  .sd-field-group h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.85rem;
+    color: var(--color-maroon);
+  }
+
+  .sd-field-group ul {
+    margin: 0;
+    padding-left: 1.1rem;
+    line-height: 1.45;
+  }
+
+  .sd-field-group li {
+    margin-bottom: 0.2rem;
+  }
+
+  code {
+    font-size: 0.85em;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 0.1em 0.35em;
+    border-radius: 3px;
   }
 </style>
