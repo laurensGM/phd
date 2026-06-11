@@ -11,7 +11,8 @@ const staticQuestions = faqSeed as { question: string }[];
   <p class="back-link"><a href={`${base}tools/`}>← Tools</a></p>
   <h1>FAQ</h1>
   <p class="page-desc">
-    Keep questions and answers you revisit during your PhD. Answers stay collapsed until you expand them.
+    Keep questions and answers you revisit during your PhD. Tag each question with labels such as method, theory, or
+    contribution, then filter the list by label. Answers stay collapsed until you expand them.
   </p>
 
   <FaqPage client:load staticQuestions={staticQuestions} />
@@ -240,8 +241,103 @@ const staticQuestions = faqSeed as { question: string }[];
     margin-top: 0.2rem;
   }
 
+  :global(.faq-question-block) {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
   :global(.faq-question-text) {
     flex: 1;
+  }
+
+  :global(.faq-item-labels) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  :global(.faq-label-badge) {
+    display: inline-block;
+    padding: 0.12rem 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: lowercase;
+    color: var(--color-maroon);
+    background: rgba(113, 32, 56, 0.08);
+    border: 1px solid rgba(113, 32, 56, 0.2);
+    border-radius: 999px;
+  }
+
+  :global(.faq-label-heading) {
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  :global(.faq-label-toggles),
+  :global(.faq-filter-chips) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  :global(.faq-label-chip),
+  :global(.faq-filter-chip) {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: var(--font-sans);
+    text-transform: lowercase;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--color-ink);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+
+  :global(.faq-label-chip:hover),
+  :global(.faq-filter-chip:hover) {
+    border-color: var(--color-maroon-muted);
+    background: rgba(113, 32, 56, 0.04);
+  }
+
+  :global(.faq-label-chip--active),
+  :global(.faq-filter-chip--active) {
+    background: var(--color-maroon);
+    border-color: var(--color-gold);
+    color: #fff;
+  }
+
+  :global(.faq-extra-labels-label) {
+    font-size: 0.85rem;
+    color: var(--color-ink-muted);
+    margin-top: 0.15rem;
+  }
+
+  :global(.faq-filter-bar) {
+    margin-bottom: 1.25rem;
+    padding: 1rem 1.1rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+  }
+
+  :global(.faq-filter-label) {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-ink-muted);
+    margin-bottom: 0.55rem;
+  }
+
+  :global(.faq-filter-meta) {
+    margin: 0.65rem 0 0 0;
+    font-size: 0.85rem;
+    color: var(--color-ink-muted);
   }
 
   :global(.faq-answer) {

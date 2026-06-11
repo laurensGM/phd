@@ -222,6 +222,7 @@ export interface Database {
           id: string;
           question: string;
           answer: string;
+          labels: string[];
           created_at: string;
           updated_at: string;
         };
@@ -229,12 +230,14 @@ export interface Database {
           id?: string;
           question: string;
           answer?: string;
+          labels?: string[];
           created_at?: string;
           updated_at?: string;
         };
         Update: {
           question?: string;
           answer?: string;
+          labels?: string[];
           updated_at?: string;
         };
       };

@@ -1,11 +1,18 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { FormatDiaryText } from '../lib/formatDiaryText';
+import {
+  DEFAULT_FAQ_LABELS,
+  labelsInclude,
+  normalizeLabel,
+  parseLabelsInput,
+} from '../data/faq-labels';
 
 interface FaqItem {
   id: string;
   question: string;
   answer: string;
+  labels: string[];
   created_at: string;
   updated_at: string;
 }
@@ -22,6 +29,7 @@ function mapRow(row: {
   id: string;
   question: string;
   answer: string;
+  labels?: string[] | null;
   created_at: string;
   updated_at: string;
 }): FaqItem {
@@ -29,6 +37,7 @@ function mapRow(row: {
     id: row.id,
     question: row.question,
     answer: row.answer ?? '',
+    labels: Array.isArray(row.labels) ? row.labels : [],
     created_at: row.created_at,
     updated_at: row.updated_at,
   };
@@ -38,11 +47,105 @@ function normalizeQuestion(q: string): string {
   return q.trim().toLowerCase();
 }
 
+function splitLabelsForEdit(labels: string[]): { defaults: string[]; extra: string } {
+  const defaultSet = new Set(DEFAULT_FAQ_LABELS.map(normalizeLabel));
+  const defaults: string[] = [];
+  const extra: string[] = [];
+
+  for (const label of labels) {
+    if (defaultSet.has(normalizeLabel(label))) {
+      const canonical = DEFAULT_FAQ_LABELS.find((d) => normalizeLabel(d) === normalizeLabel(label));
+      if (canonical && !defaults.includes(canonical)) defaults.push(canonical);
+    } else {
+      extra.push(label);
+    }
+  }
+
+  return { defaults, extra: extra.join(', ') };
+}
+
+interface LabelPickerProps {
+  idPrefix: string;
+  selectedDefaults: string[];
+  extraInput: string;
+  knownLabels: string[];
+  onToggleDefault: (label: string) => void;
+  onExtraChange: (value: string) => void;
+}
+
+function LabelPicker({
+  idPrefix,
+  selectedDefaults,
+  extraInput,
+  knownLabels,
+  onToggleDefault,
+  onExtraChange,
+}: LabelPickerProps) {
+  const customSuggestions = knownLabels.filter(
+    (label) => !DEFAULT_FAQ_LABELS.some((d) => normalizeLabel(d) === normalizeLabel(label)),
+  );
+
+  return (
+    <div className="faq-field">
+      <span className="faq-label-heading">Labels</span>
+      <div className="faq-label-toggles" role="group" aria-label="FAQ labels">
+        {DEFAULT_FAQ_LABELS.map((label) => {
+          const active = selectedDefaults.some((l) => normalizeLabel(l) === normalizeLabel(label));
+          return (
+            <button
+              key={label}
+              type="button"
+              className={`faq-label-chip${active ? ' faq-label-chip--active' : ''}`}
+              aria-pressed={active}
+              onClick={() => onToggleDefault(label)}
+            >
+              {label}
+            </button>
+          );
+        })}
+      </div>
+      <label htmlFor={`${idPrefix}-extra-labels`} className="faq-extra-labels-label">
+        Other labels (comma-separated)
+      </label>
+      <input
+        id={`${idPrefix}-extra-labels`}
+        type="text"
+        list={`${idPrefix}-labels-list`}
+        value={extraInput}
+        onChange={(e) => onExtraChange(e.target.value)}
+        placeholder="e.g. writing, ethics"
+        className="faq-input"
+      />
+      <datalist id={`${idPrefix}-labels-list`}>
+        {customSuggestions.map((label) => (
+          <option key={label} value={label} />
+        ))}
+      </datalist>
+    </div>
+  );
+}
+
+function FaqLabelBadges({ labels }: { labels: string[] }) {
+  if (labels.length === 0) return null;
+  return (
+    <div className="faq-item-labels">
+      {labels.map((label) => (
+        <span key={label} className="faq-label-badge">
+          {label}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 export default function FaqPage({ staticQuestions }: FaqPageProps) {
   const [items, setItems] = useState<FaqItem[]>([]);
   const [openIds, setOpenIds] = useState<Set<string>>(new Set());
   const [questionDraft, setQuestionDraft] = useState('');
   const [answerDraft, setAnswerDraft] = useState('');
+  const [addDefaultLabels, setAddDefaultLabels] = useState<string[]>([]);
+  const [addExtraLabels, setAddExtraLabels] = useState('');
+  const [labelFilter, setLabelFilter] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [importing, setImporting] = useState(false);
@@ -50,6 +153,8 @@ export default function FaqPage({ staticQuestions }: FaqPageProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editQuestion, setEditQuestion] = useState('');
   const [editAnswer, setEditAnswer] = useState('');
+  const [editDefaultLabels, setEditDefaultLabels] = useState<string[]>([]);
+  const [editExtraLabels, setEditExtraLabels] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   const fetchItems = useCallback(async () => {
@@ -58,7 +163,7 @@ export default function FaqPage({ staticQuestions }: FaqPageProps) {
     setError(null);
     const { data, error: fetchError } = await supabase
       .from('tool_faqs')
-      .select('id, question, answer, created_at, updated_at')
+      .select('id, question, answer, labels, created_at, updated_at')
       .order('created_at', { ascending: false });
     if (fetchError) {
       setError(fetchError.message);
@@ -79,13 +184,62 @@ export default function FaqPage({ staticQuestions }: FaqPageProps) {
 
   const existingQuestions = useMemo(
     () => new Set(items.map((item) => normalizeQuestion(item.question))),
-    [items]
+    [items],
   );
+
+  const knownLabels = useMemo(() => {
+    const seen = new Set<string>();
+    const result: string[] = [];
+    for (const item of items) {
+      for (const label of item.labels) {
+        const key = normalizeLabel(label);
+        if (!seen.has(key)) {
+          seen.add(key);
+          result.push(label);
+        }
+      }
+    }
+    return result.sort((a, b) => a.localeCompare(b));
+  }, [items]);
+
+  const filterOptions = useMemo(() => {
+    const seen = new Set<string>();
+    const options: string[] = [];
+    for (const label of [...DEFAULT_FAQ_LABELS, ...knownLabels]) {
+      const key = normalizeLabel(label);
+      if (!seen.has(key)) {
+        seen.add(key);
+        options.push(label);
+      }
+    }
+    return options;
+  }, [knownLabels]);
+
+  const filteredItems = useMemo(() => {
+    if (!labelFilter) return items;
+    return items.filter((item) => labelsInclude(item.labels, labelFilter));
+  }, [items, labelFilter]);
 
   const pendingSeedCount = useMemo(
     () => staticQuestions.filter((q) => !existingQuestions.has(normalizeQuestion(q.question))).length,
-    [staticQuestions, existingQuestions]
+    [staticQuestions, existingQuestions],
   );
+
+  const toggleDefaultLabel = (
+    label: string,
+    current: string[],
+    setter: React.Dispatch<React.SetStateAction<string[]>>,
+  ) => {
+    const key = normalizeLabel(label);
+    if (current.some((l) => normalizeLabel(l) === key)) {
+      setter(current.filter((l) => normalizeLabel(l) !== key));
+    } else {
+      setter([...current, label]);
+    }
+  };
+
+  const buildLabels = (defaults: string[], extra: string) =>
+    parseLabelsInput(defaults, extra, knownLabels);
 
   const toggleOpen = (id: string) => {
     setOpenIds((prev) => {
@@ -106,7 +260,7 @@ export default function FaqPage({ staticQuestions }: FaqPageProps) {
       for (const seed of staticQuestions) {
         const q = seed.question.trim();
         if (!q || known.has(normalizeQuestion(q))) continue;
-        await supabase.from('tool_faqs').insert({ question: q, answer: '' });
+        await supabase.from('tool_faqs').insert({ question: q, answer: '', labels: [] });
         known.add(normalizeQuestion(q));
       }
 
@@ -121,7 +275,7 @@ export default function FaqPage({ staticQuestions }: FaqPageProps) {
           await supabase.from('golden_nuggets').delete().eq('id', legacy.id);
           continue;
         }
-        await supabase.from('tool_faqs').insert({ question: q, answer: '' });
+        await supabase.from('tool_faqs').insert({ question: q, answer: '', labels: [] });
         known.add(normalizeQuestion(q));
         await supabase.from('golden_nuggets').delete().eq('id', legacy.id);
       }
@@ -138,13 +292,14 @@ export default function FaqPage({ staticQuestions }: FaqPageProps) {
     if (!supabase) return;
     const question = questionDraft.trim();
     const answer = answerDraft.trim();
+    const labels = buildLabels(addDefaultLabels, addExtraLabels);
     if (!question) return;
     setSaving(true);
     setError(null);
     const { data, error: insertError } = await supabase
       .from('tool_faqs')
-      .insert({ question, answer })
-      .select('id, question, answer, created_at, updated_at')
+      .insert({ question, answer, labels })
+      .select('id, question, answer, labels, created_at, updated_at')
       .single();
     setSaving(false);
     if (insertError) {
@@ -155,6 +310,8 @@ export default function FaqPage({ staticQuestions }: FaqPageProps) {
       setItems((prev) => [mapRow(data), ...prev]);
       setQuestionDraft('');
       setAnswerDraft('');
+      setAddDefaultLabels([]);
+      setAddExtraLabels('');
     }
   };
 
@@ -162,14 +319,15 @@ export default function FaqPage({ staticQuestions }: FaqPageProps) {
     if (!supabase) return;
     const question = editQuestion.trim();
     const answer = editAnswer.trim();
+    const labels = buildLabels(editDefaultLabels, editExtraLabels);
     if (!question) return;
     setSaving(true);
     setError(null);
     const { data, error: updateError } = await supabase
       .from('tool_faqs')
-      .update({ question, answer, updated_at: new Date().toISOString() })
+      .update({ question, answer, labels, updated_at: new Date().toISOString() })
       .eq('id', id)
-      .select('id, question, answer, created_at, updated_at')
+      .select('id, question, answer, labels, created_at, updated_at')
       .single();
     setSaving(false);
     if (updateError) {
@@ -181,6 +339,8 @@ export default function FaqPage({ staticQuestions }: FaqPageProps) {
       setEditingId(null);
       setEditQuestion('');
       setEditAnswer('');
+      setEditDefaultLabels([]);
+      setEditExtraLabels('');
     }
   };
 
@@ -204,13 +364,18 @@ export default function FaqPage({ staticQuestions }: FaqPageProps) {
       setEditingId(null);
       setEditQuestion('');
       setEditAnswer('');
+      setEditDefaultLabels([]);
+      setEditExtraLabels('');
     }
   };
 
   const startEdit = (item: FaqItem) => {
+    const { defaults, extra } = splitLabelsForEdit(item.labels);
     setEditingId(item.id);
     setEditQuestion(item.question);
     setEditAnswer(item.answer);
+    setEditDefaultLabels(defaults);
+    setEditExtraLabels(extra);
     setOpenIds((prev) => new Set(prev).add(item.id));
   };
 
@@ -228,6 +393,14 @@ export default function FaqPage({ staticQuestions }: FaqPageProps) {
               className="faq-input"
             />
           </div>
+          <LabelPicker
+            idPrefix={`edit-${item.id}`}
+            selectedDefaults={editDefaultLabels}
+            extraInput={editExtraLabels}
+            knownLabels={knownLabels}
+            onToggleDefault={(label) => toggleDefaultLabel(label, editDefaultLabels, setEditDefaultLabels)}
+            onExtraChange={setEditExtraLabels}
+          />
           <div className="faq-field">
             <label htmlFor={`edit-a-${item.id}`}>Answer</label>
             <textarea
@@ -254,6 +427,8 @@ export default function FaqPage({ staticQuestions }: FaqPageProps) {
                 setEditingId(null);
                 setEditQuestion('');
                 setEditAnswer('');
+                setEditDefaultLabels([]);
+                setEditExtraLabels('');
               }}
             >
               Cancel
@@ -272,7 +447,10 @@ export default function FaqPage({ staticQuestions }: FaqPageProps) {
               <span className="faq-chevron" aria-hidden="true">
                 {openIds.has(item.id) ? '▼' : '▶'}
               </span>
-              <span className="faq-question-text">{item.question}</span>
+              <span className="faq-question-block">
+                <span className="faq-question-text">{item.question}</span>
+                <FaqLabelBadges labels={item.labels} />
+              </span>
             </button>
             {editable && (
               <div className="faq-item-actions">
@@ -304,11 +482,44 @@ export default function FaqPage({ staticQuestions }: FaqPageProps) {
     </li>
   );
 
+  const renderFilterBar = (count: number) => (
+    <div className="faq-filter-bar">
+      <span className="faq-filter-label">Filter by label</span>
+      <div className="faq-filter-chips" role="group" aria-label="Filter FAQs by label">
+        <button
+          type="button"
+          className={`faq-filter-chip${labelFilter === null ? ' faq-filter-chip--active' : ''}`}
+          aria-pressed={labelFilter === null}
+          onClick={() => setLabelFilter(null)}
+        >
+          All
+        </button>
+        {filterOptions.map((label) => (
+          <button
+            key={label}
+            type="button"
+            className={`faq-filter-chip${labelFilter === label ? ' faq-filter-chip--active' : ''}`}
+            aria-pressed={labelFilter === label}
+            onClick={() => setLabelFilter((current) => (current === label ? null : label))}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      {labelFilter && (
+        <p className="faq-filter-meta">
+          Showing {count} question{count === 1 ? '' : 's'} tagged &ldquo;{labelFilter}&rdquo;
+        </p>
+      )}
+    </div>
+  );
+
   if (!isSupabaseConfigured()) {
     const staticItems: FaqItem[] = staticQuestions.map((q, i) => ({
       id: `static-${i}`,
       question: q.question,
       answer: '',
+      labels: [],
       created_at: '',
       updated_at: '',
     }));
@@ -360,6 +571,14 @@ export default function FaqPage({ staticQuestions }: FaqPageProps) {
             required
           />
         </div>
+        <LabelPicker
+          idPrefix="add"
+          selectedDefaults={addDefaultLabels}
+          extraInput={addExtraLabels}
+          knownLabels={knownLabels}
+          onToggleDefault={(label) => toggleDefaultLabel(label, addDefaultLabels, setAddDefaultLabels)}
+          onExtraChange={setAddExtraLabels}
+        />
         <div className="faq-field">
           <label htmlFor="faq-answer">Answer</label>
           <textarea
@@ -382,13 +601,22 @@ export default function FaqPage({ staticQuestions }: FaqPageProps) {
       <section className="faq-list-section">
         <h2 className="faq-list-title">
           Your FAQs
-          {items.length > 0 && <span className="faq-count"> ({items.length})</span>}
+          {items.length > 0 && (
+            <span className="faq-count">
+              {' '}
+              ({labelFilter ? `${filteredItems.length} of ${items.length}` : items.length})
+            </span>
+          )}
         </h2>
+
+        {items.length > 0 && renderFilterBar(filteredItems.length)}
 
         {items.length === 0 ? (
           <p className="faq-empty">No FAQs yet. Import the default questions or add one above.</p>
+        ) : filteredItems.length === 0 ? (
+          <p className="faq-empty">No FAQs with this label. Try another filter or edit a question to add labels.</p>
         ) : (
-          <ul className="faq-list">{items.map((item) => renderFaqItem(item, true))}</ul>
+          <ul className="faq-list">{filteredItems.map((item) => renderFaqItem(item, true))}</ul>
         )}
       </section>
     </div>
