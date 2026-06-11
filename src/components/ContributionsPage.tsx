@@ -1,10 +1,17 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { FormatDiaryText } from '../lib/formatDiaryText';
+import {
+  CONTRIBUTION_TYPES,
+  CONTRIBUTION_TYPE_LABELS,
+  type ContributionType,
+  isContributionType,
+} from '../data/contribution-types';
 
 interface Contribution {
   id: string;
   content: string;
+  contribution_type: ContributionType | null;
   created_at: string;
   updated_at: string;
 }
@@ -12,12 +19,14 @@ interface Contribution {
 function mapRow(row: {
   id: string;
   content: string;
+  contribution_type?: string | null;
   created_at: string;
   updated_at: string;
 }): Contribution {
   return {
     id: row.id,
     content: row.content,
+    contribution_type: isContributionType(row.contribution_type) ? row.contribution_type : null,
     created_at: row.created_at,
     updated_at: row.updated_at,
   };
@@ -35,14 +44,56 @@ function formatDate(iso: string): string {
   }
 }
 
+interface TypePickerProps {
+  idPrefix: string;
+  value: ContributionType | null;
+  onChange: (type: ContributionType) => void;
+}
+
+function TypePicker({ idPrefix, value, onChange }: TypePickerProps) {
+  return (
+    <fieldset className="contribution-type-field">
+      <legend className="contribution-type-legend">Contribution type</legend>
+      <div className="contribution-type-toggles" role="radiogroup" aria-label="Contribution type">
+        {CONTRIBUTION_TYPES.map((type) => (
+          <label key={type} className={`contribution-type-chip${value === type ? ' contribution-type-chip--active' : ''}`}>
+            <input
+              type="radio"
+              name={`${idPrefix}-contribution-type`}
+              value={type}
+              checked={value === type}
+              onChange={() => onChange(type)}
+              className="contribution-type-radio"
+            />
+            {CONTRIBUTION_TYPE_LABELS[type]}
+          </label>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
+function TypeBadge({ type }: { type: ContributionType | null }) {
+  if (!type) {
+    return <span className="contribution-type-badge contribution-type-badge--unset">No type set</span>;
+  }
+  return (
+    <span className={`contribution-type-badge contribution-type-badge--${type}`}>
+      {CONTRIBUTION_TYPE_LABELS[type]}
+    </span>
+  );
+}
+
 export default function ContributionsPage() {
   const [items, setItems] = useState<Contribution[]>([]);
   const [draft, setDraft] = useState('');
+  const [draftType, setDraftType] = useState<ContributionType | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editDraft, setEditDraft] = useState('');
+  const [editType, setEditType] = useState<ContributionType | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const fetchItems = useCallback(async () => {
@@ -51,7 +102,7 @@ export default function ContributionsPage() {
     setError(null);
     const { data, error: fetchError } = await supabase
       .from('research_contributions')
-      .select('id, content, created_at, updated_at')
+      .select('id, content, contribution_type, created_at, updated_at')
       .order('created_at', { ascending: false });
     if (fetchError) {
       setError(fetchError.message);
@@ -72,15 +123,15 @@ export default function ContributionsPage() {
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!supabase) return;
+    if (!supabase || !draftType) return;
     const content = draft.trim();
     if (!content) return;
     setSaving(true);
     setError(null);
     const { data, error: insertError } = await supabase
       .from('research_contributions')
-      .insert({ content })
-      .select('id, content, created_at, updated_at')
+      .insert({ content, contribution_type: draftType })
+      .select('id, content, contribution_type, created_at, updated_at')
       .single();
     setSaving(false);
     if (insertError) {
@@ -90,20 +141,25 @@ export default function ContributionsPage() {
     if (data) {
       setItems((prev) => [mapRow(data), ...prev]);
       setDraft('');
+      setDraftType(null);
     }
   };
 
   const handleSaveEdit = async (id: string) => {
-    if (!supabase) return;
+    if (!supabase || !editType) return;
     const content = editDraft.trim();
     if (!content) return;
     setSaving(true);
     setError(null);
     const { data, error: updateError } = await supabase
       .from('research_contributions')
-      .update({ content, updated_at: new Date().toISOString() })
+      .update({
+        content,
+        contribution_type: editType,
+        updated_at: new Date().toISOString(),
+      })
       .eq('id', id)
-      .select('id, content, created_at, updated_at')
+      .select('id, content, contribution_type, created_at, updated_at')
       .single();
     setSaving(false);
     if (updateError) {
@@ -114,6 +170,7 @@ export default function ContributionsPage() {
       setItems((prev) => prev.map((item) => (item.id === id ? mapRow(data) : item)));
       setEditingId(null);
       setEditDraft('');
+      setEditType(null);
     }
   };
 
@@ -131,7 +188,14 @@ export default function ContributionsPage() {
     if (editingId === id) {
       setEditingId(null);
       setEditDraft('');
+      setEditType(null);
     }
+  };
+
+  const startEdit = (item: Contribution) => {
+    setEditingId(item.id);
+    setEditDraft(item.content);
+    setEditType(item.contribution_type);
   };
 
   if (!isSupabaseConfigured()) {
@@ -139,8 +203,8 @@ export default function ContributionsPage() {
       <div className="contributions-setup">
         <h3>Contributions require Supabase</h3>
         <p>
-          Add your Supabase credentials and run migration{' '}
-          <code>036_research_contributions.sql</code> to save contributions.
+          Add your Supabase credentials and run migrations <code>036_research_contributions.sql</code> and{' '}
+          <code>039_research_contributions_type.sql</code> to save contributions.
         </p>
       </div>
     );
@@ -150,24 +214,27 @@ export default function ContributionsPage() {
     return <p className="contributions-loading">Loading…</p>;
   }
 
+  const canAdd = draft.trim().length > 0 && draftType !== null;
+
   return (
     <div className="contributions-page">
       {error && <p className="contributions-error">{error}</p>}
 
       <form className="contributions-add-form" onSubmit={handleAdd}>
         <label htmlFor="contribution-draft">Add a contribution</label>
+        <TypePicker idPrefix="add" value={draftType} onChange={setDraftType} />
         <textarea
           id="contribution-draft"
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           rows={4}
-          placeholder="Describe a contribution to theory, practice, or methodology…"
+          placeholder="Describe your contribution…"
           className="contributions-textarea"
         />
         <p className="contributions-format-hint">
           Line breaks are preserved. Use <code>**text**</code> for <strong>bold</strong>.
         </p>
-        <button type="submit" className="contributions-submit" disabled={saving || !draft.trim()}>
+        <button type="submit" className="contributions-submit" disabled={saving || !canAdd}>
           {saving ? 'Saving…' : 'Add contribution'}
         </button>
       </form>
@@ -191,6 +258,7 @@ export default function ContributionsPage() {
               <li key={item.id} className="contribution-item">
                 {editingId === item.id ? (
                   <div className="contribution-edit">
+                    <TypePicker idPrefix={`edit-${item.id}`} value={editType} onChange={setEditType} />
                     <textarea
                       value={editDraft}
                       onChange={(e) => setEditDraft(e.target.value)}
@@ -202,7 +270,7 @@ export default function ContributionsPage() {
                         type="button"
                         className="contributions-btn contributions-btn-primary"
                         onClick={() => handleSaveEdit(item.id)}
-                        disabled={saving || !editDraft.trim()}
+                        disabled={saving || !editDraft.trim() || !editType}
                       >
                         Save
                       </button>
@@ -212,6 +280,7 @@ export default function ContributionsPage() {
                         onClick={() => {
                           setEditingId(null);
                           setEditDraft('');
+                          setEditType(null);
                         }}
                       >
                         Cancel
@@ -220,6 +289,7 @@ export default function ContributionsPage() {
                   </div>
                 ) : (
                   <>
+                    <TypeBadge type={item.contribution_type} />
                     <p className="contribution-content">
                       <FormatDiaryText text={item.content} />
                     </p>
@@ -229,10 +299,7 @@ export default function ContributionsPage() {
                         <button
                           type="button"
                           className="contributions-btn contributions-btn-secondary"
-                          onClick={() => {
-                            setEditingId(item.id);
-                            setEditDraft(item.content);
-                          }}
+                          onClick={() => startEdit(item)}
                         >
                           Edit
                         </button>
