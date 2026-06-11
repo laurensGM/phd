@@ -1,0 +1,507 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const base = import.meta.env.BASE_URL;
+
+const proposalBlueprint = [
+  'Describes the background of the problem',
+  'Provides theoretical context',
+  'Summarises the research problem',
+  'Specifies the research objectives',
+  'Explains the research method — research context, research design, data analysis',
+  'Shows how ethical aspects of the research are mitigated while conducting the research',
+];
+
+const qualityCriteria = [
+  {
+    text: 'Does not read like a consulting pitch, but follows the logic (and rigour) of the research process.',
+  },
+  {
+    text: 'Has scientific-based evidence (i.e. a detailed literature study) to support all claims, notions, and opinions.',
+  },
+  {
+    text: 'Has a problem statement based on one knowledge-based research question that also serves as a conclusion for the literature study.',
+    emphasis: 'one',
+  },
+  {
+    text: 'Has a clear, unambiguous main research objective with (perhaps) some secondary research objectives.',
+  },
+  {
+    text: 'Shows how the research will be conducted by stipulating the research design, as well as the probable data analyses.',
+  },
+  {
+    text: 'Is written in an argumentative style, with no ambiguity or emotive-style writing.',
+  },
+  {
+    text: 'Uses a scientific referencing style to support the nature of the document.',
+  },
+];
+
+const dissertationChapters = [
+  { label: 'Introduction', inProposal: true },
+  { label: 'Literature study', inProposal: true },
+  { label: 'Problem statement and research objectives', inProposal: true },
+  { label: 'Research method', inProposal: true },
+  { label: 'Results / findings', inProposal: false },
+  { label: 'Discussion and managerial implications', inProposal: false },
+];
+---
+
+<BaseLayout title="Proposal" description="Research proposal — definition, components, quality criteria, and the 3 C's rule">
+  <div class="prop-layout">
+    <nav class="prop-toc" aria-label="On this page">
+      <h2 class="prop-toc-title">On this page</h2>
+      <ol class="prop-toc-list">
+        <li><a href="#intro">Introduction</a></li>
+        <li><a href="#what-is">What is a proposal?</a></li>
+        <li><a href="#demonstrate">What it must demonstrate</a></li>
+        <li><a href="#blueprint">Blueprint</a></li>
+        <li><a href="#quality">Quality criteria</a></li>
+        <li><a href="#dissertation">Proposal vs dissertation</a></li>
+        <li><a href="#three-cs">The 3 C&rsquo;s rule</a></li>
+      </ol>
+    </nav>
+
+    <article class="prop-article">
+      <p class="back-link"><a href={`${base}research-questions/`}>← Research</a></p>
+      <h1 id="intro">Research proposal</h1>
+      <p class="prop-lead">
+        Notes on what a research proposal is, what it should contain, and how to judge whether yours is strong enough to
+        submit.
+      </p>
+
+      <section id="what-is" class="prop-section">
+        <h2>A research proposal</h2>
+        <ul class="prop-list">
+          <li>A <strong>written document</strong></li>
+          <li>
+            It specifies:
+            <ul>
+              <li><strong>What</strong> the proposed research is about</li>
+              <li>
+                <strong>Why</strong> one should use resources to do it — significance
+              </li>
+              <li><strong>How</strong> it will be done — roadmap, methods</li>
+            </ul>
+          </li>
+          <li>Essentially it &ldquo;makes a case&rdquo; for the proposed research</li>
+        </ul>
+      </section>
+
+      <section id="demonstrate" class="prop-section">
+        <h2>A good research proposal</h2>
+        <p>Your proposal needs to demonstrate:</p>
+        <ul class="prop-list">
+          <li>That you are capable of <strong>independent critical thinking and analysis</strong></li>
+          <li>That you are capable of <strong>communicating your ideas clearly</strong></li>
+        </ul>
+      </section>
+
+      <section id="blueprint" class="prop-section">
+        <h2>The research proposal as blueprint</h2>
+        <p>
+          A research proposal is a <strong>blueprint of the planned research</strong>. It should cover:
+        </p>
+        <ul class="prop-list">
+          {proposalBlueprint.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+      </section>
+
+      <section id="quality" class="prop-section">
+        <h2>Quality criteria</h2>
+        <p>A strong proposal typically meets all of the following:</p>
+        <ul class="prop-checklist">
+          {qualityCriteria.map((item) => (
+            <li>
+              {item.emphasis ? (
+                <>
+                  Has a problem statement based on <strong><em>one</em></strong> knowledge-based research question that
+                  also serves as a conclusion for the literature study.
+                </>
+              ) : (
+                item.text
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section id="dissertation" class="prop-section">
+        <h2>Components of the PhD dissertation</h2>
+        <p>
+          The full dissertation has six main components. The first four together form the{' '}
+          <strong>research proposal</strong>.
+        </p>
+        <div
+          class="prop-dissertation"
+          role="img"
+          aria-label="Six dissertation chapters; the first four form the research proposal"
+        >
+          <ol class="prop-chapter-list">
+            {dissertationChapters.map((chapter, index) => (
+              <li class:list={[{ 'prop-chapter--proposal': chapter.inProposal }]}>
+                <span class="prop-chapter-num">{index + 1}</span>
+                <span class="prop-chapter-label">{chapter.label}</span>
+              </li>
+            ))}
+          </ol>
+          <div class="prop-proposal-bracket" aria-hidden="true">
+            <span class="prop-bracket-line"></span>
+            <span class="prop-bracket-label">= Research proposal</span>
+          </div>
+        </div>
+        <p class="prop-note">
+          Results and discussion come after the proposal stage — but your proposal should already signal how findings
+          will be analysed and reported.
+        </p>
+      </section>
+
+      <section id="three-cs" class="prop-section">
+        <h2>Align with the 3 C&rsquo;s rule</h2>
+        <p>Every proposal should be clear, concise, and coherent.</p>
+        <div class="prop-three-cs" role="img" aria-label="Proposal connected to clear, concise, and coherent">
+          <div class="prop-cs-node prop-cs-node--top">Clear</div>
+          <div class="prop-cs-hub">Proposal</div>
+          <div class="prop-cs-row">
+            <div class="prop-cs-node prop-cs-node--left">Concise</div>
+            <div class="prop-cs-node prop-cs-node--right">Coherent</div>
+          </div>
+        </div>
+        <ul class="prop-list">
+          <li><strong>Clear</strong> — the reader understands what you will study, why, and how</li>
+          <li><strong>Concise</strong> — no padding; every section earns its place</li>
+          <li><strong>Coherent</strong> — problem, objectives, literature, and method align logically</li>
+        </ul>
+        <p class="prop-note">
+          See also <a href={`${base}research-questions/process/`}>Research → Process</a> for the workflow your proposal
+          should follow.
+        </p>
+      </section>
+    </article>
+  </div>
+</BaseLayout>
+
+<style is:global>
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+  }
+</style>
+
+<style>
+  .back-link {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  .back-link a {
+    color: var(--color-maroon);
+  }
+
+  .prop-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: start;
+    max-width: 1100px;
+  }
+
+  @media (min-width: 900px) {
+    .prop-layout {
+      grid-template-columns: min(240px, 26%) 1fr;
+    }
+  }
+
+  .prop-toc {
+    position: sticky;
+    top: 5.5rem;
+    z-index: 1;
+    padding: 1rem 1.1rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    border-left: 4px solid var(--color-maroon);
+    font-size: 0.88rem;
+    line-height: 1.45;
+    max-height: calc(100vh - 6rem);
+    overflow-y: auto;
+  }
+
+  .prop-toc-title {
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-ink-muted);
+    margin: 0 0 0.65rem 0;
+  }
+
+  .prop-toc-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .prop-toc-list li {
+    margin-bottom: 0.4rem;
+  }
+
+  .prop-toc a {
+    color: var(--color-maroon);
+    text-decoration: none;
+  }
+
+  .prop-toc a:hover {
+    text-decoration: underline;
+  }
+
+  .prop-article {
+    min-width: 0;
+  }
+
+  .prop-article h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(1.45rem, 3vw, 1.85rem);
+    color: var(--color-maroon);
+    margin: 0 0 1rem 0;
+    scroll-margin-top: 5.5rem;
+  }
+
+  .prop-lead {
+    margin: 0 0 1.5rem 0;
+    line-height: 1.7;
+    color: var(--color-ink-muted);
+    max-width: 44rem;
+  }
+
+  .prop-section {
+    margin-top: 2.25rem;
+    scroll-margin-top: 5.5rem;
+  }
+
+  .prop-section > h2 {
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    color: var(--color-maroon);
+    margin: 0 0 0.85rem 0;
+  }
+
+  .prop-section p {
+    margin: 0 0 1rem 0;
+    line-height: 1.7;
+    color: var(--color-ink);
+    max-width: 44rem;
+  }
+
+  .prop-list {
+    margin: 0 0 1rem 0;
+    padding-left: 1.35rem;
+    line-height: 1.7;
+    max-width: 44rem;
+  }
+
+  .prop-list li {
+    margin-bottom: 0.5rem;
+  }
+
+  .prop-list ul {
+    margin-top: 0.35rem;
+  }
+
+  .prop-checklist {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    max-width: 44rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  .prop-checklist li {
+    padding: 0.75rem 1rem 0.75rem 2.25rem;
+    background: rgba(113, 32, 56, 0.06);
+    border: 1px solid rgba(113, 32, 56, 0.15);
+    border-left: 4px solid var(--color-maroon);
+    border-radius: 0 8px 8px 0;
+    line-height: 1.55;
+    font-size: 0.95rem;
+    position: relative;
+  }
+
+  .prop-checklist li::before {
+    content: '✓';
+    position: absolute;
+    left: 0.75rem;
+    top: 0.75rem;
+    font-weight: 700;
+    color: var(--color-gold);
+    font-size: 0.9rem;
+  }
+
+  .prop-dissertation {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: center;
+    max-width: 28rem;
+    margin: 1rem 0;
+    padding: 1.25rem;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    background: #fafafa;
+  }
+
+  .prop-chapter-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .prop-chapter-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.55rem 0.75rem;
+    border-radius: 999px;
+    background: #f4e8ea;
+    border: 1px solid #e8d0d4;
+    font-size: 0.88rem;
+    line-height: 1.35;
+    transform: translateX(calc(var(--i, 0) * 0.5rem));
+  }
+
+  .prop-chapter-list li:nth-child(1) { --i: 0; }
+  .prop-chapter-list li:nth-child(2) { --i: 1; }
+  .prop-chapter-list li:nth-child(3) { --i: 2; }
+  .prop-chapter-list li:nth-child(4) { --i: 3; }
+  .prop-chapter-list li:nth-child(5) { --i: 4; }
+  .prop-chapter-list li:nth-child(6) { --i: 5; }
+
+  .prop-chapter--proposal {
+    background: #f4e0e4;
+    border-color: rgba(113, 32, 56, 0.25);
+  }
+
+  .prop-chapter-num {
+    flex-shrink: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    background: var(--color-maroon);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .prop-proposal-bracket {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.5rem 0;
+  }
+
+  .prop-bracket-line {
+    display: block;
+    width: 2.5rem;
+    height: 9rem;
+    border: 2px dashed #c9a227;
+    border-left: none;
+    border-radius: 0 12px 12px 0;
+  }
+
+  .prop-bracket-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #a88410;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+  }
+
+  .prop-three-cs {
+    display: grid;
+    grid-template-rows: auto auto auto;
+    justify-items: center;
+    gap: 0.65rem;
+    max-width: 16rem;
+    margin: 1.25rem 0;
+    padding: 1.25rem;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    background: #fff;
+  }
+
+  .prop-cs-node,
+  .prop-cs-hub {
+    padding: 0.55rem 1.1rem;
+    border: 2px solid var(--color-maroon-muted);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: center;
+    min-width: 6rem;
+  }
+
+  .prop-cs-hub {
+    background: rgba(113, 32, 56, 0.08);
+    color: var(--color-maroon);
+    border-color: var(--color-maroon);
+  }
+
+  .prop-cs-row {
+    display: flex;
+    gap: 2.5rem;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .prop-note {
+    font-size: 0.9rem;
+    color: var(--color-ink-muted);
+    max-width: 44rem;
+  }
+
+  .prop-note a {
+    font-weight: 600;
+  }
+
+  @media (max-width: 520px) {
+    .prop-dissertation {
+      grid-template-columns: 1fr;
+    }
+
+    .prop-proposal-bracket {
+      flex-direction: row;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .prop-bracket-line {
+      width: 70%;
+      height: auto;
+      min-height: 2rem;
+      border: 2px dashed #c9a227;
+      border-top: none;
+      border-radius: 0 0 12px 12px;
+    }
+
+    .prop-bracket-label {
+      writing-mode: horizontal-tb;
+      transform: none;
+    }
+
+    .prop-cs-row {
+      gap: 0.75rem;
+    }
+  }
+</style>

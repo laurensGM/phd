@@ -6,8 +6,8 @@ const base = import.meta.env.BASE_URL;
 const steps = [
   { id: 'choose-topic', title: 'Choose topic' },
   { id: 'literature', title: 'Review literature / theories' },
-  { id: 'define-problem', title: 'Define the problem — researchable questions or hypothesis' },
-  { id: 'methodology', title: 'Methodology and design — rigour, reliability, contribution', emphasis: true },
+  { id: 'define-problem', title: 'Define the problem' },
+  { id: 'methodology', title: 'Methodology and design', emphasis: true },
   { id: 'ethical-clearance', title: 'Ethical clearance' },
   { id: 'data-gathering', title: 'Data gathering' },
   { id: 'analysis', title: 'Analysis' },
@@ -21,6 +21,7 @@ const steps = [
       <h2 class="process-toc-title">On this page</h2>
       <ol class="process-toc-list">
         <li><a href="#intro">Introduction</a></li>
+        <li><a href="#overview">Overview diagram</a></li>
         {steps.map((step) => (
           <li>
             <a href={`#${step.id}`} class:list={[{ 'process-toc-emphasis': step.emphasis }]}>
@@ -39,20 +40,131 @@ const steps = [
         takes shape.
       </p>
 
+      <section id="overview" class="process-section process-overview">
+        <h2>Research topic / research title</h2>
+        <div
+          class="process-flow"
+          role="img"
+          aria-label="Research process from secondary research through problem statement, objectives, method, data, ethical clearance, gathering, analysis, and reporting"
+        >
+          <div class="process-flow-top">
+            <div class="process-box process-box--main">
+              <strong>Secondary research</strong>
+              <ol class="process-box-list">
+                <li>Lit review</li>
+                <li>Environmental scanning</li>
+                <li>Best practice</li>
+              </ol>
+              <div class="process-funnel" aria-hidden="true">
+                <span class="process-funnel-ring process-funnel-ring--outer">Construct</span>
+                <span class="process-funnel-ring process-funnel-ring--mid">Concept</span>
+                <span class="process-funnel-ring process-funnel-ring--inner">Variables</span>
+              </div>
+              <p class="process-box-note">
+                Relationship between Y<sub>1</sub> and X<sub>1</sub> and/or difference between X<sub>1</sub> and X<sub
+                  >2</sub
+                >
+              </p>
+            </div>
+
+            <div class="process-arrow-h" aria-hidden="true">&rarr;</div>
+
+            <div class="process-box process-box--main">
+              <strong>Problem statement</strong>
+            </div>
+
+            <div class="process-why" aria-hidden="true">
+              <span>Why should you do this research?</span>
+            </div>
+
+            <div class="process-arrow-h" aria-hidden="true">&rarr;</div>
+
+            <div class="process-box process-box--main">
+              <strong>Research objectives</strong>
+              <p class="process-box-note">
+                To assess / examine / explore relationship between Y<sub>1</sub> and X<sub>1</sub> and/or to assess /
+                examine / explore the difference between X<sub>1</sub> and X<sub>2</sub>
+              </p>
+            </div>
+
+            <div class="process-arrow-h" aria-hidden="true">&rarr;</div>
+
+            <div class="process-box process-box--main process-box--method">
+              <strong>Research method</strong>
+            </div>
+          </div>
+
+          <div class="process-flow-data">
+            <div class="process-data-panel">
+              <strong class="process-data-title">What data needed?</strong>
+              <ul class="process-data-list">
+                <li class="process-box process-box--data">Secondary data (qualitative / quantitative)</li>
+                <li class="process-box process-box--data">Primary quantitative data</li>
+                <li class="process-box process-box--data process-box--data-alt">Primary qualitative data</li>
+                <li class="process-box process-box--analysis">How will data be analysed?</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="process-flow-bottom">
+            <div class="process-box process-box--main">
+              <strong>Get ethical clearance</strong>
+            </div>
+            <div class="process-arrow-h" aria-hidden="true">&rarr;</div>
+            <div class="process-box process-box--main">
+              <strong>Data gathering / admin</strong>
+            </div>
+            <div class="process-arrow-h" aria-hidden="true">&rarr;</div>
+            <div class="process-box process-box--main">
+              <strong>Analyse data</strong>
+            </div>
+            <div class="process-arrow-h" aria-hidden="true">&rarr;</div>
+            <div class="process-box process-box--main">
+              <strong>Report / article</strong>
+            </div>
+          </div>
+
+          <div class="process-flow-connector" aria-hidden="true">
+            <span class="process-connector-down"></span>
+            <span class="process-connector-label">method &rarr; data &rarr; clearance</span>
+          </div>
+        </div>
+      </section>
+
       <section id="choose-topic" class="process-section">
         <h2>Choose topic</h2>
       </section>
 
       <section id="literature" class="process-section">
         <h2>Review literature / theories</h2>
+        <p>
+          Secondary research: literature review, environmental scanning, and best practice. Narrow from construct and
+          concept toward variables and the relationship you want to study.
+        </p>
       </section>
 
       <section id="define-problem" class="process-section">
-        <h2>Define the problem — researchable questions or hypothesis</h2>
+        <h2>Define the problem</h2>
+        <p>
+          State the problem clearly and ask: why should you do this research? Turn the problem into{' '}
+          <strong>researchable questions or a hypothesis</strong> that your study can answer.
+        </p>
+        <p>
+          Set <strong>research objectives</strong> — e.g. to assess, examine, or explore a relationship between
+          variables, or a difference between groups.
+        </p>
       </section>
 
       <section id="methodology" class="process-section process-section--emphasis">
-        <h2>Methodology and design — rigour, reliability, contribution</h2>
+        <h2>Methodology and design</h2>
+        <p>
+          Choose your research method and decide what data you need: secondary (qualitative or quantitative), primary
+          quantitative, primary qualitative, and how data will be analysed.
+        </p>
+        <p>
+          Design for <strong>rigour, reliability, and contribution</strong> from the start — your method, sampling, and
+          analysis choices should support trustworthy findings and a clear scholarly contribution.
+        </p>
       </section>
 
       <section id="ethical-clearance" class="process-section">
@@ -69,7 +181,6 @@ const steps = [
 
       <section id="analysis" class="process-section">
         <h2>Analysis</h2>
-        <h3 class="process-subheading">Analyze data</h3>
         <p>
           Look at an example of how someone else has done it: look at a paper from a renowned academic and see how they
           did it. This can be an example for you to replicate. Look at one I like.
@@ -220,13 +331,6 @@ const steps = [
     font-weight: 700;
   }
 
-  .process-subheading {
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--color-ink);
-    margin: 0 0 0.75rem 0;
-  }
-
   .process-section p {
     margin: 0 0 1rem 0;
     line-height: 1.7;
@@ -236,6 +340,263 @@ const steps = [
 
   .process-section a {
     font-weight: 600;
+  }
+
+  .process-overview {
+    margin-top: 1.5rem;
+  }
+
+  .process-flow {
+    position: relative;
+    padding: 1.25rem;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    background: #fafafa;
+    overflow-x: auto;
+  }
+
+  .process-flow-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 0.4rem 0.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .process-flow-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 0.25rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 2px dashed var(--color-border);
+  }
+
+  .process-arrow-h {
+    align-self: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-maroon-muted);
+    padding: 0 0.15rem;
+    flex-shrink: 0;
+  }
+
+  .process-box {
+    border-radius: 6px;
+    font-size: 0.78rem;
+    line-height: 1.4;
+    color: #fff;
+  }
+
+  .process-box--main {
+    flex: 1 1 8.5rem;
+    min-width: 7.5rem;
+    max-width: 11rem;
+    padding: 0.65rem 0.7rem;
+    background: rgba(113, 32, 56, 0.82);
+    border: 1px solid rgba(113, 32, 56, 0.95);
+  }
+
+  .process-box--main strong {
+    display: block;
+    font-size: 0.8rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .process-box-list {
+    margin: 0 0 0.5rem 0;
+    padding-left: 1.1rem;
+    font-size: 0.72rem;
+  }
+
+  .process-box-list li {
+    margin-bottom: 0.15rem;
+  }
+
+  .process-box-note {
+    margin: 0.4rem 0 0 0;
+    font-size: 0.68rem;
+    line-height: 1.35;
+    opacity: 0.95;
+  }
+
+  .process-funnel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+    margin: 0.45rem 0;
+  }
+
+  .process-funnel-ring {
+    display: block;
+    text-align: center;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--color-maroon);
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    padding: 0.15rem 0.5rem;
+  }
+
+  .process-funnel-ring--outer {
+    width: 100%;
+  }
+
+  .process-funnel-ring--mid {
+    width: 78%;
+  }
+
+  .process-funnel-ring--inner {
+    width: 56%;
+  }
+
+  .process-why {
+    flex: 0 0 auto;
+    align-self: center;
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 50%;
+    background: #f4c4cb;
+    border: 2px solid #e8a0ab;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0.35rem;
+    font-size: 0.62rem;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--color-ink);
+  }
+
+  .process-flow-data {
+    display: flex;
+    justify-content: flex-end;
+    margin: 0.5rem 0;
+  }
+
+  .process-data-panel {
+    flex: 0 1 16rem;
+    padding: 0.75rem;
+    border: 2px solid #9ec088;
+    border-radius: 8px;
+    background: rgba(184, 212, 164, 0.15);
+  }
+
+  .process-data-title {
+    display: block;
+    font-size: 0.82rem;
+    color: var(--color-maroon);
+    margin-bottom: 0.55rem;
+    text-align: center;
+  }
+
+  .process-data-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .process-box--data {
+    padding: 0.45rem 0.55rem;
+    background: rgba(113, 32, 56, 0.75);
+    border: 1px solid rgba(113, 32, 56, 0.9);
+    font-size: 0.72rem;
+    color: #fff;
+  }
+
+  .process-box--data-alt {
+    background: #e8dcc8;
+    border-color: #d4c4a8;
+    color: var(--color-ink);
+  }
+
+  .process-box--analysis {
+    padding: 0.45rem 0.65rem;
+    background: #c8deb8;
+    border: 1px solid #9ec088;
+    border-radius: 999px;
+    text-align: center;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
+  .process-flow-connector {
+    display: none;
+  }
+
+  @media (min-width: 760px) {
+    .process-flow-connector {
+      display: block;
+      position: absolute;
+      right: 2.5rem;
+      top: 4.5rem;
+      bottom: 4.5rem;
+      width: 2px;
+      background: var(--color-maroon-muted);
+      opacity: 0.35;
+    }
+
+    .process-connector-down::before {
+      content: '';
+      position: absolute;
+      left: -4px;
+      bottom: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 8px solid var(--color-maroon-muted);
+      opacity: 0.5;
+    }
+
+    .process-connector-label {
+      position: absolute;
+      right: -0.5rem;
+      top: 50%;
+      transform: translate(100%, -50%) rotate(90deg);
+      font-size: 0.62rem;
+      color: var(--color-ink-muted);
+      white-space: nowrap;
+    }
+  }
+
+  @media (max-width: 759px) {
+    .process-flow-top,
+    .process-flow-bottom {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .process-arrow-h {
+      text-align: center;
+      transform: rotate(90deg);
+      margin: 0.15rem auto;
+    }
+
+    .process-box--main {
+      max-width: none;
+    }
+
+    .process-why {
+      width: auto;
+      height: auto;
+      border-radius: 999px;
+      padding: 0.5rem 0.85rem;
+    }
+
+    .process-flow-data {
+      justify-content: stretch;
+    }
+
+    .process-data-panel {
+      flex: 1 1 auto;
+    }
   }
 
   .process-note {
