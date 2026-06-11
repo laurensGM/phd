@@ -50,6 +50,12 @@ function parseAuthorList(authorsRaw: string): string[] {
     .filter(Boolean);
 }
 
+function formatPaperYear(year: string | null | undefined): string | null {
+  const trimmed = year?.trim();
+  if (!trimmed) return null;
+  return trimmed.match(/\d{4}/)?.[0] ?? trimmed;
+}
+
 /** e.g. Venkatesh et al. 2003 p. 200 */
 function formatSnippetSourceLine(paper: PaperSummary | undefined, pageNumber: number | null): string {
   const bits: string[] = [];
@@ -64,11 +70,8 @@ function formatSnippetSourceLine(paper: PaperSummary | undefined, pageNumber: nu
       bits.push(`${authorSurname(authors[0]!)} et al.`);
     }
   }
-  const year = paper?.year?.trim();
-  if (year) {
-    const yr = year.match(/\d{4}/)?.[0] ?? year;
-    bits.push(yr);
-  }
+  const yr = formatPaperYear(paper?.year);
+  if (yr) bits.push(yr);
   let line = bits.join(' ');
   if (pageNumber != null) {
     line = line ? `${line} p. ${pageNumber}` : `p. ${pageNumber}`;
@@ -1532,6 +1535,7 @@ export default function SnippetsPage() {
         <div className="snippets-list">
           {filteredSnippets.map((s) => {
             const paper = paperById.get(s.paper_id);
+            const paperYear = formatPaperYear(paper?.year);
             const canExpand = s.content.length > SNIPPET_PREVIEW_LENGTH;
             const isExpanded = expandedSnippetIds.includes(s.id);
             const displayContent =
@@ -1760,6 +1764,9 @@ export default function SnippetsPage() {
                         </a>
                       ) : (
                         <span className="snippets-card-paper">Unknown paper</span>
+                      )}
+                      {paperYear && editingId !== s.id && (
+                        <span className="snippets-card-year-inline"> · {paperYear}</span>
                       )}
                       {s.page_number != null && editingId !== s.id && (
                         <span className="snippets-card-page-inline"> · Page {s.page_number}</span>
