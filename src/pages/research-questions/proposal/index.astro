@@ -45,6 +45,66 @@ const dissertationChapters = [
   { label: 'Results / findings', inProposal: false },
   { label: 'Discussion and managerial implications', inProposal: false },
 ];
+
+const phdOutline = [
+  {
+    id: 'outline-overview',
+    title: 'Overview',
+    items: ['Set the scene from your abstract — what the study is about and why it matters.'],
+  },
+  {
+    id: 'outline-literature',
+    title: 'Literature',
+    items: [
+      'Key theoretical perspectives, conceptual frameworks and prior empirical findings — what is the question in the literature?',
+      'Identify the scientific conversation — briefly position your proposed research in those frameworks.',
+    ],
+  },
+  {
+    id: 'outline-problem',
+    title: 'Problem statement',
+    items: ['State the problem your research will address.'],
+  },
+  {
+    id: 'outline-objectives',
+    title: 'Research objectives',
+    items: ['Specify what the study aims to achieve.'],
+  },
+  {
+    id: 'outline-questions',
+    title: 'Your research questions',
+    items: [
+      'Based on the scientific background — what will be addressed?',
+      'What are the aims that follow from the literature and problem?',
+    ],
+  },
+  {
+    id: 'outline-method',
+    title: 'Research method',
+    items: [
+      'Design and implementation phases.',
+      'Clear link between the objectives, methods and techniques in this section and the aims previously defined.',
+      'Discuss study designs and research paradigms, where relevant.',
+      'Data collection — primary vs secondary — clear indication.',
+    ],
+  },
+  {
+    id: 'outline-contribution',
+    title: 'Contribution',
+    items: [
+      'Change, challenge, or advance scholars\u2019 understanding.',
+      'What is new? A new theoretical perspective, a new approach or method, the construction of new data/method, or a new context.',
+    ],
+  },
+  {
+    id: 'outline-time-ethics',
+    title: 'Time frame / ethical considerations',
+    items: [
+      'Indicate the time frame for the study.',
+      'Address ethical aspects of conducting the research.',
+    ],
+  },
+];
 ---
 
 <BaseLayout title="Proposal" description="Research proposal — definition, components, quality criteria, and the 3 C's rule">
@@ -56,6 +116,16 @@ const dissertationChapters = [
         <li><a href="#what-is">What is a proposal?</a></li>
         <li><a href="#demonstrate">What it must demonstrate</a></li>
         <li><a href="#blueprint">Blueprint</a></li>
+        <li>
+          <a href="#outline">PhD proposal outline</a>
+          <ol>
+            {phdOutline.map((block) => (
+              <li>
+                <a href={`#${block.id}`}>{block.title}</a>
+              </li>
+            ))}
+          </ol>
+        </li>
         <li><a href="#quality">Quality criteria</a></li>
         <li><a href="#dissertation">Proposal vs dissertation</a></li>
         <li><a href="#three-cs">The 3 C&rsquo;s rule</a></li>
@@ -109,6 +179,29 @@ const dissertationChapters = [
         </ul>
       </section>
 
+      <section id="outline" class="prop-section">
+        <h2>PhD proposal outline</h2>
+        <p>Section-by-section guide for structuring the proposal document.</p>
+        <div class="prop-outline">
+          {phdOutline.map((block) => (
+            <section id={block.id} class="prop-outline-block">
+              <h3 class="prop-outline-title">{block.title}</h3>
+              <ul class="prop-list">
+                {block.items.map((item) => (
+                  <li>{item}</li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
+        <p class="prop-note">
+          See also <a href={`${base}research-questions/questions/`}>Research questions</a>,{' '}
+          <a href={`${base}research-questions/objectives/`}>Objectives</a>,{' '}
+          <a href={`${base}research-questions/contribution/`}>Contribution</a>,{' '}
+          <a href={`${base}methods/`}>Methods</a>, and <a href={`${base}methods/ethics/`}>Ethics</a>.
+        </p>
+      </section>
+
       <section id="quality" class="prop-section">
         <h2>Quality criteria</h2>
         <p>A strong proposal typically meets all of the following:</p>
@@ -139,18 +232,32 @@ const dissertationChapters = [
           role="img"
           aria-label="Six dissertation chapters; the first four form the research proposal"
         >
-          <ol class="prop-chapter-list">
-            {dissertationChapters.map((chapter, index) => (
-              <li class:list={[{ 'prop-chapter--proposal': chapter.inProposal }]}>
-                <span class="prop-chapter-num">{index + 1}</span>
-                <span class="prop-chapter-label">{chapter.label}</span>
-              </li>
-            ))}
-          </ol>
-          <div class="prop-proposal-bracket" aria-hidden="true">
-            <span class="prop-bracket-line"></span>
-            <span class="prop-bracket-label">= Research proposal</span>
+          <div class="prop-proposal-wrap">
+            <ol class="prop-chapter-list">
+              {dissertationChapters
+                .filter((chapter) => chapter.inProposal)
+                .map((chapter, index) => (
+                  <li class="prop-chapter--proposal">
+                    <span class="prop-chapter-num">{index + 1}</span>
+                    <span class="prop-chapter-label">{chapter.label}</span>
+                  </li>
+                ))}
+            </ol>
+            <div class="prop-proposal-bracket" aria-hidden="true">
+              <span class="prop-bracket-line"></span>
+              <span class="prop-bracket-label">= Research proposal</span>
+            </div>
           </div>
+          <ol class="prop-chapter-list prop-chapter-list--rest">
+            {dissertationChapters
+              .filter((chapter) => !chapter.inProposal)
+              .map((chapter, index) => (
+                <li>
+                  <span class="prop-chapter-num">{index + 5}</span>
+                  <span class="prop-chapter-label">{chapter.label}</span>
+                </li>
+              ))}
+          </ol>
         </div>
         <p class="prop-note">
           Results and discussion come after the proposal stage — but your proposal should already signal how findings
@@ -248,6 +355,18 @@ const dissertationChapters = [
     margin-bottom: 0.4rem;
   }
 
+  .prop-toc-list ol {
+    margin: 0.35rem 0 0.5rem 0;
+    padding-left: 1rem;
+    list-style: none;
+    border-left: 2px solid var(--color-border);
+  }
+
+  .prop-toc-list ol li {
+    margin-bottom: 0.3rem;
+    font-size: 0.84rem;
+  }
+
   .prop-toc a {
     color: var(--color-maroon);
     text-decoration: none;
@@ -341,17 +460,53 @@ const dissertationChapters = [
     font-size: 0.9rem;
   }
 
+  .prop-outline {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    max-width: 44rem;
+    margin: 1rem 0;
+  }
+
+  .prop-outline-block {
+    padding: 0.85rem 1rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-maroon);
+    border-radius: 0 8px 8px 0;
+    scroll-margin-top: 5.5rem;
+  }
+
+  .prop-outline-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-maroon);
+  }
+
+  .prop-outline-block .prop-list {
+    margin-bottom: 0;
+  }
+
   .prop-dissertation {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 1rem;
-    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
     max-width: 28rem;
     margin: 1rem 0;
     padding: 1.25rem;
     border: 1px solid var(--color-border);
     border-radius: 10px;
     background: #fafafa;
+  }
+
+  .prop-proposal-wrap {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.75rem;
+    align-items: stretch;
   }
 
   .prop-chapter-list {
@@ -376,12 +531,13 @@ const dissertationChapters = [
     transform: translateX(calc(var(--i, 0) * 0.5rem));
   }
 
-  .prop-chapter-list li:nth-child(1) { --i: 0; }
-  .prop-chapter-list li:nth-child(2) { --i: 1; }
-  .prop-chapter-list li:nth-child(3) { --i: 2; }
-  .prop-chapter-list li:nth-child(4) { --i: 3; }
-  .prop-chapter-list li:nth-child(5) { --i: 4; }
-  .prop-chapter-list li:nth-child(6) { --i: 5; }
+  .prop-proposal-wrap .prop-chapter-list li:nth-child(1) { --i: 0; }
+  .prop-proposal-wrap .prop-chapter-list li:nth-child(2) { --i: 1; }
+  .prop-proposal-wrap .prop-chapter-list li:nth-child(3) { --i: 2; }
+  .prop-proposal-wrap .prop-chapter-list li:nth-child(4) { --i: 3; }
+
+  .prop-chapter-list--rest li:nth-child(1) { --i: 4; }
+  .prop-chapter-list--rest li:nth-child(2) { --i: 5; }
 
   .prop-chapter--proposal {
     background: #f4e0e4;
@@ -406,17 +562,20 @@ const dissertationChapters = [
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.35rem;
-    padding: 0.5rem 0;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.15rem 0;
+    min-width: 2.75rem;
   }
 
   .prop-bracket-line {
     display: block;
+    flex: 1;
     width: 2.5rem;
-    height: 9rem;
+    min-height: 10.5rem;
     border: 2px dashed #c9a227;
     border-left: none;
-    border-radius: 0 12px 12px 0;
+    border-radius: 0 14px 14px 0;
   }
 
   .prop-bracket-label {
@@ -476,7 +635,7 @@ const dissertationChapters = [
   }
 
   @media (max-width: 520px) {
-    .prop-dissertation {
+    .prop-proposal-wrap {
       grid-template-columns: 1fr;
     }
 
@@ -484,20 +643,27 @@ const dissertationChapters = [
       flex-direction: row;
       width: 100%;
       justify-content: center;
+      order: 2;
+      padding-top: 0.35rem;
     }
 
     .prop-bracket-line {
-      width: 70%;
-      height: auto;
-      min-height: 2rem;
+      flex: 1;
+      width: auto;
+      min-height: 0;
+      height: 2px;
+      min-width: 4rem;
       border: 2px dashed #c9a227;
       border-top: none;
-      border-radius: 0 0 12px 12px;
+      border-left: none;
+      border-right: none;
+      border-radius: 0;
     }
 
     .prop-bracket-label {
       writing-mode: horizontal-tb;
       transform: none;
+      flex-shrink: 0;
     }
 
     .prop-cs-row {
