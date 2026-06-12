@@ -46,6 +46,14 @@ export default function DiaryPage() {
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editFormData, setEditFormData] = useState({
+    date: '',
+    summary: '',
+    detailedReflection: '',
+    tags: [] as string[],
+    linkedConstructs: '',
+  });
   const [error, setError] = useState<string | null>(null);
 
   const fetchEntries = useCallback(async () => {
@@ -97,6 +105,68 @@ export default function DiaryPage() {
       ...d,
       tags: d.tags.includes(tag) ? d.tags.filter((t) => t !== tag) : [...d.tags, tag],
     }));
+  };
+
+  const toggleEditTag = (tag: string) => {
+    setEditFormData((d) => ({
+      ...d,
+      tags: d.tags.includes(tag) ? d.tags.filter((t) => t !== tag) : [...d.tags, tag],
+    }));
+  };
+
+  const startEdit = (entry: DiaryEntry) => {
+    setEditingId(entry.id);
+    setEditFormData({
+      date: entry.date,
+      summary: entry.summary,
+      detailedReflection: entry.detailedReflection,
+      tags: [...entry.tags],
+      linkedConstructs: entry.linkedConstructs.join(', '),
+    });
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditFormData({
+      date: '',
+      summary: '',
+      detailedReflection: '',
+      tags: [],
+      linkedConstructs: '',
+    });
+  };
+
+  const handleSaveEdit = async (id: string) => {
+    if (!supabase) return;
+    const summary = editFormData.summary.trim();
+    if (!summary) return;
+    setSaving(true);
+    setError(null);
+    const linked = editFormData.linkedConstructs
+      .split(/[,;]/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+    const { data, error: updateError } = await supabase
+      .from('diary_entries')
+      .update({
+        date: editFormData.date,
+        summary,
+        detailed_reflection: editFormData.detailedReflection || null,
+        tags: editFormData.tags,
+        linked_constructs: linked,
+      })
+      .eq('id', id)
+      .select('id, date, summary, detailed_reflection, tags, linked_constructs')
+      .single();
+    setSaving(false);
+    if (updateError) {
+      setError(updateError.message);
+      return;
+    }
+    if (data) {
+      setEntries((prev) => prev.map((entry) => (entry.id === id ? mapRow(data) : entry)));
+      cancelEdit();
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -276,28 +346,119 @@ export default function DiaryPage() {
         <div className="diary-entries">
         {filteredEntries.map((entry) => (
           <article key={entry.id} className="diary-entry">
-            <div className="entry-header">
-              <time dateTime={entry.date}>{entry.date}</time>
-              <div className="entry-tags">
-                {entry.tags.map((t) => (
-                  <span key={t} className="tag-badge">
-                    {t}
-                  </span>
-                ))}
+            {editingId === entry.id ? (
+              <div className="diary-edit-form">
+                <h4 className="diary-edit-title">Edit entry</h4>
+                <div className="diary-form-field">
+                  <label htmlFor={`edit-date-${entry.id}`}>Date</label>
+                  <input
+                    id={`edit-date-${entry.id}`}
+                    type="date"
+                    value={editFormData.date}
+                    onChange={(e) => setEditFormData((d) => ({ ...d, date: e.target.value }))}
+                    className="diary-input diary-date"
+                    required
+                  />
+                </div>
+                <div className="diary-form-field">
+                  <label htmlFor={`edit-summary-${entry.id}`}>Summary</label>
+                  <input
+                    id={`edit-summary-${entry.id}`}
+                    type="text"
+                    value={editFormData.summary}
+                    onChange={(e) => setEditFormData((d) => ({ ...d, summary: e.target.value }))}
+                    required
+                    className="diary-input diary-input-summary"
+                  />
+                </div>
+                <div className="diary-form-field diary-form-field-details">
+                  <label htmlFor={`edit-details-${entry.id}`}>Details</label>
+                  <textarea
+                    id={`edit-details-${entry.id}`}
+                    value={editFormData.detailedReflection}
+                    onChange={(e) =>
+                      setEditFormData((d) => ({ ...d, detailedReflection: e.target.value }))
+                    }
+                    rows={8}
+                    className="diary-textarea"
+                  />
+                </div>
+                <div className="diary-form-field">
+                  <span className="diary-form-label">Tags</span>
+                  <div className="tag-chips">
+                    {TAG_OPTIONS.map((t) => (
+                      <button
+                        key={t}
+                        type="button"
+                        className={`tag-chip ${editFormData.tags.includes(t) ? 'selected' : ''}`}
+                        onClick={() => toggleEditTag(t)}
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="diary-form-field">
+                  <label htmlFor={`edit-constructs-${entry.id}`}>Linked constructs</label>
+                  <input
+                    id={`edit-constructs-${entry.id}`}
+                    type="text"
+                    value={editFormData.linkedConstructs}
+                    onChange={(e) =>
+                      setEditFormData((d) => ({ ...d, linkedConstructs: e.target.value }))
+                    }
+                    className="diary-input"
+                  />
+                </div>
+                <div className="diary-entry-actions">
+                  <button
+                    type="button"
+                    className="diary-submit"
+                    onClick={() => handleSaveEdit(entry.id)}
+                    disabled={saving || !editFormData.summary.trim()}
+                  >
+                    {saving ? 'Saving…' : 'Save changes'}
+                  </button>
+                  <button type="button" className="diary-btn-secondary" onClick={cancelEdit}>
+                    Cancel
+                  </button>
+                </div>
               </div>
-            </div>
-            <h4 className="entry-summary">
-              <FormatDiaryText text={entry.summary} />
-            </h4>
-            {entry.detailedReflection && (
-              <div className="entry-reflection">
-                <FormatDiaryText text={entry.detailedReflection} />
-              </div>
-            )}
-            {entry.linkedConstructs?.length > 0 && (
-              <p className="entry-constructs">
-                Linked: {entry.linkedConstructs.join(', ')}
-              </p>
+            ) : (
+              <>
+                <div className="entry-header">
+                  <time dateTime={entry.date}>{entry.date}</time>
+                  <div className="entry-header-actions">
+                    <div className="entry-tags">
+                      {entry.tags.map((t) => (
+                        <span key={t} className="tag-badge">
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                    <button
+                      type="button"
+                      className="diary-btn-secondary"
+                      onClick={() => startEdit(entry)}
+                    >
+                      Edit
+                    </button>
+                  </div>
+                </div>
+                <h4 className="entry-summary">
+                  <FormatDiaryText text={entry.summary} />
+                </h4>
+                {entry.detailedReflection && (
+                  <div className="entry-reflection">
+                    <FormatDiaryText text={entry.detailedReflection} />
+                  </div>
+                )}
+                {entry.linkedConstructs?.length > 0 && (
+                  <p className="entry-constructs">
+                    Linked: {entry.linkedConstructs.join(', ')}
+                  </p>
+                )}
+              </>
             )}
           </article>
         ))}
