@@ -12,6 +12,38 @@ interface OutlineItem {
   notes?: string;
 }
 
+const PROPOSAL_MILESTONE_IDS = [
+  'draft-research-proposal',
+  'mock-phd-proposal',
+  'final-phd-proposal',
+  'phd-proposal-defence',
+] as const;
+
+function localTodayStr(): string {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function daysUntilDate(dateStr: string): number {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const target = new Date(`${dateStr}T00:00:00`);
+  const diffMs = target.getTime() - today.getTime();
+  return Math.round(diffMs / (1000 * 60 * 60 * 24));
+}
+
+function nextFocusMilestone(items: OutlineItem[], todayStr: string): OutlineItem | null {
+  const sorted = items.slice().sort((a, b) => a.date.localeCompare(b.date));
+  const nextProposal = sorted.find(
+    (m) => PROPOSAL_MILESTONE_IDS.includes(m.id as (typeof PROPOSAL_MILESTONE_IDS)[number]) && m.date >= todayStr,
+  );
+  if (nextProposal) return nextProposal;
+  return sorted.find((m) => m.date >= todayStr) ?? null;
+}
+
 const PAPER_STATUSES = [
   { id: 'Not read', label: 'Not read', color: '#9ca3af' }, // slate-400
   { id: '1st reading', label: '1st reading', color: '#60a5fa' }, // blue-400
@@ -45,14 +77,9 @@ export default function HomeDashboard() {
     const list = all.filter((m) => m.date.startsWith(year + '-'));
     const effective = list.length > 0 ? list : all;
 
-    const today = new Date().toISOString().slice(0, 10);
-    let nextId: string | null = null;
-    for (const m of effective) {
-      if (m.date >= today) {
-        nextId = m.id;
-        break;
-      }
-    }
+    const today = localTodayStr();
+    const focus = nextFocusMilestone(effective, today);
+    const nextId = focus?.id ?? null;
     return effective.map((item) => ({
       ...item,
       isPast: item.date < today,
@@ -61,23 +88,16 @@ export default function HomeDashboard() {
   }, []);
 
   const nextMilestoneCountdown = useMemo(() => {
-    const items = (outlineData as OutlineItem[]).slice().sort((a, b) => a.date.localeCompare(b.date));
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayStr = today.toISOString().slice(0, 10);
-
-    for (const m of items) {
-      if (m.date < todayStr) continue;
-      const target = new Date(m.date + 'T00:00:00');
-      const diffMs = target.getTime() - today.getTime();
-      const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-      return {
-        days: diffDays < 0 ? 0 : diffDays,
-        title: m.title,
-        id: m.id,
-      };
-    }
-    return null;
+    const items = outlineData as OutlineItem[];
+    const todayStr = localTodayStr();
+    const next = nextFocusMilestone(items, todayStr);
+    if (!next) return null;
+    const days = daysUntilDate(next.date);
+    return {
+      days: days < 0 ? 0 : days,
+      title: next.title,
+      id: next.id,
+    };
   }, []);
 
   useEffect(() => {
@@ -173,7 +193,7 @@ export default function HomeDashboard() {
           <a href={`${base}outline/`} className="home-stat-card home-stat-deadline">
             <span className="home-stat-value">{nextMilestoneCountdown.days}</span>
             <span className="home-stat-label">
-              days before {nextMilestoneCountdown.title.toLowerCase()}
+              days until {nextMilestoneCountdown.title.toLowerCase()}
             </span>
           </a>
         )}
