@@ -36,7 +36,12 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
         </a>
         <ul class="nav-links">
           <li class="nav-dropdown-wrap">
-            <span class="nav-dropdown-trigger" tabindex="0" aria-haspopup="true" aria-expanded="false" id="literature-trigger">Literature</span>
+            <a
+              href={`${base}literature/`}
+              class="nav-dropdown-trigger"
+              id="literature-trigger"
+              aria-haspopup="true"
+            >Literature</a>
             <ul class="nav-dropdown" aria-labelledby="literature-trigger">
               <li><a href={`${base}models/`}>Models</a></li>
               <li><a href={`${base}constructs/`}>Constructs</a></li>

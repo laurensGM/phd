@@ -4,15 +4,119 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 const base = import.meta.env.BASE_URL;
 ---
 
-<BaseLayout title="Literature" description="Redirect to Papers">
-  <meta http-equiv="refresh" content={`0;url=${base}papers/`} />
-  <article class="redirect-page">
-    <h1>Literature</h1>
-    <p>This page has moved. <a href={`${base}papers/`}>Go to Papers →</a></p>
-  </article>
+<BaseLayout
+  title="Literature"
+  description="Models, constructs, papers, snippets, claims, and tools for managing your theoretical literature."
+>
+  <h1>Literature</h1>
+  <p class="page-desc">
+    Your theoretical landscape — models and constructs, saved papers and snippets, evidence-linked claims, and a map of how it all connects.
+  </p>
+
+  <div class="rq-hub-grid">
+    <a href={`${base}models/`} class="rq-hub-card">
+      <span class="rq-hub-icon" aria-hidden="true">📐</span>
+      <h2 class="rq-hub-title">Models</h2>
+      <p class="rq-hub-desc">Theoretical models with diagrams, constructs, and citations. TAM, ECT, ECM, and your thesis models.</p>
+      <span class="rq-hub-link">Open models →</span>
+    </a>
+    <a href={`${base}constructs/`} class="rq-hub-card">
+      <span class="rq-hub-icon" aria-hidden="true">🧩</span>
+      <h2 class="rq-hub-title">Constructs</h2>
+      <p class="rq-hub-desc">Definitions, source papers, measurement items, and related models. Filter by umbrella construct.</p>
+      <span class="rq-hub-link">Open constructs →</span>
+    </a>
+    <a href={`${base}fields/`} class="rq-hub-card">
+      <span class="rq-hub-icon" aria-hidden="true">🌐</span>
+      <h2 class="rq-hub-title">Fields</h2>
+      <p class="rq-hub-desc">Disciplinary and contextual fields that shape your thesis — IS, ICT4D, agritech, and more.</p>
+      <span class="rq-hub-link">Open fields →</span>
+    </a>
+    <a href={`${base}papers/`} class="rq-hub-card">
+      <span class="rq-hub-icon" aria-hidden="true">📚</span>
+      <h2 class="rq-hub-title">Papers</h2>
+      <p class="rq-hub-desc">Save interesting papers with a link and why you kept them. Tag them for later.</p>
+      <span class="rq-hub-link">Open papers →</span>
+    </a>
+    <a href={`${base}snippets/`} class="rq-hub-card">
+      <span class="rq-hub-icon" aria-hidden="true">✂️</span>
+      <h2 class="rq-hub-title">Snippets</h2>
+      <p class="rq-hub-desc">Conceptual snippets extracted from papers. Filter by paper, construct, model, or tags.</p>
+      <span class="rq-hub-link">Open snippets →</span>
+    </a>
+    <a href={`${base}claims/`} class="rq-hub-card">
+      <span class="rq-hub-icon" aria-hidden="true">🔗</span>
+      <h2 class="rq-hub-title">Claims</h2>
+      <p class="rq-hub-desc">Turn snippets into defensible, evidence-linked claims with constructs, confidence, and roles.</p>
+      <span class="rq-hub-link">Open claims →</span>
+    </a>
+    <a href={`${base}academics/`} class="rq-hub-card">
+      <span class="rq-hub-icon" aria-hidden="true">👤</span>
+      <h2 class="rq-hub-title">Academics</h2>
+      <p class="rq-hub-desc">Key researchers — biographies, theoretical contributions, and links to models and constructs.</p>
+      <span class="rq-hub-link">Open academics →</span>
+    </a>
+    <a href={`${base}theory-map/`} class="rq-hub-card">
+      <span class="rq-hub-icon" aria-hidden="true">🗺️</span>
+      <h2 class="rq-hub-title">Theory Map</h2>
+      <p class="rq-hub-desc">Interactive map of constructs, models, and supporting papers. Click to highlight connections.</p>
+      <span class="rq-hub-link">Open theory map →</span>
+    </a>
+  </div>
 </BaseLayout>
 
 <style>
-  .redirect-page { padding: 2rem 0; }
-  .redirect-page a { font-weight: 600; }
+  .page-desc {
+    color: var(--color-ink-muted);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+    max-width: 40rem;
+  }
+  .rq-hub-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+  .rq-hub-card {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    border-left: 4px solid var(--color-maroon);
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  }
+  .rq-hub-card:hover {
+    border-color: var(--color-maroon-muted);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    text-decoration: none;
+    color: inherit;
+  }
+  .rq-hub-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+  }
+  .rq-hub-title {
+    font-family: var(--font-serif);
+    font-size: 1.35rem;
+    margin: 0 0 0.5rem 0;
+    color: var(--color-maroon);
+  }
+  .rq-hub-desc {
+    flex: 1;
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--color-ink);
+  }
+  .rq-hub-link {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-maroon);
+  }
 </style>
