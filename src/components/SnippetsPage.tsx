@@ -9,6 +9,7 @@ import {
   type ContributionType,
   isContributionType,
 } from '../data/contribution-types';
+import { FormatDiaryText } from '../lib/formatDiaryText';
 
 const SNIPPET_TYPE_OPTIONS = [
   { value: '', label: '—' },
@@ -39,9 +40,11 @@ function snippetTypeLabel(value: string | null | undefined): string {
   return SNIPPET_TYPE_LABEL_BY_VALUE.get(canonical) ?? (value ?? '').trim();
 }
 
-function contributionPreview(content: string, max = 72): string {
-  const text = content.trim().replace(/\s+/g, ' ');
-  return text.length > max ? `${text.slice(0, max)}…` : text;
+function contributionLinkErrorMessage(message: string): string {
+  if (/contribution_id/i.test(message)) {
+    return `${message} Run migration 040_snippets_contribution_id.sql in Supabase, then reload the API schema if needed.`;
+  }
+  return message;
 }
 
 /** First token before comma, or last word (typical surname). */
@@ -358,6 +361,8 @@ export default function SnippetsPage() {
   const [contributions, setContributions] = useState<ContributionSummary[]>([]);
   const [linkingSnippetId, setLinkingSnippetId] = useState<string | null>(null);
   const [linkingContribution, setLinkingContribution] = useState(false);
+  const [linkingContributionTargetId, setLinkingContributionTargetId] = useState<string | null>(null);
+  const [contributionLinkError, setContributionLinkError] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -798,25 +803,47 @@ export default function SnippetsPage() {
   const handleLinkContribution = useCallback(async (snippetId: string, contributionId: string | null) => {
     if (!supabase || !isSupabaseConfigured()) return;
     setLinkingContribution(true);
+    setLinkingContributionTargetId(contributionId);
+    setContributionLinkError(null);
     setError(null);
-    const { error: updateErr } = await supabase
-      .from('snippets')
-      .update({
-        contribution_id: contributionId,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', snippetId);
-    setLinkingContribution(false);
-    if (updateErr) {
-      setError(updateErr.message);
-      return;
+
+    try {
+      const { data, error: updateErr } = await supabase
+        .from('snippets')
+        .update({
+          contribution_id: contributionId,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', snippetId)
+        .select('id, contribution_id')
+        .single();
+
+      if (updateErr) {
+        const msg = contributionLinkErrorMessage(updateErr.message);
+        setContributionLinkError(msg);
+        setError(msg);
+        return;
+      }
+
+      if (!data) {
+        const msg = 'Link did not save — no row was returned from the database.';
+        setContributionLinkError(msg);
+        setError(msg);
+        return;
+      }
+
+      setSnippets((prev) =>
+        prev.map((snippet) =>
+          snippet.id === snippetId
+            ? { ...snippet, contribution_id: data.contribution_id ?? contributionId }
+            : snippet
+        )
+      );
+      setLinkingSnippetId(null);
+    } finally {
+      setLinkingContribution(false);
+      setLinkingContributionTargetId(null);
     }
-    setSnippets((prev) =>
-      prev.map((snippet) =>
-        snippet.id === snippetId ? { ...snippet, contribution_id: contributionId } : snippet
-      )
-    );
-    setLinkingSnippetId(null);
   }, []);
 
   const handleDelete = useCallback(async (id: string) => {
@@ -1891,9 +1918,10 @@ export default function SnippetsPage() {
                         <button
                           type="button"
                           className="snippets-link-contribution-btn"
-                          onClick={() =>
-                            setLinkingSnippetId(showContributionPicker ? null : s.id)
-                          }
+                          onClick={() => {
+                            setContributionLinkError(null);
+                            setLinkingSnippetId(showContributionPicker ? null : s.id);
+                          }}
                         >
                           {linkedContribution ? 'Change contribution' : 'Link to contribution'}
                         </button>
@@ -1915,13 +1943,22 @@ export default function SnippetsPage() {
                     </footer>
                     {showContributionPicker && (
                       <div className="snippets-contribution-picker">
+                        {contributionLinkError && (
+                          <p className="snippets-contribution-picker-error" role="alert">
+                            {contributionLinkError}
+                          </p>
+                        )}
                         {contributions.length === 0 ? (
                           <p className="snippets-contribution-picker-empty">
                             No contributions yet. Add one on the Contribution page first.
                           </p>
                         ) : (
                           <ul className="snippets-contribution-picker-list">
-                            {contributions.map((contribution) => (
+                            {contributions.map((contribution) => {
+                              const isLinkingThis =
+                                linkingContribution &&
+                                linkingContributionTargetId === contribution.id;
+                              return (
                               <li key={contribution.id}>
                                 <button
                                   type="button"
@@ -1939,11 +1976,15 @@ export default function SnippetsPage() {
                                       : 'Contribution'}
                                   </span>
                                   <span className="snippets-contribution-picker-text">
-                                    {contributionPreview(contribution.content)}
+                                    <FormatDiaryText text={contribution.content} />
                                   </span>
+                                  {isLinkingThis && (
+                                    <span className="snippets-contribution-picker-saving">Linking…</span>
+                                  )}
                                 </button>
                               </li>
-                            ))}
+                            );
+                            })}
                           </ul>
                         )}
                         {s.contribution_id && (

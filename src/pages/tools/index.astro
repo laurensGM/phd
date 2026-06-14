@@ -4,46 +4,48 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 const base = import.meta.env.BASE_URL;
 ---
 
-<BaseLayout title="Tools" description="Research tools - AI assistants, databases, and a bit of humour">
+<BaseLayout title="Tools" description="Research tools - AI assistants, databases, study quiz, FAQ, and a bit of humour">
   <h1>Tools</h1>
-  <p class="page-desc">AI tools for research and writing, citation databases, and links to PhD memes and academic humour.</p>
+  <p class="page-desc">
+    AI tools for research and writing, citation databases, your own FAQ, study quizzes, golden nuggets, and PhD humour when you need a break.
+  </p>
 
-  <div class="tools-categories">
-    <a href={`${base}tools/ai/`} class="category-card">
-      <span class="category-icon">🤖</span>
-      <h2 class="category-title">AI tools</h2>
-      <p class="category-desc">Elicit, SciSpace, Jenni, Julius, Notebook LM and more for literature search, writing, and analysis.</p>
-      <span class="category-link">Browse AI tools →</span>
+  <div class="rq-hub-grid">
+    <a href={`${base}tools/ai/`} class="rq-hub-card">
+      <span class="rq-hub-icon" aria-hidden="true">🤖</span>
+      <h2 class="rq-hub-title">AI tools</h2>
+      <p class="rq-hub-desc">Elicit, SciSpace, Jenni, Julius, Notebook LM and more for literature search, writing, and analysis.</p>
+      <span class="rq-hub-link">Browse AI tools →</span>
     </a>
-    <a href={`${base}tools/databases/`} class="category-card">
-      <span class="category-icon">📚</span>
-      <h2 class="category-title">Databases</h2>
-      <p class="category-desc">Web of Science, Google Scholar, Scopus, VOSviewer and other citation and discovery platforms.</p>
-      <span class="category-link">Browse databases →</span>
+    <a href={`${base}tools/databases/`} class="rq-hub-card">
+      <span class="rq-hub-icon" aria-hidden="true">📚</span>
+      <h2 class="rq-hub-title">Databases</h2>
+      <p class="rq-hub-desc">Web of Science, Google Scholar, Scopus, VOSviewer and other citation and discovery platforms.</p>
+      <span class="rq-hub-link">Browse databases →</span>
     </a>
-    <a href={`${base}tools/golden-nuggets/`} class="category-card">
-      <span class="category-icon">💎</span>
-      <h2 class="category-title">Golden nuggets</h2>
-      <p class="category-desc">Key insights, quotes, and words of wisdom from your research journey.</p>
-      <span class="category-link">Browse golden nuggets →</span>
+    <a href={`${base}tools/golden-nuggets/`} class="rq-hub-card">
+      <span class="rq-hub-icon" aria-hidden="true">💎</span>
+      <h2 class="rq-hub-title">Golden nuggets</h2>
+      <p class="rq-hub-desc">Key insights, quotes, and words of wisdom from your research journey.</p>
+      <span class="rq-hub-link">Browse golden nuggets →</span>
     </a>
-    <a href={`${base}tools/faq/`} class="category-card">
-      <span class="category-icon">❔</span>
-      <h2 class="category-title">FAQ</h2>
-      <p class="category-desc">Your own Q&amp;A — add questions and answers, edit anytime, expand answers when you need them.</p>
-      <span class="category-link">Browse FAQ →</span>
+    <a href={`${base}tools/faq/`} class="rq-hub-card">
+      <span class="rq-hub-icon" aria-hidden="true">❔</span>
+      <h2 class="rq-hub-title">FAQ</h2>
+      <p class="rq-hub-desc">Your own Q&amp;A — add questions and answers, label by method or theory, edit anytime.</p>
+      <span class="rq-hub-link">Browse FAQ →</span>
     </a>
-    <a href={`${base}tools/quiz/`} class="category-card">
-      <span class="category-icon">📝</span>
-      <h2 class="category-title">Study quiz</h2>
-      <p class="category-desc">Auto-generated quizzes on CI models, constructs, authors, and model relationships from your PhD content.</p>
-      <span class="category-link">Take a quiz →</span>
+    <a href={`${base}tools/quiz/`} class="rq-hub-card">
+      <span class="rq-hub-icon" aria-hidden="true">📝</span>
+      <h2 class="rq-hub-title">Study quiz</h2>
+      <p class="rq-hub-desc">Auto-generated quizzes on CI models, constructs, authors, and model relationships from your PhD content.</p>
+      <span class="rq-hub-link">Take a quiz →</span>
     </a>
-    <a href={`${base}tools/memes/`} class="category-card">
-      <span class="category-icon">😄</span>
-      <h2 class="category-title">Memes</h2>
-      <p class="category-desc">Funny and relatable memes and jokes about doing a PhD. When you need a laugh between chapters.</p>
-      <span class="category-link">Browse memes →</span>
+    <a href={`${base}tools/memes/`} class="rq-hub-card">
+      <span class="rq-hub-icon" aria-hidden="true">😄</span>
+      <h2 class="rq-hub-title">Memes</h2>
+      <p class="rq-hub-desc">Funny and relatable memes and jokes about doing a PhD. When you need a laugh between chapters.</p>
+      <span class="rq-hub-link">Browse memes →</span>
     </a>
   </div>
 </BaseLayout>
@@ -53,15 +55,14 @@ const base = import.meta.env.BASE_URL;
     color: var(--color-ink-muted);
     margin-bottom: 2rem;
     line-height: 1.6;
+    max-width: 40rem;
   }
-
-  .tools-categories {
+  .rq-hub-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 1.5rem;
   }
-
-  .category-card {
+  .rq-hub-card {
     display: flex;
     flex-direction: column;
     padding: 2rem;
@@ -73,36 +74,31 @@ const base = import.meta.env.BASE_URL;
     color: inherit;
     transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
   }
-
-  .category-card:hover {
+  .rq-hub-card:hover {
     border-color: var(--color-maroon-muted);
     box-shadow: var(--shadow-md);
     transform: translateY(-2px);
     text-decoration: none;
     color: inherit;
   }
-
-  .category-icon {
+  .rq-hub-icon {
     font-size: 2rem;
     margin-bottom: 0.75rem;
   }
-
-  .category-title {
+  .rq-hub-title {
     font-family: var(--font-serif);
     font-size: 1.35rem;
     margin: 0 0 0.5rem 0;
     color: var(--color-maroon);
   }
-
-  .category-desc {
+  .rq-hub-desc {
     flex: 1;
     margin: 0;
     font-size: 0.95rem;
     line-height: 1.55;
     color: var(--color-ink);
   }
-
-  .category-link {
+  .rq-hub-link {
     margin-top: 1rem;
     font-size: 0.9rem;
     font-weight: 600;

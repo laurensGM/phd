@@ -54,7 +54,12 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
             </ul>
           </li>
           <li class="nav-dropdown-wrap">
-            <span class="nav-dropdown-trigger" tabindex="0" aria-haspopup="true" aria-expanded="false" id="writing-trigger">Writing</span>
+            <a
+              href={`${base}writing/`}
+              class="nav-dropdown-trigger"
+              id="writing-trigger"
+              aria-haspopup="true"
+            >Writing</a>
             <ul class="nav-dropdown" aria-labelledby="writing-trigger">
               <li><a href={`${base}tools/writing/`}>Words</a></li>
               <li><a href={`${base}writing/revise-and-edit/`}>Revise and edit</a></li>
@@ -100,7 +105,12 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
             </ul>
           </li>
           <li class="nav-dropdown-wrap">
-            <span class="nav-dropdown-trigger" tabindex="0" aria-haspopup="true" aria-expanded="false" id="tools-trigger">Tools</span>
+            <a
+              href={`${base}tools/`}
+              class="nav-dropdown-trigger"
+              id="tools-trigger"
+              aria-haspopup="true"
+            >Tools</a>
             <ul class="nav-dropdown" aria-labelledby="tools-trigger">
               <li><a href={`${base}tools/ai/`}>AI tools</a></li>
               <li><a href={`${base}tools/databases/`}>Databases</a></li>
