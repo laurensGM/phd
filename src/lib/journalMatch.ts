@@ -58,3 +58,28 @@ export function paperMatchesJournal(
   if (!paperJournal?.trim()) return false;
   return candidates.some((candidate) => namesMatch(paperJournal, candidate));
 }
+
+export type FieldJournalEntry =
+  | string
+  | {
+      name: string;
+      matchNames?: string[];
+    };
+
+export function fieldJournalMatchCandidates(journals: FieldJournalEntry[]): string[] {
+  const all = new Set<string>();
+  for (const entry of journals) {
+    const name = typeof entry === 'string' ? entry : entry.name;
+    const extras = typeof entry === 'string' ? [] : (entry.matchNames ?? []);
+    journalMatchCandidates(name, extras).forEach((candidate) => all.add(candidate));
+  }
+  return [...all];
+}
+
+export function paperBelongsToField(
+  paperJournal: string | null | undefined,
+  fieldJournals: FieldJournalEntry[]
+): boolean {
+  if (!fieldJournals.length) return false;
+  return paperMatchesJournal(paperJournal, fieldJournalMatchCandidates(fieldJournals));
+}

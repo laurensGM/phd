@@ -434,15 +434,13 @@ export default function SnippetsPage() {
     return Array.from(set).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
   }, [papers]);
 
-  const paperSnippetCounts = useMemo(() => {
-    const map = new Map<string, number>();
-    snippets.forEach((s) => map.set(s.paper_id, (map.get(s.paper_id) ?? 0) + 1));
-    return map;
-  }, [snippets]);
-
-  const papersSortedByCount = useMemo(() => {
-    return [...papers].sort((a, b) => (paperSnippetCounts.get(b.id) ?? 0) - (paperSnippetCounts.get(a.id) ?? 0));
-  }, [papers, paperSnippetCounts]);
+  const papersSortedAlphabetically = useMemo(() => {
+    return [...papers].sort((a, b) => {
+      const labelA = (a.title && a.title.trim()) || a.url;
+      const labelB = (b.title && b.title.trim()) || b.url;
+      return labelA.localeCompare(labelB, undefined, { sensitivity: 'base' });
+    });
+  }, [papers]);
 
   const constructSnippetCounts = useMemo(() => {
     const map = new Map<string, number>();
@@ -1223,7 +1221,7 @@ export default function SnippetsPage() {
                 onChange={(e) => setFilterPaperId(e.target.value)}
               >
                 <option value="">All</option>
-                {papersSortedByCount.map((p) => (
+                {papersSortedAlphabetically.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.title || p.url}
                   </option>
@@ -1376,7 +1374,7 @@ export default function SnippetsPage() {
                   required
                 >
                   <option value="">Select a paper…</option>
-                  {papers.map((p) => (
+                  {papersSortedAlphabetically.map((p) => (
                     <option key={p.id} value={p.id}>
                       {p.title || p.url}
                     </option>
