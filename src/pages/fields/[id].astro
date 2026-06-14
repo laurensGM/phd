@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import JournalSavedPapers from '../../components/JournalSavedPapers';
+import FieldJournalsSection, { type FieldJournalItem } from '../../components/FieldJournalsSection';
 import fields from '../../data/fields.json';
 
 export function getStaticPaths() {
@@ -27,25 +27,21 @@ type JournalEntry =
       matchNames?: string[];
     };
 
-function journalName(entry: JournalEntry): string {
-  return typeof entry === 'string' ? entry : entry.name;
-}
-
-function journalUrl(entry: JournalEntry): string | undefined {
-  return typeof entry === 'string' ? undefined : entry.url;
-}
-
-function journalNote(entry: JournalEntry): string | undefined {
-  return typeof entry === 'string' ? undefined : entry.note;
-}
-
-function journalMatchNames(entry: JournalEntry): string[] | undefined {
-  return typeof entry === 'string' ? undefined : entry.matchNames;
+function normalizeJournalEntry(entry: JournalEntry): FieldJournalItem {
+  if (typeof entry === 'string') return { name: entry };
+  return {
+    name: entry.name,
+    url: entry.url,
+    note: entry.note,
+    matchNames: entry.matchNames,
+  };
 }
 
 if (!field) {
   return Astro.redirect(`${base}fields/`);
 }
+
+const journalItems: FieldJournalItem[] = (field.journals ?? []).map(normalizeJournalEntry);
 ---
 
 <BaseLayout title={field.name} description={field.description}>
@@ -62,39 +58,8 @@ if (!field) {
       ))}
     </section>
 
-    {field.journals && field.journals.length > 0 && (
-      <section class="field-journals">
-        <h2>Top journals</h2>
-        <ul class="journals-list">
-          {field.journals.map((entry: JournalEntry) => {
-            const name = journalName(entry);
-            const url = journalUrl(entry);
-            const note = journalNote(entry);
-            const matchNames = journalMatchNames(entry);
-            return (
-              <li class="journal-entry">
-                <div class="journal-entry-header">
-                  {url ? (
-                    <a href={url} class="journal-link" target="_blank" rel="noopener noreferrer">
-                      {name}
-                      <span class="journal-link-icon" aria-hidden="true">↗</span>
-                    </a>
-                  ) : (
-                    <span class="journal-name">{name}</span>
-                  )}
-                </div>
-                {note && <p class="journal-note">{note}</p>}
-                <JournalSavedPapers
-                  client:visible
-                  journalName={name}
-                  matchNames={matchNames}
-                  base={base}
-                />
-              </li>
-            );
-          })}
-        </ul>
-      </section>
+    {journalItems.length > 0 && (
+      <FieldJournalsSection client:load journals={journalItems} base={base} />
     )}
   </article>
 </BaseLayout>
@@ -152,52 +117,52 @@ if (!field) {
     margin-top: 1.25rem;
   }
 
-  .field-journals {
+  :global(.field-journals) {
     margin-top: 2rem;
     padding-top: 1.5rem;
     border-top: 1px solid var(--color-border);
   }
-  .field-journals h2 {
+  :global(.field-journals h2) {
     font-size: 1.2rem;
     color: var(--color-maroon);
     margin: 0 0 0.75rem 0;
   }
-  .journals-list {
+  :global(.journals-list) {
     list-style: none;
     padding: 0;
     margin: 0;
   }
-  .journal-entry {
+  :global(.journal-entry) {
     padding: 1rem 0;
     border-bottom: 1px solid var(--color-border);
   }
-  .journal-entry:last-child {
+  :global(.journal-entry:last-child) {
     border-bottom: none;
   }
-  .journal-entry-header {
+  :global(.journal-entry-header) {
     margin-bottom: 0.35rem;
   }
-  .journal-link,
-  .journal-name {
+  :global(.journal-link),
+  :global(.journal-name) {
     font-size: 1rem;
     font-weight: 600;
     line-height: 1.4;
     color: var(--color-maroon);
   }
-  .journal-link {
+  :global(.journal-link) {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
     text-decoration: none;
   }
-  .journal-link:hover {
+  :global(.journal-link:hover) {
     text-decoration: underline;
   }
-  .journal-link-icon {
+  :global(.journal-link-icon) {
     font-size: 0.85rem;
     opacity: 0.75;
   }
-  .journal-note {
+  :global(.journal-note) {
     margin: 0;
     font-size: 0.92rem;
     line-height: 1.55;
