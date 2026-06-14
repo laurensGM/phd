@@ -110,12 +110,37 @@
     "category": "secondary",
     "description": "Concerned with poverty, smallholder farming, rural livelihoods. Your SSA context plugs directly into this literature.",
     "journals": [
-      "World Development",
-      "Journal of Development Economics",
-      "Development Policy Review",
-      "Journal of Development Studies",
-      "Oxford Development Studies",
-      "European Journal of Development Research"
+      {
+        "name": "World Development",
+        "url": "https://www.sciencedirect.com/journal/world-development",
+        "note": "Technology and development intersection."
+      },
+      {
+        "name": "Journal of Rural Studies",
+        "url": "https://www.sciencedirect.com/journal/journal-of-rural-studies",
+        "note": "Relevant for Tanzania/Kenya fieldwork framing."
+      },
+      {
+        "name": "Development Policy Review",
+        "url": "https://onlinelibrary.wiley.com/journal/14677679",
+        "note": "SSA-focused; useful for contextualising Facilitating Conditions."
+      },
+      {
+        "name": "Journal of Development Economics",
+        "url": "https://www.sciencedirect.com/journal/journal-of-development-economics"
+      },
+      {
+        "name": "Journal of Development Studies",
+        "url": "https://www.tandfonline.com/toc/cjds20/current"
+      },
+      {
+        "name": "Oxford Development Studies",
+        "url": "https://www.tandfonline.com/toc/cods20/current"
+      },
+      {
+        "name": "European Journal of Development Research",
+        "url": "https://link.springer.com/journal/41287"
+      }
     ]
   },
   {
@@ -152,12 +177,33 @@
     "category": "secondary",
     "description": "Concerned with usability, user experience, and interface design. Closely related to why tools fit or don't fit user tasks.",
     "journals": [
-      "ACM CHI Conference Proceedings — the premier HCI venue (conference, not journal)",
-      "ACM Transactions on Computer-Human Interaction (TOCHI)",
-      "Human-Computer Interaction (Taylor & Francis)",
-      "International Journal of Human-Computer Studies",
-      "Behaviour & Information Technology",
-      "Interacting with Computers"
+      {
+        "name": "Behaviour & Information Technology",
+        "url": "https://www.tandfonline.com/toc/tbit20/current",
+        "note": "Closest to your IS/HCI boundary."
+      },
+      {
+        "name": "International Journal of Human-Computer Studies",
+        "url": "https://www.sciencedirect.com/journal/international-journal-of-human-computer-studies",
+        "note": "Usability + task–technology fit territory."
+      },
+      {
+        "name": "Interacting with Computers",
+        "url": "https://www.sciencedirect.com/journal/interacting-with-computers",
+        "note": "Mobile/field contexts well covered."
+      },
+      {
+        "name": "ACM CHI Conference Proceedings — the premier HCI venue (conference, not journal)",
+        "url": "https://dl.acm.org/conference/chi"
+      },
+      {
+        "name": "ACM Transactions on Computer-Human Interaction (TOCHI)",
+        "url": "https://dl.acm.org/journal/tochi"
+      },
+      {
+        "name": "Human-Computer Interaction (Taylor & Francis)",
+        "url": "https://www.tandfonline.com/toc/hhci20/current"
+      }
     ]
   },
   {
