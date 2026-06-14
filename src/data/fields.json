@@ -5,24 +5,64 @@
     "category": "primary",
     "description": "This is your primary disciplinary home. TPC (task–technology fit), ECM, TAM, continuance intention are all core IS theories. Most of your citations will likely come from here.",
     "journals": [
-      "MIS Quarterly (MISQ) — the gold standard",
-      "Information Systems Research (ISR)",
-      "Journal of Management Information Systems (JMIS)",
-      "European Journal of Information Systems (EJIS)",
-      "Journal of the Association for Information Systems (JAIS)",
-      "Information & Management"
+      {
+        "name": "Information & Management",
+        "url": "https://www.sciencedirect.com/journal/information-and-management",
+        "note": "Highest volume of TTF, ECM, and continuance studies; most likely home for your eventual publication."
+      },
+      {
+        "name": "Journal of the Association for Information Systems (JAIS)",
+        "url": "https://aisel.aisnet.org/jais/",
+        "note": "Open-access, with a strong qualitative IS tradition."
+      },
+      {
+        "name": "MIS Quarterly (MISQ)",
+        "url": "https://misq.umn.edu/",
+        "note": "Gold standard; read for theory, less likely publication target at PhD stage."
+      },
+      {
+        "name": "European Journal of Information Systems (EJIS)",
+        "url": "https://www.tandfonline.com/toc/tjis20/current",
+        "note": "European tradition, strong on context-sensitive IS research."
+      },
+      {
+        "name": "Information Systems Research (ISR)",
+        "url": "https://pubsonline.informs.org/journal/isre",
+        "note": "Flagship venue; read seminal pieces, less realistic as a submission target."
+      },
+      {
+        "name": "Journal of Management Information Systems (JMIS)",
+        "url": "https://www.jmis-web.org/",
+        "note": "Flagship venue; read seminal pieces, less realistic as a submission target."
+      }
     ]
   },
   {
     "id": "ict4d",
     "name": "ICT4D",
     "category": "primary",
-    "description": "As discussed — your broader contextual umbrella. Positions your work in the developing country / Global South discourse.",
+    "description": "As discussed — your broader contextual umbrella. Positions your work in the developing country / Global South discourse.\n\nICT4D isn't just a \"contextual umbrella\" — for your novelty claim (professionals in SSA, not smallholder farmers), it's actually where your gap lives. The ICT4D literature has overwhelmingly focused on farmers and rural beneficiaries; your paper is partly a critique of that bias. That makes ICT4D not just context, but a conversation partner.",
     "journals": [
-      "Information Technology for Development",
-      "Electronic Journal of Information Systems in Developing Countries (EJISDC)",
-      "Information Technologies & International Development (ITID)",
-      "Journal of Information Technology for Development"
+      {
+        "name": "Information Technology for Development (ITD)",
+        "url": "https://www.tandfonline.com/toc/titd20/current",
+        "note": "Core venue; directly relevant."
+      },
+      {
+        "name": "Electronic Journal of Information Systems in Developing Countries (EJISDC)",
+        "url": "https://ejisdc.org/",
+        "note": "Open-access, African context well-represented; your most likely publication target."
+      },
+      {
+        "name": "Information Technologies & International Development (ITID)",
+        "url": "https://direct.mit.edu/itid",
+        "note": "MIT Press; strong on development + digital."
+      },
+      {
+        "name": "African Journal of Information Systems (AJIS)",
+        "url": "https://digitalcommons.kennesaw.edu/ajis/",
+        "note": "Underused but genuinely relevant; SSA-specific IS research."
+      }
     ]
   },
   {
@@ -31,12 +71,37 @@
     "category": "secondary",
     "description": "Agritech is inherently about agricultural productivity and decision-making. Journals in this space increasingly publish on digital tool adoption.",
     "journals": [
-      "American Journal of Agricultural Economics",
-      "Journal of Agricultural Economics",
-      "Food Policy",
-      "Agricultural Systems",
-      "World Development (also crosses into development studies)",
-      "NJAS — Wageningen Journal of Life Sciences"
+      {
+        "name": "Computers and Electronics in Agriculture",
+        "url": "https://www.sciencedirect.com/journal/computers-and-electronics-in-agriculture",
+        "note": "Largest volume of digital tool adoption studies in ag; directly relevant."
+      },
+      {
+        "name": "Agricultural Systems",
+        "url": "https://www.sciencedirect.com/journal/agricultural-systems",
+        "note": "Broader systems thinking; useful for framing platform use in research workflows."
+      },
+      {
+        "name": "Food Policy",
+        "url": "https://www.sciencedirect.com/journal/food-policy",
+        "note": "If your work touches on policy dimensions of ag data infrastructure."
+      },
+      {
+        "name": "American Journal of Agricultural Economics",
+        "url": "https://academic.oup.com/ajae"
+      },
+      {
+        "name": "Journal of Agricultural Economics",
+        "url": "https://onlinelibrary.wiley.com/journal/14778352"
+      },
+      {
+        "name": "World Development (also crosses into development studies)",
+        "url": "https://www.sciencedirect.com/journal/world-development"
+      },
+      {
+        "name": "NJAS — Wageningen Journal of Life Sciences",
+        "url": "https://www.sciencedirect.com/journal/njas-wageningen-journal-of-life-sciences"
+      }
     ]
   },
   {
@@ -132,6 +197,23 @@
       "Public Administration Review",
       "Journal of Public Administration Research and Theory",
       "Transforming Government: People, Process and Policy"
+    ]
+  },
+  {
+    "id": "sts-research-infrastructure",
+    "name": "Science & Technology Studies (STS) / Research Infrastructure",
+    "category": "peripheral",
+    "description": "Your users are scientists — breeders, researchers — using platforms for research data collection. A niche literature covers research information systems, data infrastructure in science, and digital tools in agricultural R&D; CGIAR itself has published in this space. Genuinely peripheral, but it opens access to a body of work that almost no TTF paper has touched — a differentiator.",
+    "journals": [
+      "Science, Technology & Human Values",
+      "Social Studies of Science",
+      "Journal of the Association for Information Science and Technology (JASIST)",
+      "International Journal on Digital Libraries",
+      "Data Science Journal",
+      "Computers and Electronics in Agriculture",
+      "Agricultural Systems",
+      "Global Food Security",
+      "CGIAR working papers and institutional publications"
     ]
   }
 ]
