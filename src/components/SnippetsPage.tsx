@@ -4,6 +4,11 @@ import constructsData from '../data/constructs.json';
 import modelsData from '../data/models.json';
 import umbrellaConstructsData from '../data/umbrella-constructs.json';
 import { getLocalEmbedding } from '../lib/localEmbeddings';
+import {
+  CONTRIBUTION_TYPE_LABELS,
+  type ContributionType,
+  isContributionType,
+} from '../data/contribution-types';
 
 const SNIPPET_TYPE_OPTIONS = [
   { value: '', label: '—' },
@@ -32,6 +37,11 @@ function canonicalSnippetType(value: string | null | undefined): string {
 function snippetTypeLabel(value: string | null | undefined): string {
   const canonical = canonicalSnippetType(value);
   return SNIPPET_TYPE_LABEL_BY_VALUE.get(canonical) ?? (value ?? '').trim();
+}
+
+function contributionPreview(content: string, max = 72): string {
+  const text = content.trim().replace(/\s+/g, ' ');
+  return text.length > max ? `${text.slice(0, max)}…` : text;
 }
 
 /** First token before comma, or last word (typical surname). */
@@ -208,7 +218,14 @@ interface Snippet {
   snippet_type: string | null;
   /** Marked on the snippets page when incorporated into a draft / thesis. */
   used_in_writing?: boolean;
+  contribution_id?: string | null;
   created_at: string;
+}
+
+interface ContributionSummary {
+  id: string;
+  content: string;
+  contribution_type: ContributionType | null;
 }
 
 interface PaperSummary {
@@ -338,6 +355,9 @@ export default function SnippetsPage() {
   const [savedPrompts, setSavedPrompts] = useState<LiteratureReviewPrompt[]>([]);
   const [savedPromptsLoading, setSavedPromptsLoading] = useState(true);
   const [localEmbeddingsAvailable, setLocalEmbeddingsAvailable] = useState(true);
+  const [contributions, setContributions] = useState<ContributionSummary[]>([]);
+  const [linkingSnippetId, setLinkingSnippetId] = useState<string | null>(null);
+  const [linkingContribution, setLinkingContribution] = useState(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -356,13 +376,17 @@ export default function SnippetsPage() {
     (async () => {
       setLoading(true);
       setError(null);
-      const [{ data: snippetData, error: snippetErr }, { data: papersData, error: papersErr }] =
+      const [{ data: snippetData, error: snippetErr }, { data: papersData, error: papersErr }, contributionsRes] =
         await Promise.all([
           supabase!
             .from('snippets')
             .select('*')
             .order('created_at', { ascending: false }),
           supabase!.from('saved_papers').select('id,title,url,journal,authors,year'),
+          supabase!
+            .from('research_contributions')
+            .select('id, content, contribution_type')
+            .order('created_at', { ascending: false }),
         ]);
       if (cancelled) return;
       if (snippetErr) {
@@ -397,6 +421,19 @@ export default function SnippetsPage() {
           }))
         );
       }
+      if (contributionsRes.error) {
+        setContributions([]);
+      } else {
+        setContributions(
+          (contributionsRes.data ?? []).map((row: any) => ({
+            id: row.id as string,
+            content: row.content as string,
+            contribution_type: isContributionType(row.contribution_type)
+              ? row.contribution_type
+              : null,
+          }))
+        );
+      }
       const promptsRes = await supabase!
         .from('literature_review_prompts')
         .select('*')
@@ -425,6 +462,12 @@ export default function SnippetsPage() {
     for (const s of snippets) map.set(s.id, s);
     return map;
   }, [snippets]);
+
+  const contributionById = useMemo(() => {
+    const map = new Map<string, ContributionSummary>();
+    for (const c of contributions) map.set(c.id, c);
+    return map;
+  }, [contributions]);
 
   const allJournals = useMemo(() => {
     const set = new Set<string>();
@@ -751,6 +794,30 @@ export default function SnippetsPage() {
     },
     [newContent, newPaperId, newConstructId, newModelId, newPageNumber, newTagsInput, newSnippetType, allTags, syncSnippetEmbedding]
   );
+
+  const handleLinkContribution = useCallback(async (snippetId: string, contributionId: string | null) => {
+    if (!supabase || !isSupabaseConfigured()) return;
+    setLinkingContribution(true);
+    setError(null);
+    const { error: updateErr } = await supabase
+      .from('snippets')
+      .update({
+        contribution_id: contributionId,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', snippetId);
+    setLinkingContribution(false);
+    if (updateErr) {
+      setError(updateErr.message);
+      return;
+    }
+    setSnippets((prev) =>
+      prev.map((snippet) =>
+        snippet.id === snippetId ? { ...snippet, contribution_id: contributionId } : snippet
+      )
+    );
+    setLinkingSnippetId(null);
+  }, []);
 
   const handleDelete = useCallback(async (id: string) => {
     if (!supabase || !isSupabaseConfigured()) return;
@@ -1542,8 +1609,13 @@ export default function SnippetsPage() {
                 : s.content;
             const used = isSnippetUsedInWriting(s);
             const toggling = togglingProcessedId === s.id;
+            const linkedContribution = s.contribution_id
+              ? contributionById.get(s.contribution_id)
+              : undefined;
+            const showContributionPicker = linkingSnippetId === s.id;
             return (
               <article
+                id={`snippet-${s.id}`}
                 key={s.id}
                 className={`snippets-card${promptMode ? ' snippets-card-selectable' : ''}${
                   used ? ' snippets-card--used' : ''
@@ -1582,6 +1654,16 @@ export default function SnippetsPage() {
                       </span>
                     )}
                     {used && <span className="snippets-card-used-badge">Processed</span>}
+                    {linkedContribution && (
+                      <a
+                        href={`${base}research-questions/contribution/#contribution-${linkedContribution.id}`}
+                        className="snippets-card-contribution-badge"
+                      >
+                        {linkedContribution.contribution_type
+                          ? CONTRIBUTION_TYPE_LABELS[linkedContribution.contribution_type]
+                          : 'Contribution'}
+                      </a>
+                    )}
                   </div>
                   <div className="snippets-card-links">
                     {(() => {
@@ -1808,6 +1890,15 @@ export default function SnippetsPage() {
                         )}
                         <button
                           type="button"
+                          className="snippets-link-contribution-btn"
+                          onClick={() =>
+                            setLinkingSnippetId(showContributionPicker ? null : s.id)
+                          }
+                        >
+                          {linkedContribution ? 'Change contribution' : 'Link to contribution'}
+                        </button>
+                        <button
+                          type="button"
                           className="snippets-edit-btn"
                           onClick={() => startEdit(s)}
                         >
@@ -1822,6 +1913,58 @@ export default function SnippetsPage() {
                         </button>
                       </div>
                     </footer>
+                    {showContributionPicker && (
+                      <div className="snippets-contribution-picker">
+                        {contributions.length === 0 ? (
+                          <p className="snippets-contribution-picker-empty">
+                            No contributions yet. Add one on the Contribution page first.
+                          </p>
+                        ) : (
+                          <ul className="snippets-contribution-picker-list">
+                            {contributions.map((contribution) => (
+                              <li key={contribution.id}>
+                                <button
+                                  type="button"
+                                  className={`snippets-contribution-picker-item${
+                                    s.contribution_id === contribution.id
+                                      ? ' snippets-contribution-picker-item--active'
+                                      : ''
+                                  }`}
+                                  disabled={linkingContribution}
+                                  onClick={() => handleLinkContribution(s.id, contribution.id)}
+                                >
+                                  <span className="snippets-contribution-picker-type">
+                                    {contribution.contribution_type
+                                      ? CONTRIBUTION_TYPE_LABELS[contribution.contribution_type]
+                                      : 'Contribution'}
+                                  </span>
+                                  <span className="snippets-contribution-picker-text">
+                                    {contributionPreview(contribution.content)}
+                                  </span>
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                        {s.contribution_id && (
+                          <button
+                            type="button"
+                            className="snippets-contribution-unlink"
+                            disabled={linkingContribution}
+                            onClick={() => handleLinkContribution(s.id, null)}
+                          >
+                            Unlink contribution
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          className="snippets-contribution-picker-cancel"
+                          onClick={() => setLinkingSnippetId(null)}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    )}
                   </>
                 )}
               </article>

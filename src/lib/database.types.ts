@@ -354,6 +354,7 @@ export interface Database {
           page_number: number | null;
           snippet_type: string | null;
           used_in_writing: boolean;
+          contribution_id: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -369,6 +370,7 @@ export interface Database {
           page_number?: number | null;
           snippet_type?: string | null;
           used_in_writing?: boolean;
+          contribution_id?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -383,6 +385,7 @@ export interface Database {
           page_number?: number | null;
           snippet_type?: string | null;
           used_in_writing?: boolean;
+          contribution_id?: string | null;
           created_at?: string;
           updated_at?: string;
         };

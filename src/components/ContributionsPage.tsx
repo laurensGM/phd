@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { FormatDiaryText } from '../lib/formatDiaryText';
 import {
@@ -73,6 +73,39 @@ function TypePicker({ idPrefix, value, onChange }: TypePickerProps) {
   );
 }
 
+type TypeFilter = 'all' | ContributionType;
+
+function TypeFilterBar({
+  value,
+  onChange,
+  counts,
+}: {
+  value: TypeFilter;
+  onChange: (filter: TypeFilter) => void;
+  counts: Record<TypeFilter, number>;
+}) {
+  const options: { id: TypeFilter; label: string }[] = [
+    { id: 'all', label: 'All' },
+    ...CONTRIBUTION_TYPES.map((type) => ({ id: type, label: CONTRIBUTION_TYPE_LABELS[type] })),
+  ];
+
+  return (
+    <div className="contributions-filter-bar" role="group" aria-label="Filter by contribution type">
+      {options.map((option) => (
+        <button
+          key={option.id}
+          type="button"
+          className={`contributions-filter-chip${value === option.id ? ' contributions-filter-chip--active' : ''}`}
+          onClick={() => onChange(option.id)}
+        >
+          {option.label}
+          <span className="contributions-filter-count">{counts[option.id]}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function TypeBadge({ type }: { type: ContributionType | null }) {
   if (!type) {
     return <span className="contribution-type-badge contribution-type-badge--unset">No type set</span>;
@@ -84,7 +117,26 @@ function TypeBadge({ type }: { type: ContributionType | null }) {
   );
 }
 
+interface LinkedSnippet {
+  id: string;
+  content: string;
+  paper_id: string;
+  contribution_id: string | null;
+}
+
+interface PaperTitle {
+  id: string;
+  title: string | null;
+  url: string;
+}
+
+function snippetPreview(content: string, max = 120): string {
+  const text = content.trim().replace(/\s+/g, ' ');
+  return text.length > max ? `${text.slice(0, max)}…` : text;
+}
+
 export default function ContributionsPage() {
+  const base = (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) || '';
   const [items, setItems] = useState<Contribution[]>([]);
   const [draft, setDraft] = useState('');
   const [draftType, setDraftType] = useState<ContributionType | null>(null);
@@ -94,22 +146,56 @@ export default function ContributionsPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editDraft, setEditDraft] = useState('');
   const [editType, setEditType] = useState<ContributionType | null>(null);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
+  const [linkedSnippets, setLinkedSnippets] = useState<LinkedSnippet[]>([]);
+  const [papers, setPapers] = useState<PaperTitle[]>([]);
+  const [expandedSnippetContributions, setExpandedSnippetContributions] = useState<Set<string>>(
+    new Set()
+  );
   const [error, setError] = useState<string | null>(null);
 
   const fetchItems = useCallback(async () => {
     if (!supabase) return;
     setLoading(true);
     setError(null);
-    const { data, error: fetchError } = await supabase
-      .from('research_contributions')
-      .select('id, content, contribution_type, created_at, updated_at')
-      .order('created_at', { ascending: false });
-    if (fetchError) {
-      setError(fetchError.message);
+    const [contribRes, snippetsRes, papersRes] = await Promise.all([
+      supabase
+        .from('research_contributions')
+        .select('id, content, contribution_type, created_at, updated_at')
+        .order('created_at', { ascending: false }),
+      supabase
+        .from('snippets')
+        .select('id, content, paper_id, contribution_id')
+        .not('contribution_id', 'is', null),
+      supabase.from('saved_papers').select('id, title, url'),
+    ]);
+
+    if (contribRes.error) {
+      setError(contribRes.error.message);
       setItems([]);
     } else {
-      setItems((data ?? []).map(mapRow));
+      setItems((contribRes.data ?? []).map(mapRow));
     }
+
+    if (snippetsRes.error) {
+      setLinkedSnippets([]);
+    } else {
+      setLinkedSnippets((snippetsRes.data ?? []) as LinkedSnippet[]);
+    }
+
+    if (papersRes.error) {
+      setPapers([]);
+    } else {
+      setPapers(
+        (papersRes.data ?? []).map((row) => ({
+          id: row.id as string,
+          title: (row.title as string | null) ?? null,
+          url: row.url as string,
+        }))
+      );
+    }
+
     setLoading(false);
   }, []);
 
@@ -142,6 +228,7 @@ export default function ContributionsPage() {
       setItems((prev) => [mapRow(data), ...prev]);
       setDraft('');
       setDraftType(null);
+      setShowAddForm(false);
     }
   };
 
@@ -185,6 +272,12 @@ export default function ContributionsPage() {
       return;
     }
     setItems((prev) => prev.filter((item) => item.id !== id));
+    setLinkedSnippets((prev) => prev.filter((snippet) => snippet.contribution_id !== id));
+    setExpandedSnippetContributions((prev) => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
     if (editingId === id) {
       setEditingId(null);
       setEditDraft('');
@@ -197,6 +290,44 @@ export default function ContributionsPage() {
     setEditDraft(item.content);
     setEditType(item.contribution_type);
   };
+
+  const filterCounts = useMemo(() => {
+    const counts: Record<TypeFilter, number> = {
+      all: items.length,
+      theoretical: 0,
+      methodological: 0,
+      practical: 0,
+    };
+    for (const item of items) {
+      if (item.contribution_type) counts[item.contribution_type] += 1;
+    }
+    return counts;
+  }, [items]);
+
+  const paperById = useMemo(() => {
+    const map = new Map<string, PaperTitle>();
+    for (const paper of papers) map.set(paper.id, paper);
+    return map;
+  }, [papers]);
+
+  const snippetsByContributionId = useMemo(() => {
+    const map = new Map<string, LinkedSnippet[]>();
+    for (const snippet of linkedSnippets) {
+      if (!snippet.contribution_id) continue;
+      const list = map.get(snippet.contribution_id) ?? [];
+      list.push(snippet);
+      map.set(snippet.contribution_id, list);
+    }
+    for (const list of map.values()) {
+      list.sort((a, b) => a.content.localeCompare(b.content, undefined, { sensitivity: 'base' }));
+    }
+    return map;
+  }, [linkedSnippets]);
+
+  const filteredItems = useMemo(() => {
+    if (typeFilter === 'all') return items;
+    return items.filter((item) => item.contribution_type === typeFilter);
+  }, [items, typeFilter]);
 
   if (!isSupabaseConfigured()) {
     return (
@@ -216,28 +347,65 @@ export default function ContributionsPage() {
 
   const canAdd = draft.trim().length > 0 && draftType !== null;
 
+  const closeAddForm = () => {
+    setShowAddForm(false);
+    setDraft('');
+    setDraftType(null);
+  };
+
+  const toggleLinkedSnippets = (contributionId: string) => {
+    setExpandedSnippetContributions((prev) => {
+      const next = new Set(prev);
+      if (next.has(contributionId)) next.delete(contributionId);
+      else next.add(contributionId);
+      return next;
+    });
+  };
+
   return (
     <div className="contributions-page">
       {error && <p className="contributions-error">{error}</p>}
 
-      <form className="contributions-add-form" onSubmit={handleAdd}>
-        <label htmlFor="contribution-draft">Add a contribution</label>
-        <TypePicker idPrefix="add" value={draftType} onChange={setDraftType} />
-        <textarea
-          id="contribution-draft"
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          rows={4}
-          placeholder="Describe your contribution…"
-          className="contributions-textarea"
-        />
-        <p className="contributions-format-hint">
-          Line breaks are preserved. Use <code>**text**</code> for <strong>bold</strong>.
-        </p>
-        <button type="submit" className="contributions-submit" disabled={saving || !canAdd}>
-          {saving ? 'Saving…' : 'Add contribution'}
-        </button>
-      </form>
+      <div className="contributions-add-section">
+        {!showAddForm ? (
+          <button
+            type="button"
+            className="contributions-add-toggle"
+            onClick={() => setShowAddForm(true)}
+          >
+            Add contribution
+          </button>
+        ) : (
+          <form className="contributions-add-form" onSubmit={handleAdd}>
+            <label htmlFor="contribution-draft">Add a contribution</label>
+            <TypePicker idPrefix="add" value={draftType} onChange={setDraftType} />
+            <textarea
+              id="contribution-draft"
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              rows={4}
+              placeholder="Describe your contribution…"
+              className="contributions-textarea"
+            />
+            <p className="contributions-format-hint">
+              Line breaks are preserved. Use <code>**text**</code> for <strong>bold</strong>.
+            </p>
+            <div className="contribution-actions">
+              <button type="submit" className="contributions-submit" disabled={saving || !canAdd}>
+                {saving ? 'Saving…' : 'Add contribution'}
+              </button>
+              <button
+                type="button"
+                className="contributions-btn contributions-btn-secondary"
+                onClick={closeAddForm}
+                disabled={saving}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
 
       <section className="contributions-list-section">
         <h2 className="contributions-list-title">
@@ -245,17 +413,28 @@ export default function ContributionsPage() {
           {items.length > 0 && (
             <span className="contributions-count">
               {' '}
-              ({items.length})
+              ({typeFilter === 'all' ? items.length : `${filteredItems.length} of ${items.length}`})
             </span>
           )}
         </h2>
 
+        {items.length > 0 && (
+          <TypeFilterBar value={typeFilter} onChange={setTypeFilter} counts={filterCounts} />
+        )}
+
         {items.length === 0 ? (
-          <p className="contributions-empty">No contributions yet. Add your first statement above.</p>
+          <p className="contributions-empty">No contributions yet. Click &ldquo;Add contribution&rdquo; to add your first statement.</p>
+        ) : filteredItems.length === 0 ? (
+          <p className="contributions-empty">
+            No {CONTRIBUTION_TYPE_LABELS[typeFilter as ContributionType].toLowerCase()} contributions yet.
+          </p>
         ) : (
           <ul className="contributions-list">
-            {items.map((item) => (
-              <li key={item.id} className="contribution-item">
+            {filteredItems.map((item) => {
+              const linked = snippetsByContributionId.get(item.id) ?? [];
+              const snippetsExpanded = expandedSnippetContributions.has(item.id);
+              return (
+              <li key={item.id} id={`contribution-${item.id}`} className="contribution-item">
                 {editingId === item.id ? (
                   <div className="contribution-edit">
                     <TypePicker idPrefix={`edit-${item.id}`} value={editType} onChange={setEditType} />
@@ -293,6 +472,41 @@ export default function ContributionsPage() {
                     <p className="contribution-content">
                       <FormatDiaryText text={item.content} />
                     </p>
+                    {linked.length > 0 && (
+                      <div className="contribution-linked-snippets">
+                        <button
+                          type="button"
+                          className="contributions-btn contributions-btn-secondary contributions-show-snippets-btn"
+                          onClick={() => toggleLinkedSnippets(item.id)}
+                        >
+                          {snippetsExpanded
+                            ? `Hide ${linked.length} snippet${linked.length === 1 ? '' : 's'}`
+                            : `Show ${linked.length} snippet${linked.length === 1 ? '' : 's'}`}
+                        </button>
+                        {snippetsExpanded && (
+                          <ul className="contribution-linked-snippets-list">
+                            {linked.map((snippet) => {
+                              const paper = paperById.get(snippet.paper_id);
+                              return (
+                                <li key={snippet.id} className="contribution-linked-snippet-item">
+                                  <a
+                                    href={`${base}snippets/#snippet-${snippet.id}`}
+                                    className="contribution-linked-snippet-link"
+                                  >
+                                    {snippetPreview(snippet.content)}
+                                  </a>
+                                  {paper && (
+                                    <span className="contribution-linked-snippet-paper">
+                                      {paper.title || paper.url}
+                                    </span>
+                                  )}
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        )}
+                      </div>
+                    )}
                     <div className="contribution-meta">
                       <time dateTime={item.updated_at}>{formatDate(item.updated_at)}</time>
                       <div className="contribution-actions">
@@ -316,7 +530,8 @@ export default function ContributionsPage() {
                   </>
                 )}
               </li>
-            ))}
+            );
+            })}
           </ul>
         )}
       </section>
