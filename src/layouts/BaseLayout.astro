@@ -139,7 +139,12 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
             </ul>
           </li>
           <li class="nav-dropdown-wrap">
-            <span class="nav-dropdown-trigger" tabindex="0" aria-haspopup="true" aria-expanded="false" id="phd-manager-trigger">Manager</span>
+            <a
+              href={`${base}outline/`}
+              class="nav-dropdown-trigger"
+              id="phd-manager-trigger"
+              aria-haspopup="true"
+            >Manager</a>
             <ul class="nav-dropdown" aria-labelledby="phd-manager-trigger">
               <li><a href={`${base}outline/`}>PhD milestones</a></li>
               <li><a href={`${base}phd-outline/`}>PhD outline</a></li>
@@ -547,10 +552,8 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
       gap: 0;
       order: 3;
       margin: 0.35rem 0 0;
-      padding: 0.5rem 0 0.25rem;
+      padding: 0.25rem 0;
       border-top: 1px solid rgba(255, 255, 255, 0.2);
-      max-height: calc(100dvh - 5rem);
-      overflow-y: auto;
     }
 
     .site-header.nav-open .nav-links {
@@ -573,27 +576,13 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
     .nav-dropdown-trigger {
       display: block;
       width: 100%;
-      padding: 0.75rem 0.5rem;
+      padding: 0.85rem 0.5rem;
       font-weight: 600;
     }
 
+    /* Hub links only on mobile — submenus stay on desktop hover */
     .nav-dropdown {
-      position: static;
-      opacity: 1;
-      visibility: visible;
-      transform: none;
-      margin: 0;
-      padding: 0 0 0.5rem 0.75rem;
-      min-width: 0;
-      box-shadow: none;
-      border: none;
-      border-radius: 0;
-      background: transparent;
-    }
-
-    .nav-dropdown a {
-      padding: 0.55rem 0.75rem;
-      border-radius: 6px;
+      display: none;
     }
   }
 
