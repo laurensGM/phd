@@ -20,7 +20,14 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#712038" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="PhD Manager" />
     <link rel="icon" type="image/jpeg" href={`${base}logo-pos-browser.jpeg`} />
+    <link rel="apple-touch-icon" href={`${base}pwa-192x192.png`} />
+    <link rel="manifest" href={`${base}manifest.webmanifest`} />
     <meta name="description" content={description} />
     <title>{title} | PhD Manager</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -146,6 +153,7 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
       </div>
       <p class="footer-tagline">Organizing research one snippet at a time</p>
     </footer>
+    <script src={`${base}registerSW.js`} defer></script>
   </body>
 </html>
 
