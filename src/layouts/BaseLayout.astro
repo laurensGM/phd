@@ -41,7 +41,18 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
           <img src={`${base}logo-pos.png`} alt="PhD Manager" class="logo-img" width="48" height="48" />
           <span class="logo-text">PhD Manager</span>
         </a>
-        <ul class="nav-links">
+        <button
+          type="button"
+          class="nav-toggle"
+          aria-expanded="false"
+          aria-controls="nav-menu"
+          aria-label="Open menu"
+        >
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+        </button>
+        <ul class="nav-links" id="nav-menu">
           <li class="nav-dropdown-wrap">
             <a
               href={`${base}literature/`}
@@ -154,6 +165,38 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
       <p class="footer-tagline">Organizing research one snippet at a time</p>
     </footer>
     <script src={`${base}registerSW.js`} defer></script>
+    <script is:inline>
+      (function () {
+        var header = document.querySelector('.site-header');
+        var toggle = document.querySelector('.nav-toggle');
+        var menu = document.getElementById('nav-menu');
+        if (!header || !toggle || !menu) return;
+
+        function setOpen(open) {
+          header.classList.toggle('nav-open', open);
+          toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+          toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        }
+
+        toggle.addEventListener('click', function () {
+          setOpen(!header.classList.contains('nav-open'));
+        });
+
+        menu.querySelectorAll('a').forEach(function (link) {
+          link.addEventListener('click', function () {
+            setOpen(false);
+          });
+        });
+
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') setOpen(false);
+        });
+
+        window.matchMedia('(min-width: 769px)').addEventListener('change', function (e) {
+          if (e.matches) setOpen(false);
+        });
+      })();
+    </script>
   </body>
 </html>
 
@@ -424,10 +467,133 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
     box-shadow: 0 0 0 1px var(--color-gold);
   }
 
+  .nav-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0.5rem;
+    margin: 0;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .nav-toggle:hover,
+  .nav-toggle:focus-visible {
+    background: rgba(255, 255, 255, 0.16);
+    outline: 2px solid var(--color-gold-light);
+    outline-offset: 2px;
+  }
+
+  .nav-toggle-bar {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: #fff;
+    border-radius: 1px;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .site-header.nav-open .nav-toggle-bar:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .site-header.nav-open .nav-toggle-bar:nth-child(2) {
+    opacity: 0;
+  }
+
+  .site-header.nav-open .nav-toggle-bar:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  /* Content-page TOCs: scroll with the page on mobile */
+  @media (max-width: 899px) {
+    nav[aria-label="On this page"] {
+      position: static !important;
+      top: auto !important;
+      max-height: none !important;
+      overflow: visible !important;
+    }
+  }
+
   @media (max-width: 768px) {
-    .nav-links {
+    .site-header {
+      padding: 0.65rem 1rem;
+    }
+
+    .nav-toggle {
+      display: flex;
+    }
+
+    .nav-container {
       flex-wrap: wrap;
-      gap: 0.75rem;
+      gap: 0.5rem;
+    }
+
+    .logo-text {
+      font-size: 1.05rem;
+    }
+
+    .nav-links {
+      display: none;
+      flex: 1 1 100%;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      order: 3;
+      margin: 0.35rem 0 0;
+      padding: 0.5rem 0 0.25rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      max-height: calc(100dvh - 5rem);
+      overflow-y: auto;
+    }
+
+    .site-header.nav-open .nav-links {
+      display: flex;
+    }
+
+    .nav-links > li {
+      width: 100%;
+    }
+
+    .nav-dropdown-wrap {
+      width: 100%;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .nav-dropdown-wrap:last-child {
+      border-bottom: none;
+    }
+
+    .nav-dropdown-trigger {
+      display: block;
+      width: 100%;
+      padding: 0.75rem 0.5rem;
+      font-weight: 600;
+    }
+
+    .nav-dropdown {
+      position: static;
+      opacity: 1;
+      visibility: visible;
+      transform: none;
+      margin: 0;
+      padding: 0 0 0.5rem 0.75rem;
+      min-width: 0;
+      box-shadow: none;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+    }
+
+    .nav-dropdown a {
+      padding: 0.55rem 0.75rem;
+      border-radius: 6px;
     }
   }
 
