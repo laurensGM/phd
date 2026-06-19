@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { getPaperIdFromLocation } from '../lib/paperDetailUrl';
 import { uploadPaperCommentImage, removePaperCommentImage } from '../lib/paperCommentImage';
 import { extractImageFileFromClipboard } from '../lib/clipboardImage';
 import PaperModelLinks from './PaperModelLinks';
@@ -468,8 +469,18 @@ export default function PaperDetailPage() {
 
   const getIdFromUrl = useCallback((): string | null => {
     if (typeof window === 'undefined') return null;
-    const params = new URLSearchParams(window.location.search);
-    return params.get('id');
+    return getPaperIdFromLocation();
+  }, []);
+
+  const [locationKey, setLocationKey] = useState('');
+
+  useEffect(() => {
+    const syncLocation = () => {
+      setLocationKey(`${window.location.search}${window.location.hash}`);
+    };
+    syncLocation();
+    window.addEventListener('hashchange', syncLocation);
+    return () => window.removeEventListener('hashchange', syncLocation);
   }, []);
 
   useEffect(() => {
@@ -548,7 +559,7 @@ export default function PaperDetailPage() {
     return () => {
       cancelled = true;
     };
-  }, [getIdFromUrl, syncSummaryToEditor]);
+  }, [getIdFromUrl, syncSummaryToEditor, locationKey]);
 
   const handleStatusChange = useCallback(
     async (e: React.ChangeEvent<HTMLSelectElement>) => {

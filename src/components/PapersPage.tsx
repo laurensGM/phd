@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { paperDetailUrl } from '../lib/paperDetailUrl';
 import { PAPER_STATUSES, type PaperStatusId } from '../constants/paperStatuses';
 
 interface SavedPaper {
@@ -171,6 +172,7 @@ function mapRow(row: {
 }
 
 const base = (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) || '';
+const paperDetailHref = (id: string) => paperDetailUrl(id, base);
 
 export default function PapersPage() {
   const [papers, setPapers] = useState<SavedPaper[]>([]);
@@ -957,14 +959,14 @@ export default function PapersPage() {
               className={`papers-entry ${paper.golden ? 'papers-entry-golden' : ''} ${editingId !== paper.id ? 'papers-entry-clickable' : ''}`}
               onClick={editingId !== paper.id ? (e) => {
                 if ((e.target as HTMLElement).closest('a, button, input, textarea, select, form, label')) return;
-                window.location.href = `${base}papers/detail/?id=${paper.id}`;
+                window.location.href = paperDetailHref(paper.id);
               } : undefined}
               role={editingId !== paper.id ? 'button' : undefined}
               tabIndex={editingId !== paper.id ? 0 : undefined}
               onKeyDown={editingId !== paper.id ? (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
-                  if (!(e.target as HTMLElement).closest('a, button, input, textarea, select, form, label')) window.location.href = `${base}papers/detail/?id=${paper.id}`;
+                  if (!(e.target as HTMLElement).closest('a, button, input, textarea, select, form, label')) window.location.href = `${paperDetailHref(paper.id)}`;
                 }
               } : undefined}
             >
@@ -1235,14 +1237,14 @@ export default function PapersPage() {
                               setJustDraggedPaperId(null);
                               return;
                             }
-                            window.location.href = `${base}papers/detail/?id=${paper.id}`;
+                            window.location.href = paperDetailHref(paper.id);
                           }}
                           role="button"
                           tabIndex={0}
                           onKeyDown={(e) => {
                             if (e.key === 'Enter' || e.key === ' ') {
                               e.preventDefault();
-                              if (!(e.target as HTMLElement).closest('a, button')) window.location.href = `${base}papers/detail/?id=${paper.id}`;
+                              if (!(e.target as HTMLElement).closest('a, button')) window.location.href = `${paperDetailHref(paper.id)}`;
                             }
                           }}
                         >

@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { journalMatchCandidates, paperMatchesJournal } from '../lib/journalMatch';
+import { paperDetailUrl } from '../lib/paperDetailUrl';
 
 const PAPERS_FETCH_LIMIT = 3000;
 
@@ -154,7 +155,7 @@ export default function FieldJournalsSection({ journals, base }: FieldJournalsSe
                       {!fetchError && matchedPapers.length > 0 && (
                         <ul className="journal-saved-papers-list">
                           {matchedPapers.map((paper) => {
-                            const href = `${base}papers/detail/?id=${paper.id}`;
+                            const href = paperDetailUrl(paper.id, base);
                             const status = (paper.status && paper.status.trim()) || 'Not read';
                             return (
                               <li key={paper.id} className="journal-saved-papers-item">

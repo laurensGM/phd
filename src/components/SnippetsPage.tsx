@@ -10,6 +10,7 @@ import {
   isContributionType,
 } from '../data/contribution-types';
 import { FormatDiaryText } from '../lib/formatDiaryText';
+import { paperDetailUrl } from '../lib/paperDetailUrl';
 
 const SNIPPET_TYPE_OPTIONS = [
   { value: '', label: '—' },
@@ -1864,7 +1865,7 @@ export default function SnippetsPage() {
                     <p className="snippets-card-content">
                       {paper ? (
                         <a
-                          href={`${base}papers/detail/?id=${paper.id}`}
+                          href={paperDetailUrl(paper.id, base)}
                           className="snippets-card-paper"
                         >
                           {paper.title || paper.url}

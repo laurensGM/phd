@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import cytoscape from 'cytoscape';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { paperDetailUrl } from '../lib/paperDetailUrl';
 
 const BASE = typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL ? import.meta.env.BASE_URL : '/';
 
@@ -203,7 +204,7 @@ export default function TheoryMapGraph({ constructs: constructsProp, models: mod
           id: `paper-${p.id}`,
           label: (p.title && p.title.length > 50 ? p.title.slice(0, 47) + '…' : p.title) || 'Untitled',
           type: 'paper',
-          href: `${BASE}papers/detail/?id=${p.id}`,
+          href: paperDetailUrl(p.id, BASE),
           fullTitle: p.title,
         },
       });

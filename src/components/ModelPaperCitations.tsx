@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { paperDetailUrl } from '../lib/paperDetailUrl';
 
 const PAPERS_FETCH_LIMIT = 3000;
 
@@ -222,7 +223,7 @@ export default function ModelPaperCitations({ modelId, base }: ModelPaperCitatio
         <ul className="model-paper-citations-list">
           {links.map((link) => {
             const p = link.paper ?? paperById.get(link.paper_id);
-            const href = `${base}papers/detail/?id=${link.paper_id}`;
+            const href = paperDetailUrl(link.paper_id, base);
             const title = (p?.title && p.title.trim()) || (p?.url ?? `Paper ${link.paper_id.slice(0, 8)}…`);
             const meta = [p?.authors?.trim(), p?.year?.trim()].filter(Boolean).join(' · ');
             const status = (p?.status && p.status.trim()) || 'Not read';
