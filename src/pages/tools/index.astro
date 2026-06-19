@@ -4,10 +4,10 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 const base = import.meta.env.BASE_URL;
 ---
 
-<BaseLayout title="Tools" description="Research tools - AI assistants, databases, study quiz, FAQ, and a bit of humour">
+<BaseLayout title="Tools" description="Research tools - AI assistants, databases, FAQ, and a bit of humour">
   <h1>Tools</h1>
   <p class="page-desc">
-    AI tools for research and writing, citation databases, your own FAQ, study quizzes, golden nuggets, and PhD humour when you need a break.
+    AI tools for research and writing, citation databases, your own FAQ, golden nuggets, and PhD humour when you need a break.
   </p>
 
   <div class="rq-hub-grid">
@@ -34,12 +34,6 @@ const base = import.meta.env.BASE_URL;
       <h2 class="rq-hub-title">FAQ</h2>
       <p class="rq-hub-desc">Your own Q&amp;A — add questions and answers, label by method or theory, edit anytime.</p>
       <span class="rq-hub-link">Browse FAQ →</span>
-    </a>
-    <a href={`${base}tools/quiz/`} class="rq-hub-card">
-      <span class="rq-hub-icon" aria-hidden="true">📝</span>
-      <h2 class="rq-hub-title">Study quiz</h2>
-      <p class="rq-hub-desc">Auto-generated quizzes on CI models, constructs, authors, and model relationships from your PhD content.</p>
-      <span class="rq-hub-link">Take a quiz →</span>
     </a>
     <a href={`${base}tools/memes/`} class="rq-hub-card">
       <span class="rq-hub-icon" aria-hidden="true">😄</span>
