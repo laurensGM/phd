@@ -655,6 +655,88 @@ import PaperDetailPage from '../../components/PaperDetailPage';
   :global(.paper-detail-summary-bullet-block) {
     margin: 0;
   }
+  :global(.summary-narration) {
+    margin: 0 0 1.25rem 0;
+    padding: 1rem 1.1rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    border-left: 4px solid var(--color-gold);
+  }
+  :global(.summary-narration-header) {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+  }
+  :global(.summary-narration-icon) {
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+  :global(.summary-narration-meta) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  :global(.summary-narration-title) {
+    font-size: 0.95rem;
+    color: var(--color-maroon);
+  }
+  :global(.summary-narration-sub) {
+    font-size: 0.8rem;
+    color: var(--color-ink-muted);
+  }
+  :global(.summary-narration-error) {
+    margin: 0 0 0.65rem 0;
+    font-size: 0.85rem;
+    color: var(--color-error, #b91c1c);
+  }
+  :global(.summary-narration-hint) {
+    margin: 0 0 0.65rem 0;
+    font-size: 0.85rem;
+    color: var(--color-ink-muted);
+  }
+  :global(.summary-narration-controls) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+  :global(.summary-narration-btn) {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border: none;
+  }
+  :global(.summary-narration-btn-primary) {
+    background: var(--color-maroon);
+    color: #fff;
+  }
+  :global(.summary-narration-btn-secondary) {
+    background: #fff;
+    color: var(--color-maroon);
+    border: 1px solid var(--color-border);
+  }
+  :global(.summary-narration-btn:disabled) {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  :global(.summary-narration-progress) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  :global(.summary-narration-seek) {
+    width: 100%;
+    accent-color: var(--color-maroon);
+  }
+  :global(.summary-narration-time) {
+    font-size: 0.8rem;
+    color: var(--color-ink-muted);
+    text-align: right;
+  }
   :global(.paper-detail-snippets) {
     margin-top: 2rem;
   }

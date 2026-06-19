@@ -43,6 +43,22 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,ico,txt,jpg,jpeg,webp,woff,woff2,json}'],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/.*\.supabase\.co\/storage\/v1\/object\/public\/paper-narrations\/.+/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'paper-narrations',
+              expiration: {
+                maxEntries: 80,
+                maxAgeSeconds: 60 * 60 * 24 * 365,
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+        ],
       },
       experimental: {
         directoryAndTrailingSlashHandler: true,

@@ -3,6 +3,7 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { uploadPaperCommentImage, removePaperCommentImage } from '../lib/paperCommentImage';
 import { extractImageFileFromClipboard } from '../lib/clipboardImage';
 import PaperModelLinks from './PaperModelLinks';
+import SummaryNarrationPlayer from './SummaryNarrationPlayer';
 import { PAPER_STATUSES, type PaperStatusId } from '../constants/paperStatuses';
 import constructsData from '../data/constructs.json';
 import modelsData from '../data/models.json';
@@ -58,6 +59,8 @@ interface PaperSummary {
   conclusion_section: string | null;
   limitations_section: string | null;
   future_research_section: string | null;
+  narration_url: string | null;
+  narration_content_hash: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -1027,6 +1030,21 @@ export default function PaperDetailPage() {
 
         {summaryLoading && !summary && <p className="paper-detail-summary-loading">Loading summary…</p>}
         {summaryError && <p className="paper-detail-summary-error">{summaryError}</p>}
+
+        {!editingSummary && summary && (
+          <SummaryNarrationPlayer
+            paperId={paper.id}
+            paperTitle={paper.title}
+            paperAuthors={paper.authors}
+            paperYear={paper.year}
+            summary={summary}
+            onNarrationUpdated={(url, hash) =>
+              setSummary((prev) =>
+                prev ? { ...prev, narration_url: url, narration_content_hash: hash } : prev
+              )
+            }
+          />
+        )}
 
         {editingSummary && (
           <div className="paper-detail-summary-editor">

@@ -100,6 +100,8 @@ export interface Database {
           conclusion_section: string | null;
           limitations_section: string | null;
           future_research_section: string | null;
+          narration_url: string | null;
+          narration_content_hash: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -126,6 +128,8 @@ export interface Database {
           conclusion_section?: string | null;
           limitations_section?: string | null;
           future_research_section?: string | null;
+          narration_url?: string | null;
+          narration_content_hash?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -151,6 +155,8 @@ export interface Database {
           conclusion_section?: string | null;
           limitations_section?: string | null;
           future_research_section?: string | null;
+          narration_url?: string | null;
+          narration_content_hash?: string | null;
           updated_at?: string;
         };
       };
