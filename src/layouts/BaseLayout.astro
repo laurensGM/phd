@@ -171,6 +171,21 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
     <script src={`${base}registerSW.js`} defer></script>
     <script is:inline>
       (function () {
+        if (!('serviceWorker' in navigator)) return;
+        var reloaded = false;
+        navigator.serviceWorker.addEventListener('controllerchange', function () {
+          if (reloaded) return;
+          reloaded = true;
+          window.location.reload();
+        });
+        navigator.serviceWorker.ready.then(function (reg) {
+          reg.update();
+          if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+        });
+      })();
+    </script>
+    <script is:inline>
+      (function () {
         var header = document.querySelector('.site-header');
         var toggle = document.querySelector('.nav-toggle');
         var menu = document.getElementById('nav-menu');
@@ -557,6 +572,9 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
 
     .site-header.nav-open .nav-links {
       display: flex;
+      max-height: calc(100dvh - 4rem);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .nav-links > li {
@@ -580,8 +598,19 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
     }
 
     /* Hub links only on mobile — submenus stay on desktop hover */
-    .nav-dropdown {
-      display: none;
+    .site-header .nav-dropdown,
+    .nav-dropdown-wrap:hover .nav-dropdown,
+    .nav-dropdown-wrap:focus-within .nav-dropdown {
+      display: none !important;
+      height: 0 !important;
+      max-height: 0 !important;
+      overflow: hidden !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      border: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
     }
   }
 

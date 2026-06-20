@@ -116,7 +116,7 @@ function escapeSsml(text: string): string {
 /** Slower, lower pitch delivery — warm podcast-style narration. */
 function toSsml(text: string): string {
   const escaped = escapeSsml(text);
-  return `<speak><prosody rate="88%" pitch="-1.5st">${escaped}</prosody></speak>`;
+  return `<speak><prosody pitch="-1st">${escaped}</prosody></speak>`;
 }
 
 function chunkForTts(text: string, maxLen = 4200): string[] {
@@ -165,8 +165,8 @@ async function synthesizeChunk(ssml: string, apiKey: string): Promise<Uint8Array
       },
       audioConfig: {
         audioEncoding: 'MP3',
-        speakingRate: 0.9,
-        pitch: -1.0,
+        speakingRate: 1.3,
+        pitch: -0.5,
         effectsProfileId: ['handset-class-device'],
       },
     }),

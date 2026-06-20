@@ -956,20 +956,15 @@ export default function PapersPage() {
             return (
             <article
               key={paper.id}
-              className={`papers-entry ${paper.golden ? 'papers-entry-golden' : ''} ${editingId !== paper.id ? 'papers-entry-clickable' : ''}`}
-              onClick={editingId !== paper.id ? (e) => {
-                if ((e.target as HTMLElement).closest('a, button, input, textarea, select, form, label')) return;
-                window.location.href = paperDetailHref(paper.id);
-              } : undefined}
-              role={editingId !== paper.id ? 'button' : undefined}
-              tabIndex={editingId !== paper.id ? 0 : undefined}
-              onKeyDown={editingId !== paper.id ? (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  if (!(e.target as HTMLElement).closest('a, button, input, textarea, select, form, label')) window.location.href = `${paperDetailHref(paper.id)}`;
-                }
-              } : undefined}
+              className={`papers-entry ${paper.golden ? 'papers-entry-golden' : ''} ${editingId !== paper.id ? 'papers-entry-has-link' : ''}`}
             >
+              {editingId !== paper.id && (
+                <a
+                  className="papers-entry-open-link"
+                  href={paperDetailHref(paper.id)}
+                  aria-label={`Open details for ${paper.title || 'paper'}`}
+                />
+              )}
               {editingId === paper.id ? (
                 <form className="papers-entry-edit-form" onSubmit={handleSaveEdit}>
                   <div className="papers-form-field">
@@ -1226,28 +1221,23 @@ export default function PapersPage() {
                         return (
                         <div
                           key={paper.id}
-                          className={`papers-board-card ${draggedPaperId === paper.id ? 'papers-board-card-dragging' : ''} ${paper.golden ? 'papers-board-card-golden' : ''}`}
+                          className={`papers-board-card ${draggedPaperId === paper.id ? 'papers-board-card-dragging' : ''} ${paper.golden ? 'papers-board-card-golden' : ''} papers-board-card-has-link`}
                           draggable
                           onDragStart={(e) => handleBoardDragStart(e, paper.id)}
                           onDragEnd={handleBoardDragEnd}
                           onDragOver={handleBoardDragOver}
-                          onClick={(e) => {
-                            if ((e.target as HTMLElement).closest('a, button')) return;
-                            if (justDraggedPaperId === paper.id) {
-                              setJustDraggedPaperId(null);
-                              return;
-                            }
-                            window.location.href = paperDetailHref(paper.id);
-                          }}
-                          role="button"
-                          tabIndex={0}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                              e.preventDefault();
-                              if (!(e.target as HTMLElement).closest('a, button')) window.location.href = `${paperDetailHref(paper.id)}`;
-                            }
-                          }}
                         >
+                          <a
+                            className="papers-board-card-open-link"
+                            href={paperDetailHref(paper.id)}
+                            aria-label={`Open details for ${paper.title || 'paper'}`}
+                            onClick={(e) => {
+                              if (justDraggedPaperId === paper.id) {
+                                e.preventDefault();
+                                setJustDraggedPaperId(null);
+                              }
+                            }}
+                          />
                           <h4 className="papers-board-card-title">
                             <a
                               href={paper.url}

@@ -539,6 +539,24 @@ import PapersPage from '../../components/PapersPage';
   :global(.papers-page .papers-entry-clickable) {
     cursor: pointer;
   }
+  :global(.papers-page .papers-entry-has-link) {
+    position: relative;
+  }
+  :global(.papers-page .papers-entry-open-link) {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+    text-decoration: none;
+    color: inherit;
+  }
+  :global(.papers-page .papers-entry-actions),
+  :global(.papers-page .papers-entry-title a),
+  :global(.papers-page .papers-entry-secondary-link a),
+  :global(.papers-page .papers-entry-url-fallback a) {
+    position: relative;
+    z-index: 2;
+  }
   :global(.papers-page .papers-entry-secondary-link) {
     margin: 0.1rem 0 0.4rem 0;
     font-size: 0.85rem;
@@ -987,6 +1005,26 @@ import PapersPage from '../../components/PapersPage';
   :global(.papers-page .papers-board-card-golden) {
     border-color: var(--color-gold);
     box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.5);
+  }
+  :global(.papers-page .papers-board-card) {
+    position: relative;
+  }
+  :global(.papers-page .papers-board-card-has-link) {
+    cursor: pointer;
+  }
+  :global(.papers-page .papers-board-card-open-link) {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+    text-decoration: none;
+    color: inherit;
+  }
+  :global(.papers-page .papers-board-card-title a),
+  :global(.papers-page .papers-board-card-secondary a),
+  :global(.papers-page .papers-board-card-actions) {
+    position: relative;
+    z-index: 2;
   }
   :global(.papers-page .papers-board-card:active) {
     cursor: grabbing;
