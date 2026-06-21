@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { journalMatchCandidates, paperMatchesJournal } from '../lib/journalMatch';
+import { formatImpactFactor, getJournalImpactFactor } from '../lib/journalImpactFactor';
 import { paperDetailUrl } from '../lib/paperDetailUrl';
 
 const PAPERS_FETCH_LIMIT = 3000;
@@ -103,30 +104,49 @@ export default function FieldJournalsSection({ journals, base }: FieldJournalsSe
   return (
     <section className="field-journals">
       <h2>Top journals</h2>
+      <p className="field-journals-if-note">
+        Impact factors from Clarivate JCR (2024 release). Conferences and niche OA journals may not be indexed.
+      </p>
       <ul className="journals-list">
         {journals.map((journal) => {
           const matchedPapers = papersByJournal.get(journal.name) ?? [];
           const count = allPapers === null ? null : matchedPapers.length;
           const expanded = expandedJournals.has(journal.name);
+          const ifInfo = getJournalImpactFactor(journal.name, journal.matchNames ?? []);
+          const ifLabel = formatImpactFactor(ifInfo);
 
           return (
             <li key={journal.name} className="journal-entry">
               <div className="journal-entry-header">
-                {journal.url ? (
-                  <a
-                    href={journal.url}
-                    className="journal-link"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                <div className="journal-entry-title-row">
+                  {journal.url ? (
+                    <a
+                      href={journal.url}
+                      className="journal-link"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {journal.name}
+                      <span className="journal-link-icon" aria-hidden="true">
+                        ↗
+                      </span>
+                    </a>
+                  ) : (
+                    <span className="journal-name">{journal.name}</span>
+                  )}
+                  <span
+                    className={`journal-impact-factor${ifInfo.impactFactor != null ? ' journal-impact-factor--listed' : ' journal-impact-factor--unlisted'}`}
+                    title={`${ifInfo.source} (${ifInfo.releaseYear} release)`}
                   >
-                    {journal.name}
-                    <span className="journal-link-icon" aria-hidden="true">
-                      ↗
-                    </span>
-                  </a>
-                ) : (
-                  <span className="journal-name">{journal.name}</span>
-                )}
+                    {ifInfo.impactFactor != null ? (
+                      <>
+                        IF <strong>{ifLabel}</strong>
+                      </>
+                    ) : (
+                      ifLabel
+                    )}
+                  </span>
+                </div>
               </div>
               {journal.note && <p className="journal-note">{journal.note}</p>}
 

@@ -1,0 +1,79 @@
+{
+  "source": "Clarivate Journal Citation Reports",
+  "releaseYear": 2024,
+  "note": "2024 JCR release. Journals not indexed in JCR are marked notListed.",
+  "entries": [
+    { "matchNames": ["Information & Management", "Information and Management"], "impactFactor": 11.1 },
+    { "matchNames": ["Journal of the Association for Information Systems (JAIS)", "Journal of the Association for Information Systems", "JAIS"], "impactFactor": 5.5 },
+    { "matchNames": ["MIS Quarterly (MISQ)", "MIS Quarterly", "MISQ"], "impactFactor": 6.0 },
+    { "matchNames": ["European Journal of Information Systems (EJIS)", "European Journal of Information Systems", "EJIS"], "impactFactor": 8.6 },
+    { "matchNames": ["Information Systems Research (ISR)", "Information Systems Research", "ISR"], "impactFactor": 5.1 },
+    { "matchNames": ["Journal of Management Information Systems (JMIS)", "Journal of Management Information Systems", "JMIS"], "impactFactor": 6.2 },
+
+    { "matchNames": ["Information Technology for Development (ITD)", "Information Technology for Development", "ITD"], "impactFactor": 5.1 },
+    { "matchNames": ["Electronic Journal of Information Systems in Developing Countries (EJISDC)", "Electronic Journal of Information Systems in Developing Countries", "EJISDC"], "notListed": true },
+    { "matchNames": ["Information Technologies & International Development (ITID)", "Information Technologies & International Development", "ITID"], "notListed": true },
+    { "matchNames": ["African Journal of Information Systems (AJIS)", "African Journal of Information Systems", "AJIS"], "notListed": true },
+
+    { "matchNames": ["Computers and Electronics in Agriculture"], "impactFactor": 8.9 },
+    { "matchNames": ["Agricultural Systems"], "impactFactor": 6.1 },
+    { "matchNames": ["Food Policy"], "impactFactor": 6.9 },
+    { "matchNames": ["American Journal of Agricultural Economics"], "impactFactor": 3.3 },
+    { "matchNames": ["Journal of Agricultural Economics"], "impactFactor": 4.2 },
+    { "matchNames": ["World Development"], "impactFactor": 4.8 },
+    { "matchNames": ["NJAS — Wageningen Journal of Life Sciences", "NJAS - Wageningen Journal of Life Sciences", "NJAS Wageningen Journal of Life Sciences"], "impactFactor": 4.0 },
+
+    { "matchNames": ["Journal of Rural Studies"], "impactFactor": 5.7 },
+    { "matchNames": ["Development Policy Review"], "impactFactor": 2.6 },
+    { "matchNames": ["Journal of Development Economics"], "impactFactor": 4.6 },
+    { "matchNames": ["Journal of Development Studies"], "impactFactor": 1.9 },
+    { "matchNames": ["Oxford Development Studies"], "impactFactor": 2.1 },
+    { "matchNames": ["European Journal of Development Research"], "impactFactor": 2.5 },
+
+    { "matchNames": ["Research Policy"], "impactFactor": 10.0 },
+    { "matchNames": ["Journal of Business Venturing"], "impactFactor": 8.2 },
+    { "matchNames": ["Technovation"], "impactFactor": 10.9 },
+    { "matchNames": ["Small Business Economics"], "impactFactor": 4.0 },
+    { "matchNames": ["Strategic Management Journal (for innovation angles)", "Strategic Management Journal"], "impactFactor": 7.4 },
+    { "matchNames": ["Journal of Product Innovation Management"], "impactFactor": 8.5 },
+
+    { "matchNames": ["Journal of Marketing Research"], "impactFactor": 4.8 },
+    { "matchNames": ["Journal of Consumer Research"], "impactFactor": 6.0 },
+    { "matchNames": ["Journal of the Academy of Marketing Science"], "impactFactor": 12.0 },
+    { "matchNames": ["Journal of Marketing"], "impactFactor": 10.4 },
+    { "matchNames": ["Journal of Retailing"], "impactFactor": 7.8 },
+    { "matchNames": ["Journal of Interactive Marketing (relevant for digital products)", "Journal of Interactive Marketing"], "impactFactor": 9.0 },
+
+    { "matchNames": ["Behaviour & Information Technology", "Behaviour and Information Technology"], "impactFactor": 3.3 },
+    { "matchNames": ["International Journal of Human-Computer Studies"], "impactFactor": 4.5 },
+    { "matchNames": ["Interacting with Computers"], "impactFactor": 3.2 },
+    { "matchNames": ["ACM CHI Conference Proceedings — the premier HCI venue (conference, not journal)", "ACM CHI Conference Proceedings"], "notListed": true, "label": "Conference" },
+    { "matchNames": ["ACM Transactions on Computer-Human Interaction (TOCHI)", "ACM Transactions on Computer-Human Interaction", "TOCHI"], "impactFactor": 3.1 },
+    { "matchNames": ["Human-Computer Interaction (Taylor & Francis)", "Human-Computer Interaction"], "impactFactor": 3.8 },
+
+    { "matchNames": ["Rural Sociology"], "impactFactor": 3.3 },
+    { "matchNames": ["Sociologia Ruralis"], "impactFactor": 2.4 },
+    { "matchNames": ["American Journal of Sociology"], "impactFactor": 5.2 },
+    { "matchNames": ["African Sociological Review (relevant for SSA context)", "African Sociological Review"], "notListed": true },
+
+    { "matchNames": ["Psychological Science"], "impactFactor": 7.0 },
+    { "matchNames": ["Journal of Behavioral Decision Making"], "impactFactor": 1.5 },
+    { "matchNames": ["Organizational Behavior and Human Decision Processes (very relevant — bridges psychology and management)", "Organizational Behavior and Human Decision Processes"], "impactFactor": 5.2 },
+    { "matchNames": ["Journal of Applied Psychology"], "impactFactor": 4.5 },
+    { "matchNames": ["Computers in Human Behavior (highly relevant — sits between IS and psychology)", "Computers in Human Behavior"], "impactFactor": 8.9 },
+
+    { "matchNames": ["Government Information Quarterly (GIQ) — most directly relevant", "Government Information Quarterly", "GIQ"], "impactFactor": 7.2 },
+    { "matchNames": ["Information Polity"], "impactFactor": 1.8 },
+    { "matchNames": ["Public Administration Review"], "impactFactor": 5.0 },
+    { "matchNames": ["Journal of Public Administration Research and Theory"], "impactFactor": 3.6 },
+    { "matchNames": ["Transforming Government: People, Process and Policy"], "impactFactor": 2.9 },
+
+    { "matchNames": ["Science, Technology & Human Values", "Science Technology and Human Values"], "impactFactor": 3.0 },
+    { "matchNames": ["Social Studies of Science"], "impactFactor": 3.5 },
+    { "matchNames": ["Journal of the Association for Information Science and Technology (JASIST)", "Journal of the Association for Information Science and Technology", "JASIST"], "impactFactor": 2.8 },
+    { "matchNames": ["International Journal on Digital Libraries"], "impactFactor": 2.4 },
+    { "matchNames": ["Data Science Journal"], "impactFactor": 2.0 },
+    { "matchNames": ["Global Food Security"], "impactFactor": 6.9 },
+    { "matchNames": ["CGIAR working papers and institutional publications"], "notListed": true, "label": "Working papers" }
+  ]
+}

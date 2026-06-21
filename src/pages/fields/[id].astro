@@ -125,7 +125,13 @@ const journalItems: FieldJournalItem[] = (field.journals ?? []).map(normalizeJou
   :global(.field-journals h2) {
     font-size: 1.2rem;
     color: var(--color-maroon);
+    margin: 0 0 0.35rem 0;
+  }
+  :global(.field-journals-if-note) {
     margin: 0 0 0.75rem 0;
+    font-size: 0.82rem;
+    color: var(--color-ink-muted);
+    line-height: 1.45;
   }
   :global(.journals-list) {
     list-style: none;
@@ -141,6 +147,33 @@ const journalItems: FieldJournalItem[] = (field.journals ?? []).map(normalizeJou
   }
   :global(.journal-entry-header) {
     margin-bottom: 0.35rem;
+  }
+  :global(.journal-entry-title-row) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+  }
+  :global(.journal-impact-factor) {
+    flex-shrink: 0;
+    font-size: 0.82rem;
+    font-weight: 500;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  :global(.journal-impact-factor--listed) {
+    background: rgba(92, 29, 42, 0.1);
+    color: var(--color-maroon);
+  }
+  :global(.journal-impact-factor--listed strong) {
+    font-weight: 700;
+  }
+  :global(.journal-impact-factor--unlisted) {
+    background: var(--color-bg-alt);
+    color: var(--color-ink-muted);
+    font-weight: 400;
   }
   :global(.journal-link),
   :global(.journal-name) {
