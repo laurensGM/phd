@@ -11,18 +11,16 @@ interface SavePaperOfflineInput {
   summary: OfflineSummaryRecord | null;
 }
 
-/** Cache narration MP3 + paper/summary in IndexedDB for offline reading. */
+export interface SavePaperOfflineResult {
+  ok: boolean;
+  audioSaved: boolean;
+}
+
+/** Store paper + summary in IndexedDB; cache narration MP3 when available. */
 export async function savePaperForOffline({
   paper,
   summary,
-}: SavePaperOfflineInput): Promise<boolean> {
-  if (summary?.narration_url) {
-    await cacheNarrationAudio(summary.narration_url);
-    if (!(await isNarrationCached(summary.narration_url))) {
-      return false;
-    }
-  }
-
+}: SavePaperOfflineInput): Promise<SavePaperOfflineResult> {
   const bundle: OfflinePaperBundle = {
     paperId: paper.id,
     paper,
@@ -30,5 +28,12 @@ export async function savePaperForOffline({
     savedAt: new Date().toISOString(),
   };
   await saveOfflinePaper(bundle);
-  return true;
+
+  if (!summary?.narration_url) {
+    return { ok: true, audioSaved: false };
+  }
+
+  await cacheNarrationAudio(summary.narration_url);
+  const audioSaved = await isNarrationCached(summary.narration_url);
+  return { ok: true, audioSaved };
 }

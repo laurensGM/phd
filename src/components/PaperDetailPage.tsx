@@ -207,6 +207,7 @@ export default function PaperDetailPage() {
   const [savingSummary, setSavingSummary] = useState(false);
   const [isOfflineView, setIsOfflineView] = useState(false);
   const [offlineSaved, setOfflineSaved] = useState(false);
+  const [offlineSaveMessage, setOfflineSaveMessage] = useState<string | null>(null);
   const [statusSaving, setStatusSaving] = useState(false);
   const [statusError, setStatusError] = useState<string | null>(null);
   const [comments, setComments] = useState<PaperComment[]>([]);
@@ -776,28 +777,41 @@ export default function PaperDetailPage() {
     );
   }, [citation]);
 
-  const handleSaveOffline = useCallback(async (): Promise<boolean> => {
-    if (!paper) return false;
-    const ok = await savePaperForOffline({
-      paper: {
-        id: paper.id,
-        url: paper.url,
-        secondary_url: paper.secondary_url,
-        motivation: paper.motivation,
-        tags: paper.tags,
-        title: paper.title,
-        authors: paper.authors,
-        year: paper.year,
-        journal: paper.journal,
-        citations: paper.citations,
-        status: paper.status,
-        golden: paper.golden,
-        created_at: paper.created_at,
-      },
-      summary: summary as PaperSummary | null,
-    });
-    if (ok) setOfflineSaved(true);
-    return ok;
+  const handleSaveOffline = useCallback(async () => {
+    if (!paper) return { ok: false, audioSaved: false };
+    setOfflineSaveMessage(null);
+    try {
+      const result = await savePaperForOffline({
+        paper: {
+          id: paper.id,
+          url: paper.url,
+          secondary_url: paper.secondary_url,
+          motivation: paper.motivation,
+          tags: paper.tags,
+          title: paper.title,
+          authors: paper.authors,
+          year: paper.year,
+          journal: paper.journal,
+          citations: paper.citations,
+          status: paper.status,
+          golden: paper.golden,
+          created_at: paper.created_at,
+        },
+        summary: summary as PaperSummary | null,
+      });
+      if (result.ok) {
+        setOfflineSaved(true);
+        setOfflineSaveMessage(
+          result.audioSaved || !summary?.narration_url
+            ? 'Saved for offline — find it under Papers → Saved for offline.'
+            : 'Paper saved for offline reading. Audio could not be cached — try again while online.'
+        );
+      }
+      return result;
+    } catch (e) {
+      setOfflineSaveMessage((e as Error)?.message ?? 'Could not save for offline');
+      return { ok: false, audioSaved: false };
+    }
   }, [paper, summary]);
 
   const handleAddSnippet = useCallback(async () => {
@@ -1108,8 +1122,25 @@ export default function PaperDetailPage() {
             >
               {generatingSummary ? 'Generating…' : 'Try auto summary'}
             </button>
+            {!isOfflineView && summary && (
+              <button
+                type="button"
+                className="paper-detail-summary-btn paper-detail-summary-btn-secondary"
+                onClick={() => handleSaveOffline()}
+                disabled={offlineSaved}
+                title="Save this paper and summary on your device for offline reading"
+              >
+                {offlineSaved ? 'Saved for offline' : 'Save for offline'}
+              </button>
+            )}
           </div>
         </div>
+
+        {offlineSaveMessage && (
+          <p className="paper-detail-offline-save-message" role="status">
+            {offlineSaveMessage}
+          </p>
+        )}
 
         {summaryLoading && !summary && <p className="paper-detail-summary-loading">Loading summary…</p>}
         {summaryError && <p className="paper-detail-summary-error">{summaryError}</p>}

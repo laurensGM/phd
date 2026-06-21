@@ -1,6 +1,13 @@
 const DB_NAME = 'phd-manager-offline';
 const DB_VERSION = 1;
 const STORE = 'papers';
+export const OFFLINE_PAPERS_CHANGED_EVENT = 'phd-offline-papers-changed';
+
+export function notifyOfflinePapersChanged(): void {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new Event(OFFLINE_PAPERS_CHANGED_EVENT));
+  }
+}
 
 export interface OfflinePaperRecord {
   id: string;
@@ -100,6 +107,7 @@ function runTransaction<T>(
 
 export async function saveOfflinePaper(bundle: OfflinePaperBundle): Promise<void> {
   await runTransaction('readwrite', (store) => store.put(bundle));
+  notifyOfflinePapersChanged();
 }
 
 export async function getOfflinePaper(paperId: string): Promise<OfflinePaperBundle | null> {

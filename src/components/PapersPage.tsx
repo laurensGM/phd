@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { paperDetailUrl } from '../lib/paperDetailUrl';
-import { listOfflinePapers, type OfflinePaperBundle } from '../lib/offlinePaperStore';
+import { listOfflinePapers, OFFLINE_PAPERS_CHANGED_EVENT, type OfflinePaperBundle } from '../lib/offlinePaperStore';
 import { PAPER_STATUSES, type PaperStatusId } from '../constants/paperStatuses';
 
 interface SavedPaper {
@@ -244,11 +244,17 @@ export default function PapersPage() {
       refreshOfflinePapers();
     };
     const onOffline = () => setIsOffline(true);
+    const onOfflineListChanged = () => refreshOfflinePapers();
+    const onPageShow = () => refreshOfflinePapers();
     window.addEventListener('online', onOnline);
     window.addEventListener('offline', onOffline);
+    window.addEventListener(OFFLINE_PAPERS_CHANGED_EVENT, onOfflineListChanged);
+    window.addEventListener('pageshow', onPageShow);
     return () => {
       window.removeEventListener('online', onOnline);
       window.removeEventListener('offline', onOffline);
+      window.removeEventListener(OFFLINE_PAPERS_CHANGED_EVENT, onOfflineListChanged);
+      window.removeEventListener('pageshow', onPageShow);
     };
   }, [refreshOfflinePapers]);
 
@@ -665,7 +671,7 @@ export default function PapersPage() {
         </p>
       )}
 
-      {offlinePapers.length > 0 && (
+      {offlinePapers.length > 0 ? (
         <section className="papers-offline-section" aria-label="Saved for offline">
           <h2 className="papers-offline-heading">Saved for offline</h2>
           <ul className="papers-offline-list">
@@ -683,6 +689,26 @@ export default function PapersPage() {
             ))}
           </ul>
         </section>
+      ) : isOffline ? (
+        <section className="papers-offline-empty" aria-label="No offline papers">
+          <h2 className="papers-offline-heading">No papers saved for offline</h2>
+          <p>
+            Previous “Save offline” taps only cached audio — they do not appear here. You need to
+            save each paper again while online.
+          </p>
+          <ol className="papers-offline-steps">
+            <li>Go back online and open a paper.</li>
+            <li>Scroll to <strong>Summary</strong> and tap <strong>Save for offline</strong>.</li>
+            <li>Wait for the confirmation message.</li>
+            <li>Return to Papers — the paper will appear under <strong>Saved for offline</strong>.</li>
+          </ol>
+        </section>
+      ) : null}
+
+      {!isOffline && offlinePapers.length > 0 && (
+        <p className="papers-offline-hint">
+          {offlinePapers.length} paper{offlinePapers.length === 1 ? '' : 's'} saved for offline reading.
+        </p>
       )}
 
       {isOffline ? null : (

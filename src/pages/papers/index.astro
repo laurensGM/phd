@@ -7,7 +7,7 @@ import PapersPage from '../../components/PapersPage';
   <h1>Papers</h1>
   <p class="page-desc">Save interesting papers with a link and why you kept them. Tag them for later.</p>
 
-  <PapersPage client:visible />
+  <PapersPage client:load />
 </BaseLayout>
 
 <style>
@@ -70,6 +70,31 @@ import PapersPage from '../../components/PapersPage';
     line-height: 1.35;
   }
   :global(.papers-offline-link-authors) {
+    font-size: 0.85rem;
+    color: var(--color-ink-muted);
+  }
+  :global(.papers-offline-empty) {
+    margin-bottom: 2rem;
+    padding: 1rem 1.25rem;
+    background: #fff;
+    border: 1px dashed #cbd5e1;
+    border-radius: 10px;
+    color: var(--color-ink-muted);
+    font-size: 0.9rem;
+    line-height: 1.55;
+  }
+  :global(.papers-offline-empty p) {
+    margin: 0 0 0.75rem 0;
+  }
+  :global(.papers-offline-steps) {
+    margin: 0;
+    padding-left: 1.25rem;
+  }
+  :global(.papers-offline-steps li) {
+    margin-bottom: 0.35rem;
+  }
+  :global(.papers-offline-hint) {
+    margin: -0.5rem 0 1.5rem 0;
     font-size: 0.85rem;
     color: var(--color-ink-muted);
   }
