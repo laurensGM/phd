@@ -18,6 +18,61 @@ import PapersPage from '../../components/PapersPage';
   }
 
   /* Papers form & list (React) – use :global so styles apply */
+  :global(.papers-offline-notice) {
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.25rem;
+    background: #fef3c7;
+    color: #92400e;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  :global(.papers-offline-section) {
+    margin-bottom: 2rem;
+    padding: 1rem 1.25rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+  }
+  :global(.papers-offline-heading) {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.75rem 0;
+    color: var(--color-ink);
+  }
+  :global(.papers-offline-list) {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  :global(.papers-offline-link) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.65rem 0.85rem;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--color-ink);
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  :global(.papers-offline-link:hover) {
+    border-color: var(--color-maroon);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  }
+  :global(.papers-offline-link-title) {
+    font-weight: 600;
+    font-size: 0.95rem;
+    line-height: 1.35;
+  }
+  :global(.papers-offline-link-authors) {
+    font-size: 0.85rem;
+    color: var(--color-ink-muted);
+  }
   :global(.papers-page .papers-add-section) {
     margin-bottom: 2.5rem;
   }

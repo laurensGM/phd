@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { paperDetailUrl } from '../lib/paperDetailUrl';
+import { listOfflinePapers, type OfflinePaperBundle } from '../lib/offlinePaperStore';
 import { PAPER_STATUSES, type PaperStatusId } from '../constants/paperStatuses';
 
 interface SavedPaper {
@@ -226,6 +227,30 @@ export default function PapersPage() {
   const [showSort, setShowSort] = useState(false);
   const [goldenOnly, setGoldenOnly] = useState(false);
   const [tablePage, setTablePage] = useState(1);
+  const [offlinePapers, setOfflinePapers] = useState<OfflinePaperBundle[]>([]);
+  const [isOffline, setIsOffline] = useState(
+    typeof navigator !== 'undefined' ? !navigator.onLine : false
+  );
+
+  const refreshOfflinePapers = useCallback(async () => {
+    const list = await listOfflinePapers();
+    setOfflinePapers(list);
+  }, []);
+
+  useEffect(() => {
+    refreshOfflinePapers();
+    const onOnline = () => {
+      setIsOffline(false);
+      refreshOfflinePapers();
+    };
+    const onOffline = () => setIsOffline(true);
+    window.addEventListener('online', onOnline);
+    window.addEventListener('offline', onOffline);
+    return () => {
+      window.removeEventListener('online', onOnline);
+      window.removeEventListener('offline', onOffline);
+    };
+  }, [refreshOfflinePapers]);
 
   const existingJournals = useMemo(() => {
     const set = new Set<string>();
@@ -237,6 +262,12 @@ export default function PapersPage() {
 
   const fetchPapers = useCallback(async () => {
     if (!supabase) return;
+    if (!navigator.onLine) {
+      setLoading(false);
+      setPapers([]);
+      setError(null);
+      return;
+    }
     setLoading(true);
     setError(null);
     const [
@@ -622,12 +653,40 @@ export default function PapersPage() {
     );
   }
 
-  if (loading) {
+  if (loading && !isOffline && offlinePapers.length === 0) {
     return <div className="papers-loading">Loading saved papers...</div>;
   }
 
   return (
     <div className="papers-page">
+      {isOffline && (
+        <p className="papers-offline-notice" role="status">
+          You are offline. Open papers from your saved offline list below.
+        </p>
+      )}
+
+      {offlinePapers.length > 0 && (
+        <section className="papers-offline-section" aria-label="Saved for offline">
+          <h2 className="papers-offline-heading">Saved for offline</h2>
+          <ul className="papers-offline-list">
+            {offlinePapers.map((bundle) => (
+              <li key={bundle.paperId}>
+                <a href={paperDetailHref(bundle.paperId)} className="papers-offline-link">
+                  <span className="papers-offline-link-title">
+                    {bundle.paper.title || bundle.paper.url}
+                  </span>
+                  {bundle.paper.authors && (
+                    <span className="papers-offline-link-authors">{bundle.paper.authors}</span>
+                  )}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {isOffline ? null : (
+        <>
       <datalist id="papers-journal-list">
         {existingJournals.map((j) => (
           <option key={j} value={j} />
@@ -1462,6 +1521,8 @@ export default function PapersPage() {
           </div>
         )}
       </section>
+        </>
+      )}
     </div>
   );
 }

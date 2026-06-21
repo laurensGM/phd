@@ -18,6 +18,8 @@ interface Props {
     narration_content_hash?: string | null;
   } | null;
   onNarrationUpdated?: (url: string, hash: string) => void;
+  onSaveOffline?: () => Promise<boolean>;
+  offlineSaved?: boolean;
 }
 
 type PlayerStatus = 'idle' | 'generating' | 'loading' | 'ready' | 'playing' | 'error';
@@ -36,6 +38,8 @@ export default function SummaryNarrationPlayer({
   paperYear,
   summary,
   onNarrationUpdated,
+  onSaveOffline,
+  offlineSaved = false,
 }: Props) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const blobUrlRef = useRef<string | null>(null);
@@ -64,11 +68,11 @@ export default function SummaryNarrationPlayer({
 
   useEffect(() => {
     setHashChecked(false);
-    setOfflineReady(false);
+    setOfflineReady(offlineSaved);
     revokeBlob();
     setAudioSrc(null);
     setStatus('idle');
-  }, [paperId, revokeBlob]);
+  }, [paperId, revokeBlob, offlineSaved]);
 
   useEffect(() => {
     if (!summary || !hasNarratableSummary(summary)) {
@@ -201,6 +205,33 @@ export default function SummaryNarrationPlayer({
   }, [audioSrc, prepareNarration]);
 
   const handleDownloadOffline = useCallback(async () => {
+    if (onSaveOffline) {
+      setStatus('loading');
+      setError(null);
+      try {
+        const ok = await onSaveOffline();
+        setOfflineReady(ok);
+        if (!ok) {
+          setError('Could not save for offline. Check your connection and try again.');
+          setStatus('error');
+          return;
+        }
+        if (summary?.narration_url) {
+          revokeBlob();
+          const src = await getCachedNarrationUrl(summary.narration_url);
+          if (src) {
+            blobUrlRef.current = src;
+            setAudioSrc(src);
+          }
+        }
+        setStatus(audioRef.current && !audioRef.current.paused ? 'playing' : 'ready');
+      } catch (e) {
+        setError((e as Error)?.message ?? 'Could not save for offline');
+        setStatus('error');
+      }
+      return;
+    }
+
     if (!summary?.narration_url) {
       await prepareNarration(false);
       return;
@@ -218,7 +249,7 @@ export default function SummaryNarrationPlayer({
       }
     }
     setStatus(audioRef.current && !audioRef.current.paused ? 'playing' : 'ready');
-  }, [summary?.narration_url, prepareNarration, audioSrc, revokeBlob]);
+  }, [onSaveOffline, summary?.narration_url, prepareNarration, audioSrc, revokeBlob]);
 
   if (!summary || !hasNarratableSummary(summary)) return null;
 
@@ -234,7 +265,7 @@ export default function SummaryNarrationPlayer({
         <div className="summary-narration-meta">
           <strong className="summary-narration-title">Listen to summary</strong>
           <span className="summary-narration-sub">
-            Indian English narration · {offlineReady ? 'Available offline' : 'Tap download for offline'}
+            Indian English narration · {offlineReady ? 'Saved for offline' : 'Save paper + audio for offline'}
           </span>
         </div>
       </div>

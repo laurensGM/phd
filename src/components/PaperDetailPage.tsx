@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { getPaperIdFromLocation } from '../lib/paperDetailUrl';
+import { getOfflinePaper, isOfflinePaperSaved } from '../lib/offlinePaperStore';
+import { savePaperForOffline } from '../lib/narration/savePaperOffline';
 import { uploadPaperCommentImage, removePaperCommentImage } from '../lib/paperCommentImage';
 import { extractImageFileFromClipboard } from '../lib/clipboardImage';
 import PaperModelLinks from './PaperModelLinks';
@@ -203,6 +205,8 @@ export default function PaperDetailPage() {
   const [summaryConclusion, setSummaryConclusion] = useState('');
   const [summaryLimitationsAndFutureResearch, setSummaryLimitationsAndFutureResearch] = useState('');
   const [savingSummary, setSavingSummary] = useState(false);
+  const [isOfflineView, setIsOfflineView] = useState(false);
+  const [offlineSaved, setOfflineSaved] = useState(false);
   const [statusSaving, setStatusSaving] = useState(false);
   const [statusError, setStatusError] = useState<string | null>(null);
   const [comments, setComments] = useState<PaperComment[]>([]);
@@ -490,72 +494,110 @@ export default function PaperDetailPage() {
       setLoading(false);
       return;
     }
-    if (!isSupabaseConfigured()) {
-      setError('Supabase is not configured. Set PUBLIC_SUPABASE_URL and PUBLIC_SUPABASE_ANON_KEY.');
-      setLoading(false);
-      return;
-    }
     let cancelled = false;
+
+    const loadFromOfflineStore = async (): Promise<boolean> => {
+      const bundle = await getOfflinePaper(id);
+      if (!bundle) return false;
+      setPaper(mapRow(bundle.paper as Parameters<typeof mapRow>[0]));
+      if (bundle.summary) {
+        const s = bundle.summary as PaperSummary;
+        setSummary(s);
+        syncSummaryToEditor(s);
+      } else {
+        setSummary(null);
+      }
+      setSnippets([]);
+      setSnippetsLoading(false);
+      setIsOfflineView(true);
+      setOfflineSaved(true);
+      return true;
+    };
+
     (async () => {
       setLoading(true);
       setError(null);
+      setIsOfflineView(false);
+
+      if (!navigator.onLine) {
+        if (!(await loadFromOfflineStore())) {
+          setError('This paper is not saved for offline. Open it online and tap Save offline first.');
+          setPaper(null);
+        }
+        setLoading(false);
+        return;
+      }
+
+      if (!isSupabaseConfigured()) {
+        if (!(await loadFromOfflineStore())) {
+          setError('Supabase is not configured. Set PUBLIC_SUPABASE_URL and PUBLIC_SUPABASE_ANON_KEY.');
+        }
+        setLoading(false);
+        return;
+      }
+
       const { data, error: fetchError } = await supabase!
         .from('saved_papers')
         .select('*')
         .eq('id', id)
         .maybeSingle();
       if (cancelled) return;
-      if (fetchError) {
-        setError(fetchError.message);
-        setPaper(null);
-      } else if (data) {
-        setPaper(mapRow(data as Parameters<typeof mapRow>[0]));
-        // Load snippets once the paper is known
-        const row = data as Parameters<typeof mapRow>[0];
-        const paperId = row.id;
-        setSnippetsLoading(true);
-        const loadSnippets = async () => {
-          const { data: snippetData, error: snippetErr } = await supabase!
-            .from('snippets')
-            .select('*')
-            .eq('paper_id', paperId)
-            .order('created_at', { ascending: false });
-          if (snippetErr) {
-            setSnippetError(snippetErr.message);
-            setSnippets([]);
-          } else {
-            setSnippetError(null);
-            const list = (snippetData ?? []) as Snippet[];
-            setSnippets(list);
-            const tagSet = new Set<string>();
-            for (const s of list) {
-              if (Array.isArray(s.tags)) {
-                for (const t of s.tags) {
-                  if (t && typeof t === 'string') tagSet.add(t);
-                }
-              }
-            }
-            setAllSnippetTags(Array.from(tagSet));
-          }
-          setSnippetsLoading(false);
-        };
-        loadSnippets();
-        const { data: summaryData } = await supabase!
-          .from('paper_summary')
-          .select('*')
-          .eq('paper_id', paperId)
-          .maybeSingle();
-        if (!cancelled && summaryData) {
-          const s = summaryData as PaperSummary;
-          setSummary(s);
-          syncSummaryToEditor(s);
+
+      if (fetchError || !data) {
+        if (await loadFromOfflineStore()) {
+          setLoading(false);
+          return;
         }
-      } else {
-        setError('Paper not found.');
+        setError(fetchError?.message ?? 'Paper not found.');
         setPaper(null);
+        setLoading(false);
+        return;
+      }
+
+      setIsOfflineView(false);
+      setPaper(mapRow(data as Parameters<typeof mapRow>[0]));
+      const row = data as Parameters<typeof mapRow>[0];
+      const paperId = row.id;
+      setOfflineSaved(await isOfflinePaperSaved(paperId));
+
+      setSnippetsLoading(true);
+      const { data: snippetData, error: snippetErr } = await supabase!
+        .from('snippets')
+        .select('*')
+        .eq('paper_id', paperId)
+        .order('created_at', { ascending: false });
+      if (snippetErr) {
+        setSnippetError(snippetErr.message);
+        setSnippets([]);
+      } else {
+        setSnippetError(null);
+        const list = (snippetData ?? []) as Snippet[];
+        setSnippets(list);
+        const tagSet = new Set<string>();
+        for (const s of list) {
+          if (Array.isArray(s.tags)) {
+            for (const t of s.tags) {
+              if (t && typeof t === 'string') tagSet.add(t);
+            }
+          }
+        }
+        setAllSnippetTags(Array.from(tagSet));
+      }
+      setSnippetsLoading(false);
+
+      const { data: summaryData } = await supabase!
+        .from('paper_summary')
+        .select('*')
+        .eq('paper_id', paperId)
+        .maybeSingle();
+      if (!cancelled && summaryData) {
+        const s = summaryData as PaperSummary;
+        setSummary(s);
+        syncSummaryToEditor(s);
       }
       setLoading(false);
     })();
+
     return () => {
       cancelled = true;
     };
@@ -734,6 +776,30 @@ export default function PaperDetailPage() {
     );
   }, [citation]);
 
+  const handleSaveOffline = useCallback(async (): Promise<boolean> => {
+    if (!paper) return false;
+    const ok = await savePaperForOffline({
+      paper: {
+        id: paper.id,
+        url: paper.url,
+        secondary_url: paper.secondary_url,
+        motivation: paper.motivation,
+        tags: paper.tags,
+        title: paper.title,
+        authors: paper.authors,
+        year: paper.year,
+        journal: paper.journal,
+        citations: paper.citations,
+        status: paper.status,
+        golden: paper.golden,
+        created_at: paper.created_at,
+      },
+      summary: summary as PaperSummary | null,
+    });
+    if (ok) setOfflineSaved(true);
+    return ok;
+  }, [paper, summary]);
+
   const handleAddSnippet = useCallback(async () => {
     if (!paper || !newSnippetContent.trim()) return;
     if (!supabase || !isSupabaseConfigured()) return;
@@ -831,6 +897,12 @@ export default function PaperDetailPage() {
   return (
     <div className="paper-detail-page">
       <a href={`${base}papers/`} className="paper-detail-back">← Back to Papers</a>
+
+      {isOfflineView && (
+        <p className="paper-detail-offline-banner" role="status">
+          Offline copy — showing saved paper and summary from this device.
+        </p>
+      )}
 
       <header className="paper-detail-header">
         <h1 className="paper-detail-title">{paper.title || 'Untitled'}</h1>
@@ -1049,6 +1121,8 @@ export default function PaperDetailPage() {
             paperAuthors={paper.authors}
             paperYear={paper.year}
             summary={summary}
+            offlineSaved={offlineSaved}
+            onSaveOffline={handleSaveOffline}
             onNarrationUpdated={(url, hash) =>
               setSummary((prev) =>
                 prev ? { ...prev, narration_url: url, narration_content_hash: hash } : prev

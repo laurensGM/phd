@@ -7,7 +7,7 @@ Paper detail pages can **narrate the summary** as MP3 audio — like a mini podc
 1. Open a paper that has a **summary** (manual or AI-generated).
 2. In the Summary section, use **Generate narration** (first time) or **Play** (if already generated).
 3. The Edge Function builds a spoken script from all summary sections, synthesizes audio with **Google Cloud Text-to-Speech** (female **Indian English** voice), and stores an MP3 in Supabase Storage.
-4. Use **Save offline** on mobile so the MP3 is cached for listening without network.
+4. Use **Save offline** to store the **paper, summary, and audio** on your device for reading and listening without network.
 
 ## Voice and style
 
@@ -16,9 +16,23 @@ Paper detail pages can **narrate the summary** as MP3 audio — like a mini podc
 
 ## Offline (PWA)
 
-- Tap **Save offline** after narration is generated — audio is stored in the browser Cache API.
-- The service worker also caches Supabase Storage URLs under `paper-narrations/` for repeat visits.
-- You must generate and save narrations **while online** at least once per paper.
+**Save offline** stores three things on your device:
+
+1. **Paper metadata** and **full summary** (IndexedDB)
+2. **Narration MP3** (browser Cache API)
+
+### While online
+
+1. Open the paper and generate narration if needed.
+2. Tap **Save offline** on the paper detail page.
+
+### While offline
+
+1. Open **Papers** in the app.
+2. Use the **Saved for offline** list at the top (the main paper list needs network).
+3. Tap a paper — you can read the summary and play the cached narration.
+
+You must save each paper **while online** at least once. The service worker also caches Supabase Storage URLs under `paper-narrations/` for repeat visits.
 
 ## Setup
 
@@ -61,4 +75,5 @@ Google Cloud TTS Neural2 voices have a free tier (see [pricing](https://cloud.go
 - **“GOOGLE_TTS_API_KEY not set”** — Add the secret in Supabase.
 - **“Google TTS error 403”** — Enable the Text-to-Speech API and check API key restrictions.
 - **No player shown** — The paper needs summary text (at least one filled section).
-- **Offline play fails** — Generate narration online first, then tap **Save offline**.
+- **Offline play fails** — Generate narration online first, tap **Save offline**, then open the paper from **Saved for offline** when offline.
+- **“Paper not saved for offline”** — Open the paper while online and tap **Save offline** before going offline.
