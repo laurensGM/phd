@@ -1,32 +1,42 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ObjectiveCard, { type Objective } from '../../../components/ObjectiveCard.astro';
 import researchObjectives from '../../../data/research-objectives.json';
 
 const base = import.meta.env.BASE_URL;
 
-type Objective = {
-  id: string;
-  type: 'primary' | 'secondary';
-  version: string;
-  secondaryNumber?: number;
-  objective: string;
-  comments?: string;
-  date: string;
-  dateLabel: string;
-  status: string;
-  whyChanged?: string;
-  supervisoryFeedback?: string;
-};
+const allObjectives = researchObjectives as Objective[];
 
-const sorted = ([...researchObjectives] as Objective[]).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-const primaryObjectives = sorted.filter((o) => o.type === 'primary');
-const secondaryObjectives = sorted
+const primaryObjectives = allObjectives
+  .filter((o) => o.type === 'primary')
+  .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+const secondaryObjectives = allObjectives
   .filter((o) => o.type === 'secondary')
   .sort((a, b) => {
     const dateCmp = (b.date || '').localeCompare(a.date || '');
     if (dateCmp !== 0) return dateCmp;
     return (a.secondaryNumber ?? 0) - (b.secondaryNumber ?? 0);
   });
+
+const primaryCurrent = primaryObjectives.filter((o) => o.status === 'current');
+const primaryArchived = primaryObjectives.filter((o) => o.status !== 'current');
+
+const secondaryCurrent = secondaryObjectives
+  .filter((o) => o.status === 'current')
+  .sort((a, b) => (a.secondaryNumber ?? 0) - (b.secondaryNumber ?? 0));
+
+const secondaryArchived = secondaryObjectives
+  .filter((o) => o.status !== 'current')
+  .sort((a, b) => {
+    const versionCmp = (b.version || '').localeCompare(a.version || '');
+    if (versionCmp !== 0) return versionCmp;
+    return (a.secondaryNumber ?? 0) - (b.secondaryNumber ?? 0);
+  });
+
+function primaryLabel(objective: Objective): string {
+  return `Primary ${objective.version.toUpperCase()}`;
+}
 
 function secondaryLabel(objective: Objective): string {
   if (objective.secondaryNumber != null) {
@@ -58,69 +68,43 @@ function secondaryLabel(objective: Objective): string {
   <section class="objectives-section">
     <h2>Primary research objective</h2>
     <div class="objectives-timeline">
-      {primaryObjectives.map((objective: Objective) => (
-        <article class={`objective-card ${objective.status}`}>
-          <div class="objective-header">
-            <span class="objective-version">Primary {objective.version.toUpperCase()}</span>
-            {objective.dateLabel && <time class="objective-date" datetime={objective.date}>{objective.dateLabel}</time>}
-            <span class="objective-status-badge">{objective.status}</span>
-          </div>
-          <p class="objective-text">{objective.objective}</p>
-          {objective.comments && (
-            <section>
-              <h3>Comments</h3>
-              <p>{objective.comments}</p>
-            </section>
-          )}
-          {objective.whyChanged && (
-            <section>
-              <h3>Why changed</h3>
-              <p>{objective.whyChanged}</p>
-            </section>
-          )}
-          {objective.supervisoryFeedback && (
-            <section class="feedback">
-              <h3>Supervisory feedback</h3>
-              <p>{objective.supervisoryFeedback}</p>
-            </section>
-          )}
-        </article>
+      {primaryCurrent.map((objective) => (
+        <ObjectiveCard objective={objective} versionLabel={primaryLabel(objective)} />
       ))}
     </div>
+    {primaryArchived.length > 0 && (
+      <details class="objectives-archive">
+        <summary class="objectives-archive-summary">
+          Previous primary versions ({primaryArchived.length})
+        </summary>
+        <div class="objectives-timeline objectives-timeline--nested">
+          {primaryArchived.map((objective) => (
+            <ObjectiveCard objective={objective} versionLabel={primaryLabel(objective)} />
+          ))}
+        </div>
+      </details>
+    )}
   </section>
 
   <section class="objectives-section">
     <h2>Secondary research objectives</h2>
     <div class="objectives-timeline">
-      {secondaryObjectives.map((objective: Objective) => (
-        <article class={`objective-card ${objective.status}`}>
-          <div class="objective-header">
-            <span class="objective-version">{secondaryLabel(objective)}</span>
-            {objective.dateLabel && <time class="objective-date" datetime={objective.date}>{objective.dateLabel}</time>}
-            <span class="objective-status-badge">{objective.status}</span>
-          </div>
-          <p class="objective-text">{objective.objective}</p>
-          {objective.comments && (
-            <section>
-              <h3>Comments</h3>
-              <p>{objective.comments}</p>
-            </section>
-          )}
-          {objective.whyChanged && (
-            <section>
-              <h3>Why changed</h3>
-              <p>{objective.whyChanged}</p>
-            </section>
-          )}
-          {objective.supervisoryFeedback && (
-            <section class="feedback">
-              <h3>Supervisory feedback</h3>
-              <p>{objective.supervisoryFeedback}</p>
-            </section>
-          )}
-        </article>
+      {secondaryCurrent.map((objective) => (
+        <ObjectiveCard objective={objective} versionLabel={secondaryLabel(objective)} />
       ))}
     </div>
+    {secondaryArchived.length > 0 && (
+      <details class="objectives-archive">
+        <summary class="objectives-archive-summary">
+          Previous secondary versions ({secondaryArchived.length})
+        </summary>
+        <div class="objectives-timeline objectives-timeline--nested">
+          {secondaryArchived.map((objective) => (
+            <ObjectiveCard objective={objective} versionLabel={secondaryLabel(objective)} />
+          ))}
+        </div>
+      </details>
+    )}
   </section>
 </BaseLayout>
 
@@ -175,7 +159,46 @@ function secondaryLabel(objective: Objective): string {
     gap: 1.25rem;
   }
 
-  .objective-card {
+  .objectives-timeline--nested {
+    margin-top: 1rem;
+  }
+
+  .objectives-archive {
+    margin-top: 1.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+  }
+
+  .objectives-archive-summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--color-ink-muted);
+    list-style: none;
+    user-select: none;
+  }
+
+  .objectives-archive-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .objectives-archive-summary::before {
+    content: '▸ ';
+    display: inline-block;
+    transition: transform 0.15s ease;
+  }
+
+  .objectives-archive[open] .objectives-archive-summary::before {
+    transform: rotate(90deg);
+  }
+
+  .objectives-archive-summary:hover {
+    color: var(--color-maroon);
+  }
+
+  :global(.objective-card) {
     padding: 1.5rem;
     background: white;
     border: 1px solid var(--color-border);
@@ -183,46 +206,47 @@ function secondaryLabel(objective: Objective): string {
     border-left: 4px solid var(--color-border);
   }
 
-  .objective-card.current {
+  :global(.objective-card.current) {
     border-left-color: var(--color-accent);
   }
 
-  .objective-header {
+  :global(.objective-header) {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     gap: 0.75rem;
     margin-bottom: 0.5rem;
   }
-  .objective-version {
+  :global(.objective-version) {
     font-weight: 600;
     color: var(--color-accent);
   }
-  .objective-date {
+  :global(.objective-date) {
     font-size: 0.875rem;
     color: var(--color-ink-muted);
   }
-  .objective-status-badge {
+  :global(.objective-status-badge) {
     padding: 0.2rem 0.5rem;
     font-size: 0.75rem;
     background: var(--color-bg-alt);
     border-radius: 4px;
+    text-transform: capitalize;
   }
 
-  .objective-text {
+  :global(.objective-text) {
     margin: 0.5rem 0 0 0;
     font-size: 1.05rem;
     line-height: 1.6;
   }
 
-  .objective-card section {
+  :global(.objective-card section) {
     margin-top: 1rem;
   }
-  .objective-card h3 {
+  :global(.objective-card h3) {
     font-size: 0.95rem;
     margin-bottom: 0.25rem;
   }
-  .objective-card .feedback {
+  :global(.objective-card .feedback) {
     padding: 1rem;
     background: var(--color-bg-alt);
     border-radius: 6px;

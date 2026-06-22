@@ -1,0 +1,51 @@
+---
+export interface Objective {
+  id: string;
+  type: 'primary' | 'secondary';
+  version: string;
+  secondaryNumber?: number;
+  objective: string;
+  comments?: string;
+  date: string;
+  dateLabel: string;
+  status: string;
+  whyChanged?: string;
+  supervisoryFeedback?: string;
+}
+
+interface Props {
+  objective: Objective;
+  versionLabel: string;
+}
+
+const { objective, versionLabel } = Astro.props;
+---
+
+<article class={`objective-card ${objective.status}`}>
+  <div class="objective-header">
+    <span class="objective-version">{versionLabel}</span>
+    {objective.dateLabel && (
+      <time class="objective-date" datetime={objective.date}>{objective.dateLabel}</time>
+    )}
+    <span class="objective-status-badge">{objective.status}</span>
+  </div>
+  <p class="objective-text">{objective.objective}</p>
+  {objective.comments && (
+    <section>
+      <h3>Comments</h3>
+      <p>{objective.comments}</p>
+    </section>
+  )}
+  {objective.whyChanged && (
+    <section>
+      <h3>Why changed</h3>
+      <p>{objective.whyChanged}</p>
+    </section>
+  )}
+  {objective.supervisoryFeedback && (
+    <section class="feedback">
+      <h3>Supervisory feedback</h3>
+      <p>{objective.supervisoryFeedback}</p>
+    </section>
+  )}
+</article>
