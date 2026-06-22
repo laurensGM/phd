@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import ObjectiveCard, { type Objective } from '../../../components/ObjectiveCard.astro';
+import ObjectivesDiagram from '../../../components/ObjectivesDiagram.astro';
 import researchObjectives from '../../../data/research-objectives.json';
 
 const base = import.meta.env.BASE_URL;
@@ -44,6 +45,8 @@ function secondaryLabel(objective: Objective): string {
   }
   return `Secondary ${objective.version.toUpperCase()}`;
 }
+
+const diagramPrimary = primaryCurrent[0] ?? null;
 ---
 
 <BaseLayout title="Objectives" description="Primary and secondary objective evolution - versions, changes, supervisory feedback">
@@ -64,6 +67,8 @@ function secondaryLabel(objective: Objective): string {
       secondary objective to clear data collection and analysis activities.
     </p>
   </aside>
+
+  <ObjectivesDiagram primary={diagramPrimary} secondaries={secondaryCurrent} />
 
   <section class="objectives-section">
     <h2>Primary research objective</h2>
