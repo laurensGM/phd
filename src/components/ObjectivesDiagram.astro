@@ -1,5 +1,6 @@
 ---
 import type { Objective } from './ObjectiveCard.astro';
+import { abbreviateObjectiveText, OBJECTIVE_ABBREVIATION_KEY } from '../lib/abbreviateObjectiveText';
 
 interface Props {
   primary: Objective | null;
@@ -14,8 +15,8 @@ const { primary, secondaries } = Astro.props;
     <figcaption class="objectives-diagram-caption">Current objectives at a glance</figcaption>
 
     <div class="objectives-diagram-primary">
-      <span class="objectives-diagram-primary-label">Primary research objective</span>
-      <p class="objectives-diagram-primary-text">{primary.objective}</p>
+      <span class="objectives-diagram-primary-label">Primary objective</span>
+      <p class="objectives-diagram-primary-text">{abbreviateObjectiveText(primary.objective)}</p>
     </div>
 
     {secondaries.length > 0 && (
@@ -30,15 +31,26 @@ const { primary, secondaries } = Astro.props;
             <li class="objectives-diagram-secondary">
               <span class="objectives-diagram-secondary-label">
                 {objective.secondaryNumber != null
-                  ? `Secondary ${objective.secondaryNumber}`
-                  : 'Secondary'}
+                  ? `SO ${objective.secondaryNumber}`
+                  : 'SO'}
               </span>
-              <p class="objectives-diagram-secondary-text">{objective.objective}</p>
+              <p class="objectives-diagram-secondary-text">
+                {abbreviateObjectiveText(objective.objective)}
+              </p>
             </li>
           ))}
         </ol>
       </>
     )}
+
+    <p class="objectives-diagram-key" aria-label="Abbreviation key">
+      {OBJECTIVE_ABBREVIATION_KEY.map((item, i) => (
+        <span>
+          {i > 0 ? ' · ' : ''}
+          <abbr title={item.full}>{item.abbr}</abbr> = {item.full}
+        </span>
+      ))}
+    </p>
   </figure>
 )}
 
@@ -159,6 +171,20 @@ const { primary, secondaries } = Astro.props;
     font-size: 0.92rem;
     line-height: 1.55;
     color: var(--color-ink);
+  }
+
+  .objectives-diagram-key {
+    margin: 1.25rem 0 0 0;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--color-ink-muted);
+  }
+
+  .objectives-diagram-key abbr {
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--color-maroon);
+    cursor: help;
   }
 
   @media (max-width: 640px) {
