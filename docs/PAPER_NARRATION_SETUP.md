@@ -18,13 +18,15 @@ Paper detail pages can **narrate the summary** as MP3 audio — like a mini podc
 
 **Save offline** stores three things on your device:
 
-1. **Paper metadata** and **full summary** (IndexedDB)
-2. **Narration MP3** (browser Cache API)
+1. **Paper metadata** and **full summary** (IndexedDB on each device)
+2. **Narration MP3** (browser Cache API on each device)
+3. **A sync flag** in Supabase so other devices know to download the bundle
 
 ### While online
 
 1. Open the paper and generate narration if needed.
 2. Tap **Save offline** on the paper detail page.
+3. On **another device** (e.g. mobile PWA), open **Papers** while online — saved papers download automatically.
 
 ### While offline
 
@@ -32,7 +34,9 @@ Paper detail pages can **narrate the summary** as MP3 audio — like a mini podc
 2. Use the **Saved for offline** list at the top (the main paper list needs network).
 3. Tap a paper — you can read the summary and play the cached narration.
 
-You must save each paper **while online** at least once. The service worker also caches Supabase Storage URLs under `paper-narrations/` for repeat visits.
+You must save each paper **while online** at least once. Each device caches the files locally when it syncs (Papers page load while online). The service worker also caches Supabase Storage URLs under `paper-narrations/` for repeat visits.
+
+Apply `supabase/migrations/042_saved_papers_offline_flag.sql` for cross-device offline sync.
 
 ## Setup
 

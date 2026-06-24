@@ -1,4 +1,5 @@
 import { cacheNarrationAudio, isNarrationCached } from './narrationCache';
+import { markPaperSavedForOfflineInCloud } from '../offlinePaperSync';
 import {
   saveOfflinePaper,
   type OfflinePaperBundle,
@@ -9,6 +10,8 @@ import {
 interface SavePaperOfflineInput {
   paper: OfflinePaperRecord;
   summary: OfflineSummaryRecord | null;
+  /** When false, only save on this device (used during cloud→local sync). */
+  markCloud?: boolean;
 }
 
 export interface SavePaperOfflineResult {
@@ -20,6 +23,7 @@ export interface SavePaperOfflineResult {
 export async function savePaperForOffline({
   paper,
   summary,
+  markCloud = true,
 }: SavePaperOfflineInput): Promise<SavePaperOfflineResult> {
   const bundle: OfflinePaperBundle = {
     paperId: paper.id,
@@ -28,6 +32,10 @@ export async function savePaperForOffline({
     savedAt: new Date().toISOString(),
   };
   await saveOfflinePaper(bundle);
+
+  if (markCloud) {
+    await markPaperSavedForOfflineInCloud(paper.id);
+  }
 
   if (!summary?.narration_url) {
     return { ok: true, audioSaved: false };

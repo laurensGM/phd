@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { getPaperIdFromLocation } from '../lib/paperDetailUrl';
-import { getOfflinePaper, isOfflinePaperSaved } from '../lib/offlinePaperStore';
+import { getOfflinePaper } from '../lib/offlinePaperStore';
+import { isPaperSavedForOffline, syncOfflinePapersFromCloud } from '../lib/offlinePaperSync';
 import { savePaperForOffline } from '../lib/narration/savePaperOffline';
 import { uploadPaperCommentImage, removePaperCommentImage } from '../lib/paperCommentImage';
 import { extractImageFileFromClipboard } from '../lib/clipboardImage';
@@ -537,6 +538,8 @@ export default function PaperDetailPage() {
         return;
       }
 
+      await syncOfflinePapersFromCloud();
+
       const { data, error: fetchError } = await supabase!
         .from('saved_papers')
         .select('*')
@@ -559,7 +562,7 @@ export default function PaperDetailPage() {
       setPaper(mapRow(data as Parameters<typeof mapRow>[0]));
       const row = data as Parameters<typeof mapRow>[0];
       const paperId = row.id;
-      setOfflineSaved(await isOfflinePaperSaved(paperId));
+      setOfflineSaved(await isPaperSavedForOffline(paperId));
 
       setSnippetsLoading(true);
       const { data: snippetData, error: snippetErr } = await supabase!
@@ -803,7 +806,7 @@ export default function PaperDetailPage() {
         setOfflineSaved(true);
         setOfflineSaveMessage(
           result.audioSaved || !summary?.narration_url
-            ? 'Saved for offline — find it under Papers → Saved for offline.'
+            ? 'Saved for offline — synced to your library. Opens on other devices when online.'
             : 'Paper saved for offline reading. Audio could not be cached — try again while online.'
         );
       }

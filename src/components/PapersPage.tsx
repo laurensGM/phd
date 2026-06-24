@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { paperDetailUrl } from '../lib/paperDetailUrl';
 import { listOfflinePapers, OFFLINE_PAPERS_CHANGED_EVENT, type OfflinePaperBundle } from '../lib/offlinePaperStore';
+import { syncOfflinePapersFromCloud } from '../lib/offlinePaperSync';
 import { PAPER_STATUSES, type PaperStatusId } from '../constants/paperStatuses';
 
 interface SavedPaper {
@@ -237,15 +238,22 @@ export default function PapersPage() {
     setOfflinePapers(list);
   }, []);
 
+  const syncAndRefreshOffline = useCallback(async () => {
+    if (navigator.onLine && isSupabaseConfigured()) {
+      await syncOfflinePapersFromCloud();
+    }
+    await refreshOfflinePapers();
+  }, [refreshOfflinePapers]);
+
   useEffect(() => {
-    refreshOfflinePapers();
+    syncAndRefreshOffline();
     const onOnline = () => {
       setIsOffline(false);
-      refreshOfflinePapers();
+      syncAndRefreshOffline();
     };
     const onOffline = () => setIsOffline(true);
     const onOfflineListChanged = () => refreshOfflinePapers();
-    const onPageShow = () => refreshOfflinePapers();
+    const onPageShow = () => syncAndRefreshOffline();
     window.addEventListener('online', onOnline);
     window.addEventListener('offline', onOffline);
     window.addEventListener(OFFLINE_PAPERS_CHANGED_EVENT, onOfflineListChanged);
@@ -256,7 +264,7 @@ export default function PapersPage() {
       window.removeEventListener(OFFLINE_PAPERS_CHANGED_EVENT, onOfflineListChanged);
       window.removeEventListener('pageshow', onPageShow);
     };
-  }, [refreshOfflinePapers]);
+  }, [syncAndRefreshOffline, refreshOfflinePapers]);
 
   const existingJournals = useMemo(() => {
     const set = new Set<string>();
@@ -693,8 +701,8 @@ export default function PapersPage() {
         <section className="papers-offline-empty" aria-label="No offline papers">
           <h2 className="papers-offline-heading">No papers saved for offline</h2>
           <p>
-            Previous “Save offline” taps only cached audio — they do not appear here. You need to
-            save each paper again while online.
+            Open the app <strong>while online</strong> on this device once — papers you saved for offline on
+            another device will download automatically.
           </p>
           <ol className="papers-offline-steps">
             <li>Go back online and open a paper.</li>
@@ -707,7 +715,8 @@ export default function PapersPage() {
 
       {!isOffline && offlinePapers.length > 0 && (
         <p className="papers-offline-hint">
-          {offlinePapers.length} paper{offlinePapers.length === 1 ? '' : 's'} saved for offline reading.
+          {offlinePapers.length} paper{offlinePapers.length === 1 ? '' : 's'} saved for offline on this device
+          (synced from your library when online).
         </p>
       )}
 
