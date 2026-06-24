@@ -680,8 +680,10 @@ export default function PapersPage() {
       )}
 
       {offlinePapers.length > 0 ? (
-        <section className="papers-offline-section" aria-label="Saved for offline">
-          <h2 className="papers-offline-heading">Saved for offline</h2>
+        <details className="papers-offline-section" open={isOffline} aria-label="Saved for offline">
+          <summary className="papers-offline-summary">
+            Saved for offline ({offlinePapers.length})
+          </summary>
           <ul className="papers-offline-list">
             {offlinePapers.map((bundle) => (
               <li key={bundle.paperId}>
@@ -696,7 +698,12 @@ export default function PapersPage() {
               </li>
             ))}
           </ul>
-        </section>
+          {!isOffline && (
+            <p className="papers-offline-hint">
+              Synced to this device when online — open before going offline.
+            </p>
+          )}
+        </details>
       ) : isOffline ? (
         <section className="papers-offline-empty" aria-label="No offline papers">
           <h2 className="papers-offline-heading">No papers saved for offline</h2>
@@ -712,13 +719,6 @@ export default function PapersPage() {
           </ol>
         </section>
       ) : null}
-
-      {!isOffline && offlinePapers.length > 0 && (
-        <p className="papers-offline-hint">
-          {offlinePapers.length} paper{offlinePapers.length === 1 ? '' : 's'} saved for offline on this device
-          (synced from your library when online).
-        </p>
-      )}
 
       {isOffline ? null : (
         <>
