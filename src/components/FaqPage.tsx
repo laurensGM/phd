@@ -125,6 +125,14 @@ function LabelPicker({
   );
 }
 
+function FaqAnswerFormatHint() {
+  return (
+    <p className="faq-format-hint">
+      Wrap text in <code>**double asterisks**</code> to show it in <strong>bold</strong> (line breaks are kept too).
+    </p>
+  );
+}
+
 function FaqLabelBadges({ labels }: { labels: string[] }) {
   if (labels.length === 0) return null;
   return (
@@ -408,8 +416,10 @@ export default function FaqPage({ staticQuestions }: FaqPageProps) {
               value={editAnswer}
               onChange={(e) => setEditAnswer(e.target.value)}
               rows={5}
+              placeholder="Use **bold** for emphasis, e.g. **Key point:** details here…"
               className="faq-textarea"
             />
+            <FaqAnswerFormatHint />
           </div>
           <div className="faq-item-actions">
             <button
@@ -586,13 +596,11 @@ export default function FaqPage({ staticQuestions }: FaqPageProps) {
             value={answerDraft}
             onChange={(e) => setAnswerDraft(e.target.value)}
             rows={5}
-            placeholder="Your answer…"
+            placeholder="Use **bold** for emphasis, e.g. **Key point:** details here…"
             className="faq-textarea"
           />
+          <FaqAnswerFormatHint />
         </div>
-        <p className="faq-format-hint">
-          Line breaks and <code>**bold**</code> work in answers when displayed.
-        </p>
         <button type="submit" className="faq-submit" disabled={saving || !questionDraft.trim()}>
           {saving ? 'Saving…' : 'Add FAQ'}
         </button>

@@ -18,7 +18,7 @@ export function FormatDiaryText({ text }: { text: string }) {
 
 function FormatBoldLine({ line, lineKey }: { line: string; lineKey: number }) {
   const parts: React.ReactNode[] = [];
-  const re = /\*\*(.+?)\*\*/g;
+  const re = /\*\*(.+?)\*\*|__(.+?)__/g;
   let last = 0;
   let match: RegExpExecArray | null;
   let partIndex = 0;
@@ -27,9 +27,8 @@ function FormatBoldLine({ line, lineKey }: { line: string; lineKey: number }) {
     if (match.index > last) {
       parts.push(line.slice(last, match.index));
     }
-    parts.push(
-      <strong key={`${lineKey}-b-${partIndex++}`}>{match[1]}</strong>
-    );
+    const boldText = match[1] ?? match[2];
+    parts.push(<strong key={`${lineKey}-b-${partIndex++}`}>{boldText}</strong>);
     last = match.index + match[0].length;
   }
 
@@ -37,6 +36,6 @@ function FormatBoldLine({ line, lineKey }: { line: string; lineKey: number }) {
     parts.push(line.slice(last));
   }
 
-  if (parts.length === 0) return null;
+  if (parts.length === 0) return line === '' ? '\u00a0' : null;
   return <>{parts}</>;
 }
