@@ -135,6 +135,24 @@ const FETCH_LIMIT = 100;
 /** Papers per page in table view; fewer DOM nodes = snappier scrolling */
 const TABLE_PAGE_SIZE = 25;
 
+type PaperSortField = 'created_at' | 'year' | 'title' | 'citations';
+
+const SORT_DIRECTION_LABELS: Record<PaperSortField, { asc: string; desc: string }> = {
+  created_at: { asc: 'Oldest ↑', desc: 'Newest ↓' },
+  year: { asc: 'Older ↑', desc: 'Newer ↓' },
+  title: { asc: 'A–Z ↑', desc: 'Z–A ↓' },
+  citations: { asc: 'Least cited ↑', desc: 'Most cited ↓' },
+};
+
+function defaultSortDirection(field: PaperSortField): 'asc' | 'desc' {
+  if (field === 'title') return 'asc';
+  return 'desc';
+}
+
+function paperSortKeyTitle(paper: SavedPaper): string {
+  return (paper.title?.trim() || paper.url || '').toLowerCase();
+}
+
 function mapRow(row: {
   id: string;
   url: string;
@@ -223,7 +241,7 @@ export default function PapersPage() {
   const [draggedPaperId, setDraggedPaperId] = useState<string | null>(null);
   const [justDraggedPaperId, setJustDraggedPaperId] = useState<string | null>(null);
   const [statusGuideOpen, setStatusGuideOpen] = useState(false);
-  const [sortField, setSortField] = useState<'created_at' | 'year'>('created_at');
+  const [sortField, setSortField] = useState<PaperSortField>('created_at');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [showSort, setShowSort] = useState(false);
   const [goldenOnly, setGoldenOnly] = useState(false);
@@ -410,12 +428,32 @@ export default function PapersPage() {
         const db = new Date(b.created_at).getTime();
         return sortDirection === 'asc' ? da - db : db - da;
       }
-      // sortField === 'year'
-      const ya = a.year ? parseInt(a.year, 10) : NaN;
-      const yb = b.year ? parseInt(b.year, 10) : NaN;
-      const aVal = Number.isNaN(ya) ? (sortDirection === 'asc' ? Number.POSITIVE_INFINITY : Number.NEGATIVE_INFINITY) : ya;
-      const bVal = Number.isNaN(yb) ? (sortDirection === 'asc' ? Number.POSITIVE_INFINITY : Number.NEGATIVE_INFINITY) : yb;
-      return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+      if (sortField === 'year') {
+        const ya = a.year ? parseInt(a.year, 10) : NaN;
+        const yb = b.year ? parseInt(b.year, 10) : NaN;
+        const aVal = Number.isNaN(ya)
+          ? sortDirection === 'asc'
+            ? Number.POSITIVE_INFINITY
+            : Number.NEGATIVE_INFINITY
+          : ya;
+        const bVal = Number.isNaN(yb)
+          ? sortDirection === 'asc'
+            ? Number.POSITIVE_INFINITY
+            : Number.NEGATIVE_INFINITY
+          : yb;
+        return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+      }
+      if (sortField === 'title') {
+        const cmp = paperSortKeyTitle(a).localeCompare(paperSortKeyTitle(b), undefined, {
+          sensitivity: 'base',
+        });
+        return sortDirection === 'asc' ? cmp : -cmp;
+      }
+      // citations — missing counts sort last when showing most cited first
+      const missing = sortDirection === 'desc' ? -1 : Number.MAX_SAFE_INTEGER;
+      const aVal = a.citations ?? missing;
+      const bVal = b.citations ?? missing;
+      return sortDirection === 'desc' ? bVal - aVal : aVal - bVal;
     });
 
     return sorted;
@@ -1001,11 +1039,17 @@ export default function PapersPage() {
               <span className="papers-sort-label">Order by</span>
               <select
                 value={sortField}
-                onChange={(e) => setSortField(e.target.value as 'created_at' | 'year')}
+                onChange={(e) => {
+                  const field = e.target.value as PaperSortField;
+                  setSortField(field);
+                  setSortDirection(defaultSortDirection(field));
+                }}
                 className="papers-select"
               >
                 <option value="created_at">Date added</option>
                 <option value="year">Publication year</option>
+                <option value="title">Alphabetical</option>
+                <option value="citations">Citations</option>
               </select>
             </label>
             <button
@@ -1013,7 +1057,7 @@ export default function PapersPage() {
               className="papers-sort-direction-btn"
               onClick={toggleSortDirection}
             >
-              {sortDirection === 'desc' ? 'Newest ↓' : 'Oldest ↑'}
+              {SORT_DIRECTION_LABELS[sortField][sortDirection]}
             </button>
           </div>
         )}
