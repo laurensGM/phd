@@ -18,6 +18,7 @@ const SNIPPET_TYPE_OPTIONS = [
   { value: 'theory', label: 'Theory' },
   { value: 'empirical finding', label: 'Empirical finding' },
   { value: 'method', label: 'Method' },
+  { value: 'impact', label: 'Impact' },
   {
     value: 'limitations and future research',
     label: 'Limitations and Future Research',
