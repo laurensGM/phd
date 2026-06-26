@@ -4,6 +4,10 @@ import { paperDetailUrl } from '../lib/paperDetailUrl';
 import { listOfflinePapers, OFFLINE_PAPERS_CHANGED_EVENT, type OfflinePaperBundle } from '../lib/offlinePaperStore';
 import { syncOfflinePapersFromCloud } from '../lib/offlinePaperSync';
 import { PAPER_STATUSES, type PaperStatusId } from '../constants/paperStatuses';
+import {
+  PAPER_READING_SECTIONS,
+  type PaperReadingSectionKey,
+} from '../constants/paperReadingSections';
 
 interface SavedPaper {
   id: string;
@@ -19,6 +23,12 @@ interface SavedPaper {
   status: string;
   golden: boolean;
   created_at: string;
+  read_abstract: boolean;
+  read_introduction: boolean;
+  read_methodology: boolean;
+  read_results_discussion: boolean;
+  read_conclusion: boolean;
+  read_limitations_recommendations: boolean;
 }
 
 interface PaperSummaryPresenceRow {
@@ -167,6 +177,12 @@ function mapRow(row: {
   status?: string | null;
   golden?: boolean | null;
   created_at: string;
+  read_abstract?: boolean | null;
+  read_introduction?: boolean | null;
+  read_methodology?: boolean | null;
+  read_results_discussion?: boolean | null;
+  read_conclusion?: boolean | null;
+  read_limitations_recommendations?: boolean | null;
 }): SavedPaper {
   const status = row.status?.trim() && PAPER_STATUSES.some((s) => s.id === row.status) ? row.status! : 'Not read';
   return {
@@ -188,6 +204,12 @@ function mapRow(row: {
     status,
     golden: !!row.golden,
     created_at: row.created_at,
+    read_abstract: !!row.read_abstract,
+    read_introduction: !!row.read_introduction,
+    read_methodology: !!row.read_methodology,
+    read_results_discussion: !!row.read_results_discussion,
+    read_conclusion: !!row.read_conclusion,
+    read_limitations_recommendations: !!row.read_limitations_recommendations,
   };
 }
 
@@ -237,7 +259,8 @@ export default function PapersPage() {
     golden: false,
   });
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<'table' | 'board'>('table');
+  const [viewMode, setViewMode] = useState<'list' | 'board' | 'reading'>('list');
+  const [readingToggleBusy, setReadingToggleBusy] = useState<string | null>(null);
   const [draggedPaperId, setDraggedPaperId] = useState<string | null>(null);
   const [justDraggedPaperId, setJustDraggedPaperId] = useState<string | null>(null);
   const [statusGuideOpen, setStatusGuideOpen] = useState(false);
@@ -643,6 +666,28 @@ export default function PapersPage() {
     setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
   };
 
+  const toggleReadingSection = useCallback(
+    async (paperId: string, field: PaperReadingSectionKey) => {
+      if (!supabase) return;
+      const paper = papers.find((p) => p.id === paperId);
+      if (!paper) return;
+      const next = !paper[field];
+      const busyKey = `${paperId}:${field}`;
+      setReadingToggleBusy(busyKey);
+      setPapers((prev) => prev.map((p) => (p.id === paperId ? { ...p, [field]: next } : p)));
+      const { error: updateError } = await supabase
+        .from('saved_papers')
+        .update({ [field]: next })
+        .eq('id', paperId);
+      setReadingToggleBusy(null);
+      if (updateError) {
+        setPapers((prev) => prev.map((p) => (p.id === paperId ? { ...p, [field]: !next } : p)));
+        setError(updateError.message);
+      }
+    },
+    [papers]
+  );
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!supabase) return;
@@ -972,10 +1017,17 @@ export default function PapersPage() {
         <div className="papers-view-tabs">
           <button
             type="button"
-            className={`papers-view-tab ${viewMode === 'table' ? 'papers-view-tab-active' : ''}`}
-            onClick={() => setViewMode('table')}
+            className={`papers-view-tab ${viewMode === 'list' ? 'papers-view-tab-active' : ''}`}
+            onClick={() => setViewMode('list')}
           >
-            Table view
+            List view
+          </button>
+          <button
+            type="button"
+            className={`papers-view-tab ${viewMode === 'reading' ? 'papers-view-tab-active' : ''}`}
+            onClick={() => setViewMode('reading')}
+          >
+            Reading table
           </button>
           <button
             type="button"
@@ -993,7 +1045,7 @@ export default function PapersPage() {
             </span>
           )}
         </h3>
-        {viewMode === 'table' && (
+        {(viewMode === 'list' || viewMode === 'reading') && (
           <>
         <div className="papers-filters">
           <input
@@ -1062,7 +1114,7 @@ export default function PapersPage() {
           </div>
         )}
 
-        {totalFiltered > TABLE_PAGE_SIZE && (
+        {viewMode === 'list' && totalFiltered > TABLE_PAGE_SIZE && (
           <div className="papers-pagination">
             <span className="papers-pagination-info">
               Page {tablePage} of {totalPages} ({totalFiltered} papers)
@@ -1087,6 +1139,7 @@ export default function PapersPage() {
             </div>
           </div>
         )}
+        {viewMode === 'list' && (
         <div className="papers-entries">
           {papersOnPage.map((paper) => {
             const snippetN = snippetCountByPaperId[paper.id] ?? 0;
@@ -1328,6 +1381,91 @@ export default function PapersPage() {
             </p>
           )}
         </div>
+        )}
+
+        {viewMode === 'reading' && (
+          <div className="papers-reading-table-wrap">
+            {filteredPapers.length > 0 && (
+              <p className="papers-reading-table-info">
+                {filteredPapers.length} {filteredPapers.length === 1 ? 'paper' : 'papers'} — click a row to open details; tick sections as you read them.
+              </p>
+            )}
+            <table className="papers-reading-table">
+              <thead>
+                <tr>
+                  <th className="papers-reading-th papers-reading-th-title">Title &amp; authors</th>
+                  {PAPER_READING_SECTIONS.map((section) => (
+                    <th key={section.key} className="papers-reading-th papers-reading-th-section" title={section.label}>
+                      <span className="papers-reading-th-label">{section.label}</span>
+                    </th>
+                  ))}
+                  <th className="papers-reading-th papers-reading-th-num">Snippets</th>
+                  <th className="papers-reading-th papers-reading-th-num">Citations</th>
+                  <th className="papers-reading-th papers-reading-th-journal">Journal</th>
+                  <th className="papers-reading-th papers-reading-th-year">Year</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredPapers.map((paper) => {
+                  const snippetN = snippetCountByPaperId[paper.id] ?? 0;
+                  return (
+                    <tr
+                      key={paper.id}
+                      className={`papers-reading-row ${paper.golden ? 'papers-reading-row-golden' : ''}`}
+                      onClick={() => {
+                        window.location.href = paperDetailHref(paper.id);
+                      }}
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          window.location.href = paperDetailHref(paper.id);
+                        }
+                      }}
+                    >
+                      <td className="papers-reading-cell papers-reading-cell-title">
+                        <span className="papers-reading-title">{paper.title || paper.url}</span>
+                        {paper.authors && (
+                          <span className="papers-reading-authors">{paper.authors}</span>
+                        )}
+                      </td>
+                      {PAPER_READING_SECTIONS.map((section) => {
+                        const busyKey = `${paper.id}:${section.key}`;
+                        return (
+                          <td
+                            key={section.key}
+                            className="papers-reading-cell papers-reading-cell-check"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <input
+                              type="checkbox"
+                              className="papers-reading-checkbox"
+                              checked={paper[section.key]}
+                              disabled={readingToggleBusy === busyKey}
+                              onChange={() => toggleReadingSection(paper.id, section.key)}
+                              aria-label={`${section.label} read for ${paper.title || 'paper'}`}
+                            />
+                          </td>
+                        );
+                      })}
+                      <td className="papers-reading-cell papers-reading-cell-num">{snippetN}</td>
+                      <td className="papers-reading-cell papers-reading-cell-num">
+                        {paper.citations !== null && paper.citations !== undefined ? paper.citations : '—'}
+                      </td>
+                      <td className="papers-reading-cell papers-reading-cell-journal">{paper.journal || '—'}</td>
+                      <td className="papers-reading-cell papers-reading-cell-year">{paper.year || '—'}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            {filteredPapers.length === 0 && !loading && (
+              <p className="papers-empty">
+                No saved papers yet. Add a link and motivation above so you remember why you kept it.
+              </p>
+            )}
+          </div>
+        )}
           </>
         )}
 

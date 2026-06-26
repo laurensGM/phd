@@ -1224,4 +1224,162 @@ import PapersPage from '../../components/PapersPage';
   :global(.papers-page .papers-board-card-delete:hover) {
     border-color: var(--color-maroon);
     color: var(--color-maroon);
+  }
+
+  /* Reading table view */
+  :global(.papers-page .papers-reading-table-wrap) {
+    margin-top: 0.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+  :global(.papers-page .papers-reading-table-info) {
+    margin: 0 0 0.75rem 0;
+    font-size: 0.88rem;
+    color: var(--color-ink-muted);
+    line-height: 1.45;
+  }
+  :global(.papers-page .papers-reading-table) {
+    width: 100%;
+    min-width: 960px;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.88rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  :global(.papers-page .papers-reading-table thead) {
+    background: var(--color-bg-alt);
+  }
+  :global(.papers-page .papers-reading-th) {
+    padding: 0.65rem 0.75rem;
+    text-align: left;
+    font-weight: 700;
+    font-size: 0.78rem;
+    color: var(--color-ink);
+    border-bottom: 2px solid var(--color-border);
+    vertical-align: bottom;
+    white-space: nowrap;
+  }
+  :global(.papers-page .papers-reading-th-section) {
+    text-align: center;
+    max-width: 5.5rem;
+    white-space: normal;
+    line-height: 1.25;
+  }
+  :global(.papers-page .papers-reading-th-label) {
+    display: inline-block;
+    max-width: 5rem;
+  }
+  :global(.papers-page .papers-reading-th-num),
+  :global(.papers-page .papers-reading-th-year) {
+    text-align: center;
+    width: 4.5rem;
+  }
+  :global(.papers-page .papers-reading-th-title) {
+    min-width: 220px;
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: var(--color-bg-alt);
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.04);
+  }
+  :global(.papers-page .papers-reading-th-journal) {
+    min-width: 120px;
+  }
+  :global(.papers-page .papers-reading-row) {
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  :global(.papers-page .papers-reading-row:hover) {
+    background: rgba(113, 32, 56, 0.04);
+  }
+  :global(.papers-page .papers-reading-row:focus-visible) {
+    outline: 2px solid var(--color-maroon);
+    outline-offset: -2px;
+  }
+  :global(.papers-page .papers-reading-row-golden) {
+    background: rgba(212, 175, 55, 0.08);
+  }
+  :global(.papers-page .papers-reading-row-golden:hover) {
+    background: rgba(212, 175, 55, 0.14);
+  }
+  :global(.papers-page .papers-reading-cell) {
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid var(--color-border);
+    vertical-align: middle;
+    color: var(--color-ink);
+  }
+  :global(.papers-page .papers-reading-cell-title) {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: #fff;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.04);
+    min-width: 220px;
+    max-width: 320px;
+  }
+  :global(.papers-page .papers-reading-row-golden .papers-reading-cell-title) {
+    background: rgba(212, 175, 55, 0.08);
+  }
+  :global(.papers-page .papers-reading-row:hover .papers-reading-cell-title) {
+    background: rgba(113, 32, 56, 0.04);
+  }
+  :global(.papers-page .papers-reading-row-golden:hover .papers-reading-cell-title) {
+    background: rgba(212, 175, 55, 0.14);
+  }
+  :global(.papers-page .papers-reading-title) {
+    display: block;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--color-maroon);
+  }
+  :global(.papers-page .papers-reading-authors) {
+    display: block;
+    margin-top: 0.2rem;
+    font-size: 0.8rem;
+    color: var(--color-ink-muted);
+    line-height: 1.35;
+  }
+  :global(.papers-page .papers-reading-cell-check) {
+    text-align: center;
+    width: 4.5rem;
+    cursor: default;
+  }
+  :global(.papers-page .papers-reading-checkbox) {
+    width: 1.1rem;
+    height: 1.1rem;
+    cursor: pointer;
+    accent-color: var(--color-maroon);
+  }
+  :global(.papers-page .papers-reading-checkbox:disabled) {
+    opacity: 0.5;
+    cursor: wait;
+  }
+  :global(.papers-page .papers-reading-cell-num) {
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-ink-muted);
+    width: 4.5rem;
+  }
+  :global(.papers-page .papers-reading-cell-journal) {
+    font-size: 0.82rem;
+    color: var(--color-ink-muted);
+    font-style: italic;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  :global(.papers-page .papers-reading-cell-year) {
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-ink-muted);
+    width: 4rem;
+  }
+  :global(.papers-page .papers-reading-table tbody tr:last-child .papers-reading-cell) {
+    border-bottom: none;
+  }
 </style>
