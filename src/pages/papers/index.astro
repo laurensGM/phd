@@ -1273,8 +1273,7 @@ import PapersPage from '../../components/PapersPage';
     display: inline-block;
     max-width: 5rem;
   }
-  :global(.papers-page .papers-reading-th-num),
-  :global(.papers-page .papers-reading-th-year) {
+  :global(.papers-page .papers-reading-th-num) {
     text-align: center;
     width: 4.5rem;
   }
@@ -1292,6 +1291,7 @@ import PapersPage from '../../components/PapersPage';
   :global(.papers-page .papers-reading-row) {
     cursor: pointer;
     transition: background 0.15s;
+    height: 7.125rem;
   }
   :global(.papers-page .papers-reading-row:hover) {
     background: rgba(113, 32, 56, 0.04);
@@ -1311,6 +1311,10 @@ import PapersPage from '../../components/PapersPage';
     border-bottom: 1px solid var(--color-border);
     vertical-align: middle;
     color: var(--color-ink);
+    height: 7.125rem;
+    max-height: 6.5rem;
+    box-sizing: border-box;
+    overflow: hidden;
   }
   :global(.papers-page .papers-reading-cell-title) {
     position: sticky;
@@ -1320,6 +1324,10 @@ import PapersPage from '../../components/PapersPage';
     box-shadow: 2px 0 4px rgba(0, 0, 0, 0.04);
     min-width: 220px;
     max-width: 320px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.2rem;
   }
   :global(.papers-page .papers-reading-row-golden .papers-reading-cell-title) {
     background: rgba(212, 175, 55, 0.08);
@@ -1331,17 +1339,24 @@ import PapersPage from '../../components/PapersPage';
     background: rgba(212, 175, 55, 0.14);
   }
   :global(.papers-page .papers-reading-title) {
-    display: block;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
     font-weight: 600;
     line-height: 1.35;
     color: var(--color-maroon);
+    flex-shrink: 0;
   }
-  :global(.papers-page .papers-reading-authors) {
-    display: block;
-    margin-top: 0.2rem;
+  :global(.papers-page .papers-reading-meta) {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
     font-size: 0.8rem;
     color: var(--color-ink-muted);
     line-height: 1.35;
+    flex-shrink: 0;
   }
   :global(.papers-page .papers-reading-cell-check) {
     text-align: center;
@@ -1372,12 +1387,6 @@ import PapersPage from '../../components/PapersPage';
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-  :global(.papers-page .papers-reading-cell-year) {
-    text-align: center;
-    font-variant-numeric: tabular-nums;
-    color: var(--color-ink-muted);
-    width: 4rem;
   }
   :global(.papers-page .papers-reading-table tbody tr:last-child .papers-reading-cell) {
     border-bottom: none;

@@ -1393,7 +1393,7 @@ export default function PapersPage() {
             <table className="papers-reading-table">
               <thead>
                 <tr>
-                  <th className="papers-reading-th papers-reading-th-title">Title &amp; authors</th>
+                  <th className="papers-reading-th papers-reading-th-title">Title &amp; author</th>
                   {PAPER_READING_SECTIONS.map((section) => (
                     <th key={section.key} className="papers-reading-th papers-reading-th-section" title={section.label}>
                       <span className="papers-reading-th-label">{section.label}</span>
@@ -1402,7 +1402,6 @@ export default function PapersPage() {
                   <th className="papers-reading-th papers-reading-th-num">Snippets</th>
                   <th className="papers-reading-th papers-reading-th-num">Citations</th>
                   <th className="papers-reading-th papers-reading-th-journal">Journal</th>
-                  <th className="papers-reading-th papers-reading-th-year">Year</th>
                 </tr>
               </thead>
               <tbody>
@@ -1425,8 +1424,10 @@ export default function PapersPage() {
                     >
                       <td className="papers-reading-cell papers-reading-cell-title">
                         <span className="papers-reading-title">{paper.title || paper.url}</span>
-                        {paper.authors && (
-                          <span className="papers-reading-authors">{paper.authors}</span>
+                        {(paper.authors || paper.year) && (
+                          <span className="papers-reading-meta">
+                            {[paper.authors, paper.year].filter(Boolean).join(' · ')}
+                          </span>
                         )}
                       </td>
                       {PAPER_READING_SECTIONS.map((section) => {
@@ -1453,7 +1454,6 @@ export default function PapersPage() {
                         {paper.citations !== null && paper.citations !== undefined ? paper.citations : '—'}
                       </td>
                       <td className="papers-reading-cell papers-reading-cell-journal">{paper.journal || '—'}</td>
-                      <td className="papers-reading-cell papers-reading-cell-year">{paper.year || '—'}</td>
                     </tr>
                   );
                 })}
