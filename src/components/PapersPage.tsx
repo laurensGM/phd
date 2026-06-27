@@ -259,11 +259,11 @@ export default function PapersPage() {
     golden: false,
   });
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<'list' | 'reading'>('list');
+  const [viewMode, setViewMode] = useState<'list' | 'reading'>('reading');
   const [readingToggleBusy, setReadingToggleBusy] = useState<string | null>(null);
-  const [sortField, setSortField] = useState<PaperSortField>('created_at');
+  const [sortField, setSortField] = useState<PaperSortField>('year');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
-  const [showSort, setShowSort] = useState(false);
+  const [showSort, setShowSort] = useState(true);
   const [goldenOnly, setGoldenOnly] = useState(false);
   const [tablePage, setTablePage] = useState(1);
   const [offlinePapers, setOfflinePapers] = useState<OfflinePaperBundle[]>([]);
