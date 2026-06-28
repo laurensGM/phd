@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import {
   getPaperFieldIds,
   manualAssignmentsByPaperId,
