@@ -66,8 +66,8 @@ export default function PapersYearHistogram({
                 <div key={bin.year} className="home-papers-histogram-bar-col">
                   <div className="home-papers-histogram-bar-stack">
                     <span
-                      className="home-papers-histogram-bar"
-                      style={{ height: `${yMax > 0 ? (bin.count / yMax) * 100 : 0}%` }}
+                      className={`home-papers-histogram-bar ${bin.count === 0 ? 'home-papers-histogram-bar-empty' : ''}`}
+                      style={{ height: `${yMax > 0 && bin.count > 0 ? (bin.count / yMax) * 100 : 0}%` }}
                       title={`${bin.year}: ${bin.count} paper${bin.count !== 1 ? 's' : ''}`}
                     >
                       {bin.count > 0 && (

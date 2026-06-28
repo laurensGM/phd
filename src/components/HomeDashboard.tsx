@@ -3,8 +3,10 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import constructsData from '../data/constructs.json';
 import modelsData from '../data/models.json';
 import outlineData from '../data/outline.json';
+import fieldsData from '../data/fields.json';
 import SnippetDistributionChart from './SnippetDistributionChart';
 import PapersYearHistogram from './PapersYearHistogram';
+import PaperDistributionPie from './PaperDistributionPie';
 import {
   buildChartSlices,
   countTagAssignments,
@@ -13,9 +15,14 @@ import {
   type ChartSlice,
 } from '../lib/snippetTagDistribution';
 import { buildYearHistogram } from '../lib/paperYearHistogram';
+import {
+  buildFieldDistributionSlices,
+  buildJournalDistributionSlices,
+  type FieldDef,
+  type PaperJournalRow,
+} from '../lib/paperDistribution';
 
-interface PaperYearRow {
-  id: string;
+interface PaperRow extends PaperJournalRow {
   year: string | null;
 }
 
@@ -70,7 +77,7 @@ function nextFocusMilestone(items: OutlineItem[], todayStr: string): OutlineItem
 
 export default function HomeDashboard() {
   const base = (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) || '';
-  const [paperRows, setPaperRows] = useState<PaperYearRow[]>([]);
+  const [paperRows, setPaperRows] = useState<PaperRow[]>([]);
   const [snippetsCount, setSnippetsCount] = useState<number>(0);
   const [snippetsProcessedCount, setSnippetsProcessedCount] = useState<number>(0);
   const [snippetRows, setSnippetRows] = useState<SnippetTagRow[]>([]);
@@ -100,6 +107,21 @@ export default function HomeDashboard() {
     [paperRows]
   );
 
+  const fieldsList = useMemo(
+    () => fieldsData as FieldDef[],
+    []
+  );
+
+  const fieldDistributionSlices = useMemo(
+    () => buildFieldDistributionSlices(paperRows, fieldsList),
+    [paperRows, fieldsList]
+  );
+
+  const journalDistribution = useMemo(
+    () => buildJournalDistributionSlices(paperRows),
+    [paperRows]
+  );
+
   const constructSlices = useMemo((): ChartSlice[] => {
     const counts = countTagAssignments(snippetRows, getSnippetConstructIds);
     return buildChartSlices(counts, constructLabelById);
@@ -115,9 +137,8 @@ export default function HomeDashboard() {
 
   const timelineMilestones = useMemo(() => {
     const all = (outlineData as OutlineItem[]).slice().sort((a, b) => a.date.localeCompare(b.date));
-    // Prefer milestones from the current year (2026); if none, fall back to all
-    const year = '2026';
-    const list = all.filter((m) => m.date.startsWith(year + '-'));
+    const year = String(new Date().getFullYear());
+    const list = all.filter((m) => m.date.startsWith(`${year}-`));
     const effective = list.length > 0 ? list : all;
 
     const today = localTodayStr();
@@ -126,6 +147,7 @@ export default function HomeDashboard() {
     return effective.map((item) => ({
       ...item,
       isPast: item.date < today,
+      isFuture: item.date >= today,
       isNext: item.id === nextId,
     }));
   }, []);
@@ -158,7 +180,7 @@ export default function HomeDashboard() {
       setError(null);
       try {
         const [papersRes, snippetsRes] = await Promise.all([
-          supabase.from('saved_papers').select('id, year').limit(2000),
+          supabase.from('saved_papers').select('id, year, journal').limit(2000),
           supabase.from('snippets').select('id, construct_ids, model_ids, construct_id, model_id, used_in_writing'),
         ]);
         if (cancelled) return;
@@ -166,7 +188,7 @@ export default function HomeDashboard() {
           setError(papersRes.error.message);
           setPaperRows([]);
         } else {
-          setPaperRows((papersRes.data ?? []) as PaperYearRow[]);
+          setPaperRows((papersRes.data ?? []) as PaperRow[]);
         }
         if (snippetsRes.error) {
           setError((e) => e ?? snippetsRes.error.message);
@@ -238,6 +260,37 @@ export default function HomeDashboard() {
         />
       )}
 
+      {papersCount > 0 && (
+        <section className="home-paper-pies-section">
+          <div className="home-paper-pies-header">
+            <h2 className="home-section-title">Paper library</h2>
+            <p className="home-paper-pies-note">
+              Fields are matched from journal names. Journals with only one paper are grouped as Other.
+            </p>
+          </div>
+          <div className="home-paper-pies-grid">
+            <PaperDistributionPie
+              title="By field"
+              totalPapers={papersCount}
+              slices={fieldDistributionSlices}
+              emptyMessage="No papers matched to a research field yet (check journal names)."
+              subtitle="Matched via journal lists on each field page"
+            />
+            <PaperDistributionPie
+              title="By journal"
+              totalPapers={papersCount}
+              slices={journalDistribution.slices}
+              emptyMessage="No papers with a journal name yet."
+              subtitle={
+                journalDistribution.withoutJournal > 0
+                  ? `${journalDistribution.withoutJournal} paper${journalDistribution.withoutJournal !== 1 ? 's' : ''} without journal not shown`
+                  : undefined
+              }
+            />
+          </div>
+        </section>
+      )}
+
       {snippetsCount > 0 && (
         <section className="home-snippet-charts-section">
           <div className="home-snippet-charts-header">
@@ -265,14 +318,14 @@ export default function HomeDashboard() {
 
       <section className="home-timeline-section">
         <div className="home-timeline-header">
-          <h2 className="home-section-title">Milestones</h2>
+          <h2 className="home-section-title">Milestones this year</h2>
           <a href={`${base}outline/`} className="home-timeline-link">View all →</a>
         </div>
         <ul className="home-timeline">
           {timelineMilestones.map((m) => (
             <li
               key={m.id}
-              className={`home-timeline-item ${m.isPast ? 'home-timeline-past' : ''} ${m.isNext ? 'home-timeline-next' : ''}`}
+              className={`home-timeline-item ${m.isPast ? 'home-timeline-past' : ''} ${m.isFuture && !m.isNext ? 'home-timeline-future' : ''} ${m.isNext ? 'home-timeline-next' : ''}`}
             >
               <time className="home-timeline-date" dateTime={m.date}>
                 {m.dateLabel}

@@ -28,9 +28,17 @@ export function buildYearHistogram(
     counts.set(year, (counts.get(year) ?? 0) + 1);
   }
 
-  const bins = [...counts.entries()]
-    .map(([year, count]) => ({ year, count }))
-    .sort((a, b) => a.year - b.year);
+  if (counts.size === 0) {
+    return { bins: [], withoutYear };
+  }
+
+  const years = [...counts.keys()];
+  const minYear = Math.min(...years);
+  const maxYear = Math.max(...years);
+  const bins: YearBin[] = [];
+  for (let year = minYear; year <= maxYear; year += 1) {
+    bins.push({ year, count: counts.get(year) ?? 0 });
+  }
 
   return { bins, withoutYear };
 }
