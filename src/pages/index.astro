@@ -129,6 +129,171 @@ const researchTopic = latestRq?.question ?? 'Your research question';
     margin: 0 0 1rem 0;
   }
 
+  /* Papers by publication year histogram */
+  :global(.home-papers-histogram-section) {
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  :global(.home-papers-histogram-header) {
+    margin-bottom: 1rem;
+  }
+
+  :global(.home-papers-histogram-header .home-section-title) {
+    margin-bottom: 0.35rem;
+  }
+
+  :global(.home-papers-histogram-subtitle),
+  :global(.home-papers-histogram-empty) {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--color-ink-muted);
+    line-height: 1.45;
+  }
+
+  :global(.home-papers-histogram-wrap) {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: 1fr auto;
+    gap: 0.35rem 0.5rem;
+    align-items: stretch;
+  }
+
+  :global(.home-papers-histogram-y-label) {
+    grid-row: 1;
+    grid-column: 1;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-ink-muted);
+    text-align: center;
+    justify-self: center;
+    padding: 0.25rem 0;
+  }
+
+  :global(.home-papers-histogram-chart) {
+    grid-row: 1;
+    grid-column: 2;
+    display: flex;
+    gap: 0.5rem;
+    min-height: 200px;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+  }
+
+  :global(.home-papers-histogram-x-axis-label) {
+    grid-row: 2;
+    grid-column: 2;
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-ink-muted);
+    padding-top: 0.15rem;
+  }
+
+  :global(.home-papers-histogram-y-axis) {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-shrink: 0;
+    width: 1.75rem;
+    padding-bottom: 1.35rem;
+    font-size: 0.72rem;
+    color: var(--color-ink-muted);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+
+  :global(.home-papers-histogram-y-tick) {
+    line-height: 1;
+  }
+
+  :global(.home-papers-histogram-plot) {
+    position: relative;
+    flex: 1;
+    min-width: min(100%, 480px);
+  }
+
+  :global(.home-papers-histogram-grid) {
+    position: absolute;
+    inset: 0 0 1.35rem 0;
+    pointer-events: none;
+  }
+
+  :global(.home-papers-histogram-gridline) {
+    position: absolute;
+    left: 0;
+    right: 0;
+    border-top: 1px dashed #e5e7eb;
+  }
+
+  :global(.home-papers-histogram-bars) {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: flex-end;
+    gap: 0.35rem;
+    height: 100%;
+    min-height: 200px;
+    padding-bottom: 1.35rem;
+  }
+
+  :global(.home-papers-histogram-bar-col) {
+    flex: 1 1 0;
+    min-width: 2rem;
+    max-width: 3.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+  }
+
+  :global(.home-papers-histogram-bar-stack) {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 0;
+  }
+
+  :global(.home-papers-histogram-bar) {
+    width: 100%;
+    min-height: 3px;
+    background: var(--color-maroon);
+    border-radius: 4px 4px 0 0;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    transition: background 0.15s;
+  }
+
+  :global(.home-papers-histogram-bar:hover) {
+    background: var(--color-maroon-dark);
+  }
+
+  :global(.home-papers-histogram-bar-value) {
+    position: absolute;
+    top: -1.1rem;
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--color-ink-muted);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  :global(.home-papers-histogram-x-label) {
+    margin-top: 0.35rem;
+    font-size: 0.72rem;
+    color: var(--color-ink-muted);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
   /* Snippet tag charts */
   :global(.home-snippet-charts-section) {
     background: white;
@@ -185,89 +350,53 @@ const researchTopic = latestRq?.question ?? 'Your research question';
     color: var(--color-ink-muted);
   }
 
-  :global(.home-snippet-chart-body) {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    gap: 1.25rem;
-  }
-
-  :global(.home-snippet-donut) {
-    width: 140px;
-    height: 140px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  :global(.home-snippet-donut-hole) {
-    width: 88px;
-    height: 88px;
-    border-radius: 50%;
-    background: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    box-shadow: inset 0 0 0 1px var(--color-border);
-  }
-
-  :global(.home-snippet-donut-value) {
-    font-size: 1.35rem;
-    font-weight: 700;
-    line-height: 1.1;
-    color: var(--color-ink);
-  }
-
-  :global(.home-snippet-donut-label) {
-    font-size: 0.68rem;
-    color: var(--color-ink-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-
-  :global(.home-snippet-chart-legend) {
+  :global(.home-snippet-chart-bars) {
     list-style: none;
     margin: 0;
     padding: 0;
-    flex: 1;
-    min-width: 160px;
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
-    max-height: 220px;
+    gap: 0.5rem;
+    max-height: 280px;
     overflow-y: auto;
   }
 
-  :global(.home-snippet-chart-legend-item) {
-    display: flex;
+  :global(.home-snippet-chart-bar-row) {
+    display: grid;
+    grid-template-columns: minmax(5rem, 38%) 1fr auto;
     align-items: center;
     gap: 0.5rem;
     font-size: 0.82rem;
   }
 
-  :global(.home-snippet-chart-legend-swatch) {
-    width: 11px;
-    height: 11px;
-    border-radius: 3px;
-    flex-shrink: 0;
-  }
-
-  :global(.home-snippet-chart-legend-label) {
+  :global(.home-snippet-chart-bar-label) {
     color: var(--color-ink);
-    flex: 1;
-    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  :global(.home-snippet-chart-legend-count) {
+  :global(.home-snippet-chart-bar-track) {
+    height: 0.65rem;
+    background: #e5e7eb;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  :global(.home-snippet-chart-bar-fill) {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    min-width: 3px;
+    transition: width 0.2s ease;
+  }
+
+  :global(.home-snippet-chart-bar-count) {
     font-weight: 600;
     color: var(--color-ink-muted);
     font-variant-numeric: tabular-nums;
+    min-width: 1.5rem;
+    text-align: right;
   }
 
   /* Milestones timeline */

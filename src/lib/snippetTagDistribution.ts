@@ -92,20 +92,6 @@ export function buildChartSlices(
   return slices;
 }
 
-export function conicGradientFromSlices(slices: ChartSlice[]): string {
-  const total = slices.reduce((sum, s) => sum + s.count, 0);
-  if (total <= 0) return 'conic-gradient(#e5e7eb 0% 100%)';
-
-  const parts: string[] = [];
-  let acc = 0;
-  for (const slice of slices) {
-    const pct = (slice.count / total) * 100;
-    parts.push(`${slice.color} ${acc}% ${acc + pct}%`);
-    acc += pct;
-  }
-  return `conic-gradient(${parts.join(', ')})`;
-}
-
 export function tagAssignmentTotal(slices: ChartSlice[]): number {
   return slices.reduce((sum, s) => sum + s.count, 0);
 }

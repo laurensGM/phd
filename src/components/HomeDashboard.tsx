@@ -4,6 +4,7 @@ import constructsData from '../data/constructs.json';
 import modelsData from '../data/models.json';
 import outlineData from '../data/outline.json';
 import SnippetDistributionChart from './SnippetDistributionChart';
+import PapersYearHistogram from './PapersYearHistogram';
 import {
   buildChartSlices,
   countTagAssignments,
@@ -11,6 +12,12 @@ import {
   getSnippetModelIds,
   type ChartSlice,
 } from '../lib/snippetTagDistribution';
+import { buildYearHistogram } from '../lib/paperYearHistogram';
+
+interface PaperYearRow {
+  id: string;
+  year: string | null;
+}
 
 interface SnippetTagRow {
   id: string;
@@ -63,7 +70,7 @@ function nextFocusMilestone(items: OutlineItem[], todayStr: string): OutlineItem
 
 export default function HomeDashboard() {
   const base = (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) || '';
-  const [papersCount, setPapersCount] = useState<number>(0);
+  const [paperRows, setPaperRows] = useState<PaperYearRow[]>([]);
   const [snippetsCount, setSnippetsCount] = useState<number>(0);
   const [snippetsProcessedCount, setSnippetsProcessedCount] = useState<number>(0);
   const [snippetRows, setSnippetRows] = useState<SnippetTagRow[]>([]);
@@ -85,6 +92,13 @@ export default function HomeDashboard() {
     }
     return map;
   }, []);
+
+  const papersCount = paperRows.length;
+
+  const yearHistogram = useMemo(
+    () => buildYearHistogram(paperRows.map((p) => p.year)),
+    [paperRows]
+  );
 
   const constructSlices = useMemo((): ChartSlice[] => {
     const counts = countTagAssignments(snippetRows, getSnippetConstructIds);
@@ -132,7 +146,7 @@ export default function HomeDashboard() {
   useEffect(() => {
     if (!isSupabaseConfigured() || !supabase) {
       setLoading(false);
-      setPapersCount(0);
+      setPaperRows([]);
       setSnippetsCount(0);
       setSnippetsProcessedCount(0);
       setSnippetRows([]);
@@ -144,15 +158,15 @@ export default function HomeDashboard() {
       setError(null);
       try {
         const [papersRes, snippetsRes] = await Promise.all([
-          supabase.from('saved_papers').select('id', { count: 'exact', head: true }),
+          supabase.from('saved_papers').select('id, year').limit(2000),
           supabase.from('snippets').select('id, construct_ids, model_ids, construct_id, model_id, used_in_writing'),
         ]);
         if (cancelled) return;
         if (papersRes.error) {
           setError(papersRes.error.message);
-          setPapersCount(0);
+          setPaperRows([]);
         } else {
-          setPapersCount(papersRes.count ?? 0);
+          setPaperRows((papersRes.data ?? []) as PaperYearRow[]);
         }
         if (snippetsRes.error) {
           setError((e) => e ?? snippetsRes.error.message);
@@ -215,6 +229,14 @@ export default function HomeDashboard() {
           <span className="home-stat-label">models explored</span>
         </a>
       </div>
+
+      {papersCount > 0 && (
+        <PapersYearHistogram
+          bins={yearHistogram.bins}
+          withoutYear={yearHistogram.withoutYear}
+          totalPapers={papersCount}
+        />
+      )}
 
       {snippetsCount > 0 && (
         <section className="home-snippet-charts-section">

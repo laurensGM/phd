@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-  type ChartSlice,
-  conicGradientFromSlices,
-  tagAssignmentTotal,
-} from '../lib/snippetTagDistribution';
+import { type ChartSlice, tagAssignmentTotal } from '../lib/snippetTagDistribution';
 
 interface SnippetDistributionChartProps {
   title: string;
@@ -19,6 +15,7 @@ export default function SnippetDistributionChart({
   emptyMessage,
 }: SnippetDistributionChartProps) {
   const tagTotal = tagAssignmentTotal(slices);
+  const maxCount = slices.length > 0 ? Math.max(...slices.map((s) => s.count)) : 0;
 
   if (slices.length === 0) {
     return (
@@ -33,34 +30,28 @@ export default function SnippetDistributionChart({
     <div className="home-snippet-chart-card">
       <h3 className="home-snippet-chart-title">{title}</h3>
       <p className="home-snippet-chart-subtitle">
-        {tagTotal} tag{tagTotal !== 1 ? 's' : ''} across {totalSnippets} snippet
-        {totalSnippets !== 1 ? 's' : ''}
+        {totalSnippets} snippet{totalSnippets !== 1 ? 's' : ''} · {tagTotal} tag
+        {tagTotal !== 1 ? 's' : ''}
       </p>
-      <div className="home-snippet-chart-body">
-        <div
-          className="home-snippet-donut"
-          style={{ background: conicGradientFromSlices(slices) }}
-          role="img"
-          aria-label={`${title}: ${slices.map((s) => `${s.label} ${s.count}`).join(', ')}`}
-        >
-          <div className="home-snippet-donut-hole">
-            <span className="home-snippet-donut-value">{totalSnippets}</span>
-            <span className="home-snippet-donut-label">snippets</span>
-          </div>
-        </div>
-        <ul className="home-snippet-chart-legend">
-          {slices.map((slice) => (
-            <li key={slice.label} className="home-snippet-chart-legend-item">
+      <ul className="home-snippet-chart-bars" role="list">
+        {slices.map((slice) => (
+          <li key={slice.label} className="home-snippet-chart-bar-row">
+            <span className="home-snippet-chart-bar-label" title={slice.label}>
+              {slice.label}
+            </span>
+            <span className="home-snippet-chart-bar-track">
               <span
-                className="home-snippet-chart-legend-swatch"
-                style={{ backgroundColor: slice.color }}
+                className="home-snippet-chart-bar-fill"
+                style={{
+                  width: `${maxCount > 0 ? (slice.count / maxCount) * 100 : 0}%`,
+                  backgroundColor: slice.color,
+                }}
               />
-              <span className="home-snippet-chart-legend-label">{slice.label}</span>
-              <span className="home-snippet-chart-legend-count">{slice.count}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
+            </span>
+            <span className="home-snippet-chart-bar-count">{slice.count}</span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
