@@ -162,42 +162,49 @@ import PaperDetailPage from '../../components/PaperDetailPage';
     margin: 0;
     font-size: 1rem;
   }
-  :global(.paper-detail-model-links-intro) {
+  :global(.paper-detail-model-links-intro),
+  :global(.paper-detail-field-links-intro) {
     margin: 0 0 0.75rem 0;
     font-size: 0.875rem;
     color: var(--color-ink-muted);
     line-height: 1.5;
   }
-  :global(.paper-detail-model-links) {
+  :global(.paper-detail-model-links),
+  :global(.paper-detail-field-links) {
     padding: 1rem 1.25rem;
     background: var(--color-bg-alt);
     border: 1px solid var(--color-border);
     border-radius: 8px;
   }
-  :global(.paper-detail-model-links-setup) {
+  :global(.paper-detail-model-links-setup),
+  :global(.paper-detail-field-links-setup) {
     margin: 0;
     font-size: 0.875rem;
     color: var(--color-ink-muted);
   }
-  :global(.paper-detail-model-links-error) {
+  :global(.paper-detail-model-links-error),
+  :global(.paper-detail-field-links-error) {
     color: var(--color-error, #b91c1c);
     font-size: 0.875rem;
     margin: 0 0 0.75rem 0;
   }
-  :global(.paper-detail-model-links-label) {
+  :global(.paper-detail-model-links-label),
+  :global(.paper-detail-field-links-label) {
     display: block;
     font-size: 0.85rem;
     font-weight: 600;
     margin-bottom: 0.35rem;
     color: var(--color-ink);
   }
-  :global(.paper-detail-model-links-row) {
+  :global(.paper-detail-model-links-row),
+  :global(.paper-detail-field-links-row) {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
     align-items: center;
   }
-  :global(.paper-detail-model-links-select) {
+  :global(.paper-detail-model-links-select),
+  :global(.paper-detail-field-links-select) {
     flex: 1;
     min-width: 200px;
     padding: 0.5rem 0.65rem;
@@ -207,11 +214,13 @@ import PaperDetailPage from '../../components/PaperDetailPage';
     font-size: 0.9rem;
     background: #fff;
   }
-  :global(.paper-detail-model-links-select:focus) {
+  :global(.paper-detail-model-links-select:focus),
+  :global(.paper-detail-field-links-select:focus) {
     outline: none;
     border-color: var(--color-maroon);
   }
-  :global(.paper-detail-model-links-add) {
+  :global(.paper-detail-model-links-add),
+  :global(.paper-detail-field-links-add) {
     padding: 0.5rem 1rem;
     background: var(--color-maroon);
     color: #fff;
@@ -221,26 +230,31 @@ import PaperDetailPage from '../../components/PaperDetailPage';
     font-size: 0.85rem;
     cursor: pointer;
   }
-  :global(.paper-detail-model-links-add:disabled) {
+  :global(.paper-detail-model-links-add:disabled),
+  :global(.paper-detail-field-links-add:disabled) {
     opacity: 0.55;
     cursor: not-allowed;
   }
-  :global(.paper-detail-model-links-loading) {
+  :global(.paper-detail-model-links-loading),
+  :global(.paper-detail-field-links-loading) {
     font-size: 0.85rem;
     color: var(--color-ink-muted);
     margin: 0.5rem 0 0 0;
   }
-  :global(.paper-detail-model-links-empty) {
+  :global(.paper-detail-model-links-empty),
+  :global(.paper-detail-field-links-empty) {
     font-size: 0.875rem;
     color: var(--color-ink-muted);
     margin: 0.5rem 0 0 0;
   }
-  :global(.paper-detail-model-links-list) {
+  :global(.paper-detail-model-links-list),
+  :global(.paper-detail-field-links-list) {
     list-style: none;
     padding: 0;
     margin: 0.75rem 0 0 0;
   }
-  :global(.paper-detail-model-links-item) {
+  :global(.paper-detail-model-links-item),
+  :global(.paper-detail-field-links-item) {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
@@ -250,20 +264,24 @@ import PaperDetailPage from '../../components/PaperDetailPage';
     font-size: 0.9rem;
     line-height: 1.45;
   }
-  :global(.paper-detail-model-links-item:first-child) {
+  :global(.paper-detail-model-links-item:first-child),
+  :global(.paper-detail-field-links-item:first-child) {
     border-top: none;
     padding-top: 0;
   }
-  :global(.paper-detail-model-links-model) {
+  :global(.paper-detail-model-links-model),
+  :global(.paper-detail-field-links-name) {
     color: var(--color-maroon);
     font-weight: 600;
     text-decoration: none;
     flex: 1;
   }
-  :global(.paper-detail-model-links-model:hover) {
+  :global(.paper-detail-model-links-model:hover),
+  :global(.paper-detail-field-links-name:hover) {
     text-decoration: underline;
   }
-  :global(.paper-detail-model-links-remove) {
+  :global(.paper-detail-model-links-remove),
+  :global(.paper-detail-field-links-remove) {
     flex-shrink: 0;
     padding: 0.2rem 0.5rem;
     font-size: 0.8rem;
@@ -274,8 +292,31 @@ import PaperDetailPage from '../../components/PaperDetailPage';
     cursor: pointer;
     color: var(--color-ink-muted);
   }
-  :global(.paper-detail-model-links-remove:hover:not(:disabled)) {
+  :global(.paper-detail-model-links-remove:hover:not(:disabled)),
+  :global(.paper-detail-field-links-remove:hover:not(:disabled)) {
     border-color: var(--color-maroon);
+    color: var(--color-maroon);
+  }
+  :global(.paper-detail-field-links-item-main) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    flex: 1;
+    min-width: 0;
+  }
+  :global(.paper-detail-field-links-badge) {
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 0.12rem 0.45rem;
+    border-radius: 999px;
+    background: #e5e7eb;
+    color: #4b5563;
+  }
+  :global(.paper-detail-field-links-badge-manual) {
+    background: rgba(113, 32, 56, 0.1);
     color: var(--color-maroon);
   }
   :global(.paper-detail-comments) {

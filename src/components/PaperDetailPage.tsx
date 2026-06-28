@@ -7,6 +7,7 @@ import { savePaperForOffline } from '../lib/narration/savePaperOffline';
 import { uploadPaperCommentImage, removePaperCommentImage } from '../lib/paperCommentImage';
 import { extractImageFileFromClipboard } from '../lib/clipboardImage';
 import PaperModelLinks from './PaperModelLinks';
+import PaperFieldLinks from './PaperFieldLinks';
 import SummaryNarrationPlayer from './SummaryNarrationPlayer';
 import { PAPER_STATUSES, type PaperStatusId } from '../constants/paperStatuses';
 import constructsData from '../data/constructs.json';
@@ -963,6 +964,14 @@ export default function PaperDetailPage() {
             </>
           )}
         </p>
+      </section>
+
+      <section className="paper-detail-section paper-detail-section-fields">
+        <h2 className="paper-detail-section-title">Linked fields</h2>
+        <p className="paper-detail-field-links-intro">
+          Fields matched from the journal name appear automatically. You can also add manual links — these count on the Fields page and home dashboard.
+        </p>
+        <PaperFieldLinks paperId={paper.id} paperJournal={paper.journal} base={base} />
       </section>
 
       <section className="paper-detail-section paper-detail-section-models">
