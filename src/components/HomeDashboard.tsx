@@ -3,6 +3,23 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import constructsData from '../data/constructs.json';
 import modelsData from '../data/models.json';
 import outlineData from '../data/outline.json';
+import SnippetDistributionChart from './SnippetDistributionChart';
+import {
+  buildChartSlices,
+  countTagAssignments,
+  getSnippetConstructIds,
+  getSnippetModelIds,
+  type ChartSlice,
+} from '../lib/snippetTagDistribution';
+
+interface SnippetTagRow {
+  id: string;
+  construct_ids?: string[] | null;
+  model_ids?: string[] | null;
+  construct_id?: string | null;
+  model_id?: string | null;
+  used_in_writing?: boolean | null;
+}
 
 interface OutlineItem {
   id: string;
@@ -44,28 +61,40 @@ function nextFocusMilestone(items: OutlineItem[], todayStr: string): OutlineItem
   return sorted.find((m) => m.date >= todayStr) ?? null;
 }
 
-const PAPER_STATUSES = [
-  { id: 'Not read', label: 'Not read', color: '#9ca3af' }, // slate-400
-  { id: '1st reading', label: '1st reading', color: '#60a5fa' }, // blue-400
-  { id: '2nd reading', label: '2nd reading', color: '#2dd4bf' }, // teal-400
-  { id: 'Read', label: 'Read', color: '#34d399' }, // emerald-400
-  { id: 'Completed', label: 'Completed', color: '#fbbf24' }, // amber-400
-  { id: 'Archive', label: 'Archive', color: '#a855f7' }, // violet-500
-] as const;
-
-interface StatusCount {
-  status: string;
-  count: number;
-}
-
 export default function HomeDashboard() {
   const base = (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) || '';
   const [papersCount, setPapersCount] = useState<number>(0);
-  const [statusCounts, setStatusCounts] = useState<StatusCount[]>([]);
   const [snippetsCount, setSnippetsCount] = useState<number>(0);
   const [snippetsProcessedCount, setSnippetsProcessedCount] = useState<number>(0);
+  const [snippetRows, setSnippetRows] = useState<SnippetTagRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const constructLabelById = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const c of constructsData as { id: string; name: string; abbreviation?: string }[]) {
+      map.set(c.id, c.abbreviation ? `${c.name} (${c.abbreviation})` : c.name);
+    }
+    return map;
+  }, []);
+
+  const modelLabelById = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const m of modelsData as { id: string; name: string; abbreviation?: string }[]) {
+      map.set(m.id, m.abbreviation ?? m.name);
+    }
+    return map;
+  }, []);
+
+  const constructSlices = useMemo((): ChartSlice[] => {
+    const counts = countTagAssignments(snippetRows, getSnippetConstructIds);
+    return buildChartSlices(counts, constructLabelById);
+  }, [snippetRows, constructLabelById]);
+
+  const modelSlices = useMemo((): ChartSlice[] => {
+    const counts = countTagAssignments(snippetRows, getSnippetModelIds);
+    return buildChartSlices(counts, modelLabelById);
+  }, [snippetRows, modelLabelById]);
 
   const constructsCount = Array.isArray(constructsData) ? constructsData.length : 0;
   const modelsCount = Array.isArray(modelsData) ? modelsData.length : 0;
@@ -106,7 +135,7 @@ export default function HomeDashboard() {
       setPapersCount(0);
       setSnippetsCount(0);
       setSnippetsProcessedCount(0);
-      setStatusCounts(PAPER_STATUSES.map((s) => ({ status: s.label, count: 0 })));
+      setSnippetRows([]);
       return;
     }
     let cancelled = false;
@@ -115,43 +144,26 @@ export default function HomeDashboard() {
       setError(null);
       try {
         const [papersRes, snippetsRes] = await Promise.all([
-          supabase.from('saved_papers').select('id, status'),
-          supabase.from('snippets').select('id, used_in_writing'),
+          supabase.from('saved_papers').select('id', { count: 'exact', head: true }),
+          supabase.from('snippets').select('id, construct_ids, model_ids, construct_id, model_id, used_in_writing'),
         ]);
         if (cancelled) return;
         if (papersRes.error) {
           setError(papersRes.error.message);
           setPapersCount(0);
-          setStatusCounts([]);
         } else {
-          const rows = (papersRes.data ?? []) as { id: string; status: string }[];
-          setPapersCount(rows.length);
-          const byStatus: Record<string, number> = {};
-          for (const s of PAPER_STATUSES) {
-            byStatus[s.id] = 0;
-          }
-          for (const row of rows) {
-            const status = row.status?.trim() || 'Not read';
-            if (!PAPER_STATUSES.some((x) => x.id === status)) {
-              byStatus['Not read'] = (byStatus['Not read'] ?? 0) + 1;
-            } else {
-              byStatus[status] = (byStatus[status] ?? 0) + 1;
-            }
-          }
-          setStatusCounts(
-            PAPER_STATUSES.map((s) => ({ status: s.label, count: byStatus[s.id] ?? 0 }))
-          );
+          setPapersCount(papersRes.count ?? 0);
         }
         if (snippetsRes.error) {
           setError((e) => e ?? snippetsRes.error.message);
           setSnippetsCount(0);
           setSnippetsProcessedCount(0);
+          setSnippetRows([]);
         } else {
-          const snippetRows = (snippetsRes.data ?? []) as { id: string; used_in_writing?: boolean }[];
-          setSnippetsCount(snippetRows.length);
-          setSnippetsProcessedCount(
-            snippetRows.filter((row) => Boolean(row.used_in_writing)).length
-          );
+          const rows = (snippetsRes.data ?? []) as SnippetTagRow[];
+          setSnippetRows(rows);
+          setSnippetsCount(rows.length);
+          setSnippetsProcessedCount(rows.filter((row) => Boolean(row.used_in_writing)).length);
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -161,21 +173,6 @@ export default function HomeDashboard() {
       cancelled = true;
     };
   }, []);
-
-  const totalForPie = statusCounts.reduce((sum, s) => sum + s.count, 0);
-  const conicParts: string[] = [];
-  let acc = 0;
-  for (let i = 0; i < PAPER_STATUSES.length; i++) {
-    const sc = statusCounts[i];
-    const pct = totalForPie > 0 ? (sc.count / totalForPie) * 100 : 0;
-    const color = PAPER_STATUSES[i].color;
-    conicParts.push(`${color} ${acc}% ${acc + pct}%`);
-    acc += pct;
-  }
-  const conicGradient =
-    conicParts.length > 0
-      ? `conic-gradient(${conicParts.join(', ')})`
-      : 'conic-gradient(#e5e7eb 0% 100%)';
 
   if (loading) {
     return (
@@ -218,27 +215,28 @@ export default function HomeDashboard() {
           <span className="home-stat-label">models explored</span>
         </a>
       </div>
-      {papersCount > 0 && (
-        <section className="home-papers-chart">
-          <h2 className="home-section-title">Papers by status</h2>
-          <div className="home-pie-legend">
-            <div
-              className="home-pie-chart"
-              style={{ background: conicGradient }}
-              aria-hidden
+
+      {snippetsCount > 0 && (
+        <section className="home-snippet-charts-section">
+          <div className="home-snippet-charts-header">
+            <h2 className="home-section-title">Snippet tags</h2>
+            <p className="home-snippet-charts-note">
+              Snippets can have multiple tags; each tag is counted once. Single-use tags are grouped as Other.
+            </p>
+          </div>
+          <div className="home-snippet-charts-grid">
+            <SnippetDistributionChart
+              title="By construct"
+              totalSnippets={snippetsCount}
+              slices={constructSlices}
+              emptyMessage="No snippets tagged with a construct yet."
             />
-            <ul className="home-pie-legend-list">
-              {PAPER_STATUSES.map((s, i) => (
-                <li key={s.id} className="home-pie-legend-item">
-                  <span
-                    className="home-pie-legend-swatch"
-                    style={{ backgroundColor: s.color }}
-                  />
-                  <span className="home-pie-legend-label">{s.label}</span>
-                  <span className="home-pie-legend-count">{statusCounts[i]?.count ?? 0}</span>
-                </li>
-              ))}
-            </ul>
+            <SnippetDistributionChart
+              title="By model"
+              totalSnippets={snippetsCount}
+              slices={modelSlices}
+              emptyMessage="No snippets tagged with a model yet."
+            />
           </div>
         </section>
       )}
