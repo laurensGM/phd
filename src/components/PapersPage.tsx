@@ -3,7 +3,6 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { paperDetailUrl } from '../lib/paperDetailUrl';
 import { listOfflinePapers, OFFLINE_PAPERS_CHANGED_EVENT, type OfflinePaperBundle } from '../lib/offlinePaperStore';
 import { syncOfflinePapersFromCloud } from '../lib/offlinePaperSync';
-import { PAPER_STATUSES, type PaperStatusId } from '../constants/paperStatuses';
 import {
   PAPER_READING_SECTIONS,
   type PaperReadingSectionKey,
@@ -20,7 +19,6 @@ interface SavedPaper {
   year: string | null;
   journal: string | null;
   citations: number | null;
-  status: string;
   golden: boolean;
   created_at: string;
   read_abstract: boolean;
@@ -174,7 +172,6 @@ function mapRow(row: {
   year?: string | null;
   journal?: string | null;
   citations?: number | null;
-  status?: string | null;
   golden?: boolean | null;
   created_at: string;
   read_abstract?: boolean | null;
@@ -184,7 +181,6 @@ function mapRow(row: {
   read_conclusion?: boolean | null;
   read_limitations_recommendations?: boolean | null;
 }): SavedPaper {
-  const status = row.status?.trim() && PAPER_STATUSES.some((s) => s.id === row.status) ? row.status! : 'Not read';
   return {
     id: row.id,
     url: row.url,
@@ -201,7 +197,6 @@ function mapRow(row: {
       const n = typeof c === 'number' ? c : parseInt(String(c), 10);
       return Number.isNaN(n) ? null : n;
     })(),
-    status,
     golden: !!row.golden,
     created_at: row.created_at,
     read_abstract: !!row.read_abstract,
@@ -237,7 +232,6 @@ export default function PapersPage() {
     year: '',
     journal: '',
     citations: '' as string,
-    status: 'Not read' as PaperStatusId,
     golden: false,
   });
   const [loading, setLoading] = useState(true);
@@ -255,7 +249,6 @@ export default function PapersPage() {
     motivation: '',
     tags: [] as string[],
     citations: '' as string,
-    status: 'Not read' as PaperStatusId,
     golden: false,
   });
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -514,7 +507,6 @@ export default function PapersPage() {
 
   const startEdit = (paper: SavedPaper) => {
     setEditingId(paper.id);
-    const status = PAPER_STATUSES.some((s) => s.id === paper.status) ? (paper.status as PaperStatusId) : 'Not read';
     setEditForm({
       url: paper.url,
       secondary_url: paper.secondary_url ?? '',
@@ -525,7 +517,6 @@ export default function PapersPage() {
       motivation: paper.motivation ?? '',
       tags: paper.tags ?? [],
       citations: paper.citations != null ? String(paper.citations) : '',
-      status,
       golden: paper.golden ?? false,
     });
     setError(null);
@@ -560,7 +551,6 @@ export default function PapersPage() {
         motivation: editForm.motivation.trim() || null,
         tags: editForm.tags,
         citations: Number.isNaN(citationsNum) ? null : citationsNum,
-        status: editForm.status,
         golden: editForm.golden,
       })
       .eq('id', editingId)
@@ -592,11 +582,6 @@ export default function PapersPage() {
       return;
     }
     setPapers((prev) => prev.filter((p) => p.id !== id));
-  };
-
-  const getStatusColorClass = (status: string) => {
-    const s = PAPER_STATUSES.find((x) => x.id === status);
-    return s?.color ?? 'status-not-read';
   };
 
   const toggleSortDirection = () => {
@@ -643,7 +628,6 @@ export default function PapersPage() {
         year: formData.year.trim() || null,
         journal: formData.journal.trim() || null,
         citations: Number.isNaN(citationsNum) ? null : citationsNum,
-        status: formData.status,
         golden: formData.golden,
       })
       .select('id, url, secondary_url, motivation, tags, title, authors, year, journal, citations, status, golden, created_at')
@@ -652,7 +636,7 @@ export default function PapersPage() {
       setError(insertError.message);
     } else if (insertData) {
       setPapers((prev) => [mapRow({ ...insertData, id: insertData.id }), ...prev]);
-      setFormData({ url: '', secondary_url: '', motivation: '', tags: [], title: '', authors: '', year: '', journal: '', citations: '', status: 'Not read', golden: false });
+      setFormData({ url: '', secondary_url: '', motivation: '', tags: [], title: '', authors: '', year: '', journal: '', citations: '', golden: false });
       setShowForm(false);
       const paperUrl = formData.url?.trim();
       if (paperUrl) {
@@ -892,22 +876,6 @@ export default function PapersPage() {
                   </button>
                 ))}
               </div>
-            </div>
-
-            <div className="papers-form-field">
-              <label htmlFor="paper-status">Status</label>
-              <select
-                id="paper-status"
-                value={formData.status}
-                onChange={(e) => setFormData((d) => ({ ...d, status: e.target.value as PaperStatusId }))}
-                className="papers-input papers-select-status"
-              >
-                {PAPER_STATUSES.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.label}
-                  </option>
-                ))}
-              </select>
             </div>
 
             <div className="papers-form-field papers-form-field-inline">
@@ -1160,20 +1128,6 @@ export default function PapersPage() {
                       ))}
                     </div>
                   </div>
-                  <div className="papers-form-field">
-                    <label>Status</label>
-                    <select
-                      value={editForm.status}
-                      onChange={(e) => setEditForm((f) => ({ ...f, status: e.target.value as PaperStatusId }))}
-                      className="papers-input papers-select-status"
-                    >
-                      {PAPER_STATUSES.map((s) => (
-                        <option key={s.id} value={s.id}>
-                          {s.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
                   <div className="papers-form-field papers-form-field-inline">
                     <label className="papers-checkbox-label">
                       <input
@@ -1197,9 +1151,6 @@ export default function PapersPage() {
                 <>
                   <div className="papers-entry-header">
                     <div className="papers-entry-header-left">
-                      <span className={`papers-status-tag ${getStatusColorClass(paper.status)}`} title={PAPER_STATUSES.find((s) => s.id === paper.status)?.description}>
-                        {paper.status}
-                      </span>
                       <time dateTime={paper.created_at}>{formatDate(paper.created_at)}</time>
                       {paper.year && <span className="papers-entry-year">{paper.year}</span>}
                       {(paper.citations !== null && paper.citations !== undefined) && (

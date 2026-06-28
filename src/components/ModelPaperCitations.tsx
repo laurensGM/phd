@@ -9,7 +9,6 @@ interface SavedPaperRow {
   title: string | null;
   authors: string | null;
   year: string | null;
-  status: string | null;
   url: string;
 }
 
@@ -28,11 +27,6 @@ function paperLabel(p: SavedPaperRow): string {
   const title = (p.title && p.title.trim()) || p.url;
   const meta = [p.authors?.trim(), p.year?.trim()].filter(Boolean).join(', ');
   return meta ? `${title} (${meta})` : title;
-}
-
-function statusClassName(status: string | null | undefined): string {
-  const normalized = (status || 'Not read').trim().toLowerCase().replace(/\s+/g, '-');
-  return `model-paper-status model-paper-status-${normalized}`;
 }
 
 function sortLinksByLabel(
@@ -75,7 +69,7 @@ export default function ModelPaperCitations({ modelId, base }: ModelPaperCitatio
     setError(null);
     const { data, error: fetchError } = await supabase
       .from('saved_papers')
-      .select('id, title, authors, year, status, url')
+      .select('id, title, authors, year, url')
       .order('created_at', { ascending: false })
       .limit(PAPERS_FETCH_LIMIT);
     if (fetchError) {
@@ -111,7 +105,7 @@ export default function ModelPaperCitations({ modelId, base }: ModelPaperCitatio
     }
     const { data: paperRows, error: paperErr } = await supabase
       .from('saved_papers')
-      .select('id, title, authors, year, status, url')
+      .select('id, title, authors, year, url')
       .in('id', ids);
     if (paperErr) {
       setError(paperErr.message);
@@ -226,12 +220,10 @@ export default function ModelPaperCitations({ modelId, base }: ModelPaperCitatio
             const href = paperDetailUrl(link.paper_id, base);
             const title = (p?.title && p.title.trim()) || (p?.url ?? `Paper ${link.paper_id.slice(0, 8)}…`);
             const meta = [p?.authors?.trim(), p?.year?.trim()].filter(Boolean).join(' · ');
-            const status = (p?.status && p.status.trim()) || 'Not read';
             return (
               <li key={link.id} className="model-paper-citations-item">
                 <article className="model-paper-card">
                   <div className="model-paper-card-header">
-                    <span className={statusClassName(status)}>{status}</span>
                     <button
                       type="button"
                       className="model-paper-citations-remove"

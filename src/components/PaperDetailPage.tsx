@@ -9,7 +9,6 @@ import { extractImageFileFromClipboard } from '../lib/clipboardImage';
 import PaperModelLinks from './PaperModelLinks';
 import PaperFieldLinks from './PaperFieldLinks';
 import SummaryNarrationPlayer from './SummaryNarrationPlayer';
-import { PAPER_STATUSES, type PaperStatusId } from '../constants/paperStatuses';
 import constructsData from '../data/constructs.json';
 import modelsData from '../data/models.json';
 
@@ -24,7 +23,6 @@ interface SavedPaper {
   year: string | null;
   journal: string | null;
   citations: number | null;
-  status: string;
   golden: boolean;
   created_at: string;
 }
@@ -89,11 +87,9 @@ function mapRow(row: {
   year?: string | null;
   journal?: string | null;
   citations?: number | null;
-  status?: string | null;
   golden?: boolean | null;
   created_at: string;
 }): SavedPaper {
-  const status = row.status?.trim() && PAPER_STATUSES.some((s) => s.id === row.status) ? row.status! : 'Not read';
   return {
     id: row.id,
     url: row.url,
@@ -110,7 +106,6 @@ function mapRow(row: {
       const n = typeof c === 'number' ? c : parseInt(String(c), 10);
       return Number.isNaN(n) ? null : n;
     })(),
-    status,
     golden: !!row.golden,
     created_at: row.created_at,
   };
@@ -210,8 +205,6 @@ export default function PaperDetailPage() {
   const [isOfflineView, setIsOfflineView] = useState(false);
   const [offlineSaved, setOfflineSaved] = useState(false);
   const [offlineSaveMessage, setOfflineSaveMessage] = useState<string | null>(null);
-  const [statusSaving, setStatusSaving] = useState(false);
-  const [statusError, setStatusError] = useState<string | null>(null);
   const [comments, setComments] = useState<PaperComment[]>([]);
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [commentError, setCommentError] = useState<string | null>(null);
@@ -608,27 +601,6 @@ export default function PaperDetailPage() {
     };
   }, [getIdFromUrl, syncSummaryToEditor, locationKey]);
 
-  const handleStatusChange = useCallback(
-    async (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const newStatus = e.target.value as PaperStatusId;
-      if (!paper || !supabase || !isSupabaseConfigured()) return;
-      if (newStatus === paper.status) return;
-      setStatusSaving(true);
-      setStatusError(null);
-      const { error: updateError } = await supabase
-        .from('saved_papers')
-        .update({ status: newStatus })
-        .eq('id', paper.id);
-      setStatusSaving(false);
-      if (updateError) {
-        setStatusError(updateError.message);
-        return;
-      }
-      setPaper((prev) => (prev ? { ...prev, status: newStatus } : null));
-    },
-    [paper]
-  );
-
   const loadSummary = useCallback(async (paperId: string) => {
     if (!supabase) return;
     setSummaryLoading(true);
@@ -797,7 +769,7 @@ export default function PaperDetailPage() {
           year: paper.year,
           journal: paper.journal,
           citations: paper.citations,
-          status: paper.status,
+          status: 'Not read',
           golden: paper.golden,
           created_at: paper.created_at,
         },
@@ -928,23 +900,6 @@ export default function PaperDetailPage() {
         <div className="paper-detail-meta-row">
           {paper.year && <span className="paper-detail-year">{paper.year}</span>}
           {paper.journal && <span className="paper-detail-journal">{paper.journal}</span>}
-          <select
-            id="paper-detail-status"
-            className={`paper-detail-status-select paper-detail-status-${paper.status.replace(/\s+/g, '-').toLowerCase()}`}
-            value={paper.status}
-            onChange={handleStatusChange}
-            disabled={statusSaving}
-            aria-label="Reading status"
-            aria-busy={statusSaving}
-          >
-            {PAPER_STATUSES.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.label}
-              </option>
-            ))}
-          </select>
-          {statusSaving && <span className="paper-detail-status-saving">Saving…</span>}
-          {statusError && <span className="paper-detail-status-error">{statusError}</span>}
           {paper.golden && <span className="paper-detail-golden">Golden</span>}
         </div>
       </header>

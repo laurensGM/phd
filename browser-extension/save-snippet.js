@@ -148,7 +148,6 @@ async function createPaper(url, meta, doiUrl) {
     authors: meta?.authors || null,
     year: meta?.year || null,
     journal: meta?.journal || null,
-    status: 'Not read',
     golden: false,
     tags: [],
   };

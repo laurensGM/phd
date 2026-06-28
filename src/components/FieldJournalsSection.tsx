@@ -18,7 +18,6 @@ interface SavedPaperRow {
   title: string | null;
   authors: string | null;
   year: string | null;
-  status: string | null;
   journal: string | null;
 }
 
@@ -31,11 +30,6 @@ function paperLabel(paper: SavedPaperRow): string {
   const title = (paper.title && paper.title.trim()) || 'Untitled paper';
   const meta = [paper.authors?.trim(), paper.year?.trim()].filter(Boolean).join(', ');
   return meta ? `${title} (${meta})` : title;
-}
-
-function statusClassName(status: string | null | undefined): string {
-  const normalized = (status || 'Not read').trim().toLowerCase().replace(/\s+/g, '-');
-  return `journal-saved-paper-status journal-saved-paper-status-${normalized}`;
 }
 
 function papersButtonLabel(count: number | null, expanded: boolean): string {
@@ -59,7 +53,7 @@ export default function FieldJournalsSection({ journals, base }: FieldJournalsSe
 
     const { data, error } = await supabase
       .from('saved_papers')
-      .select('id, title, authors, year, status, journal')
+      .select('id, title, authors, year, journal')
       .not('journal', 'is', null)
       .order('created_at', { ascending: false })
       .limit(PAPERS_FETCH_LIMIT);
@@ -176,10 +170,8 @@ export default function FieldJournalsSection({ journals, base }: FieldJournalsSe
                         <ul className="journal-saved-papers-list">
                           {matchedPapers.map((paper) => {
                             const href = paperDetailUrl(paper.id, base);
-                            const status = (paper.status && paper.status.trim()) || 'Not read';
                             return (
                               <li key={paper.id} className="journal-saved-papers-item">
-                                <span className={statusClassName(status)}>{status}</span>
                                 <a href={href} className="journal-saved-papers-link">
                                   {paperLabel(paper)}
                                 </a>
