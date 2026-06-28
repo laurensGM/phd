@@ -290,6 +290,25 @@ export interface Database {
           created_at?: string;
         };
       };
+      paper_field_assignments: {
+        Row: {
+          id: string;
+          paper_id: string;
+          field_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          paper_id: string;
+          field_id: string;
+          created_at?: string;
+        };
+        Update: {
+          paper_id?: string;
+          field_id?: string;
+          created_at?: string;
+        };
+      };
       tasks: {
         Row: {
           id: string;

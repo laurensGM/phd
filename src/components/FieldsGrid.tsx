@@ -1,15 +1,17 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import { paperBelongsToField, type FieldJournalEntry } from '../lib/journalMatch';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import {
+  getPaperFieldIds,
+  manualAssignmentsByPaperId,
+  type FieldDef,
+} from '../lib/fieldPaperMatch';
 
 const FETCH_LIMIT = 3000;
 
-export interface FieldData {
-  id: string;
-  name: string;
+export interface FieldData extends FieldDef {
   category: string;
   description: string;
-  journals?: FieldJournalEntry[];
 }
 
 export interface FieldSection {
@@ -50,6 +52,7 @@ function formatCountLine(papers: number | null, snippets: number | null, loading
 export default function FieldsGrid({ sections, base }: FieldsGridProps) {
   const [papers, setPapers] = useState<PaperRow[] | null>(null);
   const [snippets, setSnippets] = useState<SnippetRow[] | null>(null);
+  const [manualByPaperId, setManualByPaperId] = useState<Map<string, string[]>>(new Map());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -58,19 +61,34 @@ export default function FieldsGrid({ sections, base }: FieldsGridProps) {
     setLoading(true);
     setError(null);
 
-    const [{ data: paperData, error: paperError }, { data: snippetData, error: snippetError }] =
-      await Promise.all([
-        supabase.from('saved_papers').select('id, journal').limit(FETCH_LIMIT),
-        supabase.from('snippets').select('id, paper_id').limit(FETCH_LIMIT),
-      ]);
+    const [
+      { data: paperData, error: paperError },
+      { data: snippetData, error: snippetError },
+      { data: assignData, error: assignError },
+    ] = await Promise.all([
+      supabase.from('saved_papers').select('id, journal').limit(FETCH_LIMIT),
+      supabase.from('snippets').select('id, paper_id').limit(FETCH_LIMIT),
+      supabase.from('paper_field_assignments').select('paper_id, field_id'),
+    ]);
 
     if (paperError || snippetError) {
       setError(paperError?.message ?? snippetError?.message ?? 'Failed to load library counts.');
       setPapers([]);
       setSnippets([]);
+      setManualByPaperId(new Map());
     } else {
       setPapers((paperData ?? []) as PaperRow[]);
       setSnippets((snippetData ?? []) as SnippetRow[]);
+      if (assignError && !/paper_field_assignments/i.test(assignError.message)) {
+        setError(assignError.message);
+        setManualByPaperId(new Map());
+      } else {
+        setManualByPaperId(
+          manualAssignmentsByPaperId(
+            (assignData ?? []) as { paper_id: string; field_id: string }[]
+          )
+        );
+      }
     }
     setLoading(false);
   }, [papers]);
@@ -92,27 +110,29 @@ export default function FieldsGrid({ sections, base }: FieldsGridProps) {
 
     for (const section of sections) {
       for (const field of section.fields) {
-        const journals = field.journals ?? [];
-        const matchedPaperIds = new Set<string>();
-
+        let paperCount = 0;
         for (const paper of papers) {
-          if (paperBelongsToField(paper.journal, journals)) {
-            matchedPaperIds.add(paper.id);
+          if (getPaperFieldIds(paper, [field], manualByPaperId).includes(field.id)) {
+            paperCount += 1;
           }
         }
 
         let snippetCount = 0;
         for (const snippet of snippets) {
           const journal = paperJournalById.get(snippet.paper_id);
-          if (journal && paperBelongsToField(journal, journals)) snippetCount += 1;
+          const paper = papers.find((p) => p.id === snippet.paper_id);
+          if (!paper) continue;
+          if (getPaperFieldIds({ ...paper, journal: journal ?? paper.journal }, [field], manualByPaperId).includes(field.id)) {
+            snippetCount += 1;
+          }
         }
 
-        map.set(field.id, { papers: matchedPaperIds.size, snippets: snippetCount });
+        map.set(field.id, { papers: paperCount, snippets: snippetCount });
       }
     }
 
     return map;
-  }, [sections, papers, snippets, paperJournalById]);
+  }, [sections, papers, snippets, paperJournalById, manualByPaperId]);
 
   return (
     <>

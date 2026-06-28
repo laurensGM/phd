@@ -18,9 +18,9 @@ import { buildYearHistogram } from '../lib/paperYearHistogram';
 import {
   buildFieldDistributionSlices,
   buildJournalDistributionSlices,
-  type FieldDef,
   type PaperJournalRow,
 } from '../lib/paperDistribution';
+import { manualAssignmentsByPaperId, type FieldDef } from '../lib/fieldPaperMatch';
 
 interface PaperRow extends PaperJournalRow {
   year: string | null;
@@ -81,6 +81,7 @@ export default function HomeDashboard() {
   const [snippetsCount, setSnippetsCount] = useState<number>(0);
   const [snippetsProcessedCount, setSnippetsProcessedCount] = useState<number>(0);
   const [snippetRows, setSnippetRows] = useState<SnippetTagRow[]>([]);
+  const [manualByPaperId, setManualByPaperId] = useState<Map<string, string[]>>(new Map());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -113,8 +114,8 @@ export default function HomeDashboard() {
   );
 
   const fieldDistributionSlices = useMemo(
-    () => buildFieldDistributionSlices(paperRows, fieldsList),
-    [paperRows, fieldsList]
+    () => buildFieldDistributionSlices(paperRows, fieldsList, manualByPaperId),
+    [paperRows, fieldsList, manualByPaperId]
   );
 
   const journalDistribution = useMemo(
@@ -172,6 +173,7 @@ export default function HomeDashboard() {
       setSnippetsCount(0);
       setSnippetsProcessedCount(0);
       setSnippetRows([]);
+      setManualByPaperId(new Map());
       return;
     }
     let cancelled = false;
@@ -179,9 +181,10 @@ export default function HomeDashboard() {
       setLoading(true);
       setError(null);
       try {
-        const [papersRes, snippetsRes] = await Promise.all([
+        const [papersRes, snippetsRes, assignRes] = await Promise.all([
           supabase.from('saved_papers').select('id, year, journal').limit(2000),
           supabase.from('snippets').select('id, construct_ids, model_ids, construct_id, model_id, used_in_writing'),
+          supabase.from('paper_field_assignments').select('paper_id, field_id'),
         ]);
         if (cancelled) return;
         if (papersRes.error) {
@@ -189,6 +192,13 @@ export default function HomeDashboard() {
           setPaperRows([]);
         } else {
           setPaperRows((papersRes.data ?? []) as PaperRow[]);
+        }
+        if (!assignRes.error) {
+          setManualByPaperId(
+            manualAssignmentsByPaperId(
+              (assignRes.data ?? []) as { paper_id: string; field_id: string }[]
+            )
+          );
         }
         if (snippetsRes.error) {
           setError((e) => e ?? snippetsRes.error.message);
@@ -265,7 +275,7 @@ export default function HomeDashboard() {
           <div className="home-paper-pies-header">
             <h2 className="home-section-title">Paper library</h2>
             <p className="home-paper-pies-note">
-              Fields are matched from journal names. Journals with only one paper are grouped as Other.
+              Fields use journal matching plus any manual links from the Fields page. Journals with only one paper are grouped as Other.
             </p>
           </div>
           <div className="home-paper-pies-grid">
@@ -274,7 +284,7 @@ export default function HomeDashboard() {
               totalPapers={papersCount}
               slices={fieldDistributionSlices}
               emptyMessage="No papers matched to a research field yet (check journal names)."
-              subtitle="Matched via journal lists on each field page"
+              subtitle="Journal match + manual field links"
             />
             <PaperDistributionPie
               title="By journal"

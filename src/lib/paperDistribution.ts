@@ -1,20 +1,16 @@
-import { paperBelongsToField, type FieldJournalEntry } from './journalMatch';
 import {
   buildChartSlices,
   CHART_SLICE_COLORS,
   type ChartSlice,
 } from './snippetTagDistribution';
+import { countPapersPerField, type FieldDef } from './fieldPaperMatch';
 
 export interface PaperJournalRow {
   id: string;
   journal: string | null;
 }
 
-export interface FieldDef {
-  id: string;
-  name: string;
-  journals?: FieldJournalEntry[];
-}
+export type { FieldDef };
 
 export function conicGradientFromSlices(slices: ChartSlice[]): string {
   const total = slices.reduce((sum, s) => sum + s.count, 0);
@@ -37,23 +33,15 @@ export function sliceTotal(slices: ChartSlice[]): number {
 /** Fields with zero papers are omitted; no "Other" grouping (small category set). */
 export function buildFieldDistributionSlices(
   papers: PaperJournalRow[],
-  fields: FieldDef[]
+  fields: FieldDef[],
+  manualByPaperId: Map<string, string[]> = new Map()
 ): ChartSlice[] {
-  const entries: { id: string; count: number }[] = [];
+  const counts = countPapersPerField(papers, fields, manualByPaperId);
+  const entries = [...counts.entries()]
+    .filter(([, count]) => count > 0)
+    .sort((a, b) => b[1] - a[1]);
 
-  for (const field of fields) {
-    const journals = field.journals ?? [];
-    if (!journals.length) continue;
-    let count = 0;
-    for (const paper of papers) {
-      if (paperBelongsToField(paper.journal, journals)) count += 1;
-    }
-    if (count > 0) entries.push({ id: field.id, count });
-  }
-
-  entries.sort((a, b) => b.count - a.count);
-
-  return entries.map(({ id, count }, index) => ({
+  return entries.map(([id, count], index) => ({
     label: fields.find((f) => f.id === id)?.name ?? id,
     count,
     color: CHART_SLICE_COLORS[index % CHART_SLICE_COLORS.length],

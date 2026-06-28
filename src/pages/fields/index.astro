@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import FieldsGrid from '../../components/FieldsGrid';
+import FieldPaperAllocator from '../../components/FieldPaperAllocator';
 import fields from '../../data/fields.json';
 
 const base = import.meta.env.BASE_URL;
@@ -35,6 +36,8 @@ const groupedSections = categoryOrder.map((category) => ({
 <BaseLayout title="Fields" description="Disciplinary fields relevant to your research - IS, ICT4D, agritech and more">
   <h1>Fields</h1>
   <p class="page-desc">Disciplinary and contextual fields that shape your thesis. Click a card for more detail.</p>
+
+  <FieldPaperAllocator client:load fields={fields} base={base} />
 
   <FieldsGrid client:load sections={groupedSections} base={base} />
 </BaseLayout>
@@ -253,5 +256,158 @@ const groupedSections = categoryOrder.map((category) => ({
   :global(.field-card--peripheral .field-teaser) {
     font-size: 0.85rem;
     color: var(--color-ink-muted);
+  }
+
+  :global(.field-allocator) {
+    margin-bottom: 2.5rem;
+    padding: 1.5rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    border-left: 4px solid var(--color-maroon);
+  }
+
+  :global(.field-allocator-title) {
+    margin: 0 0 0.35rem 0;
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    color: var(--color-ink);
+  }
+
+  :global(.field-allocator-intro),
+  :global(.field-allocator-muted),
+  :global(.field-allocator-hint) {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--color-ink-muted);
+  }
+
+  :global(.field-allocator-intro) {
+    margin-bottom: 1rem;
+  }
+
+  :global(.field-allocator-success) {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #166534;
+  }
+
+  :global(.field-allocator-error) {
+    margin: 0 0 1rem 0;
+    padding: 0.75rem 1rem;
+    font-size: 0.88rem;
+    color: #b42318;
+    background: #fef3f2;
+    border: 1px solid #fecdca;
+    border-radius: 8px;
+  }
+
+  :global(.field-allocator-list) {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  :global(.field-allocator-item) {
+    padding: 1rem 1.15rem;
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+  }
+
+  :global(.field-allocator-paper-title) {
+    font-weight: 600;
+    color: var(--color-maroon);
+    text-decoration: none;
+    line-height: 1.35;
+  }
+
+  :global(.field-allocator-paper-title:hover) {
+    text-decoration: underline;
+  }
+
+  :global(.field-allocator-paper-journal) {
+    margin: 0.25rem 0 0;
+    font-size: 0.85rem;
+    color: var(--color-ink-muted);
+    font-style: italic;
+  }
+
+  :global(.field-allocator-fields) {
+    margin-top: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  :global(.field-allocator-fields-label) {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--color-ink-muted);
+  }
+
+  :global(.field-allocator-chips) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  :global(.field-allocator-chip) {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--color-ink);
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+  }
+
+  :global(.field-allocator-chip:hover:not(:disabled)) {
+    border-color: var(--color-maroon-muted);
+  }
+
+  :global(.field-allocator-chip-selected) {
+    background: var(--color-maroon);
+    border-color: var(--color-maroon);
+    color: #fff;
+  }
+
+  :global(.field-allocator-chip:disabled) {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  :global(.field-allocator-save) {
+    align-self: flex-start;
+    margin-top: 0.25rem;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    background: var(--color-maroon);
+    color: #fff;
+    cursor: pointer;
+  }
+
+  :global(.field-allocator-save:hover:not(:disabled)) {
+    background: var(--color-maroon-dark);
+  }
+
+  :global(.field-allocator-save:disabled) {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  :global(.field-allocator-hint) {
+    margin-top: 1rem;
   }
 </style>
