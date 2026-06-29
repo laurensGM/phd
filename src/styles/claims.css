@@ -86,17 +86,17 @@
 
 .claims-card-top {
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 0.5rem 1rem;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: nowrap;
 }
 
 .claims-card-actions {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 0.35rem;
-  flex-shrink: 0;
+  flex: 0 0 auto;
+  margin-left: auto;
 }
 
 .claims-card-action {
@@ -122,9 +122,12 @@
 
 .claims-card-link {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem 0.75rem;
+  gap: 0.5rem;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  flex-wrap: nowrap;
   text-decoration: none;
   color: inherit;
 }
@@ -136,6 +139,15 @@
   font-weight: 700;
   color: var(--color-maroon);
   font-size: 1.05rem;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.claims-card-link .claims-badge-lr {
+  flex-shrink: 0;
 }
 
 .claims-badge {
