@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react'
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import constructsData from '../data/constructs.json';
 import { buildClaimSuggestPrompt, parseClaimOptions } from '../lib/claimAiPrompt';
+import { CLAIM_LR_CHAPTERS } from '../constants/claimLrChapters';
 
 const RELATIONSHIP_OPTIONS = [
   { value: 'predicts', label: 'Predicts' },
@@ -72,7 +73,7 @@ export default function ClaimsBuilderPage() {
   const [optionB, setOptionB] = useState('');
   const [claimText, setClaimText] = useState('');
   const [roles, setRoles] = useState<Record<string, string>>({});
-  const [confidence, setConfidence] = useState<'low' | 'medium' | 'high'>('medium');
+  const [lrChapter, setLrChapter] = useState('');
   const [title, setTitle] = useState('');
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
@@ -210,7 +211,7 @@ export default function ClaimsBuilderPage() {
         claim_text: claimText.trim(),
         constructs_involved: constructs_involved,
         relationship_type: relationshipType || null,
-        confidence_level: confidence,
+        lr_chapter: lrChapter || null,
         notes: notes.trim() || null,
       })
       .select('id')
@@ -273,7 +274,7 @@ export default function ClaimsBuilderPage() {
       </p>
 
       <ol className="claims-steps" aria-label="Progress">
-        {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
+        {[1, 2, 3, 4, 5, 6, 7].map((s) => (
           <li key={s} className={s === step ? 'claims-step-active' : s < step ? 'claims-step-done' : ''}>
             {s}
           </li>
@@ -577,33 +578,18 @@ export default function ClaimsBuilderPage() {
 
       {step === 7 && (
         <section className="claims-panel">
-          <h2>Step 7 — Confidence</h2>
-          <p className="claims-hint">
-            <strong>Low</strong> — few papers. <strong>Medium</strong> — some consistency. <strong>High</strong> —
-            strong repeated evidence.
-          </p>
-          <div className="claims-confidence">
-            {(['low', 'medium', 'high'] as const).map((c) => (
-              <label key={c} className={confidence === c ? 'claims-confidence-opt active' : 'claims-confidence-opt'}>
-                <input type="radio" name="conf" checked={confidence === c} onChange={() => setConfidence(c)} />
-                {c.charAt(0).toUpperCase() + c.slice(1)}
-              </label>
-            ))}
-          </div>
-          <div className="claims-actions">
-            <button type="button" className="claims-btn claims-btn-ghost" onClick={() => setStep(6)}>
-              Back
-            </button>
-            <button type="button" className="claims-btn" onClick={() => setStep(8)}>
-              Next
-            </button>
-          </div>
-        </section>
-      )}
-
-      {step === 8 && (
-        <section className="claims-panel">
-          <h2>Step 8 — Title &amp; save</h2>
+          <h2>Step 7 — LR chapter &amp; save</h2>
+          <label className="claims-field">
+            LR chapter <span className="claims-optional">(optional)</span>
+            <select className="claims-input" value={lrChapter} onChange={(e) => setLrChapter(e.target.value)}>
+              <option value="">— Not set —</option>
+              {CLAIM_LR_CHAPTERS.map((o) => (
+                <option key={o.id} value={o.id}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </label>
           <label className="claims-field">
             Title <span className="claims-optional">(optional — defaults to start of claim)</span>
             <input className="claims-input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Short label for your list" />
@@ -613,7 +599,7 @@ export default function ClaimsBuilderPage() {
             <textarea className="claims-textarea" rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} />
           </label>
           <div className="claims-actions">
-            <button type="button" className="claims-btn claims-btn-ghost" onClick={() => setStep(7)}>
+            <button type="button" className="claims-btn claims-btn-ghost" onClick={() => setStep(6)}>
               Back
             </button>
             <button type="button" className="claims-btn claims-btn-primary" disabled={saving || !claimText.trim()} onClick={() => void saveClaim()}>

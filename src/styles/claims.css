@@ -126,6 +126,14 @@
   border-color: #86efac;
   color: #166534;
 }
+.claims-badge-lr {
+  background: rgba(30, 64, 175, 0.1);
+  border-color: rgba(30, 64, 175, 0.25);
+  color: #1e40af;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.75rem;
+}
 
 .claims-card-preview {
   margin: 0.5rem 0 0.35rem 0;
@@ -466,6 +474,10 @@
 }
 
 /* Detail */
+.claims-edit-panel {
+  margin-bottom: 1.75rem;
+}
+
 .claims-detail-head {
   margin-bottom: 1.25rem;
 }

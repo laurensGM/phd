@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import constructsData from '../data/constructs.json';
+import { CLAIM_LR_CHAPTERS } from '../constants/claimLrChapters';
 
 const RELATIONSHIP_OPTIONS = [
   { value: 'predicts', label: 'Predicts' },
@@ -21,7 +22,7 @@ export default function ClaimManualPage() {
   const [claimText, setClaimText] = useState('');
   const [constructIds, setConstructIds] = useState<string[]>([]);
   const [relationshipType, setRelationshipType] = useState('relates');
-  const [confidence, setConfidence] = useState<'low' | 'medium' | 'high'>('medium');
+  const [lrChapter, setLrChapter] = useState('');
   const [title, setTitle] = useState('');
   const [notes, setNotes] = useState('');
   const [constructFilter, setConstructFilter] = useState('');
@@ -55,7 +56,7 @@ export default function ClaimManualPage() {
         claim_text: ct,
         constructs_involved: constructIds,
         relationship_type: relationshipType || null,
-        confidence_level: confidence,
+        lr_chapter: lrChapter || null,
         notes: notes.trim() || null,
       })
       .select('id')
@@ -175,26 +176,21 @@ export default function ClaimManualPage() {
           </select>
         </label>
 
-        <div className="claims-field">
-          Confidence
-          <div className="claims-confidence">
-            {(['low', 'medium', 'high'] as const).map((level) => (
-              <label
-                key={level}
-                className={`claims-confidence-opt${confidence === level ? ' active' : ''}`}
-              >
-                <input
-                  type="radio"
-                  name="confidence"
-                  value={level}
-                  checked={confidence === level}
-                  onChange={() => setConfidence(level)}
-                />
-                {level}
-              </label>
+        <label className="claims-field">
+          LR chapter <span className="claims-optional">(optional)</span>
+          <select
+            className="claims-input"
+            value={lrChapter}
+            onChange={(e) => setLrChapter(e.target.value)}
+          >
+            <option value="">— Not set —</option>
+            {CLAIM_LR_CHAPTERS.map((o) => (
+              <option key={o.id} value={o.id}>
+                {o.label}
+              </option>
             ))}
-          </div>
-        </div>
+          </select>
+        </label>
 
         <label className="claims-field">
           Notes <span className="claims-optional">(optional)</span>

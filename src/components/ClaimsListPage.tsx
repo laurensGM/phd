@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { claimLrChapterLabel } from '../constants/claimLrChapters';
 
 type ClaimRow = {
   id: string;
   title: string;
   claim_text: string;
-  confidence_level: string;
+  lr_chapter: string | null;
   created_at: string;
 };
 
@@ -23,7 +24,7 @@ export default function ClaimsListPage() {
     setError(null);
     const { data, error: qErr } = await supabase
       .from('claims')
-      .select('id, title, claim_text, confidence_level, created_at')
+      .select('id, title, claim_text, lr_chapter, created_at')
       .order('created_at', { ascending: false });
     if (qErr) setError(qErr.message);
     else setRows((data as ClaimRow[]) ?? []);
@@ -57,8 +58,8 @@ export default function ClaimsListPage() {
       <header className="claims-header">
         <h1>Claims</h1>
         <p className="claims-intro">
-          Turn selected snippets into defensible, evidence-linked claims. Each claim stores constructs, confidence, and
-          snippet roles (supporting / contradicting / definition).
+          Turn selected snippets into defensible, evidence-linked claims. Each claim stores constructs, LR chapter
+          placement, and snippet roles (supporting / contradicting / definition).
         </p>
         <div className="claims-header-actions">
           <a className="claims-primary-btn" href={`${base}claims/manual/`}>
@@ -78,7 +79,9 @@ export default function ClaimsListPage() {
             <li key={r.id} className="claims-card">
               <a className="claims-card-link" href={`${base}claims/detail/?id=${encodeURIComponent(r.id)}`}>
                 <span className="claims-card-title">{r.title.trim() || 'Untitled claim'}</span>
-                <span className={`claims-badge claims-badge-${r.confidence_level}`}>{r.confidence_level}</span>
+                {claimLrChapterLabel(r.lr_chapter) && (
+                  <span className="claims-badge claims-badge-lr">{claimLrChapterLabel(r.lr_chapter)}</span>
+                )}
               </a>
               <p className="claims-card-preview">{r.claim_text}</p>
               <time className="claims-card-date" dateTime={r.created_at}>

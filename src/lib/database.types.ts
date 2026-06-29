@@ -471,7 +471,7 @@ export interface Database {
           claim_text: string;
           constructs_involved: string[];
           relationship_type: string | null;
-          confidence_level: string;
+          lr_chapter: string | null;
           notes: string | null;
           created_at: string;
           updated_at: string;
@@ -482,7 +482,7 @@ export interface Database {
           claim_text: string;
           constructs_involved?: string[];
           relationship_type?: string | null;
-          confidence_level?: string;
+          lr_chapter?: string | null;
           notes?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -492,7 +492,7 @@ export interface Database {
           claim_text?: string;
           constructs_involved?: string[];
           relationship_type?: string | null;
-          confidence_level?: string;
+          lr_chapter?: string | null;
           notes?: string | null;
           updated_at?: string;
         };

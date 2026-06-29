@@ -2,6 +2,21 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import constructsData from '../data/constructs.json';
 import { buildParagraphFromClaimPrompt } from '../lib/claimAiPrompt';
+import { CLAIM_LR_CHAPTERS, claimLrChapterLabel } from '../constants/claimLrChapters';
+
+const RELATIONSHIP_OPTIONS = [
+  { value: 'predicts', label: 'Predicts' },
+  { value: 'mediates', label: 'Mediates' },
+  { value: 'moderates', label: 'Moderates' },
+  { value: 'influences', label: 'Influences' },
+  { value: 'relates', label: 'Relates' },
+  { value: 'associated', label: 'Associated' },
+  { value: 'other', label: 'Other' },
+] as const;
+
+const constructOptions = (constructsData as { id: string; name?: string }[])
+  .map((c) => ({ id: c.id, name: c.name || c.id }))
+  .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
 
 const ROLE_OPTIONS = [
   { value: 'supporting', label: 'Supporting' },
@@ -15,7 +30,7 @@ type Claim = {
   claim_text: string;
   constructs_involved: string[];
   relationship_type: string | null;
-  confidence_level: string;
+  lr_chapter: string | null;
   notes: string | null;
   created_at: string;
 };
@@ -65,6 +80,16 @@ export default function ClaimDetailPage() {
   const [linkingSnippetId, setLinkingSnippetId] = useState<string | null>(null);
   const [removingLinkId, setRemovingLinkId] = useState<string | null>(null);
   const [updatingLinkId, setUpdatingLinkId] = useState<string | null>(null);
+
+  const [editing, setEditing] = useState(false);
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [editTitle, setEditTitle] = useState('');
+  const [editClaimText, setEditClaimText] = useState('');
+  const [editConstructIds, setEditConstructIds] = useState<string[]>([]);
+  const [editRelationshipType, setEditRelationshipType] = useState('');
+  const [editLrChapter, setEditLrChapter] = useState('');
+  const [editNotes, setEditNotes] = useState('');
+  const [editConstructFilter, setEditConstructFilter] = useState('');
 
   const linkedSnippetIds = useMemo(() => new Set(links.map((l) => l.snippet_id)), [links]);
 
@@ -222,6 +247,72 @@ export default function ClaimDetailPage() {
     setLinks((prev) => prev.filter((l) => l.id !== linkId));
   };
 
+  const startEdit = () => {
+    if (!claim) return;
+    setEditTitle(claim.title);
+    setEditClaimText(claim.claim_text);
+    setEditConstructIds([...(claim.constructs_involved ?? [])]);
+    setEditRelationshipType(claim.relationship_type ?? 'relates');
+    setEditLrChapter(claim.lr_chapter ?? '');
+    setEditNotes(claim.notes ?? '');
+    setEditConstructFilter('');
+    setEditing(true);
+    setError(null);
+  };
+
+  const cancelEdit = () => {
+    setEditing(false);
+    setError(null);
+  };
+
+  const toggleEditConstruct = (id: string) => {
+    setEditConstructIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  };
+
+  const saveEdit = async () => {
+    if (!supabase || !claim || !editClaimText.trim()) return;
+    setSavingEdit(true);
+    setError(null);
+    const trimmedText = editClaimText.trim();
+    const textChanged = trimmedText !== claim.claim_text.trim();
+    const { data, error: upErr } = await supabase
+      .from('claims')
+      .update({
+        title: editTitle.trim() || claim.title,
+        claim_text: trimmedText,
+        constructs_involved: editConstructIds,
+        relationship_type: editRelationshipType || null,
+        lr_chapter: editLrChapter || null,
+        notes: editNotes.trim() || null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', claim.id)
+      .select('*')
+      .single();
+    if (upErr || !data) {
+      setError(upErr?.message ?? 'Could not save changes.');
+      setSavingEdit(false);
+      return;
+    }
+    if (textChanged) {
+      await supabase.from('claim_versions').insert({
+        claim_id: claim.id,
+        version_text: trimmedText,
+      });
+    }
+    setClaim(data as Claim);
+    setEditing(false);
+    setSavingEdit(false);
+  };
+
+  const filteredEditConstructs = editConstructFilter.trim()
+    ? constructOptions.filter((c) =>
+        c.name.toLowerCase().includes(editConstructFilter.trim().toLowerCase())
+      )
+    : constructOptions;
+
   const evidenceLines = useCallback(() => {
     if (!claim) return [];
     const lines: string[] = [];
@@ -328,9 +419,18 @@ export default function ClaimDetailPage() {
         <a href={`${base}claims/`}>← Claims</a>
       </p>
       <header className="claims-detail-head">
-        <h1>{claim.title.trim() || 'Claim'}</h1>
+        <div className="claims-detail-section-head">
+          <h1>{claim.title.trim() || 'Claim'}</h1>
+          {!editing && (
+            <button type="button" className="claims-btn" onClick={startEdit}>
+              Edit claim
+            </button>
+          )}
+        </div>
         <p className="claims-detail-meta">
-          <span className={`claims-badge claims-badge-${claim.confidence_level}`}>{claim.confidence_level}</span>
+          {claimLrChapterLabel(claim.lr_chapter) && (
+            <span className="claims-badge claims-badge-lr">{claimLrChapterLabel(claim.lr_chapter)}</span>
+          )}
           {claim.relationship_type && <span className="claims-pill">{claim.relationship_type}</span>}
           <time dateTime={claim.created_at}>{new Date(claim.created_at).toLocaleString()}</time>
         </p>
@@ -338,6 +438,99 @@ export default function ClaimDetailPage() {
 
       {error && <p className="claims-error">{error}</p>}
 
+      {editing ? (
+        <section className="claims-panel claims-edit-panel">
+          <h2>Edit claim</h2>
+          <label className="claims-field">
+            Title
+            <input className="claims-input" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
+          </label>
+          <label className="claims-field">
+            Claim text
+            <textarea
+              className="claims-textarea"
+              rows={6}
+              value={editClaimText}
+              onChange={(e) => setEditClaimText(e.target.value)}
+              required
+            />
+          </label>
+          <div className="claims-field">
+            Constructs
+            <input
+              className="claims-input"
+              type="search"
+              value={editConstructFilter}
+              onChange={(e) => setEditConstructFilter(e.target.value)}
+              placeholder="Filter constructs…"
+            />
+            <div className="claims-construct-chips">
+              {filteredEditConstructs.slice(0, 80).map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  className={`claims-construct-chip${editConstructIds.includes(c.id) ? ' selected' : ''}`}
+                  onClick={() => toggleEditConstruct(c.id)}
+                >
+                  {c.name}
+                </button>
+              ))}
+            </div>
+          </div>
+          <label className="claims-field">
+            Relationship type
+            <select
+              className="claims-input"
+              value={editRelationshipType}
+              onChange={(e) => setEditRelationshipType(e.target.value)}
+            >
+              {RELATIONSHIP_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="claims-field">
+            LR chapter
+            <select
+              className="claims-input"
+              value={editLrChapter}
+              onChange={(e) => setEditLrChapter(e.target.value)}
+            >
+              <option value="">— Not set —</option>
+              {CLAIM_LR_CHAPTERS.map((o) => (
+                <option key={o.id} value={o.id}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="claims-field">
+            Notes
+            <textarea
+              className="claims-textarea"
+              rows={3}
+              value={editNotes}
+              onChange={(e) => setEditNotes(e.target.value)}
+            />
+          </label>
+          <div className="claims-actions">
+            <button
+              type="button"
+              className="claims-btn claims-btn-primary"
+              disabled={savingEdit || !editClaimText.trim()}
+              onClick={() => void saveEdit()}
+            >
+              {savingEdit ? 'Saving…' : 'Save changes'}
+            </button>
+            <button type="button" className="claims-btn claims-btn-ghost" disabled={savingEdit} onClick={cancelEdit}>
+              Cancel
+            </button>
+          </div>
+        </section>
+      ) : (
+        <>
       <section className="claims-detail-section">
         <h2>Claim</h2>
         <blockquote className="claims-detail-claim">{claim.claim_text}</blockquote>
@@ -362,6 +555,8 @@ export default function ClaimDetailPage() {
           <p className="claims-notes">{claim.notes}</p>
         </section>
       )}
+        </>
+      )}
 
       <section className="claims-detail-section">
         <div className="claims-detail-section-head">
@@ -383,7 +578,7 @@ export default function ClaimDetailPage() {
             <p className="claims-hint">
               {claim.constructs_involved?.length
                 ? 'Showing snippets tagged with this claim’s constructs. Use search to narrow further.'
-                : 'Showing recent snippets. Link constructs on a future edit, or search below.'}
+                : 'Showing recent snippets. Use Edit claim to tag constructs, or search below.'}
             </p>
             <input
               className="claims-input"
