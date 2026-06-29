@@ -43,6 +43,20 @@
   text-decoration: none;
 }
 
+.claims-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.claims-header-secondary {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
 .claims-muted {
   color: var(--color-ink-muted);
   font-size: 0.95rem;
@@ -586,4 +600,76 @@
   font-size: 0.88rem;
   text-decoration: underline;
   padding: 0;
+}
+
+.claims-construct-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.35rem;
+}
+
+.claims-construct-chip {
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: #fff;
+  font-size: 0.82rem;
+  cursor: pointer;
+  color: var(--color-ink);
+}
+.claims-construct-chip.selected {
+  background: rgba(113, 32, 56, 0.1);
+  border-color: var(--color-maroon);
+  color: var(--color-maroon);
+  font-weight: 600;
+}
+
+.claims-detail-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+.claims-detail-section-head h2 {
+  margin: 0;
+}
+
+.claims-add-snippets {
+  margin: 0.75rem 0 1rem;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-bg-alt);
+}
+
+.claims-snippet-pick {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 0.65rem 0.75rem;
+}
+
+.claims-add-snippet-btn {
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
+.claims-evidence-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.claims-role-select {
+  width: auto;
+  min-width: 9rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.82rem;
 }

@@ -233,6 +233,19 @@ interface ContributionSummary {
   contribution_type: ContributionType | null;
 }
 
+interface ClaimSummary {
+  id: string;
+  title: string;
+  claim_text: string;
+}
+
+interface ClaimSnippetLink {
+  id: string;
+  claim_id: string;
+  snippet_id: string;
+  role: string;
+}
+
 interface PaperSummary {
   id: string;
   title: string | null;
@@ -365,12 +378,21 @@ export default function SnippetsPage() {
   const [linkingContribution, setLinkingContribution] = useState(false);
   const [linkingContributionTargetId, setLinkingContributionTargetId] = useState<string | null>(null);
   const [contributionLinkError, setContributionLinkError] = useState<string | null>(null);
+  const [claims, setClaims] = useState<ClaimSummary[]>([]);
+  const [claimLinks, setClaimLinks] = useState<ClaimSnippetLink[]>([]);
+  const [linkingClaimSnippetId, setLinkingClaimSnippetId] = useState<string | null>(null);
+  const [linkingClaim, setLinkingClaim] = useState(false);
+  const [linkingClaimTargetId, setLinkingClaimTargetId] = useState<string | null>(null);
+  const [claimLinkError, setClaimLinkError] = useState<string | null>(null);
+  const [targetClaimId, setTargetClaimId] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const host = window.location.hostname;
     const localHosts = new Set(['localhost', '127.0.0.1', '::1']);
     setLocalEmbeddingsAvailable(localHosts.has(host));
+    const claimId = new URLSearchParams(window.location.search).get('claimId');
+    setTargetClaimId(claimId);
   }, []);
 
   useEffect(() => {
@@ -383,7 +405,7 @@ export default function SnippetsPage() {
     (async () => {
       setLoading(true);
       setError(null);
-      const [{ data: snippetData, error: snippetErr }, { data: papersData, error: papersErr }, contributionsRes] =
+      const [{ data: snippetData, error: snippetErr }, { data: papersData, error: papersErr }, contributionsRes, claimsRes] =
         await Promise.all([
           supabase!
             .from('snippets')
@@ -393,6 +415,10 @@ export default function SnippetsPage() {
           supabase!
             .from('research_contributions')
             .select('id, content, contribution_type')
+            .order('created_at', { ascending: false }),
+          supabase!
+            .from('claims')
+            .select('id, title, claim_text')
             .order('created_at', { ascending: false }),
         ]);
       if (cancelled) return;
@@ -441,6 +467,30 @@ export default function SnippetsPage() {
           }))
         );
       }
+      if (claimsRes.error) {
+        setClaims([]);
+        setClaimLinks([]);
+      } else {
+        setClaims(
+          (claimsRes.data ?? []).map((row: any) => ({
+            id: row.id as string,
+            title: (row.title as string) ?? '',
+            claim_text: row.claim_text as string,
+          }))
+        );
+        const snippetIds = ((snippetData ?? []) as Snippet[]).map((s) => s.id);
+        if (snippetIds.length > 0) {
+          const { data: linkData, error: linkErr } = await supabase!
+            .from('claim_snippets')
+            .select('id, claim_id, snippet_id, role')
+            .in('snippet_id', snippetIds);
+          if (!cancelled) {
+            setClaimLinks(linkErr ? [] : ((linkData as ClaimSnippetLink[]) ?? []));
+          }
+        } else {
+          setClaimLinks([]);
+        }
+      }
       const promptsRes = await supabase!
         .from('literature_review_prompts')
         .select('*')
@@ -475,6 +525,24 @@ export default function SnippetsPage() {
     for (const c of contributions) map.set(c.id, c);
     return map;
   }, [contributions]);
+
+  const claimById = useMemo(() => {
+    const map = new Map<string, ClaimSummary>();
+    for (const c of claims) map.set(c.id, c);
+    return map;
+  }, [claims]);
+
+  const claimLinksBySnippetId = useMemo(() => {
+    const map = new Map<string, ClaimSnippetLink[]>();
+    for (const link of claimLinks) {
+      const list = map.get(link.snippet_id) ?? [];
+      list.push(link);
+      map.set(link.snippet_id, list);
+    }
+    return map;
+  }, [claimLinks]);
+
+  const targetClaim = targetClaimId ? claimById.get(targetClaimId) : undefined;
 
   const allJournals = useMemo(() => {
     const set = new Set<string>();
@@ -848,6 +916,65 @@ export default function SnippetsPage() {
     }
   }, []);
 
+  const handleLinkClaim = useCallback(async (snippetId: string, claimId: string) => {
+    if (!supabase || !isSupabaseConfigured()) return;
+    const existing = claimLinks.some((l) => l.snippet_id === snippetId && l.claim_id === claimId);
+    if (existing) {
+      setClaimLinkError('This snippet is already linked to that claim.');
+      return;
+    }
+    setLinkingClaim(true);
+    setLinkingClaimTargetId(claimId);
+    setClaimLinkError(null);
+    setError(null);
+
+    try {
+      const snippet = snippets.find((s) => s.id === snippetId);
+      const snippetType = (snippet?.snippet_type ?? '').toLowerCase().trim();
+      const role = snippetType === 'definition' ? 'definition' : 'supporting';
+      const { data, error: insertErr } = await supabase
+        .from('claim_snippets')
+        .insert({ claim_id: claimId, snippet_id: snippetId, role })
+        .select('id, claim_id, snippet_id, role')
+        .single();
+
+      if (insertErr) {
+        const msg = insertErr.message.includes('unique')
+          ? 'This snippet is already linked to that claim.'
+          : insertErr.message;
+        setClaimLinkError(msg);
+        setError(msg);
+        return;
+      }
+
+      if (data) {
+        setClaimLinks((prev) => [...prev, data as ClaimSnippetLink]);
+      }
+      setLinkingClaimSnippetId(null);
+    } finally {
+      setLinkingClaim(false);
+      setLinkingClaimTargetId(null);
+    }
+  }, [claimLinks, snippets]);
+
+  const handleUnlinkClaim = useCallback(async (linkId: string) => {
+    if (!supabase || !isSupabaseConfigured()) return;
+    setLinkingClaim(true);
+    setClaimLinkError(null);
+    setError(null);
+    try {
+      const { error: delErr } = await supabase.from('claim_snippets').delete().eq('id', linkId);
+      if (delErr) {
+        setClaimLinkError(delErr.message);
+        setError(delErr.message);
+        return;
+      }
+      setClaimLinks((prev) => prev.filter((l) => l.id !== linkId));
+    } finally {
+      setLinkingClaim(false);
+    }
+  }, []);
+
   const handleDelete = useCallback(async (id: string) => {
     if (!supabase || !isSupabaseConfigured()) return;
     const confirmed = window.confirm('Delete this snippet?');
@@ -1175,6 +1302,14 @@ export default function SnippetsPage() {
             <button type="button" className="snippets-prompt-toolbar-btn" onClick={clearSnippetSelection}>
               Clear selection
             </button>
+          </div>
+        )}
+        {targetClaim && (
+          <div className="snippets-claim-target-banner" role="status">
+            Linking snippets to claim:{' '}
+            <strong>{targetClaim.title.trim() || targetClaim.claim_text.slice(0, 80)}</strong>
+            {' · '}
+            <a href={`${base}claims/detail/?id=${encodeURIComponent(targetClaim.id)}`}>View claim</a>
           </div>
         )}
         <section className="snippets-filters">
@@ -1641,7 +1776,9 @@ export default function SnippetsPage() {
             const linkedContribution = s.contribution_id
               ? contributionById.get(s.contribution_id)
               : undefined;
+            const snippetClaimLinks = claimLinksBySnippetId.get(s.id) ?? [];
             const showContributionPicker = linkingSnippetId === s.id;
+            const showClaimPicker = linkingClaimSnippetId === s.id;
             return (
               <article
                 id={`snippet-${s.id}`}
@@ -1693,6 +1830,20 @@ export default function SnippetsPage() {
                           : 'Contribution'}
                       </a>
                     )}
+                    {snippetClaimLinks.map((link) => {
+                      const claim = claimById.get(link.claim_id);
+                      const label = claim?.title.trim() || claim?.claim_text.slice(0, 40) || 'Claim';
+                      return (
+                        <a
+                          key={link.id}
+                          href={`${base}claims/detail/?id=${encodeURIComponent(link.claim_id)}`}
+                          className="snippets-card-claim-badge"
+                          title={claim?.claim_text}
+                        >
+                          {label}
+                        </a>
+                      );
+                    })}
                   </div>
                   <div className="snippets-card-links">
                     {(() => {
@@ -1922,10 +2073,24 @@ export default function SnippetsPage() {
                           className="snippets-link-contribution-btn"
                           onClick={() => {
                             setContributionLinkError(null);
+                            setClaimLinkError(null);
+                            setLinkingClaimSnippetId(null);
                             setLinkingSnippetId(showContributionPicker ? null : s.id);
                           }}
                         >
                           {linkedContribution ? 'Change contribution' : 'Link to contribution'}
+                        </button>
+                        <button
+                          type="button"
+                          className="snippets-link-claim-btn"
+                          onClick={() => {
+                            setContributionLinkError(null);
+                            setClaimLinkError(null);
+                            setLinkingSnippetId(null);
+                            setLinkingClaimSnippetId(showClaimPicker ? null : s.id);
+                          }}
+                        >
+                          {snippetClaimLinks.length > 0 ? 'Link another claim' : 'Link to claim'}
                         </button>
                         <button
                           type="button"
@@ -2003,6 +2168,81 @@ export default function SnippetsPage() {
                           type="button"
                           className="snippets-contribution-picker-cancel"
                           onClick={() => setLinkingSnippetId(null)}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    )}
+                    {showClaimPicker && (
+                      <div className="snippets-contribution-picker snippets-claim-picker">
+                        {claimLinkError && (
+                          <p className="snippets-contribution-picker-error" role="alert">
+                            {claimLinkError}
+                          </p>
+                        )}
+                        {claims.length === 0 ? (
+                          <p className="snippets-contribution-picker-empty">
+                            No claims yet.{' '}
+                            <a href={`${base}claims/manual/`}>Write a claim</a> first.
+                          </p>
+                        ) : (
+                          <ul className="snippets-contribution-picker-list">
+                            {claims.map((claim) => {
+                              const alreadyLinked = snippetClaimLinks.some((l) => l.claim_id === claim.id);
+                              const isLinkingThis = linkingClaim && linkingClaimTargetId === claim.id;
+                              const isTarget = targetClaimId === claim.id;
+                              return (
+                                <li key={claim.id}>
+                                  <button
+                                    type="button"
+                                    className={`snippets-contribution-picker-item${
+                                      alreadyLinked ? ' snippets-contribution-picker-item--active' : ''
+                                    }${isTarget ? ' snippets-claim-picker-item--target' : ''}`}
+                                    disabled={linkingClaim || alreadyLinked}
+                                    onClick={() => void handleLinkClaim(s.id, claim.id)}
+                                  >
+                                    <span className="snippets-contribution-picker-type">
+                                      {claim.title.trim() || 'Untitled claim'}
+                                    </span>
+                                    <span className="snippets-contribution-picker-text">
+                                      {claim.claim_text}
+                                    </span>
+                                    {alreadyLinked && (
+                                      <span className="snippets-contribution-picker-saving">Already linked</span>
+                                    )}
+                                    {isLinkingThis && (
+                                      <span className="snippets-contribution-picker-saving">Linking…</span>
+                                    )}
+                                  </button>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        )}
+                        {snippetClaimLinks.length > 0 && (
+                          <ul className="snippets-claim-unlink-list">
+                            {snippetClaimLinks.map((link) => {
+                              const claim = claimById.get(link.claim_id);
+                              return (
+                                <li key={link.id}>
+                                  <span>{claim?.title.trim() || 'Claim'}</span>
+                                  <button
+                                    type="button"
+                                    className="snippets-contribution-unlink"
+                                    disabled={linkingClaim}
+                                    onClick={() => void handleUnlinkClaim(link.id)}
+                                  >
+                                    Unlink
+                                  </button>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        )}
+                        <button
+                          type="button"
+                          className="snippets-contribution-picker-cancel"
+                          onClick={() => setLinkingClaimSnippetId(null)}
                         >
                           Cancel
                         </button>

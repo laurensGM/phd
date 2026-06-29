@@ -60,13 +60,18 @@ export default function ClaimsListPage() {
           Turn selected snippets into defensible, evidence-linked claims. Each claim stores constructs, confidence, and
           snippet roles (supporting / contradicting / definition).
         </p>
-        <a className="claims-primary-btn" href={`${base}claims/new/`}>
-          Create claim
-        </a>
+        <div className="claims-header-actions">
+          <a className="claims-primary-btn" href={`${base}claims/manual/`}>
+            Write claim
+          </a>
+          <a className="claims-btn claims-btn-ghost claims-header-secondary" href={`${base}claims/new/`}>
+            Guided builder
+          </a>
+        </div>
       </header>
       {error && <p className="claims-error">{error}</p>}
       {rows.length === 0 ? (
-        <p className="claims-muted">No claims yet. Start with &ldquo;Create claim&rdquo; to run the guided flow.</p>
+        <p className="claims-muted">No claims yet. Use &ldquo;Write claim&rdquo; for a quick manual entry, or the guided builder for snippet-first flow.</p>
       ) : (
         <ul className="claims-list">
           {rows.map((r) => (

@@ -268,7 +268,8 @@ export default function ClaimsBuilderPage() {
       <h1>Create claim</h1>
       <p className="claims-intro">
         Guided flow: pick constructs → choose 5–15 snippets → optional AI wording (paste back) → refine → roles →
-        save.
+        save.{' '}
+        <a href={`${base}claims/manual/`}>Write a claim manually</a> instead if you prefer.
       </p>
 
       <ol className="claims-steps" aria-label="Progress">

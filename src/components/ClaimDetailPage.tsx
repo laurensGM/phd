@@ -1,7 +1,13 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import constructsData from '../data/constructs.json';
 import { buildParagraphFromClaimPrompt } from '../lib/claimAiPrompt';
+
+const ROLE_OPTIONS = [
+  { value: 'supporting', label: 'Supporting' },
+  { value: 'contradicting', label: 'Contradicting' },
+  { value: 'definition', label: 'Definition' },
+] as const;
 
 type Claim = {
   id: string;
@@ -35,6 +41,12 @@ function getClaimId(): string | null {
   return new URLSearchParams(window.location.search).get('id');
 }
 
+function defaultRoleForSnippet(snippet: Snippet): string {
+  const t = (snippet.snippet_type ?? '').toLowerCase().trim();
+  if (t === 'definition') return 'definition';
+  return 'supporting';
+}
+
 export default function ClaimDetailPage() {
   const base = import.meta.env.BASE_URL || '/';
   const [claim, setClaim] = useState<Claim | null>(null);
@@ -44,6 +56,17 @@ export default function ClaimDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [copyMsg, setCopyMsg] = useState<string | null>(null);
+
+  const [showAddSnippets, setShowAddSnippets] = useState(false);
+  const [snippetSearch, setSnippetSearch] = useState('');
+  const [candidateSnippets, setCandidateSnippets] = useState<Snippet[]>([]);
+  const [candidatePapers, setCandidatePapers] = useState<Map<string, Paper>>(new Map());
+  const [loadingCandidates, setLoadingCandidates] = useState(false);
+  const [linkingSnippetId, setLinkingSnippetId] = useState<string | null>(null);
+  const [removingLinkId, setRemovingLinkId] = useState<string | null>(null);
+  const [updatingLinkId, setUpdatingLinkId] = useState<string | null>(null);
+
+  const linkedSnippetIds = useMemo(() => new Set(links.map((l) => l.snippet_id)), [links]);
 
   const load = useCallback(async () => {
     const id = getClaimId();
@@ -87,9 +110,117 @@ export default function ClaimDetailPage() {
     setLoading(false);
   }, []);
 
+  const loadCandidateSnippets = useCallback(async () => {
+    if (!supabase || !claim) return;
+    setLoadingCandidates(true);
+    const { data, error: qErr } = await supabase
+      .from('snippets')
+      .select('id, paper_id, content, snippet_type, construct_ids')
+      .order('created_at', { ascending: false })
+      .limit(500);
+    if (qErr) {
+      setError(qErr.message);
+      setLoadingCandidates(false);
+      return;
+    }
+    const all = (data as Snippet[]) ?? [];
+    const constructIds = claim.constructs_involved ?? [];
+    const filtered =
+      constructIds.length > 0
+        ? all.filter((s) => {
+            const set = new Set((s.construct_ids ?? []).filter(Boolean));
+            return constructIds.some((id) => set.has(id));
+          })
+        : all;
+    setCandidateSnippets(filtered);
+    const paperIds = [...new Set(filtered.map((s) => s.paper_id))];
+    if (paperIds.length) {
+      const { data: ps } = await supabase
+        .from('saved_papers')
+        .select('id, title, authors, year, journal')
+        .in('id', paperIds);
+      const pm = new Map<string, Paper>();
+      for (const p of (ps as Paper[]) ?? []) pm.set(p.id, p);
+      setCandidatePapers(pm);
+    } else {
+      setCandidatePapers(new Map());
+    }
+    setLoadingCandidates(false);
+  }, [claim]);
+
   useEffect(() => {
     void load();
   }, [load]);
+
+  useEffect(() => {
+    if (showAddSnippets && claim) void loadCandidateSnippets();
+  }, [showAddSnippets, claim, loadCandidateSnippets]);
+
+  const filteredCandidates = useMemo(() => {
+    const q = snippetSearch.trim().toLowerCase();
+    return candidateSnippets
+      .filter((s) => !linkedSnippetIds.has(s.id))
+      .filter((s) => {
+        if (!q) return true;
+        const p = candidatePapers.get(s.paper_id);
+        const hay = [s.content, p?.title, p?.authors, p?.journal].filter(Boolean).join(' ').toLowerCase();
+        return hay.includes(q);
+      });
+  }, [candidateSnippets, candidatePapers, linkedSnippetIds, snippetSearch]);
+
+  const addSnippetLink = async (snippet: Snippet) => {
+    if (!supabase || !claim || linkedSnippetIds.has(snippet.id)) return;
+    setLinkingSnippetId(snippet.id);
+    setError(null);
+    const role = defaultRoleForSnippet(snippet);
+    const { data, error: insErr } = await supabase
+      .from('claim_snippets')
+      .insert({ claim_id: claim.id, snippet_id: snippet.id, role })
+      .select('id, snippet_id, role')
+      .single();
+    setLinkingSnippetId(null);
+    if (insErr) {
+      setError(insErr.message);
+      return;
+    }
+    const row = data as LinkRow;
+    setLinks((prev) => [...prev, row]);
+    setSnippets((prev) => new Map(prev).set(snippet.id, snippet));
+    if (!papers.has(snippet.paper_id)) {
+      const { data: ps } = await supabase
+        .from('saved_papers')
+        .select('id, title, authors, year, journal')
+        .eq('id', snippet.paper_id)
+        .maybeSingle();
+      if (ps) setPapers((prev) => new Map(prev).set(snippet.paper_id, ps as Paper));
+    }
+  };
+
+  const updateLinkRole = async (linkId: string, role: string) => {
+    if (!supabase) return;
+    setUpdatingLinkId(linkId);
+    setError(null);
+    const { error: upErr } = await supabase.from('claim_snippets').update({ role }).eq('id', linkId);
+    setUpdatingLinkId(null);
+    if (upErr) {
+      setError(upErr.message);
+      return;
+    }
+    setLinks((prev) => prev.map((l) => (l.id === linkId ? { ...l, role } : l)));
+  };
+
+  const removeLink = async (linkId: string) => {
+    if (!supabase) return;
+    setRemovingLinkId(linkId);
+    setError(null);
+    const { error: delErr } = await supabase.from('claim_snippets').delete().eq('id', linkId);
+    setRemovingLinkId(null);
+    if (delErr) {
+      setError(delErr.message);
+      return;
+    }
+    setLinks((prev) => prev.filter((l) => l.id !== linkId));
+  };
 
   const evidenceLines = useCallback(() => {
     if (!claim) return [];
@@ -165,13 +296,24 @@ export default function ClaimDetailPage() {
     );
   }
 
-  if (error || !claim) {
+  if (error && !claim) {
     return (
       <div className="claims-page">
         <p className="claims-back">
           <a href={`${base}claims/`}>← Claims</a>
         </p>
         <p className="claims-error">{error ?? 'Not found.'}</p>
+      </div>
+    );
+  }
+
+  if (!claim) {
+    return (
+      <div className="claims-page">
+        <p className="claims-back">
+          <a href={`${base}claims/`}>← Claims</a>
+        </p>
+        <p className="claims-error">Not found.</p>
       </div>
     );
   }
@@ -194,21 +336,25 @@ export default function ClaimDetailPage() {
         </p>
       </header>
 
+      {error && <p className="claims-error">{error}</p>}
+
       <section className="claims-detail-section">
         <h2>Claim</h2>
         <blockquote className="claims-detail-claim">{claim.claim_text}</blockquote>
       </section>
 
-      <section className="claims-detail-section">
-        <h2>Constructs</h2>
-        <ul className="claims-tag-list">
-          {(claim.constructs_involved ?? []).map((id) => (
-            <li key={id} className="claims-pill">
-              {constructNameById.get(id) ?? id}
-            </li>
-          ))}
-        </ul>
-      </section>
+      {(claim.constructs_involved ?? []).length > 0 && (
+        <section className="claims-detail-section">
+          <h2>Constructs</h2>
+          <ul className="claims-tag-list">
+            {(claim.constructs_involved ?? []).map((id) => (
+              <li key={id} className="claims-pill">
+                {constructNameById.get(id) ?? id}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {claim.notes && (
         <section className="claims-detail-section">
@@ -218,23 +364,107 @@ export default function ClaimDetailPage() {
       )}
 
       <section className="claims-detail-section">
-        <h2>Linked snippets</h2>
+        <div className="claims-detail-section-head">
+          <h2>Linked snippets</h2>
+          <button
+            type="button"
+            className="claims-btn claims-btn-primary"
+            onClick={() => setShowAddSnippets((v) => !v)}
+          >
+            {showAddSnippets ? 'Hide snippet picker' : 'Add snippets'}
+          </button>
+        </div>
         <p className="claims-muted">
           Supporting: {supporting.length} · Contradicting: {contradicting.length} · Definition: {definitions.length}
         </p>
-        <ul className="claims-evidence-list">
-          {links.map((l) => {
-            const s = snippets.get(l.snippet_id);
-            const p = s ? papers.get(s.paper_id) : undefined;
-            return (
-              <li key={l.id} className="claims-evidence-card">
-                <span className={`claims-role-tag claims-role-${l.role}`}>{l.role}</span>
-                <div className="claims-evidence-paper">{p?.title ?? 'Paper'}</div>
-                <div className="claims-evidence-text">{s?.content ?? '—'}</div>
-              </li>
-            );
-          })}
-        </ul>
+
+        {showAddSnippets && (
+          <div className="claims-add-snippets">
+            <p className="claims-hint">
+              {claim.constructs_involved?.length
+                ? 'Showing snippets tagged with this claim’s constructs. Use search to narrow further.'
+                : 'Showing recent snippets. Link constructs on a future edit, or search below.'}
+            </p>
+            <input
+              className="claims-input"
+              type="search"
+              value={snippetSearch}
+              onChange={(e) => setSnippetSearch(e.target.value)}
+              placeholder="Search snippet text or paper…"
+            />
+            {loadingCandidates ? (
+              <p className="claims-muted">Loading snippets…</p>
+            ) : filteredCandidates.length === 0 ? (
+              <p className="claims-muted">No snippets available to link.</p>
+            ) : (
+              <ul className="claims-snippet-pick-list">
+                {filteredCandidates.map((s) => {
+                  const p = candidatePapers.get(s.paper_id);
+                  const busy = linkingSnippetId === s.id;
+                  return (
+                    <li key={s.id} className="claims-snippet-pick">
+                      <div className="claims-snippet-pick-body">
+                        <div className="claims-snippet-pick-paper">{p?.title ?? 'Paper'}</div>
+                        {s.snippet_type && (
+                          <div className="claims-snippet-pick-type">{s.snippet_type}</div>
+                        )}
+                        <div className="claims-snippet-pick-text">{s.content}</div>
+                      </div>
+                      <button
+                        type="button"
+                        className="claims-btn claims-btn-primary claims-add-snippet-btn"
+                        disabled={busy}
+                        onClick={() => void addSnippetLink(s)}
+                      >
+                        {busy ? '…' : 'Link'}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        )}
+
+        {links.length === 0 ? (
+          <p className="claims-muted">No snippets linked yet. Add some above or link from the Snippets page.</p>
+        ) : (
+          <ul className="claims-evidence-list">
+            {links.map((l) => {
+              const s = snippets.get(l.snippet_id);
+              const p = s ? papers.get(s.paper_id) : undefined;
+              return (
+                <li key={l.id} className="claims-evidence-card">
+                  <div className="claims-evidence-card-head">
+                    <select
+                      className="claims-input claims-role-select"
+                      value={l.role}
+                      disabled={updatingLinkId === l.id}
+                      onChange={(e) => void updateLinkRole(l.id, e.target.value)}
+                      aria-label="Snippet role"
+                    >
+                      {ROLE_OPTIONS.map((o) => (
+                        <option key={o.value} value={o.value}>
+                          {o.label}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      type="button"
+                      className="claims-btn-text-danger"
+                      disabled={removingLinkId === l.id}
+                      onClick={() => void removeLink(l.id)}
+                    >
+                      {removingLinkId === l.id ? '…' : 'Remove'}
+                    </button>
+                  </div>
+                  <div className="claims-evidence-paper">{p?.title ?? 'Paper'}</div>
+                  <div className="claims-evidence-text">{s?.content ?? '—'}</div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </section>
 
       <section className="claims-detail-section">
@@ -243,7 +473,10 @@ export default function ClaimDetailPage() {
           <button type="button" className="claims-btn" onClick={() => void copyParagraphPrompt()}>
             Generate paragraph (copy prompt)
           </button>
-          <a className="claims-btn claims-btn-ghost" href={`${base}snippets/`}>
+          <a
+            className="claims-btn claims-btn-ghost"
+            href={`${base}snippets/?claimId=${encodeURIComponent(claim.id)}`}
+          >
             Find more snippets
           </a>
           <button type="button" className="claims-btn claims-btn-ghost" onClick={exportCitations}>

@@ -1,0 +1,9 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ClaimManualPage from '../../../components/ClaimManualPage';
+import '../../../styles/claims.css';
+---
+
+<BaseLayout title="Write claim" description="Create a claim manually and link snippets later.">
+  <ClaimManualPage client:load />
+</BaseLayout>
