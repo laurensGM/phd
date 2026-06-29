@@ -56,6 +56,20 @@ function getClaimId(): string | null {
   return new URLSearchParams(window.location.search).get('id');
 }
 
+function shouldOpenEditMode(): boolean {
+  if (typeof window === 'undefined') return false;
+  const edit = new URLSearchParams(window.location.search).get('edit');
+  return edit === '1' || edit === 'true';
+}
+
+function clearEditQueryParam(): void {
+  if (typeof window === 'undefined') return;
+  const url = new URL(window.location.href);
+  if (!url.searchParams.has('edit')) return;
+  url.searchParams.delete('edit');
+  window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
+}
+
 function defaultRoleForSnippet(snippet: Snippet): string {
   const t = (snippet.snippet_type ?? '').toLowerCase().trim();
   if (t === 'definition') return 'definition';
@@ -90,6 +104,7 @@ export default function ClaimDetailPage() {
   const [editLrChapter, setEditLrChapter] = useState('');
   const [editNotes, setEditNotes] = useState('');
   const [editConstructFilter, setEditConstructFilter] = useState('');
+  const [autoEditOpened, setAutoEditOpened] = useState(false);
 
   const linkedSnippetIds = useMemo(() => new Set(links.map((l) => l.snippet_id)), [links]);
 
@@ -181,6 +196,24 @@ export default function ClaimDetailPage() {
     if (showAddSnippets && claim) void loadCandidateSnippets();
   }, [showAddSnippets, claim, loadCandidateSnippets]);
 
+  const populateEditForm = useCallback((c: Claim) => {
+    setEditTitle(c.title);
+    setEditClaimText(c.claim_text);
+    setEditConstructIds([...(c.constructs_involved ?? [])]);
+    setEditRelationshipType(c.relationship_type ?? 'relates');
+    setEditLrChapter(c.lr_chapter ?? '');
+    setEditNotes(c.notes ?? '');
+    setEditConstructFilter('');
+  }, []);
+
+  useEffect(() => {
+    if (!claim || loading || autoEditOpened || !shouldOpenEditMode()) return;
+    populateEditForm(claim);
+    setEditing(true);
+    setAutoEditOpened(true);
+    setError(null);
+  }, [claim, loading, autoEditOpened, populateEditForm]);
+
   const filteredCandidates = useMemo(() => {
     const q = snippetSearch.trim().toLowerCase();
     return candidateSnippets
@@ -249,13 +282,7 @@ export default function ClaimDetailPage() {
 
   const startEdit = () => {
     if (!claim) return;
-    setEditTitle(claim.title);
-    setEditClaimText(claim.claim_text);
-    setEditConstructIds([...(claim.constructs_involved ?? [])]);
-    setEditRelationshipType(claim.relationship_type ?? 'relates');
-    setEditLrChapter(claim.lr_chapter ?? '');
-    setEditNotes(claim.notes ?? '');
-    setEditConstructFilter('');
+    populateEditForm(claim);
     setEditing(true);
     setError(null);
   };
@@ -263,6 +290,7 @@ export default function ClaimDetailPage() {
   const cancelEdit = () => {
     setEditing(false);
     setError(null);
+    clearEditQueryParam();
   };
 
   const toggleEditConstruct = (id: string) => {
@@ -305,6 +333,7 @@ export default function ClaimDetailPage() {
     setClaim(data as Claim);
     setEditing(false);
     setSavingEdit(false);
+    clearEditQueryParam();
   };
 
   const filteredEditConstructs = editConstructFilter.trim()

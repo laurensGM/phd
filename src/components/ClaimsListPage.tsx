@@ -75,20 +75,34 @@ export default function ClaimsListPage() {
         <p className="claims-muted">No claims yet. Use &ldquo;Write claim&rdquo; for a quick manual entry, or the guided builder for snippet-first flow.</p>
       ) : (
         <ul className="claims-list">
-          {rows.map((r) => (
+          {rows.map((r) => {
+            const detailHref = `${base}claims/detail/?id=${encodeURIComponent(r.id)}`;
+            const editHref = `${detailHref}&edit=1`;
+            return (
             <li key={r.id} className="claims-card">
-              <a className="claims-card-link" href={`${base}claims/detail/?id=${encodeURIComponent(r.id)}`}>
-                <span className="claims-card-title">{r.title.trim() || 'Untitled claim'}</span>
-                {claimLrChapterLabel(r.lr_chapter) && (
-                  <span className="claims-badge claims-badge-lr">{claimLrChapterLabel(r.lr_chapter)}</span>
-                )}
-              </a>
+              <div className="claims-card-top">
+                <a className="claims-card-link" href={detailHref}>
+                  <span className="claims-card-title">{r.title.trim() || 'Untitled claim'}</span>
+                  {claimLrChapterLabel(r.lr_chapter) && (
+                    <span className="claims-badge claims-badge-lr">{claimLrChapterLabel(r.lr_chapter)}</span>
+                  )}
+                </a>
+                <div className="claims-card-actions">
+                  <a className="claims-card-action" href={detailHref}>
+                    View
+                  </a>
+                  <a className="claims-card-action claims-card-action-edit" href={editHref}>
+                    Edit
+                  </a>
+                </div>
+              </div>
               <p className="claims-card-preview">{r.claim_text}</p>
               <time className="claims-card-date" dateTime={r.created_at}>
                 {new Date(r.created_at).toLocaleString()}
               </time>
             </li>
-          ))}
+            );
+          })}
         </ul>
       )}
     </div>

@@ -84,6 +84,42 @@
   border-left: 4px solid var(--color-maroon);
 }
 
+.claims-card-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+
+.claims-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.claims-card-action {
+  padding: 0.25rem 0.65rem;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-alt);
+  color: var(--color-ink);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.claims-card-action:hover {
+  border-color: var(--color-maroon-muted);
+  color: var(--color-maroon);
+  text-decoration: none;
+}
+.claims-card-action-edit {
+  border-color: rgba(113, 32, 56, 0.25);
+  background: rgba(113, 32, 56, 0.06);
+  color: var(--color-maroon);
+}
+
 .claims-card-link {
   display: flex;
   flex-wrap: wrap;
