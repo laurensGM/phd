@@ -110,6 +110,15 @@ function isSnippetUsedInWriting(s: Snippet): boolean {
   return Boolean((s as { used_in_writing?: boolean }).used_in_writing);
 }
 
+/** True when snippet created_at is on or after the given YYYY-MM-DD (local midnight). */
+function snippetCreatedOnOrAfter(createdAt: string, dateStr: string): boolean {
+  if (!dateStr) return true;
+  const cutoff = new Date(`${dateStr}T00:00:00`);
+  if (Number.isNaN(cutoff.getTime())) return true;
+  const created = new Date(createdAt);
+  return !Number.isNaN(created.getTime()) && created >= cutoff;
+}
+
 const SNIPPET_PREVIEW_LENGTH = 140;
 type SearchMode = 'keyword' | 'semantic';
 type SnippetsTab = 'snippets' | 'saved-prompts';
@@ -332,6 +341,7 @@ export default function SnippetsPage() {
   const [filterTag, setFilterTag] = useState('');
   const [filterSnippetType, setFilterSnippetType] = useState('');
   const [filterProcessed, setFilterProcessed] = useState<FilterProcessed>('');
+  const [filterCreatedAfter, setFilterCreatedAfter] = useState('');
   const [search, setSearch] = useState('');
   const [searchMode, setSearchMode] = useState<SearchMode>('keyword');
   const [activeTab, setActiveTab] = useState<SnippetsTab>('snippets');
@@ -657,6 +667,7 @@ export default function SnippetsPage() {
         const tags = Array.isArray(s.tags) ? s.tags : [];
         if (!tags.some((t) => t.toLowerCase() === filterTag.toLowerCase())) return false;
       }
+      if (!snippetCreatedOnOrAfter(s.created_at, filterCreatedAfter)) return false;
       if (search && searchMode === 'keyword') {
         const q = search.toLowerCase();
         const inContent = s.content.toLowerCase().includes(q);
@@ -681,6 +692,7 @@ export default function SnippetsPage() {
     filterSnippetType,
     filterProcessed,
     filterTag,
+    filterCreatedAfter,
     search,
     searchMode,
     paperById,
@@ -1329,6 +1341,17 @@ export default function SnippetsPage() {
             </label>
           </div>
           <div className="snippets-filter-row">
+            <label>
+              Created on or after
+              <input
+                type="date"
+                className="snippets-input snippets-date-filter"
+                value={filterCreatedAfter}
+                onChange={(e) => setFilterCreatedAfter(e.target.value)}
+              />
+            </label>
+          </div>
+          <div className="snippets-filter-row">
             <label className="snippets-search-label">
               Search
               <input
@@ -1380,6 +1403,7 @@ export default function SnippetsPage() {
                 setFilterSnippetType('');
                 setFilterProcessed('');
                 setFilterTag('');
+                setFilterCreatedAfter('');
                 setSearch('');
               }}
               title="Clear all filters"
