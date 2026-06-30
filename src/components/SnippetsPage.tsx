@@ -119,6 +119,15 @@ function snippetCreatedOnOrAfter(createdAt: string, dateStr: string): boolean {
   return !Number.isNaN(created.getTime()) && created >= cutoff;
 }
 
+/** Collapse pasted line breaks and extra whitespace into a single line. */
+function normaliseSnippetContent(content: string): string {
+  return content
+    .replace(/\r\n/g, '\n')
+    .replace(/[\n\r\u2028\u2029]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 const SNIPPET_PREVIEW_LENGTH = 140;
 type SearchMode = 'keyword' | 'semantic';
 type SnippetsTab = 'snippets' | 'saved-prompts';
@@ -807,7 +816,7 @@ export default function SnippetsPage() {
   const handleAddSnippet = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-      if (!newContent.trim() || !newPaperId) return;
+      if (!normaliseSnippetContent(newContent) || !newPaperId) return;
       if (!supabase || !isSupabaseConfigured()) return;
       setSaving(true);
       setError(null);
@@ -845,7 +854,7 @@ export default function SnippetsPage() {
           model_id: modelIds[0] ?? null,
           construct_ids: constructIds,
           model_ids: modelIds,
-          content: newContent.trim(),
+          content: normaliseSnippetContent(newContent),
           notes: null,
           tags,
           page_number: pageNum != null && !Number.isNaN(pageNum) ? pageNum : null,
@@ -1150,7 +1159,7 @@ export default function SnippetsPage() {
   const handleSaveEdit = useCallback(
     async (snippet: Snippet) => {
       if (!supabase || !isSupabaseConfigured()) return;
-      if (!editContent.trim()) return;
+      if (!normaliseSnippetContent(editContent)) return;
       const pageNum = editPageNumber.trim() ? parseInt(editPageNumber, 10) : null;
 
       const constructIds = editConstructId
@@ -1180,7 +1189,7 @@ export default function SnippetsPage() {
       const { data, error: updateErr } = await supabase
         .from('snippets')
         .update({
-          content: editContent.trim(),
+          content: normaliseSnippetContent(editContent),
           construct_id: constructIds[0] ?? null,
           model_id: modelIds[0] ?? null,
           construct_ids: constructIds,
