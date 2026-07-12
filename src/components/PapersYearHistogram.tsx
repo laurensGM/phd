@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useRef } from 'react';
 import { type YearBin, yAxisTicks } from '../lib/paperYearHistogram';
 
 interface PapersYearHistogramProps {
@@ -15,6 +15,19 @@ export default function PapersYearHistogram({
   const maxCount = useMemo(() => Math.max(0, ...bins.map((b) => b.count)), [bins]);
   const ticks = useMemo(() => yAxisTicks(maxCount), [maxCount]);
   const yMax = ticks[ticks.length - 1] ?? maxCount;
+  const chartScrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = chartScrollRef.current;
+    if (!el || bins.length === 0) return;
+    const scrollToEnd = () => {
+      el.scrollLeft = el.scrollWidth;
+    };
+    scrollToEnd();
+    // Layout may settle after paint when many year columns are present.
+    const frame = requestAnimationFrame(scrollToEnd);
+    return () => cancelAnimationFrame(frame);
+  }, [bins]);
 
   if (bins.length === 0) {
     return (
@@ -43,7 +56,7 @@ export default function PapersYearHistogram({
         <div className="home-papers-histogram-y-label" aria-hidden>
           Papers saved
         </div>
-        <div className="home-papers-histogram-chart">
+        <div className="home-papers-histogram-chart" ref={chartScrollRef}>
           <div className="home-papers-histogram-y-axis">
             {[...ticks].reverse().map((tick) => (
               <span key={tick} className="home-papers-histogram-y-tick">
@@ -86,3 +99,4 @@ export default function PapersYearHistogram({
     </section>
   );
 }
+
