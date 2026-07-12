@@ -164,6 +164,7 @@ export default function FaqPage({ staticQuestions }: FaqPageProps) {
   const [editDefaultLabels, setEditDefaultLabels] = useState<string[]>([]);
   const [editExtraLabels, setEditExtraLabels] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [showAddForm, setShowAddForm] = useState(false);
 
   const fetchItems = useCallback(async () => {
     if (!supabase) return;
@@ -320,6 +321,7 @@ export default function FaqPage({ staticQuestions }: FaqPageProps) {
       setAnswerDraft('');
       setAddDefaultLabels([]);
       setAddExtraLabels('');
+      setShowAddForm(false);
     }
   };
 
@@ -567,44 +569,56 @@ export default function FaqPage({ staticQuestions }: FaqPageProps) {
         </div>
       )}
 
-      <form className="faq-add-form" onSubmit={handleAdd}>
-        <h2 className="faq-form-title">Add FAQ</h2>
-        <div className="faq-field">
-          <label htmlFor="faq-question">Question</label>
-          <input
-            id="faq-question"
-            type="text"
-            value={questionDraft}
-            onChange={(e) => setQuestionDraft(e.target.value)}
-            placeholder="What do you want to remember?"
-            className="faq-input"
-            required
-          />
-        </div>
-        <LabelPicker
-          idPrefix="add"
-          selectedDefaults={addDefaultLabels}
-          extraInput={addExtraLabels}
-          knownLabels={knownLabels}
-          onToggleDefault={(label) => toggleDefaultLabel(label, addDefaultLabels, setAddDefaultLabels)}
-          onExtraChange={setAddExtraLabels}
-        />
-        <div className="faq-field">
-          <label htmlFor="faq-answer">Answer</label>
-          <textarea
-            id="faq-answer"
-            value={answerDraft}
-            onChange={(e) => setAnswerDraft(e.target.value)}
-            rows={5}
-            placeholder="Use **bold** for emphasis, e.g. **Key point:** details here…"
-            className="faq-textarea"
-          />
-          <FaqAnswerFormatHint />
-        </div>
-        <button type="submit" className="faq-submit" disabled={saving || !questionDraft.trim()}>
-          {saving ? 'Saving…' : 'Add FAQ'}
+      <div className="faq-add-section">
+        <button
+          type="button"
+          className="faq-submit faq-add-toggle"
+          onClick={() => setShowAddForm((open) => !open)}
+          aria-expanded={showAddForm}
+        >
+          {showAddForm ? 'Cancel' : 'Add FAQ'}
         </button>
-      </form>
+        {showAddForm && (
+          <form className="faq-add-form" onSubmit={handleAdd}>
+            <h2 className="faq-form-title">Add FAQ</h2>
+            <div className="faq-field">
+              <label htmlFor="faq-question">Question</label>
+              <input
+                id="faq-question"
+                type="text"
+                value={questionDraft}
+                onChange={(e) => setQuestionDraft(e.target.value)}
+                placeholder="What do you want to remember?"
+                className="faq-input"
+                required
+              />
+            </div>
+            <LabelPicker
+              idPrefix="add"
+              selectedDefaults={addDefaultLabels}
+              extraInput={addExtraLabels}
+              knownLabels={knownLabels}
+              onToggleDefault={(label) => toggleDefaultLabel(label, addDefaultLabels, setAddDefaultLabels)}
+              onExtraChange={setAddExtraLabels}
+            />
+            <div className="faq-field">
+              <label htmlFor="faq-answer">Answer</label>
+              <textarea
+                id="faq-answer"
+                value={answerDraft}
+                onChange={(e) => setAnswerDraft(e.target.value)}
+                rows={5}
+                placeholder="Use **bold** for emphasis, e.g. **Key point:** details here…"
+                className="faq-textarea"
+              />
+              <FaqAnswerFormatHint />
+            </div>
+            <button type="submit" className="faq-submit" disabled={saving || !questionDraft.trim()}>
+              {saving ? 'Saving…' : 'Save FAQ'}
+            </button>
+          </form>
+        )}
+      </div>
 
       <section className="faq-list-section">
         <h2 className="faq-list-title">
