@@ -271,6 +271,30 @@ export interface Database {
           updated_at?: string;
         };
       };
+      model_evaluation_items: {
+        Row: {
+          id: string;
+          model_id: string;
+          side: string;
+          content: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          model_id: string;
+          side: string;
+          content: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          model_id?: string;
+          side?: string;
+          content?: string;
+          updated_at?: string;
+        };
+      };
       model_papers: {
         Row: {
           id: string;

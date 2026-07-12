@@ -219,6 +219,184 @@ if (!model) {
     margin-bottom: 0.5rem;
   }
 
+  :global(.model-detail-view .model-eval-section) {
+    margin: 1.75rem 0 1.5rem;
+  }
+
+  :global(.model-detail-view .model-eval-section-title) {
+    font-size: 1rem;
+    margin: 0 0 0.35rem 0;
+    color: var(--color-ink);
+  }
+
+  :global(.model-detail-view .model-eval-section-desc) {
+    font-size: 0.875rem;
+    color: var(--color-ink-muted);
+    margin: 0 0 0.85rem 0;
+    line-height: 1.5;
+  }
+
+  :global(.model-detail-view .model-eval-error) {
+    color: var(--color-error, #b91c1c);
+    font-size: 0.875rem;
+    margin: 0 0 0.75rem 0;
+  }
+
+  :global(.model-detail-view .model-eval-loading),
+  :global(.model-detail-view .model-eval-setup),
+  :global(.model-detail-view .model-eval-empty) {
+    font-size: 0.875rem;
+    color: var(--color-ink-muted);
+    margin: 0.5rem 0 0 0;
+  }
+
+  :global(.model-detail-view .model-eval-grid) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  :global(.model-detail-view .model-eval-panel) {
+    padding: 1rem 1.1rem;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    display: flex;
+    flex-direction: column;
+    min-height: 12rem;
+  }
+
+  :global(.model-detail-view .model-eval-panel-advantage) {
+    background: #ecfdf5;
+    border-color: #a7f3d0;
+  }
+
+  :global(.model-detail-view .model-eval-panel-inadequacy) {
+    background: #fef2f2;
+    border-color: #fecaca;
+  }
+
+  :global(.model-detail-view .model-eval-panel-title) {
+    margin: 0 0 0.75rem 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+  }
+
+  :global(.model-detail-view .model-eval-panel-advantage .model-eval-panel-title) {
+    color: #166534;
+  }
+
+  :global(.model-detail-view .model-eval-panel-inadequacy .model-eval-panel-title) {
+    color: #991b1b;
+  }
+
+  :global(.model-detail-view .model-eval-add-form) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  :global(.model-detail-view .model-eval-textarea) {
+    width: 100%;
+    padding: 0.5rem 0.65rem;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 8px;
+    font-family: var(--font-sans);
+    font-size: 0.88rem;
+    line-height: 1.45;
+    resize: vertical;
+    background: #fff;
+    box-sizing: border-box;
+  }
+
+  :global(.model-detail-view .model-eval-add-btn),
+  :global(.model-detail-view .model-eval-btn) {
+    align-self: flex-start;
+    padding: 0.35rem 0.85rem;
+    border-radius: 7px;
+    border: 1px solid transparent;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  :global(.model-detail-view .model-eval-add-btn),
+  :global(.model-detail-view .model-eval-btn-primary) {
+    background: var(--color-maroon);
+    color: #fff;
+    border-color: var(--color-maroon);
+  }
+
+  :global(.model-detail-view .model-eval-add-btn:disabled),
+  :global(.model-detail-view .model-eval-btn:disabled) {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  :global(.model-detail-view .model-eval-btn-secondary) {
+    background: #fff;
+    border-color: var(--color-border);
+    color: var(--color-ink);
+  }
+
+  :global(.model-detail-view .model-eval-edit-actions) {
+    display: flex;
+    gap: 0.4rem;
+    margin-top: 0.45rem;
+  }
+
+  :global(.model-detail-view .model-eval-list) {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    flex: 1;
+  }
+
+  :global(.model-detail-view .model-eval-item) {
+    padding: 0.65rem 0.75rem;
+    background: rgba(255, 255, 255, 0.75);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 8px;
+  }
+
+  :global(.model-detail-view .model-eval-item-content) {
+    margin: 0 0 0.4rem 0;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  :global(.model-detail-view .model-eval-item-actions) {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  :global(.model-detail-view .model-eval-item-action) {
+    border: none;
+    background: none;
+    padding: 0;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--color-maroon);
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  :global(.model-detail-view .model-eval-item-delete) {
+    color: var(--color-error, #b91c1c);
+  }
+
+  @media (max-width: 700px) {
+    :global(.model-detail-view .model-eval-grid) {
+      grid-template-columns: 1fr;
+    }
+  }
+
   :global(.model-detail-view .model-library-citations-heading) {
     font-size: 0.95rem;
     margin: 1.25rem 0 0.35rem 0;

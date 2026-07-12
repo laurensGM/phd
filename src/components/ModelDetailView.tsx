@@ -2,6 +2,7 @@ import React from 'react';
 import ModelDiagramStatic from './ModelDiagramStatic';
 import ModelNotes from './ModelNotes';
 import ModelPaperCitations from './ModelPaperCitations';
+import ModelEvaluation from './ModelEvaluation';
 
 interface Model {
   id: string;
@@ -76,6 +77,8 @@ export default function ModelDetailView({ model, constructToSlug, base }: ModelD
           </li>
         ))}
       </ul>
+
+      <ModelEvaluation modelId={model.id} />
 
       <h4 className="model-library-citations-heading">Papers in your library</h4>
       <p className="model-library-citations-desc">
