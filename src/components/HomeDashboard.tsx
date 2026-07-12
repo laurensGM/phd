@@ -80,6 +80,8 @@ export default function HomeDashboard() {
   const [paperRows, setPaperRows] = useState<PaperRow[]>([]);
   const [snippetsCount, setSnippetsCount] = useState<number>(0);
   const [snippetsProcessedCount, setSnippetsProcessedCount] = useState<number>(0);
+  const [claimsCount, setClaimsCount] = useState<number>(0);
+  const [contributionsCount, setContributionsCount] = useState<number>(0);
   const [snippetRows, setSnippetRows] = useState<SnippetTagRow[]>([]);
   const [manualByPaperId, setManualByPaperId] = useState<Map<string, string[]>>(new Map());
   const [loading, setLoading] = useState(true);
@@ -172,6 +174,8 @@ export default function HomeDashboard() {
       setPaperRows([]);
       setSnippetsCount(0);
       setSnippetsProcessedCount(0);
+      setClaimsCount(0);
+      setContributionsCount(0);
       setSnippetRows([]);
       setManualByPaperId(new Map());
       return;
@@ -181,10 +185,12 @@ export default function HomeDashboard() {
       setLoading(true);
       setError(null);
       try {
-        const [papersRes, snippetsRes, assignRes] = await Promise.all([
+        const [papersRes, snippetsRes, assignRes, claimsRes, contributionsRes] = await Promise.all([
           supabase.from('saved_papers').select('id, year, journal').limit(2000),
           supabase.from('snippets').select('id, construct_ids, model_ids, construct_id, model_id, used_in_writing'),
           supabase.from('paper_field_assignments').select('paper_id, field_id'),
+          supabase.from('claims').select('id', { count: 'exact', head: true }),
+          supabase.from('research_contributions').select('id', { count: 'exact', head: true }),
         ]);
         if (cancelled) return;
         if (papersRes.error) {
@@ -210,6 +216,16 @@ export default function HomeDashboard() {
           setSnippetRows(rows);
           setSnippetsCount(rows.length);
           setSnippetsProcessedCount(rows.filter((row) => Boolean(row.used_in_writing)).length);
+        }
+        if (claimsRes.error) {
+          setClaimsCount(0);
+        } else {
+          setClaimsCount(claimsRes.count ?? 0);
+        }
+        if (contributionsRes.error) {
+          setContributionsCount(0);
+        } else {
+          setContributionsCount(contributionsRes.count ?? 0);
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -251,6 +267,14 @@ export default function HomeDashboard() {
         <a href={`${base}snippets/`} className="home-stat-card home-stat-snippets-processed">
           <span className="home-stat-value">{snippetsProcessedCount}</span>
           <span className="home-stat-label">snippets processed</span>
+        </a>
+        <a href={`${base}claims/`} className="home-stat-card home-stat-claims">
+          <span className="home-stat-value">{claimsCount}</span>
+          <span className="home-stat-label">claims made</span>
+        </a>
+        <a href={`${base}research-questions/contribution/`} className="home-stat-card home-stat-contributions">
+          <span className="home-stat-value">{contributionsCount}</span>
+          <span className="home-stat-label">contributions</span>
         </a>
         <a href={`${base}constructs/`} className="home-stat-card home-stat-constructs">
           <span className="home-stat-value">{constructsCount}</span>
