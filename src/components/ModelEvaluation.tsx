@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { FormatDiaryText, handleBoldShortcut } from '../lib/formatDiaryText';
 
 type EvaluationSide = 'advantage' | 'inadequacy';
 
@@ -72,10 +73,15 @@ function EvaluationPanel({
   return (
     <div className={`model-eval-panel ${panelClass}`}>
       <h3 className="model-eval-panel-title">{title}</h3>
+      <p className="model-eval-format-hint">
+        Select text and press <kbd>⌘B</kbd> / <kbd>Ctrl+B</kbd>, or wrap in <code>**double asterisks**</code> for{' '}
+        <strong>bold</strong>.
+      </p>
       <form className="model-eval-add-form" onSubmit={(e) => onAdd(e, side)}>
         <textarea
           value={newContent}
           onChange={(e) => setNewContent(e.target.value)}
+          onKeyDown={(e) => handleBoldShortcut(e, newContent, setNewContent)}
           placeholder={
             side === 'advantage'
               ? 'Add a reason this model is relevant…'
@@ -96,6 +102,7 @@ function EvaluationPanel({
                 <textarea
                   value={editContent}
                   onChange={(e) => setEditContent(e.target.value)}
+                  onKeyDown={(e) => handleBoldShortcut(e, editContent, setEditContent)}
                   rows={3}
                   className="model-eval-textarea"
                   autoFocus
@@ -111,7 +118,9 @@ function EvaluationPanel({
               </form>
             ) : (
               <>
-                <p className="model-eval-item-content">{item.content}</p>
+                <p className="model-eval-item-content">
+                  <FormatDiaryText text={item.content} />
+                </p>
                 <div className="model-eval-item-actions">
                   <button type="button" className="model-eval-item-action" onClick={() => onStartEdit(item)}>
                     Edit

@@ -39,3 +39,33 @@ function FormatBoldLine({ line, lineKey }: { line: string; lineKey: number }) {
   if (parts.length === 0) return line === '' ? '\u00a0' : null;
   return <>{parts}</>;
 }
+
+/** Wrap the current textarea selection (or insert markers) with ** for bold. */
+export function wrapTextareaSelectionWithBold(
+  textarea: HTMLTextAreaElement,
+  value: string,
+  setValue: (next: string) => void
+): void {
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const selected = value.slice(start, end);
+  const next = `${value.slice(0, start)}**${selected}**${value.slice(end)}`;
+  setValue(next);
+  const cursorStart = start + 2;
+  const cursorEnd = selected.length > 0 ? end + 2 : cursorStart;
+  requestAnimationFrame(() => {
+    textarea.focus();
+    textarea.setSelectionRange(cursorStart, cursorEnd);
+  });
+}
+
+/** Cmd/Ctrl+B handler for textareas that use **bold** markdown. */
+export function handleBoldShortcut(
+  e: React.KeyboardEvent<HTMLTextAreaElement>,
+  value: string,
+  setValue: (next: string) => void
+): void {
+  if (!(e.metaKey || e.ctrlKey) || e.key.toLowerCase() !== 'b') return;
+  e.preventDefault();
+  wrapTextareaSelectionWithBold(e.currentTarget, value, setValue);
+}

@@ -290,6 +290,22 @@ if (!model) {
     color: #991b1b;
   }
 
+  :global(.model-detail-view .model-eval-format-hint) {
+    margin: 0 0 0.65rem 0;
+    font-size: 0.78rem;
+    color: var(--color-ink-muted);
+    line-height: 1.45;
+  }
+
+  :global(.model-detail-view .model-eval-format-hint code),
+  :global(.model-detail-view .model-eval-format-hint kbd) {
+    font-size: 0.75rem;
+    padding: 0.05rem 0.3rem;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
   :global(.model-detail-view .model-eval-add-form) {
     display: flex;
     flex-direction: column;
@@ -367,7 +383,6 @@ if (!model) {
     margin: 0 0 0.4rem 0;
     font-size: 0.88rem;
     line-height: 1.5;
-    white-space: pre-wrap;
     word-break: break-word;
   }
 
