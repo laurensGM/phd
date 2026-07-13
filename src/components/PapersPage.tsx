@@ -143,22 +143,27 @@ const FETCH_LIMIT = 100;
 /** Papers per page in table view; fewer DOM nodes = snappier scrolling */
 const TABLE_PAGE_SIZE = 25;
 
-type PaperSortField = 'created_at' | 'year' | 'title' | 'citations';
+type PaperSortField = 'created_at' | 'year' | 'title' | 'authors' | 'citations';
 
 const SORT_DIRECTION_LABELS: Record<PaperSortField, { asc: string; desc: string }> = {
   created_at: { asc: 'Oldest ↑', desc: 'Newest ↓' },
   year: { asc: 'Older ↑', desc: 'Newer ↓' },
   title: { asc: 'A–Z ↑', desc: 'Z–A ↓' },
+  authors: { asc: 'A–Z ↑', desc: 'Z–A ↓' },
   citations: { asc: 'Least cited ↑', desc: 'Most cited ↓' },
 };
 
 function defaultSortDirection(field: PaperSortField): 'asc' | 'desc' {
-  if (field === 'title') return 'asc';
+  if (field === 'title' || field === 'authors') return 'asc';
   return 'desc';
 }
 
 function paperSortKeyTitle(paper: SavedPaper): string {
   return (paper.title?.trim() || paper.url || '').toLowerCase();
+}
+
+function paperSortKeyAuthors(paper: SavedPaper): string {
+  return (paper.authors?.trim() || '').toLowerCase();
 }
 
 function mapRow(row: {
@@ -461,6 +466,25 @@ export default function PapersPage() {
           sensitivity: 'base',
         });
         return sortDirection === 'asc' ? cmp : -cmp;
+      }
+      if (sortField === 'authors') {
+        const aKey = paperSortKeyAuthors(a);
+        const bKey = paperSortKeyAuthors(b);
+        // Papers without authors go last in A–Z (and first in Z–A).
+        if (!aKey && !bKey) {
+          return paperSortKeyTitle(a).localeCompare(paperSortKeyTitle(b), undefined, {
+            sensitivity: 'base',
+          });
+        }
+        if (!aKey) return 1;
+        if (!bKey) return -1;
+        const cmp = aKey.localeCompare(bKey, undefined, { sensitivity: 'base' });
+        if (cmp !== 0) return sortDirection === 'asc' ? cmp : -cmp;
+        // Tie-break by title so order is stable when authors match.
+        const titleCmp = paperSortKeyTitle(a).localeCompare(paperSortKeyTitle(b), undefined, {
+          sensitivity: 'base',
+        });
+        return sortDirection === 'asc' ? titleCmp : -titleCmp;
       }
       // citations — missing counts sort last when showing most cited first
       const missing = sortDirection === 'desc' ? -1 : Number.MAX_SAFE_INTEGER;
@@ -976,7 +1000,8 @@ export default function PapersPage() {
               >
                 <option value="created_at">Date added</option>
                 <option value="year">Publication year</option>
-                <option value="title">Alphabetical</option>
+                <option value="title">Title (A–Z)</option>
+                <option value="authors">Author (A–Z)</option>
                 <option value="citations">Citations</option>
               </select>
             </label>
