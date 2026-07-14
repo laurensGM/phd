@@ -11,11 +11,68 @@ const sortedModels = [...models].sort((a: any, b: any) =>
 
 const theoreticalModels = sortedModels.filter((model: any) => !thesisModelIds.has(model.id));
 const thesisModels = sortedModels.filter((model: any) => thesisModelIds.has(model.id));
+
+type TimelineModel = {
+  id: string;
+  abbreviation: string;
+  year: number;
+  authors?: string[];
+};
+
+const timelineModels = (theoreticalModels as TimelineModel[])
+  .filter((model) => model.year != null && Number.isFinite(model.year))
+  .sort(
+    (a, b) =>
+      a.year - b.year ||
+      String(a.abbreviation || '').localeCompare(String(b.abbreviation || ''), undefined, {
+        sensitivity: 'base',
+      })
+  );
+
+const timelineByYear = timelineModels.reduce<Record<number, TimelineModel[]>>((acc, model) => {
+  if (!acc[model.year]) acc[model.year] = [];
+  acc[model.year].push(model);
+  return acc;
+}, {});
+
+const timelineYears = Object.keys(timelineByYear)
+  .map(Number)
+  .sort((a, b) => a - b);
 ---
 
 <BaseLayout title="Models" description="Theoretical models - TAM, ECT, ECM and more">
   <h1>Models</h1>
   <p class="page-desc">Theoretical models with diagrams, constructs, and citations. Click a card to open the model detail page.</p>
+
+  {timelineYears.length > 0 && (
+    <section class="models-timeline-section" aria-label="Models by year established">
+      <h2 class="models-section-title">Timeline by year established</h2>
+      <p class="models-timeline-desc">Abbreviations only — click a model to open its detail page.</p>
+      <div class="models-timeline-scroll">
+        <ol class="models-timeline">
+          {timelineYears.map((year) => (
+            <li class="models-timeline-year">
+              <div class="models-timeline-models">
+                {timelineByYear[year].map((model) => (
+                  <a
+                    href={`${base}models/${model.id}/`}
+                    class="models-timeline-abbrev"
+                    title={`${model.abbreviation}${model.authors?.length ? ` — ${model.authors.join(', ')}` : ''} (${year})`}
+                  >
+                    {model.abbreviation}
+                  </a>
+                ))}
+              </div>
+              <div class="models-timeline-rail" aria-hidden="true">
+                <span class="models-timeline-dot" />
+              </div>
+              <time class="models-timeline-year-label" datetime={String(year)}>{year}</time>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  )}
 
   <section class="models-section">
     <h2 class="models-section-title">Theoretical Models</h2>
@@ -56,6 +113,125 @@ const thesisModels = sortedModels.filter((model: any) => thesisModelIds.has(mode
 
 <style>
   .page-desc { color: var(--color-ink-muted); margin-bottom: 2rem; }
+
+  .models-timeline-section {
+    margin: 0 0 2.5rem 0;
+    padding: 1.25rem 1.35rem 1.5rem;
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+  }
+
+  .models-timeline-desc {
+    margin: -0.35rem 0 1.15rem 0;
+    font-size: 0.875rem;
+    color: var(--color-ink-muted);
+  }
+
+  .models-timeline-scroll {
+    overflow-x: auto;
+    padding-bottom: 0.35rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .models-timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0.25rem 0.25rem 0;
+    display: flex;
+    align-items: flex-end;
+    gap: 0;
+    min-width: max-content;
+  }
+
+  .models-timeline-year {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 4.75rem;
+    position: relative;
+  }
+
+  .models-timeline-models {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.75rem;
+    min-height: 2rem;
+  }
+
+  .models-timeline-abbrev {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.28rem 0.55rem;
+    border-radius: 999px;
+    background: #fff;
+    border: 1.5px solid var(--color-maroon);
+    color: var(--color-maroon);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    line-height: 1.2;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s, transform 0.15s;
+  }
+
+  .models-timeline-abbrev:hover {
+    background: var(--color-maroon);
+    color: #fff;
+    text-decoration: none;
+    transform: translateY(-1px);
+  }
+
+  .models-timeline-rail {
+    position: relative;
+    width: 100%;
+    height: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .models-timeline-rail::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 2px;
+    background: var(--color-maroon-muted, #c4a4ad);
+    transform: translateY(-50%);
+  }
+
+  .models-timeline-year:first-child .models-timeline-rail::before {
+    left: 50%;
+  }
+
+  .models-timeline-year:last-child .models-timeline-rail::before {
+    right: 50%;
+  }
+
+  .models-timeline-dot {
+    position: relative;
+    z-index: 1;
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 50%;
+    background: var(--color-maroon);
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 1px var(--color-maroon-muted, #c4a4ad);
+  }
+
+  .models-timeline-year-label {
+    margin-top: 0.45rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-ink-muted);
+  }
 
   .models-section + .models-section {
     margin-top: 2.25rem;
