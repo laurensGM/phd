@@ -367,14 +367,20 @@ export default function KanbanBoard() {
       </div>
 
       <div className="kanban-columns">
-        {COLUMNS.map((col) => (
-          <div key={col.id} className={`kanban-column kanban-column-${col.id}`}>
-            <h3 className="kanban-column-title">{col.title}</h3>
-            <div className="kanban-cards">
-              {tasks.filter((t) => t.status === col.id).map(renderTaskCard)}
+        {COLUMNS.map((col) => {
+          const count = tasks.filter((t) => t.status === col.id).length;
+          return (
+            <div key={col.id} className={`kanban-column kanban-column-${col.id}`}>
+              <h3 className="kanban-column-title">
+                {col.title}
+                <span className="kanban-column-count">{count}</span>
+              </h3>
+              <div className="kanban-cards">
+                {tasks.filter((t) => t.status === col.id).map(renderTaskCard)}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {showArchived && (

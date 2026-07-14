@@ -191,6 +191,24 @@ import KanbanBoard from '../../components/KanbanBoard';
     margin: 0 0 0.75rem 0;
     padding-bottom: 0.5rem;
     border-bottom: 2px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  :global(.kanban-column-count) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.5rem;
+    height: 1.5rem;
+    padding: 0 0.4rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    line-height: 1;
+    background: rgba(0, 0, 0, 0.08);
+    color: inherit;
   }
   :global(.kanban-cards) {
     display: flex;
