@@ -8,6 +8,10 @@ const COLUMNS: { id: string; title: string }[] = [
   { id: 'done', title: 'Done' },
 ];
 
+const ARCHIVED_STATUS = { id: 'archived', title: 'Archived' } as const;
+
+const ALL_STATUSES = [...COLUMNS, ARCHIVED_STATUS];
+
 export interface Task {
   id: string;
   title: string;
@@ -52,6 +56,7 @@ export default function KanbanBoard() {
   const [saving, setSaving] = useState(false);
   const [detailTaskId, setDetailTaskId] = useState<string | null>(null);
   const [statusUpdatingId, setStatusUpdatingId] = useState<string | null>(null);
+  const [showArchived, setShowArchived] = useState(false);
 
   const fetchTasks = useCallback(async () => {
     if (!supabase) return;
@@ -193,6 +198,97 @@ export default function KanbanBoard() {
     startEdit(task);
   };
 
+  const archivedTasks = tasks.filter((t) => t.status === ARCHIVED_STATUS.id);
+  const archivedCount = archivedTasks.length;
+
+  const statusSelect = (task: Task, selectId: string) => (
+    <select
+      id={selectId}
+      className="kanban-card-status-select"
+      value={task.status}
+      disabled={statusUpdatingId === task.id}
+      onClick={(e) => e.stopPropagation()}
+      onChange={(e) => updateTaskStatus(task.id, e.target.value)}
+      aria-label={`Change status for ${task.title}`}
+    >
+      {ALL_STATUSES.map((c) => (
+        <option key={c.id} value={c.id}>
+          {c.title}
+        </option>
+      ))}
+    </select>
+  );
+
+  const renderTaskCard = (task: Task) => {
+    if (editingId === task.id) {
+      return (
+        <form key={task.id} className="kanban-card kanban-card-edit" onSubmit={handleSaveEdit}>
+          <input
+            type="text"
+            value={editTitle}
+            onChange={(e) => setEditTitle(e.target.value)}
+            className="kanban-input"
+            required
+            placeholder="Title"
+          />
+          <textarea
+            value={editDescription}
+            onChange={(e) => setEditDescription(e.target.value)}
+            className="kanban-textarea"
+            rows={2}
+            placeholder="Description"
+          />
+          <div className="kanban-card-actions">
+            <button type="submit" className="kanban-btn kanban-btn-primary" disabled={saving}>
+              Save
+            </button>
+            <button type="button" className="kanban-btn kanban-btn-secondary" onClick={cancelEdit}>
+              Cancel
+            </button>
+          </div>
+        </form>
+      );
+    }
+
+    return (
+      <div key={task.id} className="kanban-card">
+        <div
+          className="kanban-card-content"
+          onClick={() => setDetailTaskId(task.id)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => e.key === 'Enter' && setDetailTaskId(task.id)}
+          aria-label={`View task: ${task.title}`}
+        >
+          <h4 className="kanban-card-title">{task.title}</h4>
+          {task.description ? (
+            <p className="kanban-card-desc">{task.description}</p>
+          ) : (
+            <p className="kanban-card-desc kanban-card-desc-empty">No description</p>
+          )}
+        </div>
+        <div className="kanban-card-status">
+          <label className="kanban-card-status-label" htmlFor={`task-status-${task.id}`}>
+            Status
+          </label>
+          {statusSelect(task, `task-status-${task.id}`)}
+        </div>
+        <div className="kanban-card-actions">
+          <button type="button" className="kanban-card-action" onClick={() => startEdit(task)}>
+            Edit
+          </button>
+          <button
+            type="button"
+            className="kanban-card-action kanban-card-delete"
+            onClick={() => handleDelete(task.id)}
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   if (!isSupabaseConfigured()) {
     return (
       <div className="kanban-setup">
@@ -209,9 +305,20 @@ export default function KanbanBoard() {
     <div className="kanban-board">
       {error && <p className="kanban-error">{error}</p>}
       <div className="kanban-actions">
-        <button type="button" className="kanban-add-btn" onClick={() => setShowAdd(!showAdd)}>
-          {showAdd ? '− Cancel' : '+ Add task'}
-        </button>
+        <div className="kanban-actions-row">
+          <button type="button" className="kanban-add-btn" onClick={() => setShowAdd(!showAdd)}>
+            {showAdd ? '− Cancel' : '+ Add task'}
+          </button>
+          <button
+            type="button"
+            className={`kanban-archived-toggle${showArchived ? ' is-active' : ''}`}
+            onClick={() => setShowArchived((v) => !v)}
+            aria-pressed={showArchived}
+          >
+            {showArchived ? 'Hide archived' : 'Show archived'}
+            {archivedCount > 0 ? ` (${archivedCount})` : ''}
+          </button>
+        </div>
         {showAdd && (
           <form className="kanban-add-form" onSubmit={handleAdd}>
             <div className="kanban-form-row">
@@ -261,94 +368,30 @@ export default function KanbanBoard() {
 
       <div className="kanban-columns">
         {COLUMNS.map((col) => (
-          <div key={col.id} className="kanban-column">
+          <div key={col.id} className={`kanban-column kanban-column-${col.id}`}>
             <h3 className="kanban-column-title">{col.title}</h3>
             <div className="kanban-cards">
-              {tasks
-                .filter((t) => t.status === col.id)
-                .map((task) =>
-                  editingId === task.id ? (
-                    <form key={task.id} className="kanban-card kanban-card-edit" onSubmit={handleSaveEdit}>
-                      <input
-                        type="text"
-                        value={editTitle}
-                        onChange={(e) => setEditTitle(e.target.value)}
-                        className="kanban-input"
-                        required
-                        placeholder="Title"
-                      />
-                      <textarea
-                        value={editDescription}
-                        onChange={(e) => setEditDescription(e.target.value)}
-                        className="kanban-textarea"
-                        rows={2}
-                        placeholder="Description"
-                      />
-                      <div className="kanban-card-actions">
-                        <button type="submit" className="kanban-btn kanban-btn-primary" disabled={saving}>
-                          Save
-                        </button>
-                        <button type="button" className="kanban-btn kanban-btn-secondary" onClick={cancelEdit}>
-                          Cancel
-                        </button>
-                      </div>
-                    </form>
-                  ) : (
-                    <div key={task.id} className="kanban-card">
-                      <div
-                        className="kanban-card-content"
-                        onClick={() => setDetailTaskId(task.id)}
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(e) => e.key === 'Enter' && setDetailTaskId(task.id)}
-                        aria-label={`View task: ${task.title}`}
-                      >
-                        <h4 className="kanban-card-title">{task.title}</h4>
-                        {task.description ? (
-                          <p className="kanban-card-desc">{task.description}</p>
-                        ) : (
-                          <p className="kanban-card-desc kanban-card-desc-empty">No description</p>
-                        )}
-                      </div>
-                      <div className="kanban-card-status">
-                        <label className="kanban-card-status-label" htmlFor={`task-status-${task.id}`}>
-                          Status
-                        </label>
-                        <select
-                          id={`task-status-${task.id}`}
-                          className="kanban-card-status-select"
-                          value={task.status}
-                          disabled={statusUpdatingId === task.id}
-                          onClick={(e) => e.stopPropagation()}
-                          onChange={(e) => updateTaskStatus(task.id, e.target.value)}
-                          aria-label={`Change status for ${task.title}`}
-                        >
-                          {COLUMNS.map((c) => (
-                            <option key={c.id} value={c.id}>
-                              {c.title}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      <div className="kanban-card-actions">
-                        <button type="button" className="kanban-card-action" onClick={() => startEdit(task)}>
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          className="kanban-card-action kanban-card-delete"
-                          onClick={() => handleDelete(task.id)}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                  )
-                )}
+              {tasks.filter((t) => t.status === col.id).map(renderTaskCard)}
             </div>
           </div>
         ))}
       </div>
+
+      {showArchived && (
+        <section className="kanban-archived-section" aria-label="Archived tasks">
+          <h2 className="kanban-archived-heading">
+            Archived
+            {archivedCount > 0 ? ` (${archivedCount})` : ''}
+          </h2>
+          {archivedCount === 0 ? (
+            <p className="kanban-archived-empty">No archived tasks.</p>
+          ) : (
+            <div className="kanban-archived-grid">
+              {archivedTasks.map(renderTaskCard)}
+            </div>
+          )}
+        </section>
+      )}
 
       {detailTask && (
         <div
@@ -367,19 +410,7 @@ export default function KanbanBoard() {
               <label className="kanban-detail-status-label" htmlFor="kanban-detail-status">
                 Status
               </label>
-              <select
-                id="kanban-detail-status"
-                className="kanban-card-status-select"
-                value={detailTask.status}
-                disabled={statusUpdatingId === detailTask.id}
-                onChange={(e) => updateTaskStatus(detailTask.id, e.target.value)}
-              >
-                {COLUMNS.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.title}
-                  </option>
-                ))}
-              </select>
+              {statusSelect(detailTask, 'kanban-detail-status')}
               <span className="kanban-detail-dates">
                 Created {new Date(detailTask.created_at).toLocaleDateString()}
                 {detailTask.updated_at !== detailTask.created_at &&
