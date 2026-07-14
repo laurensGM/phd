@@ -726,5 +726,49 @@
         "doi": "10.1006/obhd.1999.2850"
       }
     ]
+  },
+  {
+    "id": "tct",
+    "name": "Technology Continuance Theory",
+    "abbreviation": "TCT",
+    "year": 2009,
+    "authors": ["Liao", "Palvia", "Chen"],
+    "description": "Liao, Palvia & Chen (2009) built TCT by empirically comparing three existing models — TAM, ECM, and the Cognitive Model (COG), which combines variables from both TAM and ECM — using structural equation modeling across adopter groups, and found the three models have quite different assumptions about the underlying constructs driving user behavior and correspondingly different explanatory power. Its distinctive move was merging attitude and satisfaction constructs into a single continuance model, incorporating perceived ease of use and perceived usefulness as first-level antecedents. Structurally: TCT = TAM's PU/PEOU + ECM's confirmation/satisfaction + an added attitude construct, integrated and empirically re-tested rather than theoretically novel from first principles.",
+    "notes": "Six constructs synthesize TAM, ECM, and COG: Confirmation, Perceived Usefulness, Perceived Ease of Use, Satisfaction, Attitude, and Continuance Intention.\n\nApplicability across the adoption life cycle (initial, short-term, and long-term users) is a stated strength versus models tuned mainly to acceptance or to post-adoption alone.\n\nDiagram paths follow the synthesised TCT structure: Confirmation → PU and Satisfaction; PEOU → PU and Attitude; PU → Attitude, Satisfaction, and Continuance Intention; Satisfaction → Attitude and Continuance Intention; Attitude → Continuance Intention.",
+    "constructs": [
+      "Confirmation",
+      "Perceived Usefulness",
+      "Perceived Ease of Use",
+      "Satisfaction",
+      "Attitude",
+      "Continuance Intention"
+    ],
+    "constructAbbreviations": {
+      "Confirmation": "Confirm",
+      "Perceived Usefulness": "PU",
+      "Perceived Ease of Use": "PEOU",
+      "Satisfaction": "Sat",
+      "Attitude": "A",
+      "Continuance Intention": "CI"
+    },
+    "relationships": [
+      { "from": "Confirm", "to": "PU" },
+      { "from": "Confirm", "to": "Sat" },
+      { "from": "PEOU", "to": "PU" },
+      { "from": "PEOU", "to": "A" },
+      { "from": "PU", "to": "Sat" },
+      { "from": "PU", "to": "A" },
+      { "from": "PU", "to": "CI" },
+      { "from": "Sat", "to": "A" },
+      { "from": "Sat", "to": "CI" },
+      { "from": "A", "to": "CI" }
+    ],
+    "keyCitations": [
+      {
+        "authors": "Liao, Palvia & Chen (2009)",
+        "title": "Information technology adoption behavior life cycle: Toward a Technology Continuance Theory (TCT)",
+        "doi": "10.1016/j.ijinfomgt.2009.03.004"
+      }
+    ]
   }
 ]

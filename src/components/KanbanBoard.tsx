@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 const COLUMNS: { id: string; title: string }[] = [
+  { id: 'backlog', title: 'Backlog' },
   { id: 'todo', title: 'To do' },
   { id: 'in_progress', title: 'In progress' },
   { id: 'done', title: 'Done' },
@@ -41,7 +42,6 @@ export default function KanbanBoard() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [draggedId, setDraggedId] = useState<string | null>(null);
   const [showAdd, setShowAdd] = useState(false);
   const [addStatus, setAddStatus] = useState<string>('todo');
   const [addTitle, setAddTitle] = useState('');
@@ -51,7 +51,7 @@ export default function KanbanBoard() {
   const [editDescription, setEditDescription] = useState('');
   const [saving, setSaving] = useState(false);
   const [detailTaskId, setDetailTaskId] = useState<string | null>(null);
-  const [justDraggedId, setJustDraggedId] = useState<string | null>(null);
+  const [statusUpdatingId, setStatusUpdatingId] = useState<string | null>(null);
 
   const fetchTasks = useCallback(async () => {
     if (!supabase) return;
@@ -79,58 +79,29 @@ export default function KanbanBoard() {
     fetchTasks();
   }, [fetchTasks]);
 
-  const handleDragStart = (e: React.DragEvent, taskId: string) => {
-    setDraggedId(taskId);
-    setJustDraggedId(null);
-    e.dataTransfer.setData('text/plain', taskId);
-    e.dataTransfer.setData('application/json', JSON.stringify({ taskId }));
-    e.dataTransfer.effectAllowed = 'move';
-  };
+  const updateTaskStatus = async (taskId: string, newStatus: string) => {
+    const task = tasks.find((t) => t.id === taskId);
+    if (!task || task.status === newStatus || !supabase) return;
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-  };
+    const previousStatus = task.status;
+    const updatedAt = new Date().toISOString();
+    setError(null);
+    setStatusUpdatingId(taskId);
+    setTasks((prev) =>
+      prev.map((t) => (t.id === taskId ? { ...t, status: newStatus, updated_at: updatedAt } : t))
+    );
 
-  const handleDrop = async (e: React.DragEvent, newStatus: string) => {
-    e.preventDefault();
-    const prevId = draggedId;
-    setDraggedId(null);
-    if (prevId) setJustDraggedId(prevId);
-    let taskId: string | null = null;
-    const raw = e.dataTransfer.getData('application/json');
-    if (raw) {
-      try {
-        const parsed = JSON.parse(raw) as { taskId?: string };
-        if (parsed?.taskId) taskId = parsed.taskId;
-      } catch {
-        taskId = null;
-      }
-    }
-    if (!taskId) {
-      const plain = e.dataTransfer.getData('text/plain').trim();
-      if (plain) taskId = plain;
-    }
-    if (!taskId && prevId) taskId = prevId;
-    if (!taskId) return;
-    try {
-      const task = tasks.find((t) => t.id === taskId);
-      if (!task || task.status === newStatus) return;
-      if (!supabase) return;
-      setError(null);
-      const { error: updateError } = await supabase
-        .from('tasks')
-        .update({ status: newStatus, updated_at: new Date().toISOString() })
-        .eq('id', taskId);
-      if (updateError) {
-        setError(updateError.message);
-        return;
-      }
+    const { error: updateError } = await supabase
+      .from('tasks')
+      .update({ status: newStatus, updated_at: updatedAt })
+      .eq('id', taskId);
+
+    setStatusUpdatingId(null);
+    if (updateError) {
+      setError(updateError.message);
       setTasks((prev) =>
-        prev.map((t) => (t.id === taskId ? { ...t, status: newStatus, updated_at: new Date().toISOString() } : t))
+        prev.map((t) => (t.id === taskId ? { ...t, status: previousStatus } : t))
       );
-    } catch {
-      setDraggedId(null);
     }
   };
 
@@ -290,12 +261,7 @@ export default function KanbanBoard() {
 
       <div className="kanban-columns">
         {COLUMNS.map((col) => (
-          <div
-            key={col.id}
-            className={`kanban-column ${draggedId ? 'kanban-column-droppable' : ''}`}
-            onDragOver={handleDragOver}
-            onDrop={(e) => handleDrop(e, col.id)}
-          >
+          <div key={col.id} className="kanban-column">
             <h3 className="kanban-column-title">{col.title}</h3>
             <div className="kanban-cards">
               {tasks
@@ -328,18 +294,10 @@ export default function KanbanBoard() {
                       </div>
                     </form>
                   ) : (
-                    <div
-                      key={task.id}
-                      className={`kanban-card ${draggedId === task.id ? 'kanban-card-dragging' : ''}`}
-                      draggable
-                      onDragStart={(e) => handleDragStart(e, task.id)}
-                    >
+                    <div key={task.id} className="kanban-card">
                       <div
                         className="kanban-card-content"
-                        onClick={() => {
-                          if (justDraggedId !== task.id) setDetailTaskId(task.id);
-                          setJustDraggedId(null);
-                        }}
+                        onClick={() => setDetailTaskId(task.id)}
                         role="button"
                         tabIndex={0}
                         onKeyDown={(e) => e.key === 'Enter' && setDetailTaskId(task.id)}
@@ -352,14 +310,34 @@ export default function KanbanBoard() {
                           <p className="kanban-card-desc kanban-card-desc-empty">No description</p>
                         )}
                       </div>
+                      <div className="kanban-card-status">
+                        <label className="kanban-card-status-label" htmlFor={`task-status-${task.id}`}>
+                          Status
+                        </label>
+                        <select
+                          id={`task-status-${task.id}`}
+                          className="kanban-card-status-select"
+                          value={task.status}
+                          disabled={statusUpdatingId === task.id}
+                          onClick={(e) => e.stopPropagation()}
+                          onChange={(e) => updateTaskStatus(task.id, e.target.value)}
+                          aria-label={`Change status for ${task.title}`}
+                        >
+                          {COLUMNS.map((c) => (
+                            <option key={c.id} value={c.id}>
+                              {c.title}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                       <div className="kanban-card-actions">
-                        <button type="button" className="kanban-card-action" onClick={(e) => { e.stopPropagation(); startEdit(task); }}>
+                        <button type="button" className="kanban-card-action" onClick={() => startEdit(task)}>
                           Edit
                         </button>
                         <button
                           type="button"
                           className="kanban-card-action kanban-card-delete"
-                          onClick={(e) => { e.stopPropagation(); handleDelete(task.id); }}
+                          onClick={() => handleDelete(task.id)}
                         >
                           Delete
                         </button>
@@ -386,9 +364,22 @@ export default function KanbanBoard() {
           >
             <h2 id="kanban-detail-title" className="kanban-detail-title">{detailTask.title}</h2>
             <div className="kanban-detail-meta">
-              <span className="kanban-detail-status">
-                {COLUMNS.find((c) => c.id === detailTask.status)?.title ?? detailTask.status}
-              </span>
+              <label className="kanban-detail-status-label" htmlFor="kanban-detail-status">
+                Status
+              </label>
+              <select
+                id="kanban-detail-status"
+                className="kanban-card-status-select"
+                value={detailTask.status}
+                disabled={statusUpdatingId === detailTask.id}
+                onChange={(e) => updateTaskStatus(detailTask.id, e.target.value)}
+              >
+                {COLUMNS.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.title}
+                  </option>
+                ))}
+              </select>
               <span className="kanban-detail-dates">
                 Created {new Date(detailTask.created_at).toLocaleDateString()}
                 {detailTask.updated_at !== detailTask.created_at &&

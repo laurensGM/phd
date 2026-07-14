@@ -3,9 +3,9 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import KanbanBoard from '../../components/KanbanBoard';
 ---
 
-<BaseLayout title="Tasks" description="Kanban board for PhD tasks - to do, in progress, done">
+<BaseLayout title="Tasks" description="Kanban board for PhD tasks - backlog, to do, in progress, done">
   <h1>Tasks</h1>
-  <p class="page-desc">Drag tasks between columns to update their status. Add, edit, or delete tasks below (saved in Supabase).</p>
+  <p class="page-desc">Change a card’s status with the dropdown to move it between columns. Add, edit, or delete tasks below (saved in Supabase).</p>
 
   <KanbanBoard client:load />
 </BaseLayout>
@@ -109,11 +109,16 @@ import KanbanBoard from '../../components/KanbanBoard';
 
   :global(.kanban-columns) {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 1.25rem;
     align-items: start;
   }
-  @media (max-width: 900px) {
+  @media (max-width: 1100px) {
+    :global(.kanban-columns) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 600px) {
     :global(.kanban-columns) {
       grid-template-columns: 1fr;
     }
@@ -124,10 +129,6 @@ import KanbanBoard from '../../components/KanbanBoard';
     border-radius: 10px;
     padding: 1rem;
     min-height: 200px;
-  }
-  :global(.kanban-column-droppable) {
-    border-color: var(--color-maroon-muted);
-    background: rgba(92, 29, 42, 0.04);
   }
   :global(.kanban-column-title) {
     font-size: 1.1rem;
@@ -146,18 +147,45 @@ import KanbanBoard from '../../components/KanbanBoard';
     border: 1px solid var(--color-border);
     border-radius: 8px;
     padding: 0.75rem 1rem;
-    cursor: grab;
     box-shadow: var(--shadow-sm);
     display: flex;
     flex-direction: column;
     min-height: 140px;
   }
-  :global(.kanban-card:active) {
-    cursor: grabbing;
+  :global(.kanban-card-status) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin: 0.35rem 0 0.15rem;
   }
-  :global(.kanban-card-dragging) {
-    opacity: 0.6;
-    box-shadow: var(--shadow-md);
+  :global(.kanban-card-status-label),
+  :global(.kanban-detail-status-label) {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+  }
+  :global(.kanban-card-status-select) {
+    width: 100%;
+    max-width: 100%;
+    padding: 0.35rem 0.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    background: #fff;
+    cursor: pointer;
+  }
+  :global(.kanban-card-status-select:hover:not(:disabled)),
+  :global(.kanban-card-status-select:focus-visible) {
+    border-color: var(--color-maroon-muted);
+    outline: none;
+  }
+  :global(.kanban-card-status-select:disabled) {
+    opacity: 0.7;
+    cursor: wait;
   }
   :global(.kanban-card-content) {
     flex: 1;
@@ -286,9 +314,8 @@ import KanbanBoard from '../../components/KanbanBoard';
     color: var(--color-ink-muted);
     margin-bottom: 1rem;
   }
-  :global(.kanban-detail-status) {
-    font-weight: 600;
-    color: var(--color-maroon);
+  :global(.kanban-detail-meta .kanban-card-status-select) {
+    max-width: 11rem;
   }
   :global(.kanban-detail-description) {
     margin-bottom: 1.25rem;
