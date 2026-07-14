@@ -12,6 +12,17 @@ const ARCHIVED_STATUS = { id: 'archived', title: 'Archived' } as const;
 
 const ALL_STATUSES = [...COLUMNS, ARCHIVED_STATUS];
 
+function tasksInStatus(list: Task[], status: string): Task[] {
+  return list
+    .filter((t) => t.status === status)
+    .sort(
+      (a, b) =>
+        a.sort_order - b.sort_order ||
+        a.created_at.localeCompare(b.created_at) ||
+        a.id.localeCompare(b.id)
+    );
+}
+
 export interface Task {
   id: string;
   title: string;
@@ -57,6 +68,7 @@ export default function KanbanBoard() {
   const [detailTaskId, setDetailTaskId] = useState<string | null>(null);
   const [statusUpdatingId, setStatusUpdatingId] = useState<string | null>(null);
   const [showArchived, setShowArchived] = useState(false);
+  const [reorderingId, setReorderingId] = useState<string | null>(null);
 
   const fetchTasks = useCallback(async () => {
     if (!supabase) return;
@@ -89,23 +101,83 @@ export default function KanbanBoard() {
     if (!task || task.status === newStatus || !supabase) return;
 
     const previousStatus = task.status;
+    const previousOrder = task.sort_order;
     const updatedAt = new Date().toISOString();
+    const maxOrder = Math.max(0, ...tasksInStatus(tasks, newStatus).map((t) => t.sort_order));
+    const nextOrder = maxOrder + 1;
     setError(null);
     setStatusUpdatingId(taskId);
     setTasks((prev) =>
-      prev.map((t) => (t.id === taskId ? { ...t, status: newStatus, updated_at: updatedAt } : t))
+      prev.map((t) =>
+        t.id === taskId
+          ? { ...t, status: newStatus, sort_order: nextOrder, updated_at: updatedAt }
+          : t
+      )
     );
 
     const { error: updateError } = await supabase
       .from('tasks')
-      .update({ status: newStatus, updated_at: updatedAt })
+      .update({ status: newStatus, sort_order: nextOrder, updated_at: updatedAt })
       .eq('id', taskId);
 
     setStatusUpdatingId(null);
     if (updateError) {
       setError(updateError.message);
       setTasks((prev) =>
-        prev.map((t) => (t.id === taskId ? { ...t, status: previousStatus } : t))
+        prev.map((t) =>
+          t.id === taskId
+            ? { ...t, status: previousStatus, sort_order: previousOrder }
+            : t
+        )
+      );
+    }
+  };
+
+  const moveTask = async (taskId: string, direction: 'up' | 'down') => {
+    if (!supabase) return;
+    const task = tasks.find((t) => t.id === taskId);
+    if (!task) return;
+
+    const column = tasksInStatus(tasks, task.status);
+    const index = column.findIndex((t) => t.id === taskId);
+    const swapIndex = direction === 'up' ? index - 1 : index + 1;
+    if (index < 0 || swapIndex < 0 || swapIndex >= column.length) return;
+
+    const reordered = [...column];
+    const [moved] = reordered.splice(index, 1);
+    reordered.splice(swapIndex, 0, moved);
+
+    const orderById = new Map(reordered.map((t, i) => [t.id, i + 1]));
+    const previousOrders = new Map(column.map((t) => [t.id, t.sort_order]));
+    const updatedAt = new Date().toISOString();
+
+    setError(null);
+    setReorderingId(taskId);
+    setTasks((prev) =>
+      prev.map((t) => {
+        const nextOrder = orderById.get(t.id);
+        return nextOrder != null ? { ...t, sort_order: nextOrder, updated_at: updatedAt } : t;
+      })
+    );
+
+    const results = await Promise.all(
+      reordered.map((t, i) =>
+        supabase!
+          .from('tasks')
+          .update({ sort_order: i + 1, updated_at: updatedAt })
+          .eq('id', t.id)
+      )
+    );
+
+    setReorderingId(null);
+    const firstError = results.find((r) => r.error)?.error;
+    if (firstError) {
+      setError(firstError.message);
+      setTasks((prev) =>
+        prev.map((t) => {
+          const prevOrder = previousOrders.get(t.id);
+          return prevOrder != null ? { ...t, sort_order: prevOrder } : t;
+        })
       );
     }
   };
@@ -198,7 +270,7 @@ export default function KanbanBoard() {
     startEdit(task);
   };
 
-  const archivedTasks = tasks.filter((t) => t.status === ARCHIVED_STATUS.id);
+  const archivedTasks = tasksInStatus(tasks, ARCHIVED_STATUS.id);
   const archivedCount = archivedTasks.length;
 
   const statusSelect = (task: Task, selectId: string) => (
@@ -219,7 +291,7 @@ export default function KanbanBoard() {
     </select>
   );
 
-  const renderTaskCard = (task: Task) => {
+  const renderTaskCard = (task: Task, index: number, columnLength: number) => {
     if (editingId === task.id) {
       return (
         <form key={task.id} className="kanban-card kanban-card-edit" onSubmit={handleSaveEdit}>
@@ -250,22 +322,48 @@ export default function KanbanBoard() {
       );
     }
 
+    const busy = reorderingId === task.id;
+
     return (
       <div key={task.id} className="kanban-card">
-        <div
-          className="kanban-card-content"
-          onClick={() => setDetailTaskId(task.id)}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => e.key === 'Enter' && setDetailTaskId(task.id)}
-          aria-label={`View task: ${task.title}`}
-        >
-          <h4 className="kanban-card-title">{task.title}</h4>
-          {task.description ? (
-            <p className="kanban-card-desc">{task.description}</p>
-          ) : (
-            <p className="kanban-card-desc kanban-card-desc-empty">No description</p>
-          )}
+        <div className="kanban-card-top">
+          <div
+            className="kanban-card-content"
+            onClick={() => setDetailTaskId(task.id)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === 'Enter' && setDetailTaskId(task.id)}
+            aria-label={`View task: ${task.title}`}
+          >
+            <h4 className="kanban-card-title">{task.title}</h4>
+            {task.description ? (
+              <p className="kanban-card-desc">{task.description}</p>
+            ) : (
+              <p className="kanban-card-desc kanban-card-desc-empty">No description</p>
+            )}
+          </div>
+          <div className="kanban-card-reorder" role="group" aria-label={`Reorder ${task.title}`}>
+            <button
+              type="button"
+              className="kanban-reorder-btn"
+              disabled={busy || index === 0}
+              onClick={() => moveTask(task.id, 'up')}
+              aria-label="Move up"
+              title="Move up"
+            >
+              <span aria-hidden="true">▴</span>
+            </button>
+            <button
+              type="button"
+              className="kanban-reorder-btn"
+              disabled={busy || index >= columnLength - 1}
+              onClick={() => moveTask(task.id, 'down')}
+              aria-label="Move down"
+              title="Move down"
+            >
+              <span aria-hidden="true">▾</span>
+            </button>
+          </div>
         </div>
         <div className="kanban-card-status">
           <label className="kanban-card-status-label" htmlFor={`task-status-${task.id}`}>
@@ -368,15 +466,15 @@ export default function KanbanBoard() {
 
       <div className="kanban-columns">
         {COLUMNS.map((col) => {
-          const count = tasks.filter((t) => t.status === col.id).length;
+          const columnTasks = tasksInStatus(tasks, col.id);
           return (
             <div key={col.id} className={`kanban-column kanban-column-${col.id}`}>
               <h3 className="kanban-column-title">
                 {col.title}
-                <span className="kanban-column-count">{count}</span>
+                <span className="kanban-column-count">{columnTasks.length}</span>
               </h3>
               <div className="kanban-cards">
-                {tasks.filter((t) => t.status === col.id).map(renderTaskCard)}
+                {columnTasks.map((task, index) => renderTaskCard(task, index, columnTasks.length))}
               </div>
             </div>
           );
@@ -393,7 +491,7 @@ export default function KanbanBoard() {
             <p className="kanban-archived-empty">No archived tasks.</p>
           ) : (
             <div className="kanban-archived-grid">
-              {archivedTasks.map(renderTaskCard)}
+              {archivedTasks.map((task, index) => renderTaskCard(task, index, archivedTasks.length))}
             </div>
           )}
         </section>

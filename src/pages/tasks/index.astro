@@ -263,6 +263,46 @@ import KanbanBoard from '../../components/KanbanBoard';
     opacity: 0.7;
     cursor: wait;
   }
+  :global(.kanban-card-top) {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.35rem;
+    min-width: 0;
+  }
+  :global(.kanban-card-top .kanban-card-content) {
+    flex: 1;
+    min-width: 0;
+  }
+  :global(.kanban-card-reorder) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    flex-shrink: 0;
+  }
+  :global(.kanban-reorder-btn) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.6rem;
+    height: 1.35rem;
+    padding: 0;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background: #fff;
+    color: var(--color-ink);
+    font-size: 0.85rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  :global(.kanban-reorder-btn:hover:not(:disabled)) {
+    border-color: var(--color-maroon-muted);
+    background: rgba(92, 29, 42, 0.06);
+    color: var(--color-maroon);
+  }
+  :global(.kanban-reorder-btn:disabled) {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
   :global(.kanban-card-content) {
     flex: 1;
     min-height: 0;
