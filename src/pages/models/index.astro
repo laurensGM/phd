@@ -41,35 +41,89 @@ const timelineYears = Object.keys(timelineByYear)
   .sort((a, b) => a - b);
 
 const modelComparison = [
-  { id: 'tra', label: 'TRA', postAdoption: false, mandatoryUse: false, fc: null },
+  {
+    id: 'tra',
+    label: 'TRA',
+    year: 1975,
+    postAdoption: false,
+    mandatoryUse: false,
+    isSpecific: false,
+    confirmation: false,
+    parsimony: 4,
+    dv: 'BI',
+    fc: null,
+  },
   {
     id: 'tpb',
     label: 'TPB',
+    year: 1991,
     postAdoption: false,
     mandatoryUse: false,
+    isSpecific: false,
+    confirmation: false,
+    parsimony: 5,
+    dv: 'BI',
     fc: { label: 'PBC', constructId: 'perceived-behavioral-control' },
   },
   {
     id: 'tpc',
     label: 'TPC (TTF)',
+    year: 1995,
     postAdoption: true,
     mandatoryUse: true,
+    isSpecific: true,
+    confirmation: false,
+    parsimony: 5,
+    dv: 'U / PI',
     fc: { label: 'TTF', constructId: 'task-technology-fit' },
   },
   {
     id: 'utaut',
     label: 'UTAUT',
+    year: 2003,
     postAdoption: true,
     mandatoryUse: true,
+    isSpecific: true,
+    confirmation: false,
+    parsimony: 6,
+    dv: 'UB',
     fc: { label: 'FC', constructId: 'facilitating-conditions' },
   },
-  { id: 'ecm-is', label: 'ECM-IS', postAdoption: true, mandatoryUse: false, fc: null },
+  {
+    id: 'ecm-is',
+    label: 'ECM-IS',
+    year: 2001,
+    postAdoption: true,
+    mandatoryUse: false,
+    isSpecific: true,
+    confirmation: true,
+    parsimony: 6,
+    dv: 'CI',
+    fc: null,
+  },
   {
     id: 'tam',
     label: 'TAM',
+    year: 1989,
     postAdoption: false,
     mandatoryUse: false,
+    isSpecific: true,
+    confirmation: false,
+    parsimony: 4,
+    dv: 'BI',
     fc: { label: 'PEOU', constructId: 'perceived-ease-of-use' },
+  },
+  {
+    id: 'tam3',
+    label: 'TAM3',
+    year: 2008,
+    postAdoption: false,
+    mandatoryUse: true,
+    isSpecific: true,
+    confirmation: false,
+    parsimony: 17,
+    dv: 'BI',
+    fc: { label: 'PEC', constructId: 'facilitating-conditions' },
   },
 ];
 ---
@@ -114,15 +168,23 @@ const modelComparison = [
     <p class="models-comparison-desc">
       Post-adoption indicates explicit coverage of realized, continued, or performance-linked use.
       Mandatory use indicates suitability for organizational settings where use may be required.
-      FC shows the construct closest to facilitating conditions.
+      IS-specific distinguishes technology/IS models from general behavioral theories. DV shows each
+      model's principal dependent variable. Confirmation identifies models that explicitly compare
+      experience with prior expectations. Parsimony is shown as the number of core constructs. FC
+      shows the construct closest to facilitating conditions.
     </p>
     <div class="models-comparison-scroll">
       <table class="models-comparison-table">
         <thead>
           <tr>
             <th scope="col">Model</th>
+            <th scope="col">Year</th>
             <th scope="col">Post-adoption</th>
             <th scope="col">Mandatory use</th>
+            <th scope="col">IS-specific</th>
+            <th scope="col">Confirmation</th>
+            <th scope="col"><abbr title="Number of core constructs">Parsimony</abbr></th>
+            <th scope="col"><abbr title="Dependent variable">DV</abbr></th>
             <th scope="col"><abbr title="Facilitating conditions">FC</abbr></th>
           </tr>
         </thead>
@@ -132,6 +194,7 @@ const modelComparison = [
               <th scope="row">
                 <a href={`${base}models/${row.id}/`}>{row.label}</a>
               </th>
+              <td class="comparison-year">{row.year}</td>
               <td class={row.postAdoption ? 'comparison-yes' : 'comparison-no'}>
                 <span aria-hidden="true">{row.postAdoption ? '✓' : '×'}</span>
                 <span class="sr-only">{row.postAdoption ? 'Yes' : 'No'}</span>
@@ -140,6 +203,16 @@ const modelComparison = [
                 <span aria-hidden="true">{row.mandatoryUse ? '✓' : '×'}</span>
                 <span class="sr-only">{row.mandatoryUse ? 'Yes' : 'No'}</span>
               </td>
+              <td class={row.isSpecific ? 'comparison-yes' : 'comparison-no'}>
+                <span aria-hidden="true">{row.isSpecific ? '✓' : '×'}</span>
+                <span class="sr-only">{row.isSpecific ? 'Yes' : 'No'}</span>
+              </td>
+              <td class={row.confirmation ? 'comparison-yes' : 'comparison-no'}>
+                <span aria-hidden="true">{row.confirmation ? '✓' : '×'}</span>
+                <span class="sr-only">{row.confirmation ? 'Yes' : 'No'}</span>
+              </td>
+              <td class="comparison-parsimony">{row.parsimony}</td>
+              <td class="comparison-dv">{row.dv}</td>
               <td class={row.fc ? 'comparison-fc' : 'comparison-no'}>
                 {row.fc ? (
                   <a
@@ -161,8 +234,9 @@ const modelComparison = [
       </table>
     </div>
     <p class="models-comparison-note">
-      PBC = perceived behavioral control; TTF = task–technology fit; FC = facilitating conditions;
-      PEOU = perceived ease of use.
+      DV: BI = behavioral intention; CI = continuance intention; U = utilization; PI = performance
+      impact; UB = use behavior. FC: PBC = perceived behavioral control; TTF = task–technology fit;
+      FC = facilitating conditions; PEOU = perceived ease of use; PEC = perceptions of external control.
     </p>
   </section>
 
@@ -383,7 +457,7 @@ const modelComparison = [
 
   .models-comparison-table {
     width: 100%;
-    min-width: 39rem;
+    min-width: 74rem;
     border-collapse: collapse;
     font-size: 0.9rem;
   }
@@ -421,6 +495,25 @@ const modelComparison = [
     color: #15803d;
     font-size: 1.15rem;
     font-weight: 800;
+  }
+
+  .comparison-year {
+    color: var(--color-ink-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .comparison-dv {
+    color: var(--color-maroon);
+    font-size: 0.82rem;
+    font-weight: 750;
+    white-space: nowrap;
+  }
+
+  .comparison-parsimony {
+    color: var(--color-ink);
+    font-size: 0.95rem;
+    font-weight: 750;
+    font-variant-numeric: tabular-nums;
   }
 
   .comparison-no {
