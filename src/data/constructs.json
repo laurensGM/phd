@@ -14,7 +14,7 @@
       "I find the system useful in my job."
     ],
     "measurementScale": "7-point Likert (Strongly disagree - Strongly agree)",
-    "relatedModels": ["TAM", "ECM-IS", "TAM2", "MM", "TCT"],
+    "relatedModels": ["TAM", "ECM-IS", "TAM2", "TAM3", "MM", "TCT"],
     "relatedConstructs": ["Perceived Ease of Use", "Behavioral Intention", "Satisfaction"],
     "notes": "Core construct in technology acceptance. Often mediates the effect of PEOU on intention."
   },
@@ -33,7 +33,7 @@
       "I find the system flexible to interact with."
     ],
     "measurementScale": "7-point Likert (Strongly disagree - Strongly agree)",
-    "relatedModels": ["TAM", "TAM2", "TCT"],
+    "relatedModels": ["TAM", "TAM2", "TAM3", "TCT"],
     "relatedConstructs": ["Perceived Usefulness", "Behavioral Intention"],
     "notes": "Often has both direct and indirect (via PU) effects on behavioral intention."
   },
@@ -51,7 +51,7 @@
       "I plan to continue using the system."
     ],
     "measurementScale": "7-point Likert (Strongly disagree - Strongly agree)",
-    "relatedModels": ["TAM", "TRA", "TPB", "MPCU", "MM"],
+    "relatedModels": ["TAM", "TAM2", "TAM3", "TRA", "TPB", "MPCU", "MM"],
     "relatedConstructs": ["Perceived Usefulness", "Perceived Ease of Use", "Actual Usage"],
     "notes": "Key predictor of actual behavior in TRA/TPB. Mediates attitudes toward behavior. MPCU studies often predict usage directly; many extensions use intention as a proximal outcome."
   },
@@ -353,7 +353,7 @@
       "I have fun using the system."
     ],
     "measurementScale": "7-point Likert (Strongly disagree - Strongly agree)",
-    "relatedModels": ["TAM", "UTAUT2", "MM"],
+    "relatedModels": ["TAM", "TAM3", "UTAUT2", "MM"],
     "relatedConstructs": ["Hedonic Motivation", "Behavioral Intention"],
     "notes": "Closely related to hedonic motivation; often used in adoption of entertainment or experiential technologies."
   },
@@ -914,7 +914,7 @@
       "Having [technology] is a status symbol among my peers."
     ],
     "measurementScale": "7-point Likert (Strongly disagree - Strongly agree); align wording with target system",
-    "relatedModels": ["DOI", "TAM2"],
+    "relatedModels": ["DOI", "TAM2", "TAM3"],
     "relatedConstructs": ["Subjective Norms", "Social Influence", "Perceived Usefulness", "Relative Advantage"],
     "notes": "In Rogers, image is tied to the social visibility of adoption. In TAM2, Image is a social-influence path to perceived usefulness (distinct from subjective norm)."
   },
@@ -968,7 +968,7 @@
       "I would have no difficulty showing others that using [system] leads to good outcomes."
     ],
     "measurementScale": "7-point Likert (Venkatesh & Davis 2000)",
-    "relatedModels": ["DOI", "TAM2"],
+    "relatedModels": ["DOI", "TAM2", "TAM3"],
     "relatedConstructs": ["Perceived Usefulness", "Observability", "Relative Advantage", "Compatibility"],
     "notes": "In TAM2, result demonstrability is a cognitive-instrumental antecedent of perceived usefulness. It overlaps conceptually with Rogers’ observability but is defined at the individual user’s ability to demonstrate outcomes of use."
   },
