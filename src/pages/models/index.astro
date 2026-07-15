@@ -67,7 +67,7 @@ const modelComparison = [
   },
   {
     id: 'tpc',
-    label: 'TPC (TTF)',
+    label: 'TPC',
     year: 1995,
     postAdoption: true,
     mandatoryUse: true,
@@ -125,7 +125,31 @@ const modelComparison = [
     dv: 'BI',
     fc: { label: 'PEC', constructId: 'facilitating-conditions' },
   },
-];
+  {
+    id: 'utaut2',
+    label: 'UTAUT2',
+    year: 2012,
+    postAdoption: true,
+    mandatoryUse: false,
+    isSpecific: true,
+    confirmation: false,
+    parsimony: 9,
+    dv: 'UB',
+    fc: { label: 'FC', constructId: 'facilitating-conditions' },
+  },
+  {
+    id: 'tam2',
+    label: 'TAM2',
+    year: 2000,
+    postAdoption: false,
+    mandatoryUse: true,
+    isSpecific: true,
+    confirmation: false,
+    parsimony: 11,
+    dv: 'BI',
+    fc: { label: 'PEOU', constructId: 'perceived-ease-of-use' },
+  },
+].sort((a, b) => b.year - a.year);
 ---
 
 <BaseLayout title="Models" description="Theoretical models - TAM, ECT, ECM and more">
@@ -457,14 +481,14 @@ const modelComparison = [
 
   .models-comparison-table {
     width: 100%;
-    min-width: 74rem;
     border-collapse: collapse;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    table-layout: fixed;
   }
 
   .models-comparison-table th,
   .models-comparison-table td {
-    padding: 0.8rem 1rem;
+    padding: 0.6rem 0.4rem;
     border-bottom: 1px solid var(--color-border);
     text-align: center;
     vertical-align: middle;
@@ -472,14 +496,18 @@ const modelComparison = [
 
   .models-comparison-table th:first-child {
     text-align: left;
+    padding-left: 0.85rem;
+    width: 4.5rem;
   }
 
   .models-comparison-table thead th {
     background: var(--color-bg-alt);
     color: var(--color-ink);
-    font-size: 0.8rem;
-    letter-spacing: 0.025em;
+    font-size: 0.68rem;
+    letter-spacing: 0.01em;
     text-transform: uppercase;
+    overflow-wrap: anywhere;
+    hyphens: auto;
   }
 
   .models-comparison-table tbody tr:last-child th,
@@ -517,8 +545,8 @@ const modelComparison = [
   }
 
   .comparison-no {
-    color: var(--color-ink-muted);
-    font-size: 1.15rem;
+    color: #dc2626;
+    font-size: 1.1rem;
     font-weight: 700;
   }
 
