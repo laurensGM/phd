@@ -35,6 +35,43 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=DM+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet" />
   </head>
   <body>
+    <div id="page-loader" class="page-loader" role="status" aria-live="polite" aria-label="Loading">
+      <svg
+        class="page-loader-logo"
+        viewBox="0 0 120 100"
+        fill="none"
+        aria-hidden="true"
+      >
+        <path
+          class="cap-line cap-board"
+          pathLength="100"
+          d="M60 8 L114 34 L60 60 L6 34 Z"
+        />
+        <path
+          class="cap-line cap-band"
+          pathLength="100"
+          d="M30 46 L33 72 Q34 80 44 80 L76 80 Q86 80 87 72 L90 46"
+        />
+        <path
+          class="cap-line cap-string"
+          pathLength="100"
+          d="M110 37 L110 65"
+        />
+        <circle
+          class="cap-line cap-knot"
+          pathLength="100"
+          cx="110"
+          cy="69"
+          r="4"
+        />
+        <path
+          class="cap-line cap-tassel"
+          pathLength="100"
+          d="M104 73 L110 92 L116 73"
+        />
+      </svg>
+      <span class="page-loader-text">Loading…</span>
+    </div>
     <header class="site-header">
       <nav class="nav-container">
         <a href={homeHref} class="logo" rel="home" aria-label="Home – PhD Manager">
@@ -168,6 +205,57 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
       </div>
       <p class="footer-tagline">Organizing research one snippet at a time</p>
     </footer>
+    <script is:inline>
+      (function () {
+        var loader = document.getElementById('page-loader');
+        if (!loader) return;
+        var MIN_SHOW = 450;
+        var startedAt = Date.now();
+
+        function hideLoader() {
+          var elapsed = Date.now() - startedAt;
+          var wait = Math.max(0, MIN_SHOW - elapsed);
+          window.setTimeout(function () {
+            loader.classList.add('is-hidden');
+          }, wait);
+        }
+
+        function showLoader() {
+          startedAt = Date.now();
+          loader.classList.remove('is-hidden');
+        }
+
+        if (document.readyState === 'complete') {
+          hideLoader();
+        } else {
+          window.addEventListener('load', hideLoader);
+        }
+
+        // Show the loader while navigating to another internal page.
+        document.addEventListener('click', function (e) {
+          if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+          var link = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+          if (!link) return;
+          if (link.target && link.target !== '_self') return;
+          if (link.hasAttribute('download')) return;
+          var href = link.getAttribute('href');
+          if (!href || href.charAt(0) === '#') return;
+          var url;
+          try { url = new URL(link.href, window.location.href); } catch (err) { return; }
+          if (url.origin !== window.location.origin) return;
+          if (url.pathname === window.location.pathname && url.search === window.location.search) return;
+          showLoader();
+        });
+
+        // Reveal on full page unloads (form posts, back/forward that reload).
+        window.addEventListener('beforeunload', showLoader);
+
+        // Restore from bfcache without a stuck overlay.
+        window.addEventListener('pageshow', function (e) {
+          if (e.persisted) loader.classList.add('is-hidden');
+        });
+      })();
+    </script>
     <script src={`${base}registerSW.js`} defer></script>
     <script is:inline>
       (function () {
@@ -243,6 +331,78 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
 
   * {
     box-sizing: border-box;
+  }
+
+  /* Page loading overlay: traces the logo outline */
+  .page-loader {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    background: var(--color-bg);
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.35s ease, visibility 0.35s ease;
+  }
+
+  .page-loader.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .page-loader-logo {
+    width: 120px;
+    height: 100px;
+  }
+
+  .page-loader-text {
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-maroon);
+    opacity: 0.75;
+  }
+
+  .cap-line {
+    fill: none;
+    stroke: var(--color-gold);
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    animation: cap-trace 2s ease-in-out infinite;
+  }
+
+  .cap-board { animation-delay: 0s; }
+  .cap-band { animation-delay: 0.18s; }
+  .cap-string { animation-delay: 0.36s; }
+  .cap-knot { animation-delay: 0.48s; }
+  .cap-tassel { animation-delay: 0.56s; }
+
+  @keyframes cap-trace {
+    0% { stroke-dashoffset: 100; }
+    45% { stroke-dashoffset: 0; }
+    75% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: -100; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cap-line {
+      animation: cap-pulse 1.4s ease-in-out infinite;
+      stroke-dashoffset: 0;
+    }
+    @keyframes cap-pulse {
+      0%, 100% { opacity: 0.35; }
+      50% { opacity: 1; }
+    }
   }
 
   html {
