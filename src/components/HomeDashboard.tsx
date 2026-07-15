@@ -7,6 +7,7 @@ import fieldsData from '../data/fields.json';
 import SnippetDistributionChart from './SnippetDistributionChart';
 import PapersYearHistogram from './PapersYearHistogram';
 import PaperDistributionPie from './PaperDistributionPie';
+import { usePageLoader } from '../hooks/usePageLoader';
 import {
   buildChartSlices,
   countTagAssignments,
@@ -85,6 +86,7 @@ export default function HomeDashboard() {
   const [snippetRows, setSnippetRows] = useState<SnippetTagRow[]>([]);
   const [manualByPaperId, setManualByPaperId] = useState<Map<string, string[]>>(new Map());
   const [loading, setLoading] = useState(true);
+  usePageLoader(loading);
   const [error, setError] = useState<string | null>(null);
 
   const constructLabelById = useMemo(() => {

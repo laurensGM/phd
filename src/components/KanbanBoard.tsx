@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { usePageLoader } from '../hooks/usePageLoader';
 
 const COLUMNS: { id: string; title: string }[] = [
   { id: 'backlog', title: 'Backlog' },
@@ -56,6 +57,7 @@ function mapRow(row: {
 export default function KanbanBoard() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
+  usePageLoader(loading);
   const [error, setError] = useState<string | null>(null);
   const [showAdd, setShowAdd] = useState(false);
   const [addStatus, setAddStatus] = useState<string>('todo');

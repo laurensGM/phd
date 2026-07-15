@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { usePageLoader } from '../hooks/usePageLoader';
 import constructsData from '../data/constructs.json';
 import modelsData from '../data/models.json';
 import umbrellaConstructsData from '../data/umbrella-constructs.json';
@@ -339,6 +340,7 @@ export default function SnippetsPage() {
   const [snippets, setSnippets] = useState<Snippet[]>([]);
   const [papers, setPapers] = useState<PaperSummary[]>([]);
   const [loading, setLoading] = useState(true);
+  usePageLoader(loading);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

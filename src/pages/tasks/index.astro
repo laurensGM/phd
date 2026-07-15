@@ -3,7 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import KanbanBoard from '../../components/KanbanBoard';
 ---
 
-<BaseLayout title="Tasks" description="Kanban board for PhD tasks - backlog, to do, in progress, done, archived">
+<BaseLayout title="Tasks" description="Kanban board for PhD tasks - backlog, to do, in progress, done, archived" deferLoader>
   <h1>Tasks</h1>
   <p class="page-desc">Change a card’s status with the dropdown to move it between columns. Archive hides cards from the board — use Show archived to find them again. Add, edit, or delete tasks below (saved in Supabase).</p>
 

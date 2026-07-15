@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { claimLrChapterLabel } from '../constants/claimLrChapters';
+import { usePageLoader } from '../hooks/usePageLoader';
 
 type ClaimRow = {
   id: string;
@@ -14,6 +15,7 @@ export default function ClaimsListPage() {
   const base = import.meta.env.BASE_URL || '/';
   const [rows, setRows] = useState<ClaimRow[]>([]);
   const [loading, setLoading] = useState(true);
+  usePageLoader(loading);
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {

@@ -2,9 +2,15 @@
 interface Props {
   title: string;
   description?: string;
+  /** Keep the logo spinner until client content calls PhDLoader.hide / usePageLoader. */
+  deferLoader?: boolean;
 }
 
-const { title, description = "PhD Manager - Organizing research, models, constructs, and literature" } = Astro.props;
+const {
+  title,
+  description = "PhD Manager - Organizing research, models, constructs, and literature",
+  deferLoader = false,
+} = Astro.props;
 const base = import.meta.env.BASE_URL;
 // Home link: use path-relative URL so it always resolves to this app's root (avoids going to portfolio when base is wrong)
 const pathname = (Astro.url.pathname || '/').replace(/\/$/, '') || '/';
@@ -16,7 +22,7 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
 ---
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-defer-loader={deferLoader ? 'true' : undefined}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -210,25 +216,68 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
         var loader = document.getElementById('page-loader');
         if (!loader) return;
         var MIN_SHOW = 450;
+        var MAX_DEFER_MS = 15000;
         var startedAt = Date.now();
+        var pending = 0;
+        var hideTimer = null;
+        var deferred = document.documentElement.getAttribute('data-defer-loader') === 'true';
 
-        function hideLoader() {
-          var elapsed = Date.now() - startedAt;
-          var wait = Math.max(0, MIN_SHOW - elapsed);
-          window.setTimeout(function () {
-            loader.classList.add('is-hidden');
-          }, wait);
+        function applyHidden(hidden) {
+          if (hideTimer) {
+            window.clearTimeout(hideTimer);
+            hideTimer = null;
+          }
+          if (hidden) {
+            var elapsed = Date.now() - startedAt;
+            var wait = Math.max(0, MIN_SHOW - elapsed);
+            hideTimer = window.setTimeout(function () {
+              if (pending > 0) return;
+              loader.classList.add('is-hidden');
+            }, wait);
+          } else {
+            startedAt = Date.now();
+            loader.classList.remove('is-hidden');
+          }
         }
 
         function showLoader() {
-          startedAt = Date.now();
-          loader.classList.remove('is-hidden');
+          pending += 1;
+          applyHidden(false);
+        }
+
+        function hideLoader() {
+          pending = Math.max(0, pending - 1);
+          if (pending === 0) applyHidden(true);
+        }
+
+        function readyLoader() {
+          pending = 0;
+          deferred = false;
+          document.documentElement.removeAttribute('data-defer-loader');
+          applyHidden(true);
+        }
+
+        window.PhDLoader = {
+          show: showLoader,
+          hide: hideLoader,
+          ready: readyLoader,
+        };
+
+        function maybeHideAfterShellLoad() {
+          if (deferred) {
+            // Keep the visible shell spinner until React content finishes loading.
+            window.setTimeout(function () {
+              if (!loader.classList.contains('is-hidden')) readyLoader();
+            }, MAX_DEFER_MS);
+            return;
+          }
+          applyHidden(true);
         }
 
         if (document.readyState === 'complete') {
-          hideLoader();
+          maybeHideAfterShellLoad();
         } else {
-          window.addEventListener('load', hideLoader);
+          window.addEventListener('load', maybeHideAfterShellLoad);
         }
 
         // Show the loader while navigating to another internal page.
@@ -244,15 +293,20 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
           try { url = new URL(link.href, window.location.href); } catch (err) { return; }
           if (url.origin !== window.location.origin) return;
           if (url.pathname === window.location.pathname && url.search === window.location.search) return;
+          pending = 0;
           showLoader();
         });
 
-        // Reveal on full page unloads (form posts, back/forward that reload).
-        window.addEventListener('beforeunload', showLoader);
+        window.addEventListener('beforeunload', function () {
+          pending = 0;
+          showLoader();
+        });
 
-        // Restore from bfcache without a stuck overlay.
         window.addEventListener('pageshow', function (e) {
-          if (e.persisted) loader.classList.add('is-hidden');
+          if (e.persisted) {
+            pending = 0;
+            applyHidden(true);
+          }
         });
       })();
     </script>

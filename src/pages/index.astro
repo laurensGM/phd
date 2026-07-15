@@ -8,7 +8,7 @@ const latestRq = ([...researchQuestions] as RQ[]).sort((a, b) => (b.date || '').
 const researchTopic = latestRq?.question ?? 'Your research question';
 ---
 
-<BaseLayout title="Home" description="PhD Operating System - Your research topic and stats">
+<BaseLayout title="Home" description="PhD Operating System - Your research topic and stats" deferLoader>
   <div class="homepage">
     <h1>PhD Manager</h1>
     <p class="tagline">Organizing theory, constructs, and literature for doctoral research</p>

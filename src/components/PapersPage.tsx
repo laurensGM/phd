@@ -7,6 +7,7 @@ import {
   PAPER_READING_SECTIONS,
   type PaperReadingSectionKey,
 } from '../constants/paperReadingSections';
+import { usePageLoader } from '../hooks/usePageLoader';
 
 interface SavedPaper {
   id: string;
@@ -240,6 +241,7 @@ export default function PapersPage() {
     golden: false,
   });
   const [loading, setLoading] = useState(true);
+  usePageLoader(loading);
   const [saving, setSaving] = useState(false);
   const [fetchingMeta, setFetchingMeta] = useState(false);
   const [error, setError] = useState<string | null>(null);
