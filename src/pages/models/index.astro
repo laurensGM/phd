@@ -39,6 +39,39 @@ const timelineByYear = timelineModels.reduce<Record<number, TimelineModel[]>>((a
 const timelineYears = Object.keys(timelineByYear)
   .map(Number)
   .sort((a, b) => a - b);
+
+const modelComparison = [
+  { id: 'tra', label: 'TRA', postAdoption: false, mandatoryUse: false, fc: null },
+  {
+    id: 'tpb',
+    label: 'TPB',
+    postAdoption: false,
+    mandatoryUse: false,
+    fc: { label: 'PBC', constructId: 'perceived-behavioral-control' },
+  },
+  {
+    id: 'tpc',
+    label: 'TPC (TTF)',
+    postAdoption: true,
+    mandatoryUse: true,
+    fc: { label: 'TTF', constructId: 'task-technology-fit' },
+  },
+  {
+    id: 'utaut',
+    label: 'UTAUT',
+    postAdoption: true,
+    mandatoryUse: true,
+    fc: { label: 'FC', constructId: 'facilitating-conditions' },
+  },
+  { id: 'ecm-is', label: 'ECM-IS', postAdoption: true, mandatoryUse: false, fc: null },
+  {
+    id: 'tam',
+    label: 'TAM',
+    postAdoption: false,
+    mandatoryUse: false,
+    fc: { label: 'PEOU', constructId: 'perceived-ease-of-use' },
+  },
+];
 ---
 
 <BaseLayout title="Models" description="Theoretical models - TAM, ECT, ECM and more">
@@ -75,6 +108,63 @@ const timelineYears = Object.keys(timelineByYear)
       </div>
     </section>
   )}
+
+  <section class="models-comparison-section" aria-labelledby="models-comparison-title">
+    <h2 id="models-comparison-title" class="models-section-title">Key model comparison</h2>
+    <p class="models-comparison-desc">
+      Post-adoption indicates explicit coverage of realized, continued, or performance-linked use.
+      Mandatory use indicates suitability for organizational settings where use may be required.
+      FC shows the construct closest to facilitating conditions.
+    </p>
+    <div class="models-comparison-scroll">
+      <table class="models-comparison-table">
+        <thead>
+          <tr>
+            <th scope="col">Model</th>
+            <th scope="col">Post-adoption</th>
+            <th scope="col">Mandatory use</th>
+            <th scope="col"><abbr title="Facilitating conditions">FC</abbr></th>
+          </tr>
+        </thead>
+        <tbody>
+          {modelComparison.map((row) => (
+            <tr>
+              <th scope="row">
+                <a href={`${base}models/${row.id}/`}>{row.label}</a>
+              </th>
+              <td class={row.postAdoption ? 'comparison-yes' : 'comparison-no'}>
+                <span aria-hidden="true">{row.postAdoption ? '✓' : '×'}</span>
+                <span class="sr-only">{row.postAdoption ? 'Yes' : 'No'}</span>
+              </td>
+              <td class={row.mandatoryUse ? 'comparison-yes' : 'comparison-no'}>
+                <span aria-hidden="true">{row.mandatoryUse ? '✓' : '×'}</span>
+                <span class="sr-only">{row.mandatoryUse ? 'Yes' : 'No'}</span>
+              </td>
+              <td class={row.fc ? 'comparison-fc' : 'comparison-no'}>
+                {row.fc ? (
+                  <a
+                    href={`${base}constructs/${row.fc.constructId}/`}
+                    title={`Closest facilitating-conditions construct: ${row.fc.label}`}
+                  >
+                    {row.fc.label}
+                  </a>
+                ) : (
+                  <>
+                    <span aria-hidden="true">×</span>
+                    <span class="sr-only">No close facilitating-conditions construct</span>
+                  </>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="models-comparison-note">
+      PBC = perceived behavioral control; TTF = task–technology fit; FC = facilitating conditions;
+      PEOU = perceived ease of use.
+    </p>
+  </section>
 
   <section class="models-section">
     <h2 class="models-section-title">Theoretical Models</h2>
@@ -269,6 +359,112 @@ const timelineYears = Object.keys(timelineByYear)
 
   .models-section + .models-section {
     margin-top: 2.25rem;
+  }
+
+  .models-comparison-section {
+    margin: 0 0 2.5rem;
+  }
+
+  .models-comparison-desc {
+    max-width: 58rem;
+    margin: -0.35rem 0 1rem;
+    color: var(--color-ink-muted);
+    font-size: 0.875rem;
+    line-height: 1.55;
+  }
+
+  .models-comparison-scroll {
+    overflow-x: auto;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    background: #fff;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .models-comparison-table {
+    width: 100%;
+    min-width: 39rem;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  .models-comparison-table th,
+  .models-comparison-table td {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid var(--color-border);
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .models-comparison-table th:first-child {
+    text-align: left;
+  }
+
+  .models-comparison-table thead th {
+    background: var(--color-bg-alt);
+    color: var(--color-ink);
+    font-size: 0.8rem;
+    letter-spacing: 0.025em;
+    text-transform: uppercase;
+  }
+
+  .models-comparison-table tbody tr:last-child th,
+  .models-comparison-table tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .models-comparison-table tbody tr:hover {
+    background: rgba(92, 29, 42, 0.035);
+  }
+
+  .comparison-yes {
+    color: #15803d;
+    font-size: 1.15rem;
+    font-weight: 800;
+  }
+
+  .comparison-no {
+    color: var(--color-ink-muted);
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+
+  .comparison-fc a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 3rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(92, 29, 42, 0.08);
+    color: var(--color-maroon);
+    font-size: 0.78rem;
+    font-weight: 750;
+    text-decoration: none;
+  }
+
+  .comparison-fc a:hover {
+    background: var(--color-maroon);
+    color: #fff;
+  }
+
+  .models-comparison-note {
+    margin: 0.7rem 0 0;
+    color: var(--color-ink-muted);
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
 
   .models-section-title {
