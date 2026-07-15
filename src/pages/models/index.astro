@@ -4,6 +4,7 @@ import models from '../../data/models.json';
 const base = import.meta.env.BASE_URL;
 
 const thesisModelIds = new Set(['my-thesis-model', 'my-thesis-2']);
+const keyModelIds = new Set(['utaut', 'ecm-is', 'tpc']);
 
 const sortedModels = [...models].sort((a: any, b: any) =>
   String(a.name || '').localeCompare(String(b.name || ''), undefined, { sensitivity: 'base' })
@@ -47,7 +48,7 @@ const timelineYears = Object.keys(timelineByYear)
   {timelineYears.length > 0 && (
     <section class="models-timeline-section" aria-label="Models by year established">
       <h2 class="models-section-title">Timeline by year established</h2>
-      <p class="models-timeline-desc">Abbreviations only — click a model to open its detail page.</p>
+      <p class="models-timeline-desc">Abbreviations only — click a model to open its detail page. <span class="models-key-legend"><span class="models-key-star" aria-hidden="true">★</span> marks the models used in this thesis.</span></p>
       <div class="models-timeline-scroll">
         <ol class="models-timeline">
           {timelineYears.map((year) => (
@@ -56,9 +57,10 @@ const timelineYears = Object.keys(timelineByYear)
                 {timelineByYear[year].map((model) => (
                   <a
                     href={`${base}models/${model.id}/`}
-                    class="models-timeline-abbrev"
-                    title={`${model.abbreviation}${model.authors?.length ? ` — ${model.authors.join(', ')}` : ''} (${year})`}
+                    class={`models-timeline-abbrev${keyModelIds.has(model.id) ? ' models-timeline-abbrev-key' : ''}`}
+                    title={`${model.abbreviation}${model.authors?.length ? ` — ${model.authors.join(', ')}` : ''} (${year})${keyModelIds.has(model.id) ? ' — used in this thesis' : ''}`}
                   >
+                    {keyModelIds.has(model.id) && <span class="models-timeline-abbrev-star" aria-hidden="true">★</span>}
                     {model.abbreviation}
                   </a>
                 ))}
@@ -78,7 +80,8 @@ const timelineYears = Object.keys(timelineByYear)
     <h2 class="models-section-title">Theoretical Models</h2>
     <div class="models-grid">
       {theoreticalModels.map((model: any) => (
-        <article class="model-card">
+        <article class={`model-card${keyModelIds.has(model.id) ? ' model-card-key' : ''}`}>
+          {keyModelIds.has(model.id) && <span class="model-card-key-badge"><span aria-hidden="true">★</span> Used in this thesis</span>}
           <h3><a href={`${base}models/${model.id}/`}>{model.name}</a></h3>
           <span class="abbrev">{model.abbreviation}</span>
           <p class="model-meta">{(model.authors && model.authors.length > 0 ? model.authors.join(', ') : '—')}{(model.year != null ? ` (${model.year})` : '')}</p>
@@ -126,6 +129,18 @@ const timelineYears = Object.keys(timelineByYear)
     margin: -0.35rem 0 1.15rem 0;
     font-size: 0.875rem;
     color: var(--color-ink-muted);
+  }
+
+  .models-key-legend {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .models-key-star {
+    color: var(--color-gold, #c8a13a);
+    font-size: 0.95rem;
+    line-height: 1;
   }
 
   .models-timeline-scroll {
@@ -184,6 +199,25 @@ const timelineYears = Object.keys(timelineByYear)
     color: #fff;
     text-decoration: none;
     transform: translateY(-1px);
+  }
+
+  .models-timeline-abbrev-key {
+    background: var(--color-gold, #c8a13a);
+    border-color: var(--color-gold, #c8a13a);
+    color: #3a2c00;
+    box-shadow: 0 0 0 3px rgba(200, 161, 58, 0.22);
+  }
+
+  .models-timeline-abbrev-key:hover {
+    background: #b8901f;
+    border-color: #b8901f;
+    color: #fff;
+  }
+
+  .models-timeline-abbrev-star {
+    margin-right: 0.28rem;
+    font-size: 0.72rem;
+    line-height: 1;
   }
 
   .models-timeline-rail {
@@ -253,6 +287,29 @@ const timelineYears = Object.keys(timelineByYear)
     background: white;
     border: 1px solid var(--color-border);
     border-radius: 8px;
+    position: relative;
+  }
+
+  .model-card-key {
+    border-color: var(--color-gold, #c8a13a);
+    border-width: 2px;
+    background: linear-gradient(180deg, rgba(200, 161, 58, 0.08), rgba(200, 161, 58, 0) 55%);
+    box-shadow: 0 2px 10px rgba(200, 161, 58, 0.18);
+  }
+
+  .model-card-key-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-bottom: 0.6rem;
+    padding: 0.2rem 0.6rem;
+    background: var(--color-gold, #c8a13a);
+    color: #3a2c00;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    border-radius: 999px;
   }
 
   .model-card h3 { margin-top: 0; font-size: 1.25rem; }
