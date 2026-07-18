@@ -45,13 +45,20 @@ So the hierarchy is always: **Paper → Snippet**.
 If you add or rename constructs or models in the main app (`src/data/constructs.json` and `src/data/models.json`), regenerate the extension’s copies:
 
 ```bash
-node -e "
-const c = require('./src/data/constructs.json');
-const m = require('./src/data/models.json');
-const fs = require('fs');
-fs.writeFileSync('./browser-extension/constructs.json', JSON.stringify(c.map(x => ({ id: x.id, name: x.name }))));
-fs.writeFileSync('./browser-extension/models.json', JSON.stringify(m.map(x => ({ id: x.id, name: x.name }))));
-"
+node -e '
+const fs = require("fs");
+const c = JSON.parse(fs.readFileSync("src/data/constructs.json","utf8"));
+const m = JSON.parse(fs.readFileSync("src/data/models.json","utf8"));
+const constructs = c.map(x => ({ id: x.id, name: x.name }))
+  .sort((a,b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
+const models = m.map(x => ({ id: x.id, name: x.name, abbreviation: x.abbreviation || x.name }))
+  .sort((a,b) => String(a.abbreviation || a.name).localeCompare(String(b.abbreviation || b.name), undefined, { sensitivity: "base" }));
+fs.writeFileSync("browser-extension/constructs.json", JSON.stringify(constructs, null, 2) + "\n");
+fs.writeFileSync("browser-extension/models.json", JSON.stringify(models, null, 2) + "\n");
+console.log("Synced", constructs.length, "constructs and", models.length, "models");
+'
 ```
+
+The save-snippet UI also sorts both lists alphabetically at runtime (constructs by name, models by abbreviation). Models are shown as `TAM3 — Technology Acceptance Model 3`.
 
 Then reload the extension in `chrome://extensions/`.

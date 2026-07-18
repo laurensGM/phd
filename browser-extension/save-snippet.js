@@ -216,10 +216,38 @@ async function loadDropdowns() {
     console.error(e);
     return;
   }
+
+  const byLabel = (a, b) =>
+    String(a).localeCompare(String(b), undefined, { sensitivity: 'base' });
+
+  constructs = [...constructs].sort((a, b) => byLabel(a.name, b.name));
+  models = [...models].sort((a, b) =>
+    byLabel(a.abbreviation || a.name, b.abbreviation || b.name)
+  );
+
   const constructSelect = document.getElementById('construct-select');
   const modelSelect = document.getElementById('model-select');
-  constructSelect.innerHTML = constructs.map((c) => `<option value="${c.id}">${c.name}</option>`).join('');
-  modelSelect.innerHTML = models.map((m) => `<option value="${m.id}">${m.name}</option>`).join('');
+  constructSelect.innerHTML = constructs
+    .map((c) => `<option value="${c.id}">${escapeHtml(c.name)}</option>`)
+    .join('');
+  modelSelect.innerHTML = models
+    .map((m) => {
+      const abbrev = m.abbreviation || m.name;
+      const label =
+        m.abbreviation && m.abbreviation !== m.name
+          ? `${abbrev} — ${m.name}`
+          : abbrev;
+      return `<option value="${m.id}">${escapeHtml(label)}</option>`;
+    })
+    .join('');
+}
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function renderPaperDisplay() {

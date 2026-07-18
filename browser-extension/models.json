@@ -1,1 +1,112 @@
-[{"id":"tam","name":"TAM"},{"id":"ect","name":"ECT"},{"id":"ecm-is","name":"ECM-IS"},{"id":"tra","name":"TRA"},{"id":"tpb","name":"TPB"},{"id":"tam2","name":"TAM 2"},{"id":"utaut","name":"UTAUT"},{"id":"utaut2","name":"UTAUT2"},{"id":"tpc","name":"Technology-to-Performance Chain"},{"id":"doi","name":"DOI"},{"id":"cjm","name":"CJM"},{"id":"tajm","name":"TAJM"},{"id":"my-thesis-model","name":"My Thesis Model"},{"id":"my-thesis-2","name":"My Thesis 2"},{"id":"ev-attitudes","name":"Expectancy-Value Model of Attitudes"},{"id":"issm","name":"Information System Success Model"},{"id":"toe","name":"Technology–Organization–Environment Framework"},{"id":"sct","name":"Social Cognitive Theory"},{"id":"mpcu","name":"Model of PC Utilization"},{"id":"mm","name":"Motivational Model"}]
+[
+  {
+    "id": "cjm",
+    "name": "CJM",
+    "abbreviation": "CJM"
+  },
+  {
+    "id": "doi",
+    "name": "DOI",
+    "abbreviation": "DOI"
+  },
+  {
+    "id": "ecm-is",
+    "name": "ECM-IS",
+    "abbreviation": "ECM-IS"
+  },
+  {
+    "id": "ect",
+    "name": "ECT",
+    "abbreviation": "ECT"
+  },
+  {
+    "id": "ev-attitudes",
+    "name": "Expectancy-Value Model of Attitudes",
+    "abbreviation": "EVMA"
+  },
+  {
+    "id": "issm",
+    "name": "Information System Success Model",
+    "abbreviation": "ISSM"
+  },
+  {
+    "id": "mm",
+    "name": "Motivational Model",
+    "abbreviation": "MM"
+  },
+  {
+    "id": "mpcu",
+    "name": "Model of PC Utilization",
+    "abbreviation": "MPCU"
+  },
+  {
+    "id": "sct",
+    "name": "Social Cognitive Theory",
+    "abbreviation": "SCT"
+  },
+  {
+    "id": "tajm",
+    "name": "TAJM",
+    "abbreviation": "TAJM"
+  },
+  {
+    "id": "tam",
+    "name": "TAM",
+    "abbreviation": "TAM"
+  },
+  {
+    "id": "tam2",
+    "name": "TAM 2",
+    "abbreviation": "TAM2"
+  },
+  {
+    "id": "tam3",
+    "name": "Technology Acceptance Model 3",
+    "abbreviation": "TAM3"
+  },
+  {
+    "id": "tct",
+    "name": "Technology Continuance Theory",
+    "abbreviation": "TCT"
+  },
+  {
+    "id": "my-thesis-model",
+    "name": "My Thesis Model",
+    "abbreviation": "Thesis"
+  },
+  {
+    "id": "my-thesis-2",
+    "name": "My Thesis 2",
+    "abbreviation": "Thesis2"
+  },
+  {
+    "id": "toe",
+    "name": "Technology–Organization–Environment Framework",
+    "abbreviation": "TOE"
+  },
+  {
+    "id": "tpb",
+    "name": "TPB",
+    "abbreviation": "TPB"
+  },
+  {
+    "id": "tpc",
+    "name": "Technology-to-Performance Chain",
+    "abbreviation": "TPC"
+  },
+  {
+    "id": "tra",
+    "name": "TRA",
+    "abbreviation": "TRA"
+  },
+  {
+    "id": "utaut",
+    "name": "UTAUT",
+    "abbreviation": "UTAUT"
+  },
+  {
+    "id": "utaut2",
+    "name": "UTAUT2",
+    "abbreviation": "UTAUT2"
+  }
+]
