@@ -1374,56 +1374,39 @@ export default function SnippetsPage() {
             <a href={`${base}claims/detail/?id=${encodeURIComponent(targetClaim.id)}`}>View claim</a>
           </div>
         )}
-        <aside className="snippets-filters" aria-label="Snippet filters">
-          <div className="snippets-filters-header">
-            <div className="snippets-filters-heading">
-              <h2 className="snippets-filters-title">Filters</h2>
-              {activeFilterCount > 0 && (
-                <span className="snippets-filters-count" aria-label={`${activeFilterCount} active filters`}>
-                  {activeFilterCount}
-                </span>
-              )}
-            </div>
-            <button
-              type="button"
-              className="snippets-clear-btn"
-              onClick={clearAllFilters}
-              disabled={activeFilterCount === 0}
-              title="Clear all filters"
-            >
-              Clear
-            </button>
-          </div>
 
-          <div className="snippets-filters-pinned">
-            <div className="snippets-filter-field">
-              <label htmlFor="snippets-search-input" className="snippets-filter-label">
-                Search
-              </label>
-              <div className="snippets-search-mode" role="group" aria-label="Search mode">
-                <button
-                  type="button"
-                  className={`snippets-search-mode-btn${searchMode === 'keyword' ? ' snippets-search-mode-btn-active' : ''}`}
-                  onClick={() => setSearchMode('keyword')}
-                >
-                  Keyword
-                </button>
-                <button
-                  type="button"
-                  className={`snippets-search-mode-btn${searchMode === 'semantic' ? ' snippets-search-mode-btn-active' : ''}`}
-                  onClick={() => {
-                    if (!localEmbeddingsAvailable) return;
-                    setSearchMode('semantic');
-                  }}
-                  disabled={!localEmbeddingsAvailable}
-                  title={
-                    localEmbeddingsAvailable
-                      ? 'Search by meaning using local embeddings'
-                      : 'Semantic mode is available only on localhost'
-                  }
-                >
-                  Semantic
-                </button>
+        <section className="snippets-top-filters" aria-label="Primary snippet filters">
+          <div className="snippets-top-filters-main">
+            <div className="snippets-filter-field snippets-top-search">
+              <div className="snippets-filter-label-row">
+                <label htmlFor="snippets-search-input" className="snippets-filter-label">
+                  Search
+                </label>
+                <div className="snippets-search-mode" role="group" aria-label="Search mode">
+                  <button
+                    type="button"
+                    className={`snippets-search-mode-btn${searchMode === 'keyword' ? ' snippets-search-mode-btn-active' : ''}`}
+                    onClick={() => setSearchMode('keyword')}
+                  >
+                    Keyword
+                  </button>
+                  <button
+                    type="button"
+                    className={`snippets-search-mode-btn${searchMode === 'semantic' ? ' snippets-search-mode-btn-active' : ''}`}
+                    onClick={() => {
+                      if (!localEmbeddingsAvailable) return;
+                      setSearchMode('semantic');
+                    }}
+                    disabled={!localEmbeddingsAvailable}
+                    title={
+                      localEmbeddingsAvailable
+                        ? 'Search by meaning using local embeddings'
+                        : 'Semantic mode is available only on localhost'
+                    }
+                  >
+                    Semantic
+                  </button>
+                </div>
               </div>
               <input
                 id="snippets-search-input"
@@ -1438,64 +1421,7 @@ export default function SnippetsPage() {
                 }
               />
             </div>
-            {searchMode === 'semantic' && (
-              <>
-                <div className="snippets-semantic-controls">
-                  <label className="snippets-semantic-control">
-                    <span className="snippets-semantic-control-label">
-                      Similarity
-                      <span
-                        className="snippets-help-tip"
-                        title="Higher threshold = stricter matching (fewer, more focused results). Lower threshold = broader matching (more, less precise results)."
-                        aria-label="Semantic threshold help"
-                      >
-                        ?
-                      </span>
-                    </span>
-                    <input
-                      type="number"
-                      min={0}
-                      max={1}
-                      step={0.01}
-                      className="snippets-input snippets-semantic-input"
-                      value={semanticMinSimilarity}
-                      onChange={(e) =>
-                        setSemanticMinSimilarity(Math.min(1, Math.max(0, Number(e.target.value) || 0)))
-                      }
-                    />
-                  </label>
-                  <label className="snippets-semantic-control">
-                    <span className="snippets-semantic-control-label">
-                      Max candidates
-                      <span
-                        className="snippets-help-tip"
-                        title="How many top semantic matches to consider before applying your other filters."
-                        aria-label="Max candidates help"
-                      >
-                        ?
-                      </span>
-                    </span>
-                    <input
-                      type="number"
-                      min={1}
-                      max={200}
-                      step={1}
-                      className="snippets-input snippets-semantic-input"
-                      value={semanticMatchCount}
-                      onChange={(e) =>
-                        setSemanticMatchCount(Math.min(200, Math.max(1, Number(e.target.value) || 1)))
-                      }
-                    />
-                  </label>
-                </div>
-                <p className="snippets-semantic-note">
-                  Uses local embeddings (Ollama on localhost).
-                  {semanticSearchLoading ? ' Searching…' : ''}
-                  {!semanticSearchLoading && semanticSearchError ? ` ${semanticSearchError}` : ''}
-                </p>
-              </>
-            )}
-            <div className="snippets-filter-field">
+            <div className="snippets-filter-field snippets-top-status">
               <label htmlFor="snippets-filter-processed" className="snippets-filter-label">
                 Writing status
               </label>
@@ -1510,7 +1436,7 @@ export default function SnippetsPage() {
                 <option value="unprocessed">Not processed ({unprocessedSnippetCount})</option>
               </select>
             </div>
-            <div className="snippets-filter-field">
+            <div className="snippets-filter-field snippets-top-date">
               <label htmlFor="snippets-filter-created" className="snippets-filter-label">
                 Created on or after
               </label>
@@ -1522,10 +1448,87 @@ export default function SnippetsPage() {
                 onChange={(e) => setFilterCreatedAfter(e.target.value)}
               />
             </div>
+            <div className="snippets-top-filters-actions">
+              {activeFilterCount > 0 && (
+                <span className="snippets-filters-count" aria-label={`${activeFilterCount} active filters`}>
+                  {activeFilterCount}
+                </span>
+              )}
+              <button
+                type="button"
+                className="snippets-clear-btn"
+                onClick={clearAllFilters}
+                disabled={activeFilterCount === 0}
+                title="Clear all filters"
+              >
+                Clear
+              </button>
+            </div>
           </div>
+          {searchMode === 'semantic' && (
+            <div className="snippets-top-semantic">
+              <div className="snippets-semantic-controls">
+                <label className="snippets-semantic-control">
+                  <span className="snippets-semantic-control-label">
+                    Similarity
+                    <span
+                      className="snippets-help-tip"
+                      title="Higher threshold = stricter matching (fewer, more focused results). Lower threshold = broader matching (more, less precise results)."
+                      aria-label="Semantic threshold help"
+                    >
+                      ?
+                    </span>
+                  </span>
+                  <input
+                    type="number"
+                    min={0}
+                    max={1}
+                    step={0.01}
+                    className="snippets-input snippets-semantic-input"
+                    value={semanticMinSimilarity}
+                    onChange={(e) =>
+                      setSemanticMinSimilarity(Math.min(1, Math.max(0, Number(e.target.value) || 0)))
+                    }
+                  />
+                </label>
+                <label className="snippets-semantic-control">
+                  <span className="snippets-semantic-control-label">
+                    Max candidates
+                    <span
+                      className="snippets-help-tip"
+                      title="How many top semantic matches to consider before applying your other filters."
+                      aria-label="Max candidates help"
+                    >
+                      ?
+                    </span>
+                  </span>
+                  <input
+                    type="number"
+                    min={1}
+                    max={200}
+                    step={1}
+                    className="snippets-input snippets-semantic-input"
+                    value={semanticMatchCount}
+                    onChange={(e) =>
+                      setSemanticMatchCount(Math.min(200, Math.max(1, Number(e.target.value) || 1)))
+                    }
+                  />
+                </label>
+              </div>
+              <p className="snippets-semantic-note">
+                Uses local embeddings (Ollama on localhost).
+                {semanticSearchLoading ? ' Searching…' : ''}
+                {!semanticSearchLoading && semanticSearchError ? ` ${semanticSearchError}` : ''}
+              </p>
+            </div>
+          )}
+        </section>
 
-          <div className="snippets-filters-scroll">
-            <p className="snippets-filters-group-label">Facets</p>
+        <aside className="snippets-filters" aria-label="Facet filters">
+          <div className="snippets-filters-header">
+            <h2 className="snippets-filters-title">Facets</h2>
+          </div>
+          <div className="snippets-filters-body">
             <div className="snippets-filter-field">
               <label htmlFor="snippets-filter-paper" className="snippets-filter-label">
                 Paper
