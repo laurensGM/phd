@@ -32,6 +32,7 @@ type Claim = {
   relationship_type: string | null;
   lr_chapter: string | null;
   notes: string | null;
+  generated_paragraph: string | null;
   created_at: string;
 };
 
@@ -85,6 +86,9 @@ export default function ClaimDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [copyMsg, setCopyMsg] = useState<string | null>(null);
+  const [paragraphDraft, setParagraphDraft] = useState('');
+  const [savingParagraph, setSavingParagraph] = useState(false);
+  const [paragraphSaveMsg, setParagraphSaveMsg] = useState<string | null>(null);
 
   const [showAddSnippets, setShowAddSnippets] = useState(false);
   const [snippetSearch, setSnippetSearch] = useState('');
@@ -123,6 +127,8 @@ export default function ClaimDetailPage() {
       return;
     }
     setClaim(c as Claim);
+    setParagraphDraft((c as Claim).generated_paragraph ?? '');
+    setParagraphSaveMsg(null);
 
     const { data: ls, error: lErr } = await supabase.from('claim_snippets').select('id, snippet_id, role').eq('claim_id', id);
     if (lErr) {
@@ -364,11 +370,31 @@ export default function ClaimDetailPage() {
     const t = buildParagraphFromClaimPrompt(claim.claim_text, evidenceLines());
     try {
       await navigator.clipboard.writeText(t);
-      setCopyMsg('Paragraph prompt copied.');
-      window.setTimeout(() => setCopyMsg(null), 2500);
+      setCopyMsg('Prompt copied — paste the AI paragraph below when ready.');
+      window.setTimeout(() => setCopyMsg(null), 3500);
     } catch {
       setCopyMsg('Could not copy.');
     }
+  };
+
+  const saveGeneratedParagraph = async () => {
+    if (!supabase || !claim) return;
+    setSavingParagraph(true);
+    setParagraphSaveMsg(null);
+    const value = paragraphDraft.trim() || null;
+    const { error: uErr } = await supabase
+      .from('claims')
+      .update({ generated_paragraph: value })
+      .eq('id', claim.id);
+    setSavingParagraph(false);
+    if (uErr) {
+      setParagraphSaveMsg(uErr.message);
+      return;
+    }
+    setClaim({ ...claim, generated_paragraph: value });
+    setParagraphDraft(value ?? '');
+    setParagraphSaveMsg('Saved.');
+    window.setTimeout(() => setParagraphSaveMsg(null), 2500);
   };
 
   const exportCitations = () => {
@@ -708,6 +734,27 @@ export default function ClaimDetailPage() {
           </button>
         </div>
         {copyMsg && <p className="claims-copy-msg">{copyMsg}</p>}
+        <label className="claims-paragraph-label">
+          Generated paragraph
+          <textarea
+            className="claims-textarea claims-paragraph-textarea"
+            rows={8}
+            value={paragraphDraft}
+            onChange={(e) => setParagraphDraft(e.target.value)}
+            placeholder="Paste the paragraph from your AI chat here…"
+          />
+        </label>
+        <div className="claims-paragraph-actions">
+          <button
+            type="button"
+            className="claims-btn"
+            disabled={savingParagraph || paragraphDraft.trim() === (claim.generated_paragraph ?? '').trim()}
+            onClick={() => void saveGeneratedParagraph()}
+          >
+            {savingParagraph ? 'Saving…' : 'Save paragraph'}
+          </button>
+          {paragraphSaveMsg && <p className="claims-copy-msg">{paragraphSaveMsg}</p>}
+        </div>
       </section>
 
       <section className="claims-detail-section claims-danger-zone">

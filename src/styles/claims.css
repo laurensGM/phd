@@ -667,6 +667,30 @@
   margin: 0.5rem 0 0 0;
 }
 
+.claims-paragraph-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.claims-paragraph-textarea {
+  font-weight: 400;
+  width: 100%;
+  min-height: 8rem;
+}
+
+.claims-paragraph-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.6rem;
+}
+
 .claims-danger-zone {
   padding-top: 1rem;
   border-top: 1px dashed var(--color-border);

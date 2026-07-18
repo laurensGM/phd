@@ -497,6 +497,7 @@ export interface Database {
           relationship_type: string | null;
           lr_chapter: string | null;
           notes: string | null;
+          generated_paragraph: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -508,6 +509,7 @@ export interface Database {
           relationship_type?: string | null;
           lr_chapter?: string | null;
           notes?: string | null;
+          generated_paragraph?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -518,6 +520,7 @@ export interface Database {
           relationship_type?: string | null;
           lr_chapter?: string | null;
           notes?: string | null;
+          generated_paragraph?: string | null;
           updated_at?: string;
         };
       };
