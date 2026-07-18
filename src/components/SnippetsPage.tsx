@@ -709,6 +709,45 @@ export default function SnippetsPage() {
     paperById,
   ]);
 
+  const activeFilterCount = useMemo(() => {
+    let n = 0;
+    if (filterPaperId) n += 1;
+    if (filterJournalNames.length) n += 1;
+    if (filterConstructIds.length) n += 1;
+    if (filterUmbrellaConstructId) n += 1;
+    if (filterModelIds.length) n += 1;
+    if (filterSnippetType) n += 1;
+    if (filterProcessed) n += 1;
+    if (filterTag) n += 1;
+    if (filterCreatedAfter) n += 1;
+    if (search.trim()) n += 1;
+    return n;
+  }, [
+    filterPaperId,
+    filterJournalNames,
+    filterConstructIds,
+    filterUmbrellaConstructId,
+    filterModelIds,
+    filterSnippetType,
+    filterProcessed,
+    filterTag,
+    filterCreatedAfter,
+    search,
+  ]);
+
+  const clearAllFilters = useCallback(() => {
+    setFilterPaperId('');
+    setFilterJournalNames([]);
+    setFilterConstructIds([]);
+    setFilterUmbrellaConstructId('');
+    setFilterModelIds([]);
+    setFilterSnippetType('');
+    setFilterProcessed('');
+    setFilterTag('');
+    setFilterCreatedAfter('');
+    setSearch('');
+  }, []);
+
   const filteredSnippets = useMemo(() => {
     if (searchMode !== 'semantic' || !search.trim()) return filteredSnippetsBase;
 
@@ -1335,12 +1374,133 @@ export default function SnippetsPage() {
             <a href={`${base}claims/detail/?id=${encodeURIComponent(targetClaim.id)}`}>View claim</a>
           </div>
         )}
-        <section className="snippets-filters">
+        <aside className="snippets-filters" aria-label="Snippet filters">
+          <div className="snippets-filters-header">
+            <div className="snippets-filters-heading">
+              <h2 className="snippets-filters-title">Filters</h2>
+              {activeFilterCount > 0 && (
+                <span className="snippets-filters-count" aria-label={`${activeFilterCount} active filters`}>
+                  {activeFilterCount}
+                </span>
+              )}
+            </div>
+            <button
+              type="button"
+              className="snippets-clear-btn"
+              onClick={clearAllFilters}
+              disabled={activeFilterCount === 0}
+              title="Clear all filters"
+            >
+              Clear
+            </button>
+          </div>
+
           <div className="snippets-filters-pinned">
-          <div className="snippets-filter-row">
-            <label>
-              Processed (used in writing)
+            <div className="snippets-filter-field">
+              <label htmlFor="snippets-search-input" className="snippets-filter-label">
+                Search
+              </label>
+              <div className="snippets-search-mode" role="group" aria-label="Search mode">
+                <button
+                  type="button"
+                  className={`snippets-search-mode-btn${searchMode === 'keyword' ? ' snippets-search-mode-btn-active' : ''}`}
+                  onClick={() => setSearchMode('keyword')}
+                >
+                  Keyword
+                </button>
+                <button
+                  type="button"
+                  className={`snippets-search-mode-btn${searchMode === 'semantic' ? ' snippets-search-mode-btn-active' : ''}`}
+                  onClick={() => {
+                    if (!localEmbeddingsAvailable) return;
+                    setSearchMode('semantic');
+                  }}
+                  disabled={!localEmbeddingsAvailable}
+                  title={
+                    localEmbeddingsAvailable
+                      ? 'Search by meaning using local embeddings'
+                      : 'Semantic mode is available only on localhost'
+                  }
+                >
+                  Semantic
+                </button>
+              </div>
+              <input
+                id="snippets-search-input"
+                type="search"
+                className="snippets-input"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder={
+                  searchMode === 'semantic'
+                    ? 'Search by meaning…'
+                    : 'Search text, tags, constructs…'
+                }
+              />
+            </div>
+            {searchMode === 'semantic' && (
+              <>
+                <div className="snippets-semantic-controls">
+                  <label className="snippets-semantic-control">
+                    <span className="snippets-semantic-control-label">
+                      Similarity
+                      <span
+                        className="snippets-help-tip"
+                        title="Higher threshold = stricter matching (fewer, more focused results). Lower threshold = broader matching (more, less precise results)."
+                        aria-label="Semantic threshold help"
+                      >
+                        ?
+                      </span>
+                    </span>
+                    <input
+                      type="number"
+                      min={0}
+                      max={1}
+                      step={0.01}
+                      className="snippets-input snippets-semantic-input"
+                      value={semanticMinSimilarity}
+                      onChange={(e) =>
+                        setSemanticMinSimilarity(Math.min(1, Math.max(0, Number(e.target.value) || 0)))
+                      }
+                    />
+                  </label>
+                  <label className="snippets-semantic-control">
+                    <span className="snippets-semantic-control-label">
+                      Max candidates
+                      <span
+                        className="snippets-help-tip"
+                        title="How many top semantic matches to consider before applying your other filters."
+                        aria-label="Max candidates help"
+                      >
+                        ?
+                      </span>
+                    </span>
+                    <input
+                      type="number"
+                      min={1}
+                      max={200}
+                      step={1}
+                      className="snippets-input snippets-semantic-input"
+                      value={semanticMatchCount}
+                      onChange={(e) =>
+                        setSemanticMatchCount(Math.min(200, Math.max(1, Number(e.target.value) || 1)))
+                      }
+                    />
+                  </label>
+                </div>
+                <p className="snippets-semantic-note">
+                  Uses local embeddings (Ollama on localhost).
+                  {semanticSearchLoading ? ' Searching…' : ''}
+                  {!semanticSearchLoading && semanticSearchError ? ` ${semanticSearchError}` : ''}
+                </p>
+              </>
+            )}
+            <div className="snippets-filter-field">
+              <label htmlFor="snippets-filter-processed" className="snippets-filter-label">
+                Writing status
+              </label>
               <select
+                id="snippets-filter-processed"
                 className="snippets-input"
                 value={filterProcessed}
                 onChange={(e) => setFilterProcessed(e.target.value as FilterProcessed)}
@@ -1349,164 +1509,58 @@ export default function SnippetsPage() {
                 <option value="processed">Processed ({processedSnippetCount})</option>
                 <option value="unprocessed">Not processed ({unprocessedSnippetCount})</option>
               </select>
-            </label>
-          </div>
-          <div className="snippets-filter-row">
-            <label>
-              Created on or after
+            </div>
+            <div className="snippets-filter-field">
+              <label htmlFor="snippets-filter-created" className="snippets-filter-label">
+                Created on or after
+              </label>
               <input
+                id="snippets-filter-created"
                 type="date"
-                className="snippets-input snippets-date-filter"
+                className="snippets-input"
                 value={filterCreatedAfter}
                 onChange={(e) => setFilterCreatedAfter(e.target.value)}
               />
-            </label>
-          </div>
-          <div className="snippets-filter-row">
-            <label className="snippets-search-label">
-              Search
-              <input
-                type="search"
-                className="snippets-input"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder={
-                  searchMode === 'semantic'
-                    ? 'Search by meaning (e.g., drivers of continuance intention)…'
-                    : 'Search in snippet text, tags, constructs, models…'
-                }
-              />
-            </label>
-            <div className="snippets-search-mode" role="group" aria-label="Search mode">
-              <button
-                type="button"
-                className={`snippets-search-mode-btn${searchMode === 'keyword' ? ' snippets-search-mode-btn-active' : ''}`}
-                onClick={() => setSearchMode('keyword')}
-              >
-                Keyword
-              </button>
-              <button
-                type="button"
-                className={`snippets-search-mode-btn${searchMode === 'semantic' ? ' snippets-search-mode-btn-active' : ''}`}
-                onClick={() => {
-                  if (!localEmbeddingsAvailable) return;
-                  setSearchMode('semantic');
-                }}
-                disabled={!localEmbeddingsAvailable}
-                title={
-                  localEmbeddingsAvailable
-                    ? 'Search by meaning using local embeddings'
-                    : 'Semantic mode is available only on localhost'
-                }
-              >
-                Semantic
-              </button>
             </div>
-            <button
-              type="button"
-              className="snippets-clear-btn"
-              onClick={() => {
-                setFilterPaperId('');
-                setFilterJournalNames([]);
-                setFilterConstructIds([]);
-                setFilterUmbrellaConstructId('');
-                setFilterModelIds([]);
-                setFilterSnippetType('');
-                setFilterProcessed('');
-                setFilterTag('');
-                setFilterCreatedAfter('');
-                setSearch('');
-              }}
-              title="Clear all filters"
-            >
-              <span className="snippets-clear-icon" aria-hidden>×</span>
-              Clear filters
-            </button>
           </div>
-          {searchMode === 'semantic' && (
-            <>
-              <div className="snippets-semantic-controls">
-                <label className="snippets-semantic-control">
-                  Similarity threshold
-                  <span
-                    className="snippets-help-tip"
-                    title="Higher threshold = stricter matching (fewer, more focused results). Lower threshold = broader matching (more, less precise results)."
-                    aria-label="Semantic threshold help"
-                  >
-                    ?
-                  </span>
-                  <input
-                    type="number"
-                    min={0}
-                    max={1}
-                    step={0.01}
-                    className="snippets-input snippets-semantic-input"
-                    value={semanticMinSimilarity}
-                    onChange={(e) =>
-                      setSemanticMinSimilarity(Math.min(1, Math.max(0, Number(e.target.value) || 0)))
-                    }
-                  />
-                </label>
-                <label className="snippets-semantic-control">
-                  Max candidates
-                  <span
-                    className="snippets-help-tip"
-                    title="How many top semantic matches to consider before applying your other filters."
-                    aria-label="Max candidates help"
-                  >
-                    ?
-                  </span>
-                  <input
-                    type="number"
-                    min={1}
-                    max={200}
-                    step={1}
-                    className="snippets-input snippets-semantic-input"
-                    value={semanticMatchCount}
-                    onChange={(e) =>
-                      setSemanticMatchCount(Math.min(200, Math.max(1, Number(e.target.value) || 1)))
-                    }
-                  />
-                </label>
-              </div>
-              <p className="snippets-semantic-note">
-                Semantic mode uses local embeddings (default: Ollama on localhost) and returns snippets by meaning.
-                {semanticSearchLoading ? ' Searching…' : ''}
-                {!semanticSearchLoading && semanticSearchError ? ` ${semanticSearchError}` : ''}
-              </p>
-            </>
-          )}
-          </div>
+
           <div className="snippets-filters-scroll">
-          <div className="snippets-filter-row">
-            <label>
-              Paper
+            <p className="snippets-filters-group-label">Facets</p>
+            <div className="snippets-filter-field">
+              <label htmlFor="snippets-filter-paper" className="snippets-filter-label">
+                Paper
+              </label>
               <select
+                id="snippets-filter-paper"
                 className="snippets-input"
                 value={filterPaperId}
                 onChange={(e) => setFilterPaperId(e.target.value)}
               >
-                <option value="">All</option>
+                <option value="">All papers</option>
                 {papersSortedAlphabetically.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.title || p.url}
                   </option>
                 ))}
               </select>
-            </label>
-          </div>
-          <div className="snippets-filter-row">
-            <label>
-              Model(s)
+            </div>
+            <div className="snippets-filter-field">
+              <div className="snippets-filter-label-row">
+                <label htmlFor="snippets-filter-models" className="snippets-filter-label">
+                  Models
+                </label>
+                {filterModelIds.length > 0 && (
+                  <span className="snippets-filter-selected">{filterModelIds.length} selected</span>
+                )}
+              </div>
               <select
+                id="snippets-filter-models"
                 multiple
-                size={modelOptions.length}
-                className="snippets-input snippets-model-select"
+                size={Math.min(8, Math.max(4, modelOptionsAlphabetical.length))}
+                className="snippets-input snippets-facet-select snippets-model-select"
                 value={filterModelIds}
                 onChange={(e) =>
-                  setFilterModelIds(
-                    Array.from(e.target.selectedOptions).map((opt) => opt.value)
-                  )
+                  setFilterModelIds(Array.from(e.target.selectedOptions).map((opt) => opt.value))
                 }
               >
                 {modelOptionsAlphabetical.map((m) => (
@@ -1515,12 +1569,13 @@ export default function SnippetsPage() {
                   </option>
                 ))}
               </select>
-            </label>
-          </div>
-          <div className="snippets-filter-row">
-            <label>
-              Umbrella construct
+            </div>
+            <div className="snippets-filter-field">
+              <label htmlFor="snippets-filter-umbrella" className="snippets-filter-label">
+                Umbrella construct
+              </label>
               <select
+                id="snippets-filter-umbrella"
                 className="snippets-input"
                 value={filterUmbrellaConstructId}
                 onChange={(e) => setFilterUmbrellaConstructId(e.target.value)}
@@ -1532,20 +1587,24 @@ export default function SnippetsPage() {
                   </option>
                 ))}
               </select>
-            </label>
-          </div>
-          <div className="snippets-filter-row">
-            <label>
-              Construct(s)
+            </div>
+            <div className="snippets-filter-field">
+              <div className="snippets-filter-label-row">
+                <label htmlFor="snippets-filter-constructs" className="snippets-filter-label">
+                  Constructs
+                </label>
+                {filterConstructIds.length > 0 && (
+                  <span className="snippets-filter-selected">{filterConstructIds.length} selected</span>
+                )}
+              </div>
               <select
+                id="snippets-filter-constructs"
                 multiple
-                size={Math.max(4, Math.min(15, constructOptions.length))}
-                className="snippets-input snippets-construct-select"
+                size={Math.max(5, Math.min(10, constructOptions.length))}
+                className="snippets-input snippets-facet-select snippets-construct-select"
                 value={filterConstructIds}
                 onChange={(e) =>
-                  setFilterConstructIds(
-                    Array.from(e.target.selectedOptions).map((opt) => opt.value)
-                  )
+                  setFilterConstructIds(Array.from(e.target.selectedOptions).map((opt) => opt.value))
                 }
               >
                 {constructOptions.map((c) => (
@@ -1554,20 +1613,24 @@ export default function SnippetsPage() {
                   </option>
                 ))}
               </select>
-            </label>
-          </div>
-          <div className="snippets-filter-row">
-            <label>
-              Journal(s)
+            </div>
+            <div className="snippets-filter-field">
+              <div className="snippets-filter-label-row">
+                <label htmlFor="snippets-filter-journals" className="snippets-filter-label">
+                  Journals
+                </label>
+                {filterJournalNames.length > 0 && (
+                  <span className="snippets-filter-selected">{filterJournalNames.length} selected</span>
+                )}
+              </div>
               <select
+                id="snippets-filter-journals"
                 multiple
-                size={Math.max(4, Math.min(8, allJournals.length || 1))}
-                className="snippets-input snippets-journal-select"
+                size={Math.max(4, Math.min(6, allJournals.length || 1))}
+                className="snippets-input snippets-facet-select snippets-journal-select"
                 value={filterJournalNames}
                 onChange={(e) =>
-                  setFilterJournalNames(
-                    Array.from(e.target.selectedOptions).map((opt) => opt.value)
-                  )
+                  setFilterJournalNames(Array.from(e.target.selectedOptions).map((opt) => opt.value))
                 }
               >
                 {allJournals.map((j) => (
@@ -1576,45 +1639,45 @@ export default function SnippetsPage() {
                   </option>
                 ))}
               </select>
-            </label>
-          </div>
-          <div className="snippets-filter-row">
-            <label>
-              Snippet type
+            </div>
+            <div className="snippets-filter-field">
+              <label htmlFor="snippets-filter-type" className="snippets-filter-label">
+                Snippet type
+              </label>
               <select
+                id="snippets-filter-type"
                 className="snippets-input snippets-snippet-type-select"
-                size={7}
                 value={filterSnippetType}
                 onChange={(e) => setFilterSnippetType(e.target.value)}
               >
-                <option value="">All</option>
+                <option value="">All types</option>
                 {SNIPPET_TYPE_OPTIONS.filter((o) => o.value).map((opt) => (
                   <option key={opt.value} value={opt.value}>
                     {opt.label} ({snippetTypeCounts.get(opt.value) ?? 0})
                   </option>
                 ))}
               </select>
-            </label>
-          </div>
-          <div className="snippets-filter-row">
-            <label>
-              Tag
+            </div>
+            <div className="snippets-filter-field">
+              <label htmlFor="snippets-filter-tag" className="snippets-filter-label">
+                Tag
+              </label>
               <select
+                id="snippets-filter-tag"
                 className="snippets-input"
                 value={filterTag}
                 onChange={(e) => setFilterTag(e.target.value)}
               >
-                <option value="">All</option>
+                <option value="">All tags</option>
                 {allTags.map((t) => (
                   <option key={t} value={t}>
                     {t}
                   </option>
                 ))}
               </select>
-            </label>
+            </div>
           </div>
-          </div>
-        </section>
+        </aside>
 
       {showAddModal && (
         <div className="snippets-modal-overlay" role="dialog" aria-modal="true">
