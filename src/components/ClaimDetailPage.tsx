@@ -91,6 +91,7 @@ export default function ClaimDetailPage() {
   const [paragraphSaveMsg, setParagraphSaveMsg] = useState<string | null>(null);
 
   const [showAddSnippets, setShowAddSnippets] = useState(false);
+  const [linkedSnippetsOpen, setLinkedSnippetsOpen] = useState(true);
   const [snippetSearch, setSnippetSearch] = useState('');
   const [candidateSnippets, setCandidateSnippets] = useState<Snippet[]>([]);
   const [candidatePapers, setCandidatePapers] = useState<Map<string, Paper>>(new Map());
@@ -615,7 +616,22 @@ export default function ClaimDetailPage() {
 
       <section className="claims-detail-section">
         <div className="claims-detail-section-head">
-          <h2>Linked snippets</h2>
+          <button
+            type="button"
+            className="claims-section-toggle"
+            aria-expanded={linkedSnippetsOpen}
+            onClick={() => setLinkedSnippetsOpen((v) => !v)}
+          >
+            <span className="claims-section-toggle-chevron" aria-hidden="true">
+              {linkedSnippetsOpen ? '▾' : '▸'}
+            </span>
+            <h2>
+              Linked snippets
+              {links.length > 0 ? (
+                <span className="claims-section-toggle-count"> ({links.length})</span>
+              ) : null}
+            </h2>
+          </button>
           <button
             type="button"
             className="claims-btn claims-btn-primary"
@@ -676,45 +692,46 @@ export default function ClaimDetailPage() {
           </div>
         )}
 
-        {links.length === 0 ? (
-          <p className="claims-muted">No snippets linked yet. Add some above or link from the Snippets page.</p>
-        ) : (
-          <ul className="claims-evidence-list">
-            {links.map((l) => {
-              const s = snippets.get(l.snippet_id);
-              const p = s ? papers.get(s.paper_id) : undefined;
-              return (
-                <li key={l.id} className="claims-evidence-card">
-                  <div className="claims-evidence-card-head">
-                    <select
-                      className="claims-input claims-role-select"
-                      value={l.role}
-                      disabled={updatingLinkId === l.id}
-                      onChange={(e) => void updateLinkRole(l.id, e.target.value)}
-                      aria-label="Snippet role"
-                    >
-                      {ROLE_OPTIONS.map((o) => (
-                        <option key={o.value} value={o.value}>
-                          {o.label}
-                        </option>
-                      ))}
-                    </select>
-                    <button
-                      type="button"
-                      className="claims-btn-text-danger"
-                      disabled={removingLinkId === l.id}
-                      onClick={() => void removeLink(l.id)}
-                    >
-                      {removingLinkId === l.id ? '…' : 'Remove'}
-                    </button>
-                  </div>
-                  <div className="claims-evidence-paper">{p?.title ?? 'Paper'}</div>
-                  <div className="claims-evidence-text">{s?.content ?? '—'}</div>
-                </li>
-              );
-            })}
-          </ul>
-        )}
+        {linkedSnippetsOpen &&
+          (links.length === 0 ? (
+            <p className="claims-muted">No snippets linked yet. Add some above or link from the Snippets page.</p>
+          ) : (
+            <ul className="claims-evidence-list">
+              {links.map((l) => {
+                const s = snippets.get(l.snippet_id);
+                const p = s ? papers.get(s.paper_id) : undefined;
+                return (
+                  <li key={l.id} className="claims-evidence-card">
+                    <div className="claims-evidence-card-head">
+                      <select
+                        className="claims-input claims-role-select"
+                        value={l.role}
+                        disabled={updatingLinkId === l.id}
+                        onChange={(e) => void updateLinkRole(l.id, e.target.value)}
+                        aria-label="Snippet role"
+                      >
+                        {ROLE_OPTIONS.map((o) => (
+                          <option key={o.value} value={o.value}>
+                            {o.label}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        className="claims-btn-text-danger"
+                        disabled={removingLinkId === l.id}
+                        onClick={() => void removeLink(l.id)}
+                      >
+                        {removingLinkId === l.id ? '…' : 'Remove'}
+                      </button>
+                    </div>
+                    <div className="claims-evidence-paper">{p?.title ?? 'Paper'}</div>
+                    <div className="claims-evidence-text">{s?.content ?? '—'}</div>
+                  </li>
+                );
+              })}
+            </ul>
+          ))}
       </section>
 
       <section className="claims-detail-section">

@@ -740,6 +740,40 @@
   margin: 0;
 }
 
+.claims-section-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+}
+.claims-section-toggle h2 {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  color: var(--color-maroon);
+  margin: 0;
+}
+.claims-section-toggle-chevron {
+  display: inline-block;
+  width: 0.85rem;
+  color: var(--color-maroon);
+  font-size: 0.95rem;
+  line-height: 1;
+}
+.claims-section-toggle-count {
+  font-weight: 500;
+  opacity: 0.75;
+}
+.claims-section-toggle:hover h2,
+.claims-section-toggle:hover .claims-section-toggle-chevron {
+  color: var(--color-gold-dark, #a8892a);
+}
+
 .claims-add-snippets {
   margin: 0.75rem 0 1rem;
   padding: 1rem;
