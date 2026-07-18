@@ -9,6 +9,7 @@ type ClaimRow = {
   claim_text: string;
   lr_chapter: string | null;
   created_at: string;
+  snippet_count: number;
 };
 
 export default function ClaimsListPage() {
@@ -24,12 +25,35 @@ export default function ClaimsListPage() {
       return;
     }
     setError(null);
-    const { data, error: qErr } = await supabase
-      .from('claims')
-      .select('id, title, claim_text, lr_chapter, created_at')
-      .order('created_at', { ascending: false });
-    if (qErr) setError(qErr.message);
-    else setRows((data as ClaimRow[]) ?? []);
+    const [claimsRes, linksRes] = await Promise.all([
+      supabase
+        .from('claims')
+        .select('id, title, claim_text, lr_chapter, created_at')
+        .order('created_at', { ascending: false }),
+      supabase.from('claim_snippets').select('claim_id'),
+    ]);
+    if (claimsRes.error) {
+      setError(claimsRes.error.message);
+      setRows([]);
+      setLoading(false);
+      return;
+    }
+    if (linksRes.error) {
+      setError(linksRes.error.message);
+    }
+
+    const counts = new Map<string, number>();
+    for (const link of linksRes.data ?? []) {
+      const claimId = (link as { claim_id: string }).claim_id;
+      counts.set(claimId, (counts.get(claimId) ?? 0) + 1);
+    }
+
+    setRows(
+      ((claimsRes.data as Omit<ClaimRow, 'snippet_count'>[]) ?? []).map((claim) => ({
+        ...claim,
+        snippet_count: counts.get(claim.id) ?? 0,
+      }))
+    );
     setLoading(false);
   }, []);
 
@@ -80,29 +104,34 @@ export default function ClaimsListPage() {
           {rows.map((r) => {
             const detailHref = `${base}claims/detail/?id=${encodeURIComponent(r.id)}`;
             const editHref = `${detailHref}&edit=1`;
+            const snippetLabel =
+              r.snippet_count === 1 ? '1 snippet' : `${r.snippet_count} snippets`;
             return (
-            <li key={r.id} className="claims-card">
-              <div className="claims-card-top">
-                <a className="claims-card-link" href={detailHref}>
-                  <span className="claims-card-title">{r.title.trim() || 'Untitled claim'}</span>
-                  {claimLrChapterLabel(r.lr_chapter) && (
-                    <span className="claims-badge claims-badge-lr">{claimLrChapterLabel(r.lr_chapter)}</span>
-                  )}
-                </a>
-                <div className="claims-card-actions">
-                  <a className="claims-card-action" href={detailHref}>
-                    View
+              <li key={r.id} className="claims-card">
+                <div className="claims-card-top">
+                  <a className="claims-card-link" href={detailHref}>
+                    <span className="claims-card-title">{r.title.trim() || 'Untitled claim'}</span>
+                    {claimLrChapterLabel(r.lr_chapter) && (
+                      <span className="claims-badge claims-badge-lr">{claimLrChapterLabel(r.lr_chapter)}</span>
+                    )}
                   </a>
-                  <a className="claims-card-action claims-card-action-edit" href={editHref}>
-                    Edit
-                  </a>
+                  <div className="claims-card-actions">
+                    <a className="claims-card-action" href={detailHref}>
+                      View
+                    </a>
+                    <a className="claims-card-action claims-card-action-edit" href={editHref}>
+                      Edit
+                    </a>
+                  </div>
                 </div>
-              </div>
-              <p className="claims-card-preview">{r.claim_text}</p>
-              <time className="claims-card-date" dateTime={r.created_at}>
-                {new Date(r.created_at).toLocaleString()}
-              </time>
-            </li>
+                <p className="claims-card-preview">{r.claim_text}</p>
+                <div className="claims-card-meta">
+                  <span className="claims-card-snippet-count">{snippetLabel}</span>
+                  <time className="claims-card-date" dateTime={r.created_at}>
+                    {new Date(r.created_at).toLocaleString()}
+                  </time>
+                </div>
+              </li>
             );
           })}
         </ul>
