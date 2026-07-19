@@ -106,6 +106,14 @@ Sign in via magic link using a redirect URL allowed in Supabase.
 
 The browser extension still uses the anon key without a user session — after RLS, it will **not** read/write project data until you add signed-in support. Edge functions that use the **service role** key continue to work for server-side jobs.
 
-## 8. Later: more students
+## 9. Admin panel (roles & permissions)
 
-Create additional rows in `projects` and memberships per PhD. Existing `project_id` columns and RLS are already structured for that; you mainly add UI to switch/create projects.
+After migration `053_role_permissions_admin.sql`:
+
+- Default-project **owners** are marked `profiles.is_superadmin = true`
+- Open **Admin** in the navbar (or avatar → Admin panel) → `/phd/admin/`
+- Navbar turns **dark blue** on admin pages
+- Edit the placeholder permission matrix (rows: superadmin / student / supervisor)
+
+Permissions are stored but not yet enforced on every page — that comes next when you wire gates into features.
+

@@ -14,6 +14,7 @@ type AuthState = {
   memberships: ProjectMember[];
   primaryProjectId: string | null;
   role: ProjectRole | null;
+  isSuperadmin: boolean;
   error: string | null;
   configured: boolean;
 };
@@ -25,6 +26,7 @@ const initial: AuthState = {
   memberships: [],
   primaryProjectId: null,
   role: null,
+  isSuperadmin: false,
   error: null,
   configured: isSupabaseConfigured(),
 };
@@ -39,17 +41,27 @@ export function useAuth() {
         memberships: [],
         primaryProjectId: null,
         role: null,
+        isSuperadmin: false,
       }));
       return;
     }
     try {
       const result = await bootstrapProjectAccess();
       const primary = result.memberships[0] ?? null;
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('is_superadmin')
+        .eq('id', user.id)
+        .maybeSingle();
+      const isSuperadmin = !!(profile as { is_superadmin?: boolean } | null)?.is_superadmin;
+
       setState((s) => ({
         ...s,
         memberships: result.memberships,
         primaryProjectId: primary?.project_id ?? null,
         role: primary?.role ?? null,
+        isSuperadmin,
         error: null,
       }));
     } catch (e) {
@@ -80,7 +92,6 @@ export function useAuth() {
       void refreshMemberships(session?.user ?? null);
     };
 
-    // Never leave the UI stuck on “Checking session…”
     const failSafe = window.setTimeout(() => {
       if (!cancelled) {
         setState((s) => (s.loading ? { ...s, loading: false } : s));

@@ -6,12 +6,15 @@ interface Props {
   description?: string;
   /** Keep the logo spinner until client content calls PhDLoader.hide / usePageLoader. */
   deferLoader?: boolean;
+  /** Navbar colour theme — admin uses dark blue. */
+  navTheme?: 'default' | 'admin';
 }
 
 const {
   title,
   description = "PhD Manager - Organizing research, models, constructs, and literature",
   deferLoader = false,
+  navTheme = 'default',
 } = Astro.props;
 const base = import.meta.env.BASE_URL;
 // Home link: use path-relative URL so it always resolves to this app's root (avoids going to portfolio when base is wrong)
@@ -21,14 +24,15 @@ const baseSegments = base.replace(/\/$/, '').split('/').filter(Boolean);
 const baseDepth = baseSegments.length;
 const upLevels = Math.max(0, pathSegments.length - baseDepth);
 const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
+const isAdminNav = navTheme === 'admin';
 ---
 
 <!DOCTYPE html>
-<html lang="en" data-defer-loader={deferLoader ? 'true' : undefined}>
+<html lang="en" data-defer-loader={deferLoader ? 'true' : undefined} data-nav-theme={navTheme}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#712038" />
+    <meta name="theme-color" content={isAdminNav ? '#1e3a5f' : '#712038'} />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -80,11 +84,11 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
       </svg>
       <span class="page-loader-text">Loading…</span>
     </div>
-    <header class="site-header">
+    <header class={`site-header${isAdminNav ? ' site-header-admin' : ''}`}>
       <nav class="nav-container">
         <a href={homeHref} class="logo" rel="home" aria-label="Home – PhD Manager">
           <img src={`${base}logo-pos.png`} alt="PhD Manager" class="logo-img" width="48" height="48" />
-          <span class="logo-text">PhD Manager</span>
+          <span class="logo-text">{isAdminNav ? 'PhD Admin' : 'PhD Manager'}</span>
         </a>
         <button
           type="button"
@@ -198,6 +202,9 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
               <li><a href={`${base}supervisor/`}>Supervisor</a></li>
               <li><a href={`${base}members/`}>Members</a></li>
             </ul>
+          </li>
+          <li class="nav-admin-link-slot" id="nav-admin-slot" hidden>
+            <a href={`${base}admin/`} class="nav-admin-link">Admin</a>
           </li>
         </ul>
         <div id="auth-bar-root" class="nav-auth">
@@ -489,6 +496,184 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
     top: 0;
     z-index: 100;
     border-bottom: 3px solid var(--color-gold);
+  }
+
+  .site-header-admin {
+    background: #1e3a5f;
+    border-bottom-color: #7eb6e8;
+  }
+  .site-header-admin .logo-text {
+    color: #9ec9f0;
+  }
+  .site-header-admin .nav-avatar {
+    background: #2a4a73;
+    border-color: #7eb6e8;
+  }
+  .site-header-admin .nav-avatar:hover,
+  .site-header-admin .nav-avatar:focus-visible {
+    background: #355a88;
+    box-shadow: 0 0 0 3px rgba(126, 182, 232, 0.35);
+  }
+  .site-header-admin .nav-sign-in {
+    color: #9ec9f0;
+    border-color: rgba(126, 182, 232, 0.55);
+  }
+  .site-header-admin .nav-links a:hover,
+  .site-header-admin a.nav-dropdown-trigger:hover {
+    color: #cfe6f8;
+    background: rgba(255, 255, 255, 0.1);
+  }
+  .nav-admin-link {
+    color: #9ec9f0 !important;
+    font-weight: 700;
+    border: 1px solid rgba(126, 182, 232, 0.45);
+    border-radius: 999px;
+    padding: 0.35rem 0.75rem !important;
+  }
+  .site-header:not(.site-header-admin) .nav-admin-link {
+    color: #c5d9f0 !important;
+    border-color: rgba(197, 217, 240, 0.4);
+    background: rgba(30, 58, 95, 0.35);
+  }
+  .site-header:not(.site-header-admin) .nav-admin-link:hover {
+    background: rgba(30, 58, 95, 0.55) !important;
+    color: #fff !important;
+  }
+  .site-header-admin .nav-admin-link {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  .site-header-admin .nav-admin-link:hover {
+    background: rgba(255, 255, 255, 0.18) !important;
+    color: #fff !important;
+  }
+
+  .nav-profile-menu-admin {
+    color: #1e3a5f;
+    font-weight: 600;
+  }
+
+  .admin-lead {
+    color: var(--color-ink-muted);
+    max-width: 42rem;
+    line-height: 1.5;
+    margin: 0 0 1.25rem;
+  }
+  .admin-muted {
+    color: var(--color-ink-muted);
+    font-size: 0.9rem;
+  }
+  .admin-banner {
+    margin: 0.85rem 0 0;
+    padding: 0.65rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+  .admin-banner-ok {
+    background: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+  }
+  .admin-banner-warn {
+    background: #fff7ed;
+    color: #9a3412;
+    border: 1px solid #fed7aa;
+  }
+  .admin-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    background: #fff;
+    margin-bottom: 1.75rem;
+  }
+  .admin-perm-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.82rem;
+    min-width: 720px;
+  }
+  .admin-perm-table th,
+  .admin-perm-table td {
+    padding: 0.65rem 0.55rem;
+    border-bottom: 1px solid var(--color-border);
+    text-align: center;
+    vertical-align: middle;
+  }
+  .admin-perm-table thead th {
+    background: #1e3a5f;
+    color: #fff;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+  .admin-perm-table thead th.admin-perm-sticky {
+    text-align: left;
+    left: 0;
+    z-index: 3;
+  }
+  .admin-perm-sticky {
+    position: sticky;
+    left: 0;
+    background: #fff;
+    text-align: left;
+    z-index: 1;
+    min-width: 9.5rem;
+    box-shadow: 2px 0 6px rgba(0, 0, 0, 0.04);
+  }
+  .admin-perm-table tbody th.admin-perm-sticky {
+    background: #f4f7fb;
+  }
+  .admin-perm-col-label {
+    display: inline-block;
+    max-width: 6.5rem;
+    white-space: normal;
+    line-height: 1.25;
+    font-size: 0.72rem;
+  }
+  .admin-role-name {
+    font-weight: 700;
+    color: #1e3a5f;
+    font-size: 0.9rem;
+  }
+  .admin-role-hint {
+    font-weight: 400;
+    font-size: 0.72rem;
+    color: var(--color-ink-muted);
+    margin-top: 0.15rem;
+  }
+  .admin-check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .admin-check input {
+    width: 1.05rem;
+    height: 1.05rem;
+    accent-color: #1e3a5f;
+    cursor: pointer;
+  }
+  .admin-perm-legend h2 {
+    font-family: var(--font-serif);
+    font-size: 1.15rem;
+    color: #1e3a5f;
+    margin: 0 0 0.75rem;
+  }
+  .admin-perm-cat {
+    margin-bottom: 1rem;
+  }
+  .admin-perm-cat h3 {
+    font-size: 0.95rem;
+    margin: 0 0 0.35rem;
+    color: var(--color-maroon);
+  }
+  .admin-perm-cat ul {
+    margin: 0;
+    padding-left: 1.1rem;
+    line-height: 1.55;
+    font-size: 0.88rem;
   }
 
   .nav-auth {

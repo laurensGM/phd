@@ -11,11 +11,17 @@ function appHref(path: string) {
 }
 
 export default function AuthBar() {
-  const { loading, isSignedIn, user, role, memberships } = useAuth();
+  const { loading, isSignedIn, user, role, memberships, isSuperadmin } = useAuth();
   const configured = isSupabaseConfigured();
   const [open, setOpen] = useState(false);
   const [displayName, setDisplayName] = useState<string | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const slot = document.getElementById('nav-admin-slot');
+    if (!slot) return;
+    slot.hidden = !( !loading && isSignedIn && isSuperadmin );
+  }, [loading, isSignedIn, isSuperadmin]);
 
   useEffect(() => {
     if (!supabase || !user?.id) {
@@ -23,12 +29,13 @@ export default function AuthBar() {
       return;
     }
     let cancelled = false;
-    void supabase
-      .from('profiles')
-      .select('display_name')
-      .eq('id', user.id)
-      .maybeSingle()
-      .then(({ data, error }) => {
+    void (async () => {
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('display_name')
+          .eq('id', user.id)
+          .maybeSingle();
         if (cancelled) return;
         if (error) {
           console.warn('Could not load profile display name', error.message);
@@ -40,10 +47,10 @@ export default function AuthBar() {
           (user.user_metadata?.full_name as string | undefined) ||
           null;
         setDisplayName(name);
-      })
-      .catch((err) => {
+      } catch (err) {
         if (!cancelled) console.warn('Profile fetch failed', err);
-      });
+      }
+    })();
     return () => {
       cancelled = true;
     };
@@ -143,6 +150,15 @@ export default function AuthBar() {
           >
             Profile
           </a>
+          {isSuperadmin && (
+            <a
+              className="nav-profile-menu-item nav-profile-menu-admin"
+              role="menuitem"
+              href={appHref('admin/')}
+            >
+              Admin panel
+            </a>
+          )}
           <a
             className="nav-profile-menu-item"
             role="menuitem"

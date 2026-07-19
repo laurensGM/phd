@@ -589,6 +589,7 @@ export interface Database {
           id: string;
           email: string | null;
           display_name: string | null;
+          is_superadmin: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -596,12 +597,14 @@ export interface Database {
           id: string;
           email?: string | null;
           display_name?: string | null;
+          is_superadmin?: boolean;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
           email?: string | null;
           display_name?: string | null;
+          is_superadmin?: boolean;
           updated_at?: string;
         };
       };
@@ -652,6 +655,48 @@ export interface Database {
           accepted_at?: string | null;
         };
       };
+      app_permissions: {
+        Row: {
+          key: string;
+          label: string;
+          description: string | null;
+          category: string;
+          sort_order: number;
+          created_at: string;
+        };
+        Insert: {
+          key: string;
+          label: string;
+          description?: string | null;
+          category?: string;
+          sort_order?: number;
+          created_at?: string;
+        };
+        Update: {
+          label?: string;
+          description?: string | null;
+          category?: string;
+          sort_order?: number;
+        };
+      };
+      role_permissions: {
+        Row: {
+          role: string;
+          permission_key: string;
+          allowed: boolean;
+          updated_at: string;
+        };
+        Insert: {
+          role: string;
+          permission_key: string;
+          allowed?: boolean;
+          updated_at?: string;
+        };
+        Update: {
+          allowed?: boolean;
+          updated_at?: string;
+        };
+      };
     };
     Functions: {
       claim_default_project_if_empty: {
@@ -688,6 +733,10 @@ export interface Database {
       };
       can_manage_project: {
         Args: { p_project_id: string };
+        Returns: boolean;
+      };
+      is_superadmin: {
+        Args: Record<string, never>;
         Returns: boolean;
       };
     };

@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AdminPermissionsPanel from '../../components/AdminPermissionsPanel';
+---
+
+<BaseLayout
+  title="Admin · Roles & permissions"
+  description="Control what superadmins, students, and supervisors can see and do"
+  navTheme="admin"
+>
+  <h1>Roles &amp; permissions</h1>
+  <p class="page-desc">
+    Superadmin controls for the PhD Manager app. Permission keys are placeholders until feature gates are
+    wired into each page.
+  </p>
+  <AdminPermissionsPanel client:load />
+</BaseLayout>
+
+<style>
+  .page-desc {
+    color: var(--color-ink-muted);
+    margin-bottom: 1.5rem;
+    max-width: 42rem;
+    line-height: 1.55;
+  }
+</style>
