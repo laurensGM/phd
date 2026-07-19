@@ -129,19 +129,14 @@
     "profilePath": "supervisor"
   },
   {
-    "id": "nicky-terblanche",
-    "name": "Nicky Terblanche",
-    "image": "nicky-terblanche.jpg",
-    "bio": "Nicky Terblanche is an Associate Professor of Leadership Coaching at Stellenbosch Business School and Head of the MPhil Leadership Coaching and PhD programmes. He holds a PhD in Business Management and an MSc in Electronic Engineering. His research focuses on transition coaching, transformative learning, social network analysis, complexity theory, and the application of AI and machine learning in coaching. He has developed an AI Bot Coach called Vici and researches how newly appointed senior leaders can be supported during career transitions.",
+    "id": "lee-ann-steenkamp",
+    "name": "Lee-Ann Steenkamp",
+    "image": "lee-ann-steenkamp.jpg",
+    "bio": "Lee-Ann Steenkamp is an Associate Professor (full-time faculty) at Stellenbosch Business School. She has held that role since January 2024, having previously served as Senior Lecturer at Stellenbosch University (2016–2023). She holds a PhD and an MCom (Tax) from the University of Cape Town, and a BAcc Hons from Stellenbosch University. Her research areas are corporate governance, taxation, and climate change.",
     "keyContributions": [],
-    "keyArticles": [
-      {
-        "citation": "Terblanche, N., Albertyn, R., & Van Coller-Peter, S. (2020). Why newly appointed senior leaders need support. Stellenbosch Business School Management Review.",
-        "doi": "",
-        "description": "Explores organisational support for newly promoted leaders during critical transitions."
-      }
-    ],
-    "constructs": []
+    "keyArticles": [],
+    "constructs": [],
+    "profilePath": "supervisor"
   },
   {
     "id": "charlene-gerber",

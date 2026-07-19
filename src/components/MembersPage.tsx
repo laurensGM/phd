@@ -51,7 +51,6 @@ export default function MembersPage() {
         .from('project_invites')
         .select('id, email, role, created_at, accepted_at')
         .eq('project_id', primaryProjectId)
-        .is('accepted_at', null)
         .order('created_at', { ascending: false }),
     ]);
     if (mErr) {
@@ -222,7 +221,7 @@ export default function MembersPage() {
         <section className="members-section">
           <h2>Invite supervisor or student</h2>
           <p className="auth-muted">
-            They sign in with a magic link using this email. Pending invites appear below until they join.
+            They sign in with a magic link using this email. Invites below show Pending until they join, then Accepted.
           </p>
           <form className="auth-form members-invite-form" onSubmit={(e) => void onInvite(e)}>
             <label className="auth-label" htmlFor="invite-email">
@@ -259,19 +258,40 @@ export default function MembersPage() {
 
       {canManage && invites.length > 0 && (
         <section className="members-section">
-          <h2>Pending invites</h2>
+          <h2>Invites</h2>
           <ul className="members-list">
-            {invites.map((inv) => (
-              <li key={inv.id} className="members-row">
-                <div>
-                  <div className="members-name">{inv.email}</div>
-                  <div className="auth-muted">role: {inv.role}</div>
-                </div>
-                <button type="button" className="auth-btn-text" onClick={() => void onCancelInvite(inv.id)}>
-                  Cancel
-                </button>
-              </li>
-            ))}
+            {invites.map((inv) => {
+              const accepted = !!inv.accepted_at;
+              return (
+                <li key={inv.id} className="members-row">
+                  <div>
+                    <div className="members-name">{inv.email}</div>
+                    <div className="auth-muted">role: {inv.role}</div>
+                    {accepted && inv.accepted_at && (
+                      <div className="auth-muted">
+                        Accepted {new Date(inv.accepted_at).toLocaleString()}
+                      </div>
+                    )}
+                  </div>
+                  <div className="members-row-actions">
+                    <span
+                      className={`members-invite-status${accepted ? ' is-accepted' : ' is-pending'}`}
+                    >
+                      {accepted ? 'Accepted' : 'Pending'}
+                    </span>
+                    {!accepted && (
+                      <button
+                        type="button"
+                        className="auth-btn-text"
+                        onClick={() => void onCancelInvite(inv.id)}
+                      >
+                        Cancel
+                      </button>
+                    )}
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         </section>
       )}

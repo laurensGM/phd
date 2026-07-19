@@ -203,7 +203,7 @@ const isAdminNav = navTheme === 'admin';
               <li><a href={`${base}diary/`} data-requires-permission="diary.view">Diary</a></li>
               <li><a href={`${base}tasks/`} data-requires-permission="tasks.view">Tasks</a></li>
               <li><a href={`${base}meeting-notes/`} data-requires-permission="meeting_notes.view">Meeting notes</a></li>
-              <li><a href={`${base}supervisor/`}>Supervisor</a></li>
+              <li><a href={`${base}supervisor/`}>Supervisors</a></li>
               <li><a href={`${base}members/`} data-requires-permission="members.manage">Members</a></li>
             </ul>
           </li>
@@ -1226,6 +1226,21 @@ const isAdminNav = navTheme === 'admin';
     border-radius: 4px;
     background: rgba(113, 32, 56, 0.1);
     color: var(--color-maroon);
+  }
+  .members-invite-status {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+  }
+  .members-invite-status.is-pending {
+    background: #fff7ed;
+    color: #9a3412;
+  }
+  .members-invite-status.is-accepted {
+    background: #ecfdf5;
+    color: #047857;
   }
   .members-row-actions {
     display: flex;

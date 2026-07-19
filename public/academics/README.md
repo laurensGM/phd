@@ -6,7 +6,7 @@ Place profile photos here so they appear on the Academics page. Use these filena
 - `davis.jpg` — Fred Davis
 - `venkatesh.jpg` — Viswanath Venkatesh
 - `marlize-terblanche-smit.jpg` — Marlize Terblanche-Smit
-- `nicky-terblanche.jpg` — Nicky Terblanche
+- `lee-ann-steenkamp.jpg` — Lee-Ann Steenkamp
 - `charlene-gerber.jpg` — Charlene Gerber
 - `richard-heeks.jpg` — Richard Heeks
 - `geoff-walsham.jpg` — Geoff Walsham

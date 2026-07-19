@@ -1,16 +1,59 @@
-{
-  "name": "Prof Marlize Terblanche-Smit",
-  "title": "Professor of Marketing, Stellenbosch Business School",
-  "profileUrl": "https://www.stellenboschbusiness.ac.za/profile/prof-marlize-terblanche-smit",
-  "orcidId": "0000-0002-4877-9610",
-  "publicationsUrl": "https://researcherprofiles.sun.ac.za/1182-marlize-terblanchesmit/publications",
-  "linkedInUrl": "https://www.linkedin.com/in/marlize-terblanche-smit/",
-  "researchGateUrl": "https://www.researchgate.net/profile/Marlize-Terblanche-Smit",
-  "keyPublications": [
-    {
-      "title": "Add key article title",
-      "citation": "Authors (Year). Journal or source.",
-      "url": ""
-    }
-  ]
-}
+[
+  {
+    "name": "Prof Marlize Terblanche-Smit",
+    "title": "Professor of Marketing, Stellenbosch Business School",
+    "profileUrl": "https://www.stellenboschbusiness.ac.za/profile/prof-marlize-terblanche-smit",
+    "orcidId": "0000-0002-4877-9610",
+    "publicationsUrl": "https://researcherprofiles.sun.ac.za/1182-marlize-terblanchesmit/publications",
+    "linkedInUrl": "https://www.linkedin.com/in/marlize-terblanche-smit/",
+    "researchGateUrl": "https://www.researchgate.net/profile/Marlize-Terblanche-Smit",
+    "bio": [
+      "Professor Marlize Terblanche-Smit is a Professor of Marketing at Stellenbosch Business School (USB), Bellville, South Africa. She has been in this role since 2019, having previously served as Associate Professor at Stellenbosch University (2013–2018). She served as head of the MBA programme at USB from January 2014, bringing expertise in marketing and strategy to the programme.",
+      "Her institutional profile is tagged with Responsible Leadership. Stellenbosch Business School holds AACSB, EQUIS and AMBA accreditation and was the first school from an African university to hold all three international accreditations."
+    ],
+    "expertise": [
+      "Marketing strategy and branding",
+      "Marketing communication and digital marketing",
+      "Non-profit and social marketing",
+      "Consumer behaviour"
+    ],
+    "education": [
+      "PhD — Stellenbosch University (2006–2008)",
+      "MEcon (Master of Economics in Business Management) — Stellenbosch University (1997–1998)",
+      "BEcon (Hons) — Bachelor of Economics Honours, Business Management and Marketing — Stellenbosch University (1991)",
+      "BEcon — Bachelor of Economics, Business Management and Marketing — Stellenbosch University (1988–1990)"
+    ],
+    "keyPublications": [
+      {
+        "title": "Add key article title",
+        "citation": "Authors (Year). Journal or source.",
+        "url": ""
+      }
+    ]
+  },
+  {
+    "name": "Prof Lee-Ann Steenkamp",
+    "title": "Associate Professor, Stellenbosch Business School",
+    "profileUrl": "https://www.stellenboschbusiness.ac.za/profile/prof-lee-ann-steenkamp",
+    "orcidId": "0000-0001-7975-4259",
+    "publicationsUrl": "https://researcherprofiles.sun.ac.za/4433-leeann-steenkamp",
+    "linkedInUrl": "",
+    "researchGateUrl": "",
+    "email": "leeanns@sun.ac.za",
+    "bio": [
+      "Professor Lee-Ann Steenkamp is an Associate Professor (full-time faculty) at Stellenbosch Business School. She has been Associate Professor since January 2024, having previously served as Senior Lecturer at Stellenbosch University (2016–2023).",
+      "Her research focuses on corporate governance, taxation, and climate change."
+    ],
+    "expertise": [
+      "Corporate governance",
+      "Taxation",
+      "Climate change"
+    ],
+    "education": [
+      "PhD — University of Cape Town (2016–2018)",
+      "MCom (Tax) — University of Cape Town (2011)",
+      "BAcc Hons — Stellenbosch University (2001–2004)"
+    ],
+    "keyPublications": []
+  }
+]
