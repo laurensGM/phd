@@ -127,4 +127,12 @@ Superadmin only. From **Admin** or the avatar menu:
 
 This is UI preview. Database RLS is still membership-based until permissions are enforced end-to-end.
 
+## 11. Feedback widget & inbox
+
+After migration `055_feedback_inbox.sql`:
+
+- Signed-in users see a **?** button (bottom-right) to submit a feature idea or bug report
+- Superadmin opens **Inbox** from the avatar menu (`/phd/inbox/`) — unread badge included
+- RLS: anyone authenticated may insert; only `is_superadmin()` may read/update/delete
+
 

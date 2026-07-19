@@ -3,6 +3,7 @@ import AuthBar from '../components/AuthBar';
 import AdminNavLink from '../components/AdminNavLink';
 import ViewAsBanner from '../components/ViewAsBanner';
 import NavPermissionFilter from '../components/NavPermissionFilter';
+import FeedbackWidget from '../components/FeedbackWidget';
 
 interface Props {
   title: string;
@@ -215,6 +216,7 @@ const isAdminNav = navTheme === 'admin';
     </header>
     <ViewAsBanner client:load />
     <NavPermissionFilter client:load />
+    <FeedbackWidget client:load />
     <script is:inline>
       (function () {
         try {
@@ -860,6 +862,7 @@ const isAdminNav = navTheme === 'admin';
   }
 
   .nav-avatar {
+    position: relative;
     width: 2.25rem;
     height: 2.25rem;
     border-radius: 50%;
@@ -956,7 +959,10 @@ const isAdminNav = navTheme === 'admin';
     border-radius: 8px;
   }
   .nav-profile-menu-item {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
     width: 100%;
     text-align: left;
     border: none;
@@ -968,6 +974,7 @@ const isAdminNav = navTheme === 'admin';
     padding: 0.55rem 0.65rem;
     border-radius: 8px;
     cursor: pointer;
+    box-sizing: border-box;
   }
   .nav-profile-menu-item:hover {
     background: rgba(113, 32, 56, 0.08);
@@ -977,6 +984,35 @@ const isAdminNav = navTheme === 'admin';
   .nav-profile-menu-logout {
     color: var(--color-error, #b91c1c);
     margin-top: 0.15rem;
+  }
+  .nav-inbox-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.25rem;
+    height: 1.25rem;
+    padding: 0 0.35rem;
+    border-radius: 999px;
+    background: var(--color-maroon);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .nav-avatar-wrap {
+    position: relative;
+    display: inline-flex;
+  }
+  .nav-avatar-dot {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: #d4af37;
+    border: 2px solid var(--color-maroon);
+    pointer-events: none;
   }
 
   .profile-page {
@@ -1832,5 +1868,151 @@ const isAdminNav = navTheme === 'admin';
     font-size: 0.75rem;
     color: var(--color-ink-muted);
     text-align: center;
+  }
+
+  /* Feedback widget (all signed-in roles) */
+  .feedback-widget {
+    position: fixed;
+    right: 1.15rem;
+    bottom: 1.15rem;
+    z-index: 90;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.65rem;
+  }
+  .feedback-fab {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    border: none;
+    background: var(--color-maroon);
+    color: #fff;
+    font-family: var(--font-serif);
+    font-size: 1.35rem;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(40, 20, 30, 0.28);
+  }
+  .feedback-fab:hover,
+  .feedback-fab:focus-visible {
+    background: #8a2f4a;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.4), 0 6px 18px rgba(40, 20, 30, 0.28);
+  }
+  .feedback-fab.is-open {
+    background: #5c1d2a;
+  }
+  .feedback-panel {
+    width: min(22rem, calc(100vw - 2rem));
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(40, 20, 30, 0.2);
+    padding: 0.9rem 1rem 1rem;
+  }
+  .feedback-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .feedback-panel-title {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: 1.15rem;
+    color: var(--color-ink);
+  }
+  .feedback-panel-close {
+    border: none;
+    background: transparent;
+    font-size: 1.35rem;
+    line-height: 1;
+    color: var(--color-ink-muted);
+    cursor: pointer;
+    padding: 0.15rem 0.35rem;
+  }
+  .feedback-kind {
+    display: flex;
+    gap: 0.35rem;
+    margin-bottom: 0.75rem;
+  }
+  .feedback-kind-btn {
+    flex: 1;
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    padding: 0.4rem 0.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    background: #fff;
+    color: var(--color-ink-muted);
+    cursor: pointer;
+  }
+  .feedback-kind-btn.is-active {
+    border-color: var(--color-maroon);
+    background: rgba(113, 32, 56, 0.08);
+    color: var(--color-maroon);
+    font-weight: 600;
+  }
+  .feedback-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    margin-bottom: 0.7rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+  .feedback-optional {
+    font-weight: 400;
+    color: var(--color-ink-muted);
+  }
+  .feedback-input,
+  .feedback-textarea {
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    font-weight: 400;
+    padding: 0.5rem 0.65rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    color: var(--color-ink);
+    background: #fff;
+  }
+  .feedback-textarea {
+    resize: vertical;
+    min-height: 5.5rem;
+    line-height: 1.45;
+  }
+  .feedback-error {
+    margin: 0 0 0.65rem;
+    font-size: 0.85rem;
+    color: var(--color-maroon);
+  }
+  .feedback-submit {
+    width: 100%;
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.55rem 0.85rem;
+    border: none;
+    border-radius: 8px;
+    background: var(--color-maroon);
+    color: #fff;
+    cursor: pointer;
+  }
+  .feedback-submit:hover:not(:disabled) {
+    background: #8a2f4a;
+  }
+  .feedback-submit:disabled {
+    opacity: 0.55;
+    cursor: default;
+  }
+  .feedback-thanks {
+    margin: 0.5rem 0 0.25rem;
+    color: #1a5f4a;
+    font-size: 0.95rem;
+    line-height: 1.45;
   }
 </style>

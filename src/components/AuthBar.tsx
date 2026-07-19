@@ -28,6 +28,7 @@ export default function AuthBar() {
   const configured = isSupabaseConfigured();
   const [open, setOpen] = useState(false);
   const [displayName, setDisplayName] = useState<string | null>(null);
+  const [unreadCount, setUnreadCount] = useState(0);
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -62,6 +63,33 @@ export default function AuthBar() {
       cancelled = true;
     };
   }, [user?.id, user?.user_metadata?.full_name]);
+
+  useEffect(() => {
+    if (!supabase || !isRealSuperadmin || !isSignedIn) {
+      setUnreadCount(0);
+      return;
+    }
+    let cancelled = false;
+    const loadUnread = async () => {
+      const { count, error } = await supabase
+        .from('feedback_messages')
+        .select('id', { count: 'exact', head: true })
+        .eq('status', 'unread');
+      if (cancelled) return;
+      if (error) {
+        console.warn('Could not load inbox unread count', error.message);
+        return;
+      }
+      setUnreadCount(count ?? 0);
+    };
+    void loadUnread();
+    const onFocus = () => void loadUnread();
+    window.addEventListener('focus', onFocus);
+    return () => {
+      cancelled = true;
+      window.removeEventListener('focus', onFocus);
+    };
+  }, [isRealSuperadmin, isSignedIn, open]);
 
   useEffect(() => {
     if (!open) return;
@@ -135,6 +163,7 @@ export default function AuthBar() {
         onClick={() => setOpen((v) => !v)}
       >
         {initials}
+        {isRealSuperadmin && unreadCount > 0 && <span className="nav-avatar-dot" aria-hidden="true" />}
       </button>
       {open && (
         <div className="nav-profile-menu" role="menu">
@@ -156,6 +185,16 @@ export default function AuthBar() {
           <a className="nav-profile-menu-item" role="menuitem" href={appHref('profile/')}>
             Profile
           </a>
+          {isRealSuperadmin && (
+            <a className="nav-profile-menu-item nav-profile-menu-inbox" role="menuitem" href={appHref('inbox/')}>
+              Inbox
+              {unreadCount > 0 && (
+                <span className="nav-inbox-badge" aria-label={`${unreadCount} unread`}>
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
+            </a>
+          )}
           {isSuperadmin && (
             <a
               className="nav-profile-menu-item nav-profile-menu-admin"
