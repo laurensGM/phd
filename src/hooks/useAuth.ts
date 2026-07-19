@@ -68,9 +68,8 @@ export function useAuth() {
 
     let cancelled = false;
 
-    supabase.auth.getSession().then(({ data }) => {
+    const applySession = (session: Session | null) => {
       if (cancelled) return;
-      const session = data.session;
       setState((s) => ({
         ...s,
         loading: false,
@@ -79,20 +78,40 @@ export function useAuth() {
         configured: true,
       }));
       void refreshMemberships(session?.user ?? null);
-    });
+    };
+
+    // Never leave the UI stuck on “Checking session…”
+    const failSafe = window.setTimeout(() => {
+      if (!cancelled) {
+        setState((s) => (s.loading ? { ...s, loading: false } : s));
+      }
+    }, 4000);
+
+    void supabase.auth
+      .getSession()
+      .then(({ data, error }) => {
+        if (error) {
+          console.warn('getSession failed', error);
+          applySession(null);
+          return;
+        }
+        applySession(data.session);
+      })
+      .catch((err) => {
+        console.warn('getSession error', err);
+        applySession(null);
+      })
+      .finally(() => {
+        window.clearTimeout(failSafe);
+      });
 
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      setState((s) => ({
-        ...s,
-        loading: false,
-        session,
-        user: session?.user ?? null,
-      }));
-      void refreshMemberships(session?.user ?? null);
+      applySession(session);
     });
 
     return () => {
       cancelled = true;
+      window.clearTimeout(failSafe);
       sub.subscription.unsubscribe();
     };
   }, [refreshMemberships]);

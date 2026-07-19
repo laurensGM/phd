@@ -16,19 +16,51 @@ This will:
 
 **After this migration, the app will not load data until you sign in.**
 
-## 2. Enable Auth in Supabase
+## 2. Enable Auth in Supabase (magic link)
 
-In the Supabase dashboard:
+Magic link login is part of the **Email** provider. There is usually **no separate “Magic Link” switch** — Email is on by default.
 
-1. **Authentication → Providers → Email** — enable Email (magic link / OTP).
-2. **Authentication → URL configuration**
-   - **Site URL:** `https://laurensgm.github.io/phd/` (or your Pages URL)
-   - **Redirect URLs** (add all you use):
-     - `https://laurensgm.github.io/phd/login/`
-     - `http://localhost:4321/phd/login/` (local Astro with base `/phd/`)
-     - `http://localhost:4321/login/` if you run without base locally
+### A. Confirm Email is enabled
 
-3. Optional: turn off “Confirm email” friction if magic links alone are enough for your workflow (dashboard setting depends on Supabase version).
+1. Open [https://supabase.com/dashboard](https://supabase.com/dashboard) and select your PhD project.
+2. In the left sidebar: **Authentication** → **Sign In / Providers** (sometimes labelled **Providers**).
+3. Open **Email**.
+4. Ensure **Enable Email provider** is **ON**.
+5. Leave magic-link behaviour as default (the app uses `signInWithOtp`, which emails a link).
+
+### B. Allow your site as a redirect target (required)
+
+1. Still under **Authentication**, open **URL Configuration**.
+2. Set **Site URL** to:
+   ```
+   https://laurensgm.github.io/phd/
+   ```
+3. Under **Redirect URLs**, add (one per line):
+   ```
+   https://laurensgm.github.io/phd/login/
+   http://localhost:4321/phd/login/
+   ```
+4. Save.
+
+Without these URLs, the email may send but clicking the link will fail or land in the wrong place.
+
+### C. Email delivery note
+
+On the free Supabase SMTP, magic-link emails can be slow, rate-limited (~2/hour), or land in spam. Check spam. For reliable delivery later, add custom SMTP (Resend, etc.) under Authentication → SMTP.
+
+### D. What you should see on the login page
+
+After deploying the latest frontend, open:
+
+`https://laurensgm.github.io/phd/login/`
+
+You should see:
+
+- title **Sign in with email**
+- an **Email** field
+- button **Email magic link**
+
+If you only see **Checking session…**, hard-refresh (or wait a few seconds). That spinner should clear and show the form.
 
 ## 3. Claim ownership (you — first login)
 
