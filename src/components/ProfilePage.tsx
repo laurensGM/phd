@@ -146,7 +146,9 @@ export default function ProfilePage() {
           />
         </label>
         <p className="auth-muted">
-          Initials on the avatar come from this name (e.g. Laurens Goormachtigha → LG).
+          Use your real name as <strong>First Last</strong> (e.g. Laurens Goormachtigha). That sets the avatar
+          to <strong>LG</strong>. If this field looked like your email prefix before, that was filled in
+          automatically at sign-up — you can replace it.
         </p>
 
         <label className="auth-label" htmlFor="profile-email">
