@@ -214,14 +214,14 @@ const isAdminNav = navTheme === 'admin';
     <main class="main-content">
       <slot />
     </main>
-    <footer class="site-footer">
+    <footer class={`site-footer${isAdminNav ? ' site-footer-admin' : ''}`}>
       <div class="footer-brand">
         <img src={`${base}logo-pos.png`} alt="PhD Manager" class="footer-logo" width="32" height="32" />
         <div>
-          <p class="footer-title">PhD Manager</p>
+          <p class="footer-title">{isAdminNav ? 'PhD Admin' : 'PhD Manager'}</p>
         </div>
       </div>
-      <p class="footer-tagline">Organizing research one snippet at a time</p>
+      <p class="footer-tagline">{isAdminNav ? 'Roles, permissions, and app control' : 'Organizing research one snippet at a time'}</p>
     </footer>
     <script is:inline>
       (function () {
@@ -1205,6 +1205,18 @@ const isAdminNav = navTheme === 'admin';
     text-align: center;
     font-size: 0.85rem;
     border-top: 3px solid var(--color-gold);
+  }
+
+  .site-footer-admin {
+    background: #1e3a5f;
+    border-top-color: #7eb6e8;
+    color: #cfe6f8;
+  }
+  .site-footer-admin .footer-title {
+    color: #9ec9f0;
+  }
+  .site-footer-admin .footer-tagline {
+    color: rgba(255, 255, 255, 0.8);
   }
 
   .footer-brand {
