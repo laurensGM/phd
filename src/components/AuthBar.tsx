@@ -2,12 +2,17 @@ import { useEffect, useRef, useState } from 'react';
 import { signOut } from '../lib/auth';
 import { useAuth } from '../hooks/useAuth';
 import { getUserInitials } from '../lib/userInitials';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
-const base = import.meta.env.BASE_URL || '/';
+const base = (import.meta.env.BASE_URL || '/').replace(/\/?$/, '/');
+
+function appHref(path: string) {
+  return `${base}${path.replace(/^\//, '')}`;
+}
 
 export default function AuthBar() {
-  const { loading, configured, isSignedIn, user, role, memberships } = useAuth();
+  const { loading, isSignedIn, user, role, memberships } = useAuth();
+  const configured = isSupabaseConfigured();
   const [open, setOpen] = useState(false);
   const [displayName, setDisplayName] = useState<string | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -23,13 +28,21 @@ export default function AuthBar() {
       .select('display_name')
       .eq('id', user.id)
       .maybeSingle()
-      .then(({ data }) => {
+      .then(({ data, error }) => {
         if (cancelled) return;
+        if (error) {
+          console.warn('Could not load profile display name', error.message);
+          setDisplayName((user.user_metadata?.full_name as string | undefined) ?? null);
+          return;
+        }
         const name =
           (data as { display_name?: string | null } | null)?.display_name ||
           (user.user_metadata?.full_name as string | undefined) ||
           null;
         setDisplayName(name);
+      })
+      .catch((err) => {
+        if (!cancelled) console.warn('Profile fetch failed', err);
       });
     return () => {
       cancelled = true;
@@ -54,7 +67,16 @@ export default function AuthBar() {
     };
   }, [open]);
 
-  if (!configured) return null;
+  // Always render a stable control so the top-right slot never goes blank
+  if (!configured) {
+    return (
+      <div className="nav-profile">
+        <a className="nav-sign-in" href={appHref('login/')}>
+          Sign in
+        </a>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -67,7 +89,7 @@ export default function AuthBar() {
   if (!isSignedIn) {
     return (
       <div className="nav-profile">
-        <a className="nav-sign-in" href={`${base}login/`}>
+        <a className="nav-sign-in" href={appHref('login/')}>
           Sign in
         </a>
       </div>
@@ -81,7 +103,7 @@ export default function AuthBar() {
   const onLogout = () => {
     setOpen(false);
     void signOut().then(() => {
-      window.location.href = `${base}login/`;
+      window.location.assign(appHref('login/'));
     });
   };
 
@@ -114,13 +136,26 @@ export default function AuthBar() {
               Not on a project yet. Open Login once if you are the owner, or wait for an invite.
             </p>
           )}
-          <a className="nav-profile-menu-item" role="menuitem" href={`${base}profile/`} onClick={() => setOpen(false)}>
+          <a
+            className="nav-profile-menu-item"
+            role="menuitem"
+            href={appHref('profile/')}
+          >
             Profile
           </a>
-          <a className="nav-profile-menu-item" role="menuitem" href={`${base}members/`} onClick={() => setOpen(false)}>
+          <a
+            className="nav-profile-menu-item"
+            role="menuitem"
+            href={appHref('members/')}
+          >
             Project members
           </a>
-          <button type="button" className="nav-profile-menu-item nav-profile-menu-logout" role="menuitem" onClick={onLogout}>
+          <button
+            type="button"
+            className="nav-profile-menu-item nav-profile-menu-logout"
+            role="menuitem"
+            onClick={onLogout}
+          >
             Log out
           </button>
         </div>

@@ -491,12 +491,13 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
     border-bottom: 3px solid var(--color-gold);
   }
 
-  .auth-bar-root,
   .nav-auth {
     flex-shrink: 0;
     margin-left: 0.75rem;
     display: flex;
     align-items: center;
+    min-width: 2.25rem;
+    min-height: 2.25rem;
   }
 
   .nav-profile {
@@ -656,6 +657,12 @@ const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
   }
   .profile-form {
     margin-bottom: 1rem;
+  }
+  .profile-bio {
+    resize: vertical;
+    min-height: 5rem;
+    font-weight: 400;
+    line-height: 1.45;
   }
   .profile-actions {
     display: flex;

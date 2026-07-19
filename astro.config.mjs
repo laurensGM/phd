@@ -44,7 +44,8 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,svg,png,ico,txt,jpg,jpeg,webp,woff,woff2,json}'],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         cleanupOutdatedCaches: true,
-        cacheId: 'phd-manager-v3',
+        cacheId: 'phd-manager-v4',
+        navigateFallback: null,
         // Query params (e.g. ?id=) must not break precache match for paper detail
         ignoreURLParametersMatching: [/^id$/, /^v$/, /^highlight$/],
         runtimeCaching: [
