@@ -127,9 +127,7 @@ export default function AdminPermissionsPanel() {
   if (!isSuperadmin) {
     return (
       <p className="admin-banner admin-banner-warn">
-        This area is only available to superadmins. If you own this PhD project, run migration{' '}
-        <code>053_role_permissions_admin.sql</code> and refresh — default-project owners are promoted
-        automatically.
+        Access denied. Only the superadmin can open this panel.
       </p>
     );
   }

@@ -49,12 +49,19 @@ export function useAuth() {
       const result = await bootstrapProjectAccess();
       const primary = result.memberships[0] ?? null;
 
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('is_superadmin')
-        .eq('id', user.id)
-        .maybeSingle();
-      const isSuperadmin = !!(profile as { is_superadmin?: boolean } | null)?.is_superadmin;
+      // Prefer DB RPC so client cannot spoof admin via stale profile cache
+      const { data: rpcFlag, error: rpcErr } = await supabase.rpc('is_superadmin');
+      let isSuperadmin = false;
+      if (!rpcErr && typeof rpcFlag === 'boolean') {
+        isSuperadmin = rpcFlag;
+      } else {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('is_superadmin')
+          .eq('id', user.id)
+          .maybeSingle();
+        isSuperadmin = !!(profile as { is_superadmin?: boolean } | null)?.is_superadmin;
+      }
 
       setState((s) => ({
         ...s,

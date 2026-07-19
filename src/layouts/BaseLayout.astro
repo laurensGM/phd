@@ -1,5 +1,6 @@
 ---
 import AuthBar from '../components/AuthBar';
+import AdminNavLink from '../components/AdminNavLink';
 
 interface Props {
   title: string;
@@ -203,11 +204,9 @@ const isAdminNav = navTheme === 'admin';
               <li><a href={`${base}members/`}>Members</a></li>
             </ul>
           </li>
-          <li class="nav-admin-link-slot" id="nav-admin-slot" hidden>
-            <a href={`${base}admin/`} class="nav-admin-link">Admin</a>
-          </li>
         </ul>
         <div id="auth-bar-root" class="nav-auth">
+          <AdminNavLink client:load />
           <AuthBar client:load />
         </div>
       </nav>
@@ -681,6 +680,7 @@ const isAdminNav = navTheme === 'admin';
     margin-left: 0.75rem;
     display: flex;
     align-items: center;
+    gap: 0.55rem;
     min-width: 2.25rem;
     min-height: 2.25rem;
   }

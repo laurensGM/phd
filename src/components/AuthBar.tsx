@@ -18,12 +18,6 @@ export default function AuthBar() {
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const slot = document.getElementById('nav-admin-slot');
-    if (!slot) return;
-    slot.hidden = !( !loading && isSignedIn && isSuperadmin );
-  }, [loading, isSignedIn, isSuperadmin]);
-
-  useEffect(() => {
     if (!supabase || !user?.id) {
       setDisplayName(null);
       return;

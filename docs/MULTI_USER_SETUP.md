@@ -108,12 +108,13 @@ The browser extension still uses the anon key without a user session — after R
 
 ## 9. Admin panel (roles & permissions)
 
-After migration `053_role_permissions_admin.sql`:
+After migrations `053` and `054`:
 
-- Default-project **owners** are marked `profiles.is_superadmin = true`
-- Open **Admin** in the navbar (or avatar → Admin panel) → `/phd/admin/`
+- There is **exactly one** superadmin (enforced in the database)
+- Default-project owner is promoted only if no superadmin exists yet
+- Open **Admin** in the navbar (stays visible on every page) or avatar → Admin panel → `/phd/admin/`
 - Navbar turns **dark blue** on admin pages
-- Edit the placeholder permission matrix (rows: superadmin / student / supervisor)
+- Non-superadmins cannot open or edit the panel
 
-Permissions are stored but not yet enforced on every page — that comes next when you wire gates into features.
+Permissions are stored but not yet enforced on every feature page — wire gates next when ready.
 
