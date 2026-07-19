@@ -49,15 +49,16 @@ export function useAuth() {
 
   const refreshMemberships = useCallback(async (user: User | null) => {
     if (!user || !supabase) {
+      // Do not clear session view-as here — multiple Astro islands each run useAuth,
+      // and a transient null session would wipe view-as for the whole page.
       setState((s) => ({
         ...s,
         memberships: [],
         primaryProjectId: null,
         role: null,
         isRealSuperadmin: false,
-        viewAsRole: null,
+        viewAsRole: readViewAsRole(),
       }));
-      writeViewAsRole(null);
       return;
     }
     try {

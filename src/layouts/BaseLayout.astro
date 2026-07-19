@@ -215,6 +215,38 @@ const isAdminNav = navTheme === 'admin';
     </header>
     <ViewAsBanner client:load />
     <NavPermissionFilter client:load />
+    <script is:inline>
+      (function () {
+        try {
+          var role = sessionStorage.getItem('phd_view_as_role');
+          if (role !== 'student' && role !== 'supervisor') return;
+          var deny =
+            role === 'supervisor'
+              ? {
+                  'admin.access': 1,
+                  'members.manage': 1,
+                  'papers.edit': 1,
+                  'snippets.edit': 1,
+                  'claims.edit': 1,
+                  'diary.view': 1,
+                  'diary.edit': 1,
+                  'tasks.edit': 1,
+                }
+              : { 'admin.access': 1 };
+          document.querySelectorAll('[data-requires-permission]').forEach(function (el) {
+            var key = el.getAttribute('data-requires-permission');
+            if (!key || !deny[key]) return;
+            el.classList.add('nav-perm-denied');
+            el.style.setProperty('display', 'none', 'important');
+            var li = el.closest('li');
+            if (li) {
+              li.classList.add('nav-perm-denied');
+              li.hidden = true;
+            }
+          });
+        } catch (e) {}
+      })();
+    </script>
     <main class="main-content">
       <slot />
     </main>
@@ -1304,6 +1336,11 @@ const isAdminNav = navTheme === 'admin';
     color: rgba(255, 255, 255, 0.92);
     font-size: 0.9rem;
     text-decoration: none;
+  }
+
+  .nav-links li.nav-perm-denied,
+  .nav-links a.nav-perm-denied {
+    display: none !important;
   }
 
   .nav-dropdown a:hover {

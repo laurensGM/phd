@@ -68,7 +68,9 @@ export function resolvePermissionRole(opts: {
   viewAsRole: ViewAsRole | null;
   role: ProjectRole | null;
 }): AppPermissionRole | null {
-  if (opts.isViewingAs && opts.viewAsRole) return opts.viewAsRole;
+  // Prefer stored view-as even before isRealSuperadmin finishes loading.
+  // Otherwise nav briefly (or stuck) treats the user as full superadmin after navigation.
+  if (opts.viewAsRole) return opts.viewAsRole;
   if (opts.isRealSuperadmin) return 'superadmin';
   if (opts.role === 'supervisor') return 'supervisor';
   if (opts.role === 'owner' || opts.role === 'student') return 'student';
