@@ -1,0 +1,225 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import DocumentsPage from '../../components/DocumentsPage';
+
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout
+  title="Documents"
+  description="Shared Google Docs and artefact links for student–supervisor collaboration"
+>
+  <p class="back-link"><a href={`${base}outline/`}>← Manager</a></p>
+  <h1>Documents</h1>
+  <p class="page-desc">
+    Share Google Doc (or other) links with your supervisors. They open the file in Google; feedback
+    happens in the Doc itself. Keep sharing permissions set correctly in Google Drive.
+  </p>
+  <DocumentsPage client:load />
+</BaseLayout>
+
+<style>
+  .back-link {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  .back-link a {
+    color: var(--color-maroon);
+  }
+  .page-desc {
+    color: var(--color-ink-muted);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+    max-width: 40rem;
+  }
+
+  :global(.docs-muted),
+  :global(.docs-empty) {
+    color: var(--color-ink-muted);
+    padding: 0.5rem 0 1rem;
+  }
+  :global(.docs-error) {
+    color: var(--color-maroon);
+    background: rgba(113, 32, 56, 0.08);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+  }
+  :global(.docs-add-section) {
+    margin-bottom: 2rem;
+  }
+  :global(.docs-add-btn),
+  :global(.docs-submit) {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.65rem 1.25rem;
+    background: var(--color-maroon);
+    color: #fff;
+    border: 2px solid var(--color-gold);
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  :global(.docs-add-btn:hover),
+  :global(.docs-submit:hover:not(:disabled)) {
+    background: #8a2f4a;
+  }
+  :global(.docs-submit:disabled) {
+    opacity: 0.55;
+    cursor: default;
+  }
+  :global(.docs-form) {
+    padding: 1.5rem;
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    max-width: 36rem;
+  }
+  :global(.docs-form-title) {
+    margin: 0 0 0.5rem;
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+  }
+  :global(.docs-hint) {
+    margin: 0 0 1rem;
+    font-size: 0.9rem;
+    color: var(--color-ink-muted);
+    line-height: 1.5;
+  }
+  :global(.docs-hint-standalone) {
+    margin-bottom: 1.5rem;
+  }
+  :global(.docs-warn) {
+    margin: -0.35rem 0 0.85rem;
+    font-size: 0.85rem;
+    color: #9a3412;
+  }
+  :global(.docs-field) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    margin-bottom: 0.85rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+  :global(.docs-optional) {
+    font-weight: 400;
+    color: var(--color-ink-muted);
+  }
+  :global(.docs-input),
+  :global(.docs-textarea) {
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    font-weight: 400;
+    padding: 0.55rem 0.7rem;
+    border: 2px solid var(--color-border);
+    border-radius: 8px;
+    color: var(--color-ink);
+    background: #fff;
+  }
+  :global(.docs-textarea) {
+    resize: vertical;
+    line-height: 1.45;
+  }
+  :global(.docs-form-actions) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  :global(.docs-cancel),
+  :global(.docs-btn-secondary) {
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    padding: 0.55rem 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    background: #fff;
+    color: var(--color-ink);
+    cursor: pointer;
+  }
+  :global(.docs-list) {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  :global(.docs-item) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.15rem 1.25rem;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    background: #fff;
+  }
+  :global(.docs-item-title) {
+    margin: 0 0 0.35rem;
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    color: var(--color-ink);
+  }
+  :global(.docs-item-notes) {
+    margin: 0 0 0.5rem;
+    color: var(--color-ink);
+    line-height: 1.5;
+    white-space: pre-wrap;
+  }
+  :global(.docs-item-meta) {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--color-ink-muted);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  :global(.docs-badge) {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    background: rgba(66, 133, 244, 0.12);
+    color: #1a73e8;
+  }
+  :global(.docs-item-actions) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    align-items: center;
+  }
+  :global(.docs-open) {
+    display: inline-block;
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.5rem 0.95rem;
+    border-radius: 8px;
+    background: var(--color-maroon);
+    color: #fff;
+    text-decoration: none;
+    border: 2px solid var(--color-gold);
+  }
+  :global(.docs-open:hover) {
+    background: #8a2f4a;
+    color: #fff;
+    text-decoration: none;
+  }
+  :global(.docs-btn-danger) {
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    padding: 0.5rem 0.85rem;
+    border-radius: 8px;
+    border: 1px solid rgba(113, 32, 56, 0.35);
+    background: #fff;
+    color: var(--color-maroon);
+    cursor: pointer;
+  }
+</style>

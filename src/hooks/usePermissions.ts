@@ -109,6 +109,8 @@ export function usePermissions() {
     canEditTasks: can('tasks.edit'),
     canViewMeetingNotes: can('meeting_notes.view'),
     canEditMeetingNotes: can('meeting_notes.edit'),
+    canViewDocuments: can('documents.view'),
+    canEditDocuments: can('documents.edit'),
     canManageMembers: can('members.manage'),
     canAccessAdmin: can('admin.access'),
   };

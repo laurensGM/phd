@@ -135,4 +135,13 @@ After migration `055_feedback_inbox.sql`:
 - Superadmin opens **Inbox** from the avatar menu (`/phd/inbox/`) — unread badge included
 - RLS: anyone authenticated may insert; only `is_superadmin()` may read/update/delete
 
+## 12. Shared documents
+
+After migration `056_shared_documents.sql`:
+
+- **Manager → Documents** — paste Google Doc (or other) links
+- Students/owners can add, edit, remove links
+- Supervisors can view and open links (read-only in the app)
+- Remember to share the Google Doc itself with supervisor Google accounts
+
 

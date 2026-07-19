@@ -203,6 +203,7 @@ const isAdminNav = navTheme === 'admin';
               <li><a href={`${base}diary/`} data-requires-permission="diary.view">Diary</a></li>
               <li><a href={`${base}tasks/`} data-requires-permission="tasks.view">Tasks</a></li>
               <li><a href={`${base}meeting-notes/`} data-requires-permission="meeting_notes.view">Meeting notes</a></li>
+              <li><a href={`${base}documents/`} data-requires-permission="documents.view">Documents</a></li>
               <li><a href={`${base}supervisor/`}>Supervisors</a></li>
               <li><a href={`${base}members/`} data-requires-permission="members.manage">Members</a></li>
             </ul>
@@ -233,6 +234,7 @@ const isAdminNav = navTheme === 'admin';
                   'diary.view': 1,
                   'diary.edit': 1,
                   'tasks.edit': 1,
+                  'documents.edit': 1,
                 }
               : { 'admin.access': 1 };
           document.querySelectorAll('[data-requires-permission]').forEach(function (el) {

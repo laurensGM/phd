@@ -16,7 +16,9 @@ export type PermissionKey =
   | 'tasks.view'
   | 'tasks.edit'
   | 'meeting_notes.view'
-  | 'meeting_notes.edit';
+  | 'meeting_notes.edit'
+  | 'documents.view'
+  | 'documents.edit';
 
 export const PERMISSION_KEYS: PermissionKey[] = [
   'admin.access',
@@ -33,6 +35,8 @@ export const PERMISSION_KEYS: PermissionKey[] = [
   'tasks.edit',
   'meeting_notes.view',
   'meeting_notes.edit',
+  'documents.view',
+  'documents.edit',
 ];
 
 /** Defaults matching the seeded admin matrix (screenshot). */
@@ -56,6 +60,8 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<AppPermissionRole, Record<Permissi
     'tasks.edit': false,
     'meeting_notes.view': true,
     'meeting_notes.edit': true,
+    'documents.view': true,
+    'documents.edit': false,
   },
 };
 
