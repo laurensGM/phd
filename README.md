@@ -48,6 +48,10 @@ Output in `dist/`.
    - `base`: `/` for user/org site, or `/repo-name/` for project site
 4. Push to `main` to trigger the deploy workflow.
 
+## Multi-user (projects + supervisors)
+
+See **[docs/MULTI_USER_SETUP.md](docs/MULTI_USER_SETUP.md)** for Auth, claiming the default project, and inviting supervisors.
+
 ### Deployment not updating?
 
 If you pushed but the site still shows the old layout:

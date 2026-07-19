@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import LoginForm from '../components/LoginForm';
+---
+
+<BaseLayout title="Sign in" description="Sign in to PhD Manager with a magic link">
+  <h1>Sign in</h1>
+  <p class="page-desc">
+    Access is limited to project members (you and invited supervisors). Use the email address you were
+    invited with.
+  </p>
+  <LoginForm client:load />
+</BaseLayout>
+
+<style>
+  .page-desc {
+    color: var(--color-ink-muted);
+    margin-bottom: 1.5rem;
+    max-width: 36rem;
+    line-height: 1.55;
+  }
+</style>

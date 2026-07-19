@@ -563,6 +563,136 @@ export interface Database {
           version_text?: string;
         };
       };
+      projects: {
+        Row: {
+          id: string;
+          name: string;
+          slug: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          slug: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          name?: string;
+          slug?: string;
+          updated_at?: string;
+        };
+      };
+      profiles: {
+        Row: {
+          id: string;
+          email: string | null;
+          display_name: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          email?: string | null;
+          display_name?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          email?: string | null;
+          display_name?: string | null;
+          updated_at?: string;
+        };
+      };
+      project_members: {
+        Row: {
+          id: string;
+          project_id: string;
+          user_id: string;
+          role: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          project_id: string;
+          user_id: string;
+          role?: string;
+          created_at?: string;
+        };
+        Update: {
+          project_id?: string;
+          user_id?: string;
+          role?: string;
+        };
+      };
+      project_invites: {
+        Row: {
+          id: string;
+          project_id: string;
+          email: string;
+          role: string;
+          invited_by: string | null;
+          created_at: string;
+          accepted_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          project_id: string;
+          email: string;
+          role?: string;
+          invited_by?: string | null;
+          created_at?: string;
+          accepted_at?: string | null;
+        };
+        Update: {
+          email?: string;
+          role?: string;
+          invited_by?: string | null;
+          accepted_at?: string | null;
+        };
+      };
     };
+    Functions: {
+      claim_default_project_if_empty: {
+        Args: Record<string, never>;
+        Returns: {
+          id: string;
+          project_id: string;
+          user_id: string;
+          role: string;
+          created_at: string;
+        } | null;
+      };
+      accept_my_project_invites: {
+        Args: Record<string, never>;
+        Returns: {
+          id: string;
+          project_id: string;
+          user_id: string;
+          role: string;
+          created_at: string;
+        }[];
+      };
+      invite_to_project: {
+        Args: {
+          p_project_id: string;
+          p_email: string;
+          p_role?: string;
+        };
+        Returns: Record<string, unknown>;
+      };
+      is_project_member: {
+        Args: { p_project_id: string };
+        Returns: boolean;
+      };
+      can_manage_project: {
+        Args: { p_project_id: string };
+        Returns: boolean;
+      };
+    };
+    Views: Record<string, never>;
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
   };
 }

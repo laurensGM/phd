@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import MembersPage from '../components/MembersPage';
+---
+
+<BaseLayout title="Project members" description="Invite supervisors and manage project access">
+  <h1>Project members</h1>
+  <p class="page-desc">
+    Invite your supervisors by email. They sign in with a magic link and join this PhD project.
+  </p>
+  <MembersPage client:load />
+</BaseLayout>
+
+<style>
+  .page-desc {
+    color: var(--color-ink-muted);
+    margin-bottom: 1.5rem;
+    max-width: 40rem;
+    line-height: 1.55;
+  }
+</style>
