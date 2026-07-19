@@ -27,6 +27,7 @@ interface PaperFieldLinksProps {
   paperId: string;
   paperJournal: string | null;
   base: string;
+  readOnly?: boolean;
 }
 
 function buildFieldLinks(
@@ -47,7 +48,7 @@ function buildFieldLinks(
     .sort((a, b) => a.fieldName.localeCompare(b.fieldName, undefined, { sensitivity: 'base' }));
 }
 
-export default function PaperFieldLinks({ paperId, paperJournal, base }: PaperFieldLinksProps) {
+export default function PaperFieldLinks({ paperId, paperJournal, base, readOnly = false }: PaperFieldLinksProps) {
   const [manualRows, setManualRows] = useState<FieldAssignmentRow[]>([]);
   const [selectedFieldId, setSelectedFieldId] = useState('');
   const [loading, setLoading] = useState(true);
@@ -94,7 +95,7 @@ export default function PaperFieldLinks({ paperId, paperJournal, base }: PaperFi
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!supabase || !paperId || !selectedFieldId) return;
+    if (readOnly || !supabase || !paperId || !selectedFieldId) return;
     if (manualFieldIds.has(selectedFieldId)) return;
     setAdding(true);
     setError(null);
@@ -112,7 +113,7 @@ export default function PaperFieldLinks({ paperId, paperJournal, base }: PaperFi
   };
 
   const handleRemove = async (assignmentId: string) => {
-    if (!supabase) return;
+    if (readOnly || !supabase) return;
     setRemovingId(assignmentId);
     setError(null);
     const { error: delError } = await supabase
@@ -139,6 +140,7 @@ export default function PaperFieldLinks({ paperId, paperJournal, base }: PaperFi
     <div className="paper-detail-field-links">
       {error && <p className="paper-detail-field-links-error">{error}</p>}
 
+      {!readOnly && (
       <form className="paper-detail-field-links-form" onSubmit={handleAdd}>
         <label className="paper-detail-field-links-label" htmlFor={`paper-field-select-${paperId}`}>
           Link to a field
@@ -167,6 +169,7 @@ export default function PaperFieldLinks({ paperId, paperJournal, base }: PaperFi
           </button>
         </div>
       </form>
+      )}
 
       {loading ? (
         <p className="paper-detail-field-links-loading">Loading linked fields…</p>
@@ -190,7 +193,7 @@ export default function PaperFieldLinks({ paperId, paperJournal, base }: PaperFi
                   </span>
                 )}
               </div>
-              {link.assignmentId && (
+              {!readOnly && link.assignmentId && (
                 <button
                   type="button"
                   className="paper-detail-field-links-remove"
@@ -206,7 +209,9 @@ export default function PaperFieldLinks({ paperId, paperJournal, base }: PaperFi
         </ul>
       ) : (
         <p className="paper-detail-field-links-empty">
-          No fields linked yet. Add a manual link above, or set the journal so it matches a field journal list.
+          {readOnly
+            ? 'No fields linked yet.'
+            : 'No fields linked yet. Add a manual link above, or set the journal so it matches a field journal list.'}
         </p>
       )}
     </div>

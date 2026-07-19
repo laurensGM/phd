@@ -2,6 +2,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { claimLrChapterLabel } from '../constants/claimLrChapters';
 import { usePageLoader } from '../hooks/usePageLoader';
+import { usePermissions } from '../hooks/usePermissions';
+import AccessDenied from './AccessDenied';
 
 type ClaimRow = {
   id: string;
@@ -14,9 +16,10 @@ type ClaimRow = {
 
 export default function ClaimsListPage() {
   const base = import.meta.env.BASE_URL || '/';
+  const { loading: permLoading, canViewClaims, canEditClaims } = usePermissions();
   const [rows, setRows] = useState<ClaimRow[]>([]);
   const [loading, setLoading] = useState(true);
-  usePageLoader(loading);
+  usePageLoader(loading || permLoading);
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -71,11 +74,17 @@ export default function ClaimsListPage() {
     );
   }
 
-  if (loading) {
+  if (loading || permLoading) {
     return (
       <div className="claims-page">
         <p className="claims-muted">Loading claims…</p>
       </div>
+    );
+  }
+
+  if (!canViewClaims) {
+    return (
+      <AccessDenied message="Your role cannot view claims." permission="claims.view" />
     );
   }
 
@@ -87,6 +96,7 @@ export default function ClaimsListPage() {
           Turn selected snippets into defensible, evidence-linked claims. Each claim stores constructs, LR chapter
           placement, and snippet roles (supporting / contradicting / definition).
         </p>
+        {canEditClaims && (
         <div className="claims-header-actions">
           <a className="claims-primary-btn" href={`${base}claims/manual/`}>
             Write claim
@@ -95,7 +105,13 @@ export default function ClaimsListPage() {
             Guided builder
           </a>
         </div>
+        )}
       </header>
+      {!canEditClaims && (
+        <p className="claims-muted" role="status">
+          View-only: your role cannot create or edit claims.
+        </p>
+      )}
       {error && <p className="claims-error">{error}</p>}
       {rows.length === 0 ? (
         <p className="claims-muted">No claims yet. Use &ldquo;Write claim&rdquo; for a quick manual entry, or the guided builder for snippet-first flow.</p>
@@ -119,9 +135,11 @@ export default function ClaimsListPage() {
                     <a className="claims-card-action" href={detailHref}>
                       View
                     </a>
+                    {canEditClaims && (
                     <a className="claims-card-action claims-card-action-edit" href={editHref}>
                       Edit
                     </a>
+                    )}
                   </div>
                 </div>
                 <p className="claims-card-preview">{r.claim_text}</p>

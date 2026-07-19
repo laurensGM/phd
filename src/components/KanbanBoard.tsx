@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { usePageLoader } from '../hooks/usePageLoader';
+import { usePermissions } from '../hooks/usePermissions';
+import AccessDenied from './AccessDenied';
 
 const COLUMNS: { id: string; title: string }[] = [
   { id: 'backlog', title: 'Backlog' },
@@ -55,9 +57,10 @@ function mapRow(row: {
 }
 
 export default function KanbanBoard() {
+  const { loading: permLoading, canViewTasks, canEditTasks } = usePermissions();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
-  usePageLoader(loading);
+  usePageLoader(loading || permLoading);
   const [error, setError] = useState<string | null>(null);
   const [showAdd, setShowAdd] = useState(false);
   const [addStatus, setAddStatus] = useState<string>('todo');
@@ -99,6 +102,7 @@ export default function KanbanBoard() {
   }, [fetchTasks]);
 
   const updateTaskStatus = async (taskId: string, newStatus: string) => {
+    if (!canEditTasks || !supabase) return;
     const task = tasks.find((t) => t.id === taskId);
     if (!task || task.status === newStatus || !supabase) return;
 
@@ -186,7 +190,7 @@ export default function KanbanBoard() {
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!supabase || !addTitle.trim()) return;
+    if (!canEditTasks || !supabase || !addTitle.trim()) return;
     setSaving(true);
     setError(null);
     const maxOrder = Math.max(0, ...tasks.filter((t) => t.status === addStatus).map((t) => t.sort_order));
@@ -226,7 +230,7 @@ export default function KanbanBoard() {
 
   const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!supabase || !editingId || !editTitle.trim()) return;
+    if (!canEditTasks || !supabase || !editingId || !editTitle.trim()) return;
     setSaving(true);
     setError(null);
     const { error: updateError } = await supabase
@@ -253,6 +257,7 @@ export default function KanbanBoard() {
   };
 
   const handleDelete = async (id: string) => {
+    if (!canEditTasks) return;
     if (!window.confirm('Delete this task?')) return;
     if (!supabase) return;
     setError(null);
@@ -280,7 +285,7 @@ export default function KanbanBoard() {
       id={selectId}
       className="kanban-card-status-select"
       value={task.status}
-      disabled={statusUpdatingId === task.id}
+      disabled={!canEditTasks || statusUpdatingId === task.id}
       onClick={(e) => e.stopPropagation()}
       onChange={(e) => updateTaskStatus(task.id, e.target.value)}
       aria-label={`Change status for ${task.title}`}
@@ -294,7 +299,7 @@ export default function KanbanBoard() {
   );
 
   const renderTaskCard = (task: Task, index: number, columnLength: number) => {
-    if (editingId === task.id) {
+    if (editingId === task.id && canEditTasks) {
       return (
         <form key={task.id} className="kanban-card kanban-card-edit" onSubmit={handleSaveEdit}>
           <input
@@ -348,7 +353,7 @@ export default function KanbanBoard() {
             <button
               type="button"
               className="kanban-reorder-btn"
-              disabled={busy || index === 0}
+              disabled={!canEditTasks || busy || index === 0}
               onClick={() => moveTask(task.id, 'up')}
               aria-label="Move up"
               title="Move up"
@@ -358,7 +363,7 @@ export default function KanbanBoard() {
             <button
               type="button"
               className="kanban-reorder-btn"
-              disabled={busy || index >= columnLength - 1}
+              disabled={!canEditTasks || busy || index >= columnLength - 1}
               onClick={() => moveTask(task.id, 'down')}
               aria-label="Move down"
               title="Move down"
@@ -374,9 +379,12 @@ export default function KanbanBoard() {
           {statusSelect(task, `task-status-${task.id}`)}
         </div>
         <div className="kanban-card-actions">
+          {canEditTasks && (
           <button type="button" className="kanban-card-action" onClick={() => startEdit(task)}>
             Edit
           </button>
+          )}
+          {canEditTasks && (
           <button
             type="button"
             className="kanban-card-action kanban-card-delete"
@@ -384,6 +392,7 @@ export default function KanbanBoard() {
           >
             Delete
           </button>
+          )}
         </div>
       </div>
     );
@@ -397,8 +406,14 @@ export default function KanbanBoard() {
     );
   }
 
-  if (loading) {
+  if (loading || permLoading) {
     return <div className="kanban-loading">Loading tasks…</div>;
+  }
+
+  if (!canViewTasks) {
+    return (
+      <AccessDenied message="Your role cannot view tasks." permission="tasks.view" />
+    );
   }
 
   return (
@@ -406,9 +421,11 @@ export default function KanbanBoard() {
       {error && <p className="kanban-error">{error}</p>}
       <div className="kanban-actions">
         <div className="kanban-actions-row">
+          {canEditTasks && (
           <button type="button" className="kanban-add-btn" onClick={() => setShowAdd(!showAdd)}>
             {showAdd ? '− Cancel' : '+ Add task'}
           </button>
+          )}
           <button
             type="button"
             className={`kanban-archived-toggle${showArchived ? ' is-active' : ''}`}
@@ -419,7 +436,7 @@ export default function KanbanBoard() {
             {archivedCount > 0 ? ` (${archivedCount})` : ''}
           </button>
         </div>
-        {showAdd && (
+        {showAdd && canEditTasks && (
           <form className="kanban-add-form" onSubmit={handleAdd}>
             <div className="kanban-form-row">
               <label htmlFor="task-title">Title</label>
@@ -531,6 +548,7 @@ export default function KanbanBoard() {
               )}
             </div>
             <div className="kanban-detail-actions">
+              {canEditTasks && (
               <button
                 type="button"
                 className="kanban-btn kanban-btn-primary"
@@ -538,6 +556,8 @@ export default function KanbanBoard() {
               >
                 Edit
               </button>
+              )}
+              {canEditTasks && (
               <button
                 type="button"
                 className="kanban-btn kanban-card-delete"
@@ -545,6 +565,7 @@ export default function KanbanBoard() {
               >
                 Delete
               </button>
+              )}
               <button
                 type="button"
                 className="kanban-btn kanban-btn-secondary"

@@ -23,6 +23,7 @@ interface ModelPaperLinkRow {
 interface PaperModelLinksProps {
   paperId: string;
   base: string;
+  readOnly?: boolean;
 }
 
 function sortLinksByModelName(items: (ModelPaperLinkRow & { modelName: string })[]) {
@@ -31,7 +32,7 @@ function sortLinksByModelName(items: (ModelPaperLinkRow & { modelName: string })
   );
 }
 
-export default function PaperModelLinks({ paperId, base }: PaperModelLinksProps) {
+export default function PaperModelLinks({ paperId, base, readOnly = false }: PaperModelLinksProps) {
   const [links, setLinks] = useState<(ModelPaperLinkRow & { modelName: string })[]>([]);
   const [selectedModelId, setSelectedModelId] = useState('');
   const [loading, setLoading] = useState(true);
@@ -77,7 +78,7 @@ export default function PaperModelLinks({ paperId, base }: PaperModelLinksProps)
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!supabase || !paperId || !selectedModelId) return;
+    if (readOnly || !supabase || !paperId || !selectedModelId) return;
     if (linkedModelIds.has(selectedModelId)) return;
     setAdding(true);
     setError(null);
@@ -95,7 +96,7 @@ export default function PaperModelLinks({ paperId, base }: PaperModelLinksProps)
   };
 
   const handleRemove = async (linkId: string) => {
-    if (!supabase) return;
+    if (readOnly || !supabase) return;
     setRemovingId(linkId);
     setError(null);
     const { error: delError } = await supabase.from('model_papers').delete().eq('id', linkId);
@@ -119,6 +120,7 @@ export default function PaperModelLinks({ paperId, base }: PaperModelLinksProps)
     <div className="paper-detail-model-links">
       {error && <p className="paper-detail-model-links-error">{error}</p>}
 
+      {!readOnly && (
       <form className="paper-detail-model-links-form" onSubmit={handleAdd}>
         <label className="paper-detail-model-links-label" htmlFor={`paper-model-select-${paperId}`}>
           Link to a model
@@ -147,6 +149,7 @@ export default function PaperModelLinks({ paperId, base }: PaperModelLinksProps)
           </button>
         </div>
       </form>
+      )}
 
       {loading ? (
         <p className="paper-detail-model-links-loading">Loading linked models…</p>
@@ -157,6 +160,7 @@ export default function PaperModelLinks({ paperId, base }: PaperModelLinksProps)
               <a href={`${base}models/${link.model_id}/`} className="paper-detail-model-links-model">
                 {link.modelName}
               </a>
+              {!readOnly && (
               <button
                 type="button"
                 className="paper-detail-model-links-remove"
@@ -166,11 +170,14 @@ export default function PaperModelLinks({ paperId, base }: PaperModelLinksProps)
               >
                 {removingId === link.id ? '…' : 'Remove'}
               </button>
+              )}
             </li>
           ))}
         </ul>
       ) : (
-        <p className="paper-detail-model-links-empty">No models linked yet. Choose one above.</p>
+        <p className="paper-detail-model-links-empty">
+          {readOnly ? 'No models linked yet.' : 'No models linked yet. Choose one above.'}
+        </p>
       )}
     </div>
   );

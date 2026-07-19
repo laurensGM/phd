@@ -4,6 +4,13 @@ export type ViewAsRole = 'student' | 'supervisor';
 
 export const VIEW_AS_STORAGE_KEY = 'phd_view_as_role';
 export const VIEW_AS_EVENT = 'phd-view-as-changed';
+export const PERMISSIONS_CHANGED_EVENT = 'phd-permissions-changed';
+
+export function notifyPermissionsChanged() {
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent(PERMISSIONS_CHANGED_EVENT));
+  }
+}
 
 export function readViewAsRole(): ViewAsRole | null {
   try {

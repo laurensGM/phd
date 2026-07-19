@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
+import { usePermissions } from '../hooks/usePermissions';
 import { signOut } from '../lib/auth';
+import AccessDenied from './AccessDenied';
 
 type MemberRow = {
   id: string;
@@ -23,7 +25,9 @@ type InviteRow = {
 const base = import.meta.env.BASE_URL || '/';
 
 export default function MembersPage() {
-  const { loading, isSignedIn, user, primaryProjectId, canManage, role, refreshMemberships } = useAuth();
+  const { loading, isSignedIn, user, primaryProjectId, role, refreshMemberships } = useAuth();
+  const { loading: permLoading, canManageMembers } = usePermissions();
+  const canManage = canManageMembers;
   const [members, setMembers] = useState<MemberRow[]>([]);
   const [invites, setInvites] = useState<InviteRow[]>([]);
   const [projectName, setProjectName] = useState('My PhD');
@@ -144,13 +148,22 @@ export default function MembersPage() {
     return <p className="auth-banner auth-banner-warn">Supabase is not configured.</p>;
   }
 
-  if (loading) return <p className="auth-muted">Loading…</p>;
+  if (loading || permLoading) return <p className="auth-muted">Loading…</p>;
 
   if (!isSignedIn) {
     return (
       <p className="auth-banner auth-banner-warn">
         <a href={`${base}login/`}>Sign in</a> to manage project members.
       </p>
+    );
+  }
+
+  if (!canManageMembers) {
+    return (
+      <AccessDenied
+        message="Your role cannot manage project members."
+        permission="members.manage"
+      />
     );
   }
 

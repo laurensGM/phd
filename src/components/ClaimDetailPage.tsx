@@ -3,6 +3,8 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import constructsData from '../data/constructs.json';
 import { buildParagraphFromClaimPrompt } from '../lib/claimAiPrompt';
 import { CLAIM_LR_CHAPTERS, claimLrChapterLabel } from '../constants/claimLrChapters';
+import { usePermissions } from '../hooks/usePermissions';
+import AccessDenied from './AccessDenied';
 
 const RELATIONSHIP_OPTIONS = [
   { value: 'predicts', label: 'Predicts' },
@@ -79,6 +81,7 @@ function defaultRoleForSnippet(snippet: Snippet): string {
 
 export default function ClaimDetailPage() {
   const base = import.meta.env.BASE_URL || '/';
+  const { loading: permLoading, canViewClaims, canEditClaims } = usePermissions();
   const [claim, setClaim] = useState<Claim | null>(null);
   const [links, setLinks] = useState<LinkRow[]>([]);
   const [snippets, setSnippets] = useState<Map<string, Snippet>>(new Map());
@@ -214,12 +217,12 @@ export default function ClaimDetailPage() {
   }, []);
 
   useEffect(() => {
-    if (!claim || loading || autoEditOpened || !shouldOpenEditMode()) return;
+    if (!claim || loading || permLoading || !canEditClaims || autoEditOpened || !shouldOpenEditMode()) return;
     populateEditForm(claim);
     setEditing(true);
     setAutoEditOpened(true);
     setError(null);
-  }, [claim, loading, autoEditOpened, populateEditForm]);
+  }, [claim, loading, permLoading, canEditClaims, autoEditOpened, populateEditForm]);
 
   const filteredCandidates = useMemo(() => {
     const q = snippetSearch.trim().toLowerCase();
@@ -234,7 +237,7 @@ export default function ClaimDetailPage() {
   }, [candidateSnippets, candidatePapers, linkedSnippetIds, snippetSearch]);
 
   const addSnippetLink = async (snippet: Snippet) => {
-    if (!supabase || !claim || linkedSnippetIds.has(snippet.id)) return;
+    if (!canEditClaims || !supabase || !claim || linkedSnippetIds.has(snippet.id)) return;
     setLinkingSnippetId(snippet.id);
     setError(null);
     const role = defaultRoleForSnippet(snippet);
@@ -262,7 +265,7 @@ export default function ClaimDetailPage() {
   };
 
   const updateLinkRole = async (linkId: string, role: string) => {
-    if (!supabase) return;
+    if (!canEditClaims || !supabase) return;
     setUpdatingLinkId(linkId);
     setError(null);
     const { error: upErr } = await supabase.from('claim_snippets').update({ role }).eq('id', linkId);
@@ -275,7 +278,7 @@ export default function ClaimDetailPage() {
   };
 
   const removeLink = async (linkId: string) => {
-    if (!supabase) return;
+    if (!canEditClaims || !supabase) return;
     setRemovingLinkId(linkId);
     setError(null);
     const { error: delErr } = await supabase.from('claim_snippets').delete().eq('id', linkId);
@@ -307,7 +310,7 @@ export default function ClaimDetailPage() {
   };
 
   const saveEdit = async () => {
-    if (!supabase || !claim || !editClaimText.trim()) return;
+    if (!canEditClaims || !supabase || !claim || !editClaimText.trim()) return;
     setSavingEdit(true);
     setError(null);
     const trimmedText = editClaimText.trim();
@@ -379,7 +382,7 @@ export default function ClaimDetailPage() {
   };
 
   const saveGeneratedParagraph = async () => {
-    if (!supabase || !claim) return;
+    if (!canEditClaims || !supabase || !claim) return;
     setSavingParagraph(true);
     setParagraphSaveMsg(null);
     const value = paragraphDraft.trim() || null;
@@ -420,7 +423,7 @@ export default function ClaimDetailPage() {
   };
 
   const deleteClaim = async () => {
-    if (!supabase || !claim) return;
+    if (!canEditClaims || !supabase || !claim) return;
     if (!window.confirm('Delete this claim and all linked evidence rows?')) return;
     const { error: dErr } = await supabase.from('claims').delete().eq('id', claim.id);
     if (dErr) setError(dErr.message);
@@ -435,12 +438,16 @@ export default function ClaimDetailPage() {
     );
   }
 
-  if (loading) {
+  if (loading || permLoading) {
     return (
       <div className="claims-page">
         <p className="claims-muted">Loading…</p>
       </div>
     );
+  }
+
+  if (!canViewClaims) {
+    return <AccessDenied message="Your role cannot view claims." permission="claims.view" />;
   }
 
   if (error && !claim) {
@@ -477,7 +484,7 @@ export default function ClaimDetailPage() {
       <header className="claims-detail-head">
         <div className="claims-detail-section-head">
           <h1>{claim.title.trim() || 'Claim'}</h1>
-          {!editing && (
+          {!editing && canEditClaims && (
             <button type="button" className="claims-btn" onClick={startEdit}>
               Edit claim
             </button>
@@ -494,7 +501,7 @@ export default function ClaimDetailPage() {
 
       {error && <p className="claims-error">{error}</p>}
 
-      {editing ? (
+      {editing && canEditClaims ? (
         <section className="claims-panel claims-edit-panel">
           <h2>Edit claim</h2>
           <label className="claims-field">
@@ -632,6 +639,7 @@ export default function ClaimDetailPage() {
               ) : null}
             </h2>
           </button>
+          {canEditClaims && (
           <button
             type="button"
             className="claims-btn claims-btn-primary"
@@ -639,12 +647,13 @@ export default function ClaimDetailPage() {
           >
             {showAddSnippets ? 'Hide snippet picker' : 'Add snippets'}
           </button>
+          )}
         </div>
         <p className="claims-muted">
           Supporting: {supporting.length} · Contradicting: {contradicting.length} · Definition: {definitions.length}
         </p>
 
-        {showAddSnippets && (
+        {showAddSnippets && canEditClaims && (
           <div className="claims-add-snippets">
             <p className="claims-hint">
               {claim.constructs_involved?.length
@@ -703,6 +712,8 @@ export default function ClaimDetailPage() {
                 return (
                   <li key={l.id} className="claims-evidence-card">
                     <div className="claims-evidence-card-head">
+                      {canEditClaims ? (
+                        <>
                       <select
                         className="claims-input claims-role-select"
                         value={l.role}
@@ -724,6 +735,12 @@ export default function ClaimDetailPage() {
                       >
                         {removingLinkId === l.id ? '…' : 'Remove'}
                       </button>
+                        </>
+                      ) : (
+                        <span className="claims-pill">
+                          {ROLE_OPTIONS.find((o) => o.value === l.role)?.label ?? l.role}
+                        </span>
+                      )}
                     </div>
                     <div className="claims-evidence-paper">{p?.title ?? 'Paper'}</div>
                     <div className="claims-evidence-text">{s?.content ?? '—'}</div>
@@ -737,9 +754,11 @@ export default function ClaimDetailPage() {
       <section className="claims-detail-section">
         <h2>Quick actions</h2>
         <div className="claims-quick-actions">
+          {canEditClaims && (
           <button type="button" className="claims-btn" onClick={() => void copyParagraphPrompt()}>
             Generate paragraph (copy prompt)
           </button>
+          )}
           <a
             className="claims-btn claims-btn-ghost"
             href={`${base}snippets/?claimId=${encodeURIComponent(claim.id)}`}
@@ -751,6 +770,8 @@ export default function ClaimDetailPage() {
           </button>
         </div>
         {copyMsg && <p className="claims-copy-msg">{copyMsg}</p>}
+        {canEditClaims ? (
+          <>
         <label className="claims-paragraph-label">
           Generated paragraph
           <textarea
@@ -772,13 +793,24 @@ export default function ClaimDetailPage() {
           </button>
           {paragraphSaveMsg && <p className="claims-copy-msg">{paragraphSaveMsg}</p>}
         </div>
+          </>
+        ) : claim.generated_paragraph ? (
+          <div className="claims-paragraph-readonly">
+            <h3 className="claims-paragraph-label">Generated paragraph</h3>
+            <p className="claims-notes" style={{ whiteSpace: 'pre-wrap' }}>
+              {claim.generated_paragraph}
+            </p>
+          </div>
+        ) : null}
       </section>
 
+      {canEditClaims && (
       <section className="claims-detail-section claims-danger-zone">
         <button type="button" className="claims-btn-text-danger" onClick={() => void deleteClaim()}>
           Delete claim
         </button>
       </section>
+      )}
     </div>
   );
 }

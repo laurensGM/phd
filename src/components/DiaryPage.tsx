@@ -1,6 +1,8 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { FormatDiaryText } from '../lib/formatDiaryText';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { usePermissions } from '../hooks/usePermissions';
+import AccessDenied from './AccessDenied';
 
 interface DiaryEntry {
   id: string;
@@ -32,6 +34,7 @@ function mapRow(row: {
 }
 
 export default function DiaryPage() {
+  const { loading: permLoading, canViewDiary, canEditDiary } = usePermissions();
   const [entries, setEntries] = useState<DiaryEntry[]>([]);
   const [search, setSearch] = useState('');
   const [tagFilter, setTagFilter] = useState<string>('');
@@ -137,7 +140,7 @@ export default function DiaryPage() {
   };
 
   const handleSaveEdit = async (id: string) => {
-    if (!supabase) return;
+    if (!supabase || !canEditDiary) return;
     const summary = editFormData.summary.trim();
     if (!summary) return;
     setSaving(true);
@@ -214,14 +217,24 @@ export default function DiaryPage() {
     );
   }
 
-  if (loading) {
+  if (loading || permLoading) {
     return <div className="diary-loading">Loading...</div>;
+  }
+
+  if (!canViewDiary) {
+    return (
+      <AccessDenied
+        message="Your role cannot view the research diary."
+        permission="diary.view"
+      />
+    );
   }
 
   return (
     <div className="diary-page">
       {error && <p className="diary-error">{error}</p>}
 
+      {canEditDiary && (
       <section className="diary-add-section">
         <button
           className="diary-add-btn"
@@ -302,6 +315,7 @@ export default function DiaryPage() {
           </form>
         )}
       </section>
+      )}
 
       <section className="diary-history-section">
         <h3 className="diary-history-title">
@@ -346,7 +360,7 @@ export default function DiaryPage() {
         <div className="diary-entries">
         {filteredEntries.map((entry) => (
           <article key={entry.id} className="diary-entry">
-            {editingId === entry.id ? (
+            {editingId === entry.id && canEditDiary ? (
               <div className="diary-edit-form">
                 <h4 className="diary-edit-title">Edit entry</h4>
                 <div className="diary-form-field">
@@ -436,6 +450,7 @@ export default function DiaryPage() {
                         </span>
                       ))}
                     </div>
+                    {canEditDiary && (
                     <button
                       type="button"
                       className="diary-btn-secondary"
@@ -443,6 +458,7 @@ export default function DiaryPage() {
                     >
                       Edit
                     </button>
+                    )}
                   </div>
                 </div>
                 <h4 className="entry-summary">

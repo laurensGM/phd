@@ -2,6 +2,7 @@
 import AuthBar from '../components/AuthBar';
 import AdminNavLink from '../components/AdminNavLink';
 import ViewAsBanner from '../components/ViewAsBanner';
+import NavPermissionFilter from '../components/NavPermissionFilter';
 
 interface Props {
   title: string;
@@ -112,12 +113,12 @@ const isAdminNav = navTheme === 'admin';
               aria-haspopup="true"
             >Literature</a>
             <ul class="nav-dropdown" aria-labelledby="literature-trigger">
-              <li><a href={`${base}papers/`}>Papers</a></li>
+              <li><a href={`${base}papers/`} data-requires-permission="papers.view">Papers</a></li>
               <li><a href={`${base}models/`}>Models</a></li>
               <li><a href={`${base}constructs/`}>Constructs</a></li>
               <li><a href={`${base}fields/`}>Fields</a></li>
-              <li><a href={`${base}snippets/`}>Snippets</a></li>
-              <li><a href={`${base}claims/`}>Claims</a></li>
+              <li><a href={`${base}snippets/`} data-requires-permission="snippets.view">Snippets</a></li>
+              <li><a href={`${base}claims/`} data-requires-permission="claims.view">Claims</a></li>
               <li><a href={`${base}academics/`}>Academics</a></li>
               <li><a href={`${base}theory-map/`}>Theory Map</a></li>
             </ul>
@@ -198,11 +199,11 @@ const isAdminNav = navTheme === 'admin';
             <ul class="nav-dropdown" aria-labelledby="phd-manager-trigger">
               <li><a href={`${base}outline/`}>PhD milestones</a></li>
               <li><a href={`${base}phd-outline/`}>PhD outline</a></li>
-              <li><a href={`${base}diary/`}>Diary</a></li>
-              <li><a href={`${base}tasks/`}>Tasks</a></li>
-              <li><a href={`${base}meeting-notes/`}>Meeting notes</a></li>
+              <li><a href={`${base}diary/`} data-requires-permission="diary.view">Diary</a></li>
+              <li><a href={`${base}tasks/`} data-requires-permission="tasks.view">Tasks</a></li>
+              <li><a href={`${base}meeting-notes/`} data-requires-permission="meeting_notes.view">Meeting notes</a></li>
               <li><a href={`${base}supervisor/`}>Supervisor</a></li>
-              <li><a href={`${base}members/`}>Members</a></li>
+              <li><a href={`${base}members/`} data-requires-permission="members.manage">Members</a></li>
             </ul>
           </li>
         </ul>
@@ -213,6 +214,7 @@ const isAdminNav = navTheme === 'admin';
       </nav>
     </header>
     <ViewAsBanner client:load />
+    <NavPermissionFilter client:load />
     <main class="main-content">
       <slot />
     </main>
@@ -546,6 +548,31 @@ const isAdminNav = navTheme === 'admin';
   .site-header-admin .nav-admin-link:hover {
     background: rgba(255, 255, 255, 0.18) !important;
     color: #fff !important;
+  }
+
+  .access-denied {
+    max-width: 28rem;
+    margin: 1.5rem 0;
+    padding: 1.25rem 1.35rem;
+    border: 1px solid #fed7aa;
+    border-radius: 12px;
+    background: #fff7ed;
+  }
+  .access-denied-title {
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    color: #9a3412;
+    margin: 0 0 0.5rem;
+  }
+  .access-denied-msg {
+    margin: 0 0 0.5rem;
+    color: #9a3412;
+    line-height: 1.5;
+  }
+  .access-denied-key {
+    margin: 0 0 0.75rem;
+    font-size: 0.85rem;
+    color: var(--color-ink-muted);
   }
 
   .nav-avatar-view-as {

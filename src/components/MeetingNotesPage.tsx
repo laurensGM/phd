@@ -1,5 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { usePermissions } from '../hooks/usePermissions';
+import AccessDenied from './AccessDenied';
 
 interface MeetingNote {
   id: string;
@@ -35,6 +37,7 @@ function mapRow(row: {
 }
 
 export default function MeetingNotesPage() {
+  const { loading: permLoading, canViewMeetingNotes, canEditMeetingNotes } = usePermissions();
   const [notes, setNotes] = useState<MeetingNote[]>([]);
   const [search, setSearch] = useState('');
   const [dateFrom, setDateFrom] = useState('');
@@ -105,7 +108,7 @@ export default function MeetingNotesPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!supabase) return;
+    if (!canEditMeetingNotes || !supabase) return;
     setSaving(true);
     setError(null);
     const { data, error: insertError } = await supabase
@@ -153,7 +156,7 @@ export default function MeetingNotesPage() {
 
   const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!supabase || !editingId) return;
+    if (!canEditMeetingNotes || !supabase || !editingId) return;
     setSaving(true);
     setError(null);
     const { data, error: updateError } = await supabase
@@ -181,6 +184,7 @@ export default function MeetingNotesPage() {
   };
 
   const handleDelete = async (id: string) => {
+    if (!canEditMeetingNotes) return;
     if (!window.confirm('Delete this meeting note?')) return;
     if (!supabase) return;
     setDeletingId(id);
@@ -213,13 +217,20 @@ export default function MeetingNotesPage() {
           </p>
         </div>
       )}
-      {isSupabaseConfigured() && loading && (
+      {isSupabaseConfigured() && (loading || permLoading) && (
         <div className="meeting-notes-loading">Loading meeting notes…</div>
       )}
-      {isSupabaseConfigured() && !loading && (
+      {isSupabaseConfigured() && !loading && !permLoading && !canViewMeetingNotes && (
+        <AccessDenied
+          message="Your role cannot view meeting notes."
+          permission="meeting_notes.view"
+        />
+      )}
+      {isSupabaseConfigured() && !loading && !permLoading && canViewMeetingNotes && (
     <>
       {error && <p className="meeting-notes-error">{error}</p>}
 
+      {canEditMeetingNotes && (
       <section className="meeting-notes-add-section">
         <button
           className="meeting-notes-add-btn"
@@ -301,6 +312,7 @@ export default function MeetingNotesPage() {
           </form>
         )}
       </section>
+      )}
 
       <section className="meeting-notes-history-section">
         <h3 className="meeting-notes-history-title">
@@ -404,6 +416,7 @@ export default function MeetingNotesPage() {
                   <div className="meeting-notes-entry-header">
                     <time dateTime={note.date}>{formatDate(note.date)}</time>
                     <div className="meeting-notes-entry-actions">
+                      {canEditMeetingNotes && (
                       <button
                         type="button"
                         className="meeting-notes-entry-action"
@@ -411,6 +424,8 @@ export default function MeetingNotesPage() {
                       >
                         Edit
                       </button>
+                      )}
+                      {canEditMeetingNotes && (
                       <button
                         type="button"
                         className="meeting-notes-entry-action meeting-notes-entry-action-delete"
@@ -419,6 +434,7 @@ export default function MeetingNotesPage() {
                       >
                         {deletingId === note.id ? '…' : 'Delete'}
                       </button>
+                      )}
                     </div>
                   </div>
                   <h4 className="meeting-notes-entry-title">{note.title}</h4>

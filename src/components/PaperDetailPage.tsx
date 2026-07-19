@@ -11,6 +11,8 @@ import PaperFieldLinks from './PaperFieldLinks';
 import SummaryNarrationPlayer from './SummaryNarrationPlayer';
 import constructsData from '../data/constructs.json';
 import modelsData from '../data/models.json';
+import { usePermissions } from '../hooks/usePermissions';
+import AccessDenied from './AccessDenied';
 
 interface SavedPaper {
   id: string;
@@ -174,6 +176,7 @@ function canonicalModelId(id: string): string {
 
 export default function PaperDetailPage() {
   const base = (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) || '';
+  const { loading: permLoading, canViewPapers, canEditPapers, canEditSnippets } = usePermissions();
   const [paper, setPaper] = useState<SavedPaper | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -639,7 +642,7 @@ export default function PaperDetailPage() {
   }, [paper?.id, loadComments]);
 
   const handleAddComment = useCallback(async () => {
-    if (!paper || !supabase || !isSupabaseConfigured()) return;
+    if (!canEditPapers || !paper || !supabase || !isSupabaseConfigured()) return;
     const content = newComment.trim();
     if (!content && !commentImageFile) return;
     setCommentSaving(true);
@@ -674,10 +677,10 @@ export default function PaperDetailPage() {
       setCommentImageFile(null);
       setCommentFileInputKey((k) => k + 1);
     }
-  }, [paper, newComment, commentImageFile]);
+  }, [canEditPapers, paper, newComment, commentImageFile]);
 
   const handleGenerateSummary = useCallback(async () => {
-    if (!paper || !supabase || !isSupabaseConfigured()) return;
+    if (!canEditPapers || !paper || !supabase || !isSupabaseConfigured()) return;
     setGeneratingSummary(true);
     setSummaryError(null);
     try {
@@ -702,10 +705,10 @@ export default function PaperDetailPage() {
     } finally {
       setGeneratingSummary(false);
     }
-  }, [paper]);
+  }, [canEditPapers, paper]);
 
   const handleSaveSummary = useCallback(async () => {
-    if (!paper || !supabase || !isSupabaseConfigured()) return;
+    if (!canEditPapers || !paper || !supabase || !isSupabaseConfigured()) return;
     setSavingSummary(true);
     setSummaryError(null);
     const payload = {
@@ -729,6 +732,7 @@ export default function PaperDetailPage() {
     await loadSummary(paper.id);
     setEditingSummary(false);
   }, [
+    canEditPapers,
     paper,
     summaryAbstract,
     summaryKeyClaims,
@@ -791,7 +795,7 @@ export default function PaperDetailPage() {
   }, [paper, summary]);
 
   const handleAddSnippet = useCallback(async () => {
-    if (!paper || !newSnippetContent.trim()) return;
+    if (!canEditSnippets || !paper || !newSnippetContent.trim()) return;
     if (!supabase || !isSupabaseConfigured()) return;
     setSnippetsLoading(true);
     setSnippetError(null);
@@ -847,11 +851,11 @@ export default function PaperDetailPage() {
       setNewSnippetTagsInput('');
     }
     setSnippetsLoading(false);
-  }, [paper, newSnippetContent, newSnippetConstructId, newSnippetModelId, newSnippetPageNumber, newSnippetTagsInput, allSnippetTags]);
+  }, [canEditSnippets, paper, newSnippetContent, newSnippetConstructId, newSnippetModelId, newSnippetPageNumber, newSnippetTagsInput, allSnippetTags]);
 
   const handleDeleteSnippet = useCallback(
     async (id: string) => {
-      if (!supabase || !isSupabaseConfigured()) return;
+      if (!canEditSnippets || !supabase || !isSupabaseConfigured()) return;
       const confirmed = window.confirm('Delete this snippet?');
       if (!confirmed) return;
       setSnippetsLoading(true);
@@ -864,15 +868,19 @@ export default function PaperDetailPage() {
       }
       setSnippetsLoading(false);
     },
-    []
+    [canEditSnippets]
   );
 
-  if (loading) {
+  if (loading || permLoading) {
     return (
       <div className="paper-detail-page">
         <p className="paper-detail-loading">Loading paper…</p>
       </div>
     );
+  }
+
+  if (!canViewPapers) {
+    return <AccessDenied message="Your role cannot view papers." permission="papers.view" />;
   }
 
   if (error || !paper) {
@@ -926,7 +934,7 @@ export default function PaperDetailPage() {
         <p className="paper-detail-field-links-intro">
           Fields matched from the journal name appear automatically. You can also add manual links — these count on the Fields page and home dashboard.
         </p>
-        <PaperFieldLinks paperId={paper.id} paperJournal={paper.journal} base={base} />
+        <PaperFieldLinks paperId={paper.id} paperJournal={paper.journal} base={base} readOnly={!canEditPapers} />
       </section>
 
       <section className="paper-detail-section paper-detail-section-models">
@@ -934,7 +942,7 @@ export default function PaperDetailPage() {
         <p className="paper-detail-model-links-intro">
           Attach this paper to theoretical models. The same links appear under Key Citations on each model page.
         </p>
-        <PaperModelLinks paperId={paper.id} base={base} />
+        <PaperModelLinks paperId={paper.id} base={base} readOnly={!canEditPapers} />
       </section>
 
       {paper.motivation && (
@@ -964,6 +972,7 @@ export default function PaperDetailPage() {
 
       <section className="paper-detail-section paper-detail-comments">
         <h2 className="paper-detail-section-title">Comments</h2>
+        {canEditPapers && (
         <div className="paper-detail-comments-add">
           <div className="paper-detail-comments-add-fields">
             <textarea
@@ -1025,6 +1034,7 @@ export default function PaperDetailPage() {
             {commentSaving ? 'Saving…' : 'Add comment'}
           </button>
         </div>
+        )}
         {commentError && <p className="paper-detail-comments-error">{commentError}</p>}
         {commentsLoading && comments.length === 0 && (
           <p className="paper-detail-comments-empty">Loading comments…</p>
@@ -1067,6 +1077,7 @@ export default function PaperDetailPage() {
         <div className="paper-detail-summary-header">
           <h2 className="paper-detail-section-title">Summary</h2>
           <div className="paper-detail-summary-header-actions">
+            {canEditPapers && (
             <button
               type="button"
               className="paper-detail-summary-btn"
@@ -1080,6 +1091,8 @@ export default function PaperDetailPage() {
             >
               {editingSummary ? 'Close editor' : 'Edit summary'}
             </button>
+            )}
+            {canEditPapers && (
             <button
               type="button"
               className="paper-detail-summary-btn paper-detail-summary-btn-secondary"
@@ -1089,6 +1102,7 @@ export default function PaperDetailPage() {
             >
               {generatingSummary ? 'Generating…' : 'Try auto summary'}
             </button>
+            )}
             {!isOfflineView && summary && (
               <button
                 type="button"
@@ -1129,7 +1143,7 @@ export default function PaperDetailPage() {
           />
         )}
 
-        {editingSummary && (
+        {editingSummary && canEditPapers && (
           <div className="paper-detail-summary-editor">
             <label className="paper-detail-summary-label">
               Paste structured summary (optional)
@@ -1266,6 +1280,7 @@ export default function PaperDetailPage() {
         <p className="paper-detail-snippets-hint">
           Capture key ideas or quotes here and optionally link them to constructs or models so you can reuse them later.
         </p>
+        {canEditSnippets && (
         <div className="paper-detail-snippet-form">
           <label className="paper-detail-snippet-label">
             Snippet text
@@ -1346,13 +1361,18 @@ export default function PaperDetailPage() {
           </button>
           {snippetError && <p className="paper-detail-snippet-error">{snippetError}</p>}
         </div>
+        )}
 
         <div className="paper-detail-snippet-list">
           {snippetsLoading && snippets.length === 0 && (
             <p className="paper-detail-snippet-empty">Loading snippets…</p>
           )}
           {!snippetsLoading && snippets.length === 0 && !snippetError && (
-            <p className="paper-detail-snippet-empty">No snippets yet. Add your first snippet from this paper above.</p>
+            <p className="paper-detail-snippet-empty">
+              {canEditSnippets
+                ? 'No snippets yet. Add your first snippet from this paper above.'
+                : 'No snippets yet.'}
+            </p>
           )}
           {snippets.map((s) => (
             <article key={s.id} className="paper-detail-snippet-card">
@@ -1401,6 +1421,7 @@ export default function PaperDetailPage() {
                 <span className="paper-detail-snippet-date">
                   {new Date(s.created_at).toLocaleDateString()}
                 </span>
+                {canEditSnippets && (
                 <button
                   type="button"
                   className="paper-detail-snippet-delete"
@@ -1408,6 +1429,7 @@ export default function PaperDetailPage() {
                 >
                   Delete
                 </button>
+                )}
               </div>
             </article>
           ))}

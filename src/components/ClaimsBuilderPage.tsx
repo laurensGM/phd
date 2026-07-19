@@ -3,6 +3,8 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import constructsData from '../data/constructs.json';
 import { buildClaimSuggestPrompt, parseClaimOptions } from '../lib/claimAiPrompt';
 import { CLAIM_LR_CHAPTERS } from '../constants/claimLrChapters';
+import { usePermissions } from '../hooks/usePermissions';
+import AccessDenied from './AccessDenied';
 
 const RELATIONSHIP_OPTIONS = [
   { value: 'predicts', label: 'Predicts' },
@@ -55,6 +57,7 @@ function snippetMatchesEvidenceFilter(s: Snippet, includeDefinitions: boolean): 
 
 export default function ClaimsBuilderPage() {
   const base = import.meta.env.BASE_URL || '/';
+  const { loading: permLoading, canEditClaims } = usePermissions();
   const [step, setStep] = useState(1);
   const [error, setError] = useState<string | null>(null);
 
@@ -253,6 +256,20 @@ export default function ClaimsBuilderPage() {
       <div className="claims-page">
         <p className="claims-error">Supabase is not configured.</p>
       </div>
+    );
+  }
+
+  if (permLoading) {
+    return (
+      <div className="claims-page">
+        <p className="claims-muted">Loading…</p>
+      </div>
+    );
+  }
+
+  if (!canEditClaims) {
+    return (
+      <AccessDenied message="Your role cannot create or edit claims." permission="claims.edit" />
     );
   }
 

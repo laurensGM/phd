@@ -8,6 +8,8 @@ import {
   type PaperReadingSectionKey,
 } from '../constants/paperReadingSections';
 import { usePageLoader } from '../hooks/usePageLoader';
+import { usePermissions } from '../hooks/usePermissions';
+import AccessDenied from './AccessDenied';
 
 interface SavedPaper {
   id: string;
@@ -218,6 +220,7 @@ const base = (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) |
 const paperDetailHref = (id: string) => paperDetailUrl(id, base);
 
 export default function PapersPage() {
+  const { loading: permLoading, canViewPapers, canEditPapers } = usePermissions();
   const [papers, setPapers] = useState<SavedPaper[]>([]);
   const [papersWithSummary, setPapersWithSummary] = useState<Set<string>>(new Set());
   /** Comment counts keyed by paper_id (from paper_comments table). */
@@ -561,7 +564,7 @@ export default function PapersPage() {
 
   const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!supabase || !editingId) return;
+    if (!canEditPapers || !supabase || !editingId) return;
     setSaving(true);
     setError(null);
     const citationsNum = editForm.citations.trim() ? parseInt(editForm.citations.trim(), 10) : null;
@@ -597,6 +600,7 @@ export default function PapersPage() {
   };
 
   const handleDelete = async (id: string) => {
+    if (!canEditPapers) return;
     if (!window.confirm('Delete this paper from your list?')) return;
     if (!supabase) return;
     setDeletingId(id);
@@ -638,7 +642,7 @@ export default function PapersPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!supabase) return;
+    if (!canEditPapers || !supabase) return;
     setSaving(true);
     setError(null);
     const citationsNum = formData.citations.trim() ? parseInt(formData.citations.trim(), 10) : null;
@@ -697,12 +701,21 @@ export default function PapersPage() {
     );
   }
 
-  if (loading && !isOffline && offlinePapers.length === 0) {
+  if ((loading && !isOffline && offlinePapers.length === 0) || permLoading) {
     return <div className="papers-loading">Loading saved papers...</div>;
+  }
+
+  if (!canViewPapers) {
+    return <AccessDenied message="Your role cannot view papers." permission="papers.view" />;
   }
 
   return (
     <div className="papers-page">
+      {!canEditPapers && (
+        <p className="papers-offline-notice" role="status">
+          View-only: your role cannot add or edit papers.
+        </p>
+      )}
       {isOffline && (
         <p className="papers-offline-notice" role="status">
           You are offline. Open papers from your saved offline list below.
@@ -759,6 +772,7 @@ export default function PapersPage() {
       </datalist>
       {error && <p className="papers-error">{error}</p>}
 
+      {canEditPapers && (
       <section className="papers-add-section">
         <div className="papers-add-header">
           <button
@@ -921,6 +935,7 @@ export default function PapersPage() {
           </form>
         )}
       </section>
+      )}
 
       <section className="papers-history-section">
         <div className="papers-view-tabs">
@@ -1211,6 +1226,7 @@ export default function PapersPage() {
                       </div>
                     </div>
                     <div className="papers-entry-actions">
+                      {canEditPapers && (
                       <button
                         type="button"
                         className="papers-entry-action papers-entry-edit"
@@ -1219,6 +1235,8 @@ export default function PapersPage() {
                       >
                         Edit
                       </button>
+                      )}
+                      {canEditPapers && (
                       <button
                         type="button"
                         className="papers-entry-action papers-entry-delete"
@@ -1228,6 +1246,7 @@ export default function PapersPage() {
                       >
                         {deletingId === paper.id ? '…' : 'Delete'}
                       </button>
+                      )}
                     </div>
                   </div>
                   <h4 className="papers-entry-title">

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { ViewAsControls } from './ViewAsBanner';
+import { notifyPermissionsChanged } from '../lib/viewAs';
 
 const base = (import.meta.env.BASE_URL || '/').replace(/\/?$/, '/');
 
@@ -107,6 +108,7 @@ export default function AdminPermissionsPanel() {
       return;
     }
     setMsg('Saved.');
+    notifyPermissionsChanged();
     window.setTimeout(() => setMsg(null), 1500);
   };
 

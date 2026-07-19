@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import constructsData from '../data/constructs.json';
 import { CLAIM_LR_CHAPTERS } from '../constants/claimLrChapters';
+import { usePermissions } from '../hooks/usePermissions';
+import AccessDenied from './AccessDenied';
 
 const RELATIONSHIP_OPTIONS = [
   { value: 'predicts', label: 'Predicts' },
@@ -19,6 +21,7 @@ const constructOptions = (constructsData as { id: string; name?: string }[])
 
 export default function ClaimManualPage() {
   const base = import.meta.env.BASE_URL || '/';
+  const { loading: permLoading, canEditClaims } = usePermissions();
   const [claimText, setClaimText] = useState('');
   const [constructIds, setConstructIds] = useState<string[]>([]);
   const [relationshipType, setRelationshipType] = useState('relates');
@@ -88,6 +91,20 @@ export default function ClaimManualPage() {
       <div className="claims-page">
         <p className="claims-error">Supabase is not configured.</p>
       </div>
+    );
+  }
+
+  if (permLoading) {
+    return (
+      <div className="claims-page">
+        <p className="claims-muted">Loading…</p>
+      </div>
+    );
+  }
+
+  if (!canEditClaims) {
+    return (
+      <AccessDenied message="Your role cannot create or edit claims." permission="claims.edit" />
     );
   }
 

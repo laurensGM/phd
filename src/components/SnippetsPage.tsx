@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { usePageLoader } from '../hooks/usePageLoader';
+import { usePermissions } from '../hooks/usePermissions';
+import AccessDenied from './AccessDenied';
 import constructsData from '../data/constructs.json';
 import modelsData from '../data/models.json';
 import umbrellaConstructsData from '../data/umbrella-constructs.json';
@@ -336,11 +338,12 @@ function getSnippetModelIds(s: any): string[] {
 }
 
 export default function SnippetsPage() {
+  const { loading: permLoading, canViewSnippets, canEditSnippets } = usePermissions();
   const base = (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) || '';
   const [snippets, setSnippets] = useState<Snippet[]>([]);
   const [papers, setPapers] = useState<PaperSummary[]>([]);
   const [loading, setLoading] = useState(true);
-  usePageLoader(loading);
+  usePageLoader(loading || permLoading);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -857,6 +860,7 @@ export default function SnippetsPage() {
   const handleAddSnippet = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
+      if (!canEditSnippets) return;
       if (!normaliseSnippetContent(newContent) || !newPaperId) return;
       if (!supabase || !isSupabaseConfigured()) return;
       setSaving(true);
@@ -929,7 +933,7 @@ export default function SnippetsPage() {
       }
       setSaving(false);
     },
-    [newContent, newPaperId, newConstructId, newModelId, newPageNumber, newTagsInput, newSnippetType, allTags, syncSnippetEmbedding]
+    [canEditSnippets, newContent, newPaperId, newConstructId, newModelId, newPageNumber, newTagsInput, newSnippetType, allTags, syncSnippetEmbedding]
   );
 
   const handleLinkContribution = useCallback(async (snippetId: string, contributionId: string | null) => {
@@ -1038,7 +1042,7 @@ export default function SnippetsPage() {
   }, []);
 
   const handleDelete = useCallback(async (id: string) => {
-    if (!supabase || !isSupabaseConfigured()) return;
+    if (!canEditSnippets || !supabase || !isSupabaseConfigured()) return;
     const confirmed = window.confirm('Delete this snippet?');
     if (!confirmed) return;
     const { error: deleteErr } = await supabase.from('snippets').delete().eq('id', id);
@@ -1048,7 +1052,7 @@ export default function SnippetsPage() {
       setSnippets((prev) => prev.filter((s) => s.id !== id));
       setSelectedSnippetIds((prev) => prev.filter((x) => x !== id));
     }
-  }, []);
+  }, [canEditSnippets]);
 
   const setSnippetProcessed = useCallback(async (snippet: Snippet, usedInWriting: boolean) => {
     if (!supabase || !isSupabaseConfigured()) return;
@@ -1199,7 +1203,7 @@ export default function SnippetsPage() {
 
   const handleSaveEdit = useCallback(
     async (snippet: Snippet) => {
-      if (!supabase || !isSupabaseConfigured()) return;
+      if (!canEditSnippets || !supabase || !isSupabaseConfigured()) return;
       if (!normaliseSnippetContent(editContent)) return;
       const pageNum = editPageNumber.trim() ? parseInt(editPageNumber, 10) : null;
 
@@ -1260,10 +1264,10 @@ export default function SnippetsPage() {
         cancelEdit();
       }
     },
-    [editContent, editConstructId, editModelId, editPageNumber, editTagsInput, editSnippetType, allTags, cancelEdit, syncSnippetEmbedding]
+    [canEditSnippets, editContent, editConstructId, editModelId, editPageNumber, editTagsInput, editSnippetType, allTags, cancelEdit, syncSnippetEmbedding]
   );
 
-  if (loading) {
+  if (loading || permLoading) {
     return (
       <div className="snippets-page">
         <p className="snippets-loading">Loading snippets…</p>
@@ -1282,13 +1286,25 @@ export default function SnippetsPage() {
     );
   }
 
+  if (!canViewSnippets) {
+    return (
+      <AccessDenied message="Your role cannot view snippets." permission="snippets.view" />
+    );
+  }
+
   return (
     <div className="snippets-page">
+      {!canEditSnippets && (
+        <p className="snippets-error" role="status" style={{ background: '#eef4fa', color: '#1e3a5f', borderColor: '#b7d0e8' }}>
+          View-only: your role cannot add or edit snippets.
+        </p>
+      )}
       <header className="snippets-header">
         <h1>Snippets</h1>
         <p className="snippets-intro">
           Conceptual snippets extracted from papers. Filter by paper, construct, model, or tags.
         </p>
+        {canEditSnippets ? (
         <div className="snippets-header-actions">
           <button
             type="button"
@@ -1321,6 +1337,7 @@ export default function SnippetsPage() {
             Add snippet
           </button>
         </div>
+        ) : null}
         <div className="snippets-top-tabs" role="tablist" aria-label="Snippets sections">
           <button
             type="button"
@@ -2193,6 +2210,7 @@ export default function SnippetsPage() {
                         >
                           {snippetClaimLinks.length > 0 ? 'Link another claim' : 'Link to claim'}
                         </button>
+                        {canEditSnippets && (
                         <button
                           type="button"
                           className="snippets-edit-btn"
@@ -2200,6 +2218,8 @@ export default function SnippetsPage() {
                         >
                           Edit
                         </button>
+                        )}
+                        {canEditSnippets && (
                         <button
                           type="button"
                           className="snippets-delete-btn"
@@ -2207,6 +2227,7 @@ export default function SnippetsPage() {
                         >
                           Delete
                         </button>
+                        )}
                       </div>
                     </footer>
                     {showContributionPicker && (
