@@ -3,6 +3,8 @@ import { signOut } from '../lib/auth';
 import { useAuth } from '../hooks/useAuth';
 import { getUserInitials } from '../lib/userInitials';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { ViewAsControls } from './ViewAsBanner';
+import { viewAsLabel, writeViewAsRole } from '../lib/viewAs';
 
 const base = (import.meta.env.BASE_URL || '/').replace(/\/?$/, '/');
 
@@ -11,7 +13,18 @@ function appHref(path: string) {
 }
 
 export default function AuthBar() {
-  const { loading, isSignedIn, user, role, memberships, isSuperadmin } = useAuth();
+  const {
+    loading,
+    isSignedIn,
+    user,
+    role,
+    memberships,
+    isSuperadmin,
+    isRealSuperadmin,
+    isViewingAs,
+    viewAsRole,
+    effectiveRole,
+  } = useAuth();
   const configured = isSupabaseConfigured();
   const [open, setOpen] = useState(false);
   const [displayName, setDisplayName] = useState<string | null>(null);
@@ -68,7 +81,6 @@ export default function AuthBar() {
     };
   }, [open]);
 
-  // Always render a stable control so the top-right slot never goes blank
   if (!configured) {
     return (
       <div className="nav-profile">
@@ -100,9 +112,13 @@ export default function AuthBar() {
   const email = user?.email ?? '';
   const initials = getUserInitials({ email, displayName });
   const noProject = memberships.length === 0;
+  const roleLabel = isViewingAs
+    ? `viewing as ${viewAsLabel(viewAsRole)}`
+    : effectiveRole || role;
 
   const onLogout = () => {
     setOpen(false);
+    writeViewAsRole(null);
     void signOut().then(() => {
       window.location.assign(appHref('login/'));
     });
@@ -112,7 +128,7 @@ export default function AuthBar() {
     <div className="nav-profile" ref={rootRef}>
       <button
         type="button"
-        className="nav-avatar"
+        className={`nav-avatar${isViewingAs ? ' nav-avatar-view-as' : ''}`}
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label={`Account menu for ${email || 'signed-in user'}`}
@@ -129,7 +145,7 @@ export default function AuthBar() {
             <div className="nav-profile-menu-meta">
               {displayName && <div className="nav-profile-menu-name">{displayName}</div>}
               <div className="nav-profile-menu-email">{email}</div>
-              {role && <div className="nav-profile-menu-role">{role}</div>}
+              {roleLabel && <div className="nav-profile-menu-role">{roleLabel}</div>}
             </div>
           </div>
           {noProject && (
@@ -137,11 +153,7 @@ export default function AuthBar() {
               Not on a project yet. Open Login once if you are the owner, or wait for an invite.
             </p>
           )}
-          <a
-            className="nav-profile-menu-item"
-            role="menuitem"
-            href={appHref('profile/')}
-          >
+          <a className="nav-profile-menu-item" role="menuitem" href={appHref('profile/')}>
             Profile
           </a>
           {isSuperadmin && (
@@ -153,11 +165,8 @@ export default function AuthBar() {
               Admin panel
             </a>
           )}
-          <a
-            className="nav-profile-menu-item"
-            role="menuitem"
-            href={appHref('members/')}
-          >
+          {isRealSuperadmin && <ViewAsControls compact />}
+          <a className="nav-profile-menu-item" role="menuitem" href={appHref('members/')}>
             Project members
           </a>
           <button

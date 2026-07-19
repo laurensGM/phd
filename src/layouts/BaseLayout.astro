@@ -1,6 +1,7 @@
 ---
 import AuthBar from '../components/AuthBar';
 import AdminNavLink from '../components/AdminNavLink';
+import ViewAsBanner from '../components/ViewAsBanner';
 
 interface Props {
   title: string;
@@ -211,6 +212,7 @@ const isAdminNav = navTheme === 'admin';
         </div>
       </nav>
     </header>
+    <ViewAsBanner client:load />
     <main class="main-content">
       <slot />
     </main>
@@ -544,6 +546,99 @@ const isAdminNav = navTheme === 'admin';
   .site-header-admin .nav-admin-link:hover {
     background: rgba(255, 255, 255, 0.18) !important;
     color: #fff !important;
+  }
+
+  .nav-avatar-view-as {
+    box-shadow: 0 0 0 3px #1e3a5f;
+  }
+
+  .view-as-banner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem 1rem;
+    padding: 0.55rem 1.25rem;
+    background: #1e3a5f;
+    color: #fff;
+    font-size: 0.88rem;
+    border-bottom: 2px solid #7eb6e8;
+  }
+  .view-as-banner-note {
+    opacity: 0.85;
+    font-weight: 400;
+  }
+  .view-as-banner-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+  .view-as-banner-btn {
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.3rem 0.65rem;
+    border-radius: 999px;
+    border: 1px solid rgba(126, 182, 232, 0.65);
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    cursor: pointer;
+  }
+  .view-as-banner-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+  .view-as-banner-btn-exit {
+    background: #fff;
+    color: #1e3a5f;
+    border-color: #fff;
+  }
+  .view-as-banner-btn-exit:hover {
+    background: #e8f2fb;
+  }
+
+  .view-as-menu-block {
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    margin: 0.25rem 0;
+    padding: 0.35rem 0;
+  }
+  .view-as-menu-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-ink-muted);
+    padding: 0.25rem 0.65rem 0.15rem;
+  }
+
+  .view-as-admin-section {
+    margin-bottom: 1.75rem;
+    padding: 1rem 1.15rem;
+    border: 1px solid #b7d0e8;
+    border-radius: 12px;
+    background: #f3f7fb;
+  }
+  .view-as-admin-section h2 {
+    font-family: var(--font-serif);
+    font-size: 1.15rem;
+    color: #1e3a5f;
+    margin: 0 0 0.4rem;
+  }
+  .view-as-admin-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 0.85rem;
+  }
+  .admin-inline-btn {
+    font: inherit;
+    font-weight: 600;
+    color: #1e3a5f;
+    background: none;
+    border: none;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
   }
 
   .nav-profile-menu-admin {

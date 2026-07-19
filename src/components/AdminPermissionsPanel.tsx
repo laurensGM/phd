@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
+import { ViewAsControls } from './ViewAsBanner';
 
 const base = (import.meta.env.BASE_URL || '/').replace(/\/?$/, '/');
 
@@ -23,7 +24,8 @@ const ROLES: { id: AppRole; label: string; hint: string }[] = [
 ];
 
 export default function AdminPermissionsPanel() {
-  const { loading: authLoading, isSignedIn, isSuperadmin } = useAuth();
+  const { loading: authLoading, isSignedIn, isRealSuperadmin, isViewingAs, clearViewAs } =
+    useAuth();
   const [permissions, setPermissions] = useState<PermissionDef[]>([]);
   const [matrix, setMatrix] = useState<Record<string, MatrixCell>>({});
   const [loading, setLoading] = useState(true);
@@ -65,8 +67,8 @@ export default function AdminPermissionsPanel() {
   }, []);
 
   useEffect(() => {
-    if (isSignedIn && isSuperadmin) void load();
-  }, [isSignedIn, isSuperadmin, load]);
+    if (isSignedIn && isRealSuperadmin && !isViewingAs) void load();
+  }, [isSignedIn, isRealSuperadmin, isViewingAs, load]);
 
   const categories = useMemo(() => {
     const map = new Map<string, PermissionDef[]>();
@@ -79,7 +81,7 @@ export default function AdminPermissionsPanel() {
   }, [permissions]);
 
   const toggle = async (permissionKey: string, role: AppRole) => {
-    if (!supabase || !isSuperadmin) return;
+    if (!supabase || !isRealSuperadmin || isViewingAs) return;
     const prev = matrix[permissionKey]?.[role] ?? false;
     const nextVal = !prev;
     setMatrix((m) => ({
@@ -124,7 +126,19 @@ export default function AdminPermissionsPanel() {
     );
   }
 
-  if (!isSuperadmin) {
+  if (isViewingAs) {
+    return (
+      <p className="admin-banner admin-banner-warn">
+        Admin is hidden while view-as is active.{' '}
+        <button type="button" className="admin-inline-btn" onClick={() => clearViewAs()}>
+          Exit view-as
+        </button>{' '}
+        to manage permissions.
+      </p>
+    );
+  }
+
+  if (!isRealSuperadmin) {
     return (
       <p className="admin-banner admin-banner-warn">
         Access denied. Only the superadmin can open this panel.
@@ -134,6 +148,8 @@ export default function AdminPermissionsPanel() {
 
   return (
     <div className="admin-permissions">
+      <ViewAsControls />
+
       <p className="admin-lead">
         Rows are roles. Columns are permissions (placeholders for now — toggle freely; enforcement can be
         wired later).

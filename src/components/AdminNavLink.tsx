@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
+import { readViewAsRole } from '../lib/viewAs';
 
 const base = (import.meta.env.BASE_URL || '/').replace(/\/?$/, '/');
 const CACHE_KEY = 'phd_is_superadmin';
 
-/** Persistent Admin CTA — visible on every page for the sole superadmin. */
+/** Persistent Admin CTA — real superadmin only; hidden while view-as is active. */
 export default function AdminNavLink() {
-  const { loading, isSignedIn, isSuperadmin } = useAuth();
+  const { loading, isSignedIn, isSuperadmin, isRealSuperadmin, isViewingAs } = useAuth();
   const [cached, setCached] = useState(() => {
     try {
       return sessionStorage.getItem(CACHE_KEY) === '1';
@@ -14,6 +15,7 @@ export default function AdminNavLink() {
       return false;
     }
   });
+  const [viewAsCached] = useState(() => !!readViewAsRole());
 
   useEffect(() => {
     if (!isSignedIn) {
@@ -27,14 +29,17 @@ export default function AdminNavLink() {
     }
     if (!loading) {
       try {
-        if (isSuperadmin) sessionStorage.setItem(CACHE_KEY, '1');
+        if (isRealSuperadmin) sessionStorage.setItem(CACHE_KEY, '1');
         else sessionStorage.removeItem(CACHE_KEY);
       } catch {
         /* ignore */
       }
-      setCached(isSuperadmin);
+      setCached(isRealSuperadmin);
     }
-  }, [loading, isSignedIn, isSuperadmin]);
+  }, [loading, isSignedIn, isRealSuperadmin]);
+
+  const shadowing = isViewingAs || (loading && viewAsCached);
+  if (shadowing) return null;
 
   const show = isSignedIn && (isSuperadmin || (loading && cached));
   if (!show) return null;

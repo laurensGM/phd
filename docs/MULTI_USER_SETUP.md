@@ -116,5 +116,15 @@ After migrations `053` and `054`:
 - Navbar turns **dark blue** on admin pages
 - Non-superadmins cannot open or edit the panel
 
-Permissions are stored but not yet enforced on every feature page — wire gates next when ready.
+## 10. View as (shadow mode)
+
+Superadmin only. From **Admin** or the avatar menu:
+
+- **View as Student** / **View as Supervisor**
+- Site-wide blue banner with **Exit view-as**
+- Admin CTA and admin panel stay hidden until you exit
+- Affects this browser session only (`sessionStorage`); not a second login
+
+This is UI preview. Database RLS is still membership-based until permissions are enforced end-to-end.
+
 

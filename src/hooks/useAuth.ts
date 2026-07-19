@@ -6,6 +6,12 @@ import {
   type ProjectMember,
   type ProjectRole,
 } from '../lib/auth';
+import {
+  readViewAsRole,
+  writeViewAsRole,
+  VIEW_AS_EVENT,
+  type ViewAsRole,
+} from '../lib/viewAs';
 
 type AuthState = {
   loading: boolean;
@@ -13,8 +19,11 @@ type AuthState = {
   user: User | null;
   memberships: ProjectMember[];
   primaryProjectId: string | null;
+  /** Real project membership role (owner / student / supervisor). */
   role: ProjectRole | null;
-  isSuperadmin: boolean;
+  /** True DB superadmin — ignore view-as. */
+  isRealSuperadmin: boolean;
+  viewAsRole: ViewAsRole | null;
   error: string | null;
   configured: boolean;
 };
@@ -26,13 +35,17 @@ const initial: AuthState = {
   memberships: [],
   primaryProjectId: null,
   role: null,
-  isSuperadmin: false,
+  isRealSuperadmin: false,
+  viewAsRole: null,
   error: null,
   configured: isSupabaseConfigured(),
 };
 
 export function useAuth() {
-  const [state, setState] = useState<AuthState>(initial);
+  const [state, setState] = useState<AuthState>(() => ({
+    ...initial,
+    viewAsRole: typeof window !== 'undefined' ? readViewAsRole() : null,
+  }));
 
   const refreshMemberships = useCallback(async (user: User | null) => {
     if (!user || !supabase) {
@@ -41,26 +54,34 @@ export function useAuth() {
         memberships: [],
         primaryProjectId: null,
         role: null,
-        isSuperadmin: false,
+        isRealSuperadmin: false,
+        viewAsRole: null,
       }));
+      writeViewAsRole(null);
       return;
     }
     try {
       const result = await bootstrapProjectAccess();
       const primary = result.memberships[0] ?? null;
 
-      // Prefer DB RPC so client cannot spoof admin via stale profile cache
       const { data: rpcFlag, error: rpcErr } = await supabase.rpc('is_superadmin');
-      let isSuperadmin = false;
+      let isRealSuperadmin = false;
       if (!rpcErr && typeof rpcFlag === 'boolean') {
-        isSuperadmin = rpcFlag;
+        isRealSuperadmin = rpcFlag;
       } else {
         const { data: profile } = await supabase
           .from('profiles')
           .select('is_superadmin')
           .eq('id', user.id)
           .maybeSingle();
-        isSuperadmin = !!(profile as { is_superadmin?: boolean } | null)?.is_superadmin;
+        isRealSuperadmin = !!(profile as { is_superadmin?: boolean } | null)?.is_superadmin;
+      }
+
+      // Only real superadmins may keep a view-as session
+      let viewAsRole = readViewAsRole();
+      if (!isRealSuperadmin && viewAsRole) {
+        writeViewAsRole(null);
+        viewAsRole = null;
       }
 
       setState((s) => ({
@@ -68,7 +89,8 @@ export function useAuth() {
         memberships: result.memberships,
         primaryProjectId: primary?.project_id ?? null,
         role: primary?.role ?? null,
-        isSuperadmin,
+        isRealSuperadmin,
+        viewAsRole,
         error: null,
       }));
     } catch (e) {
@@ -77,6 +99,28 @@ export function useAuth() {
         error: e instanceof Error ? e.message : 'Could not load project access',
       }));
     }
+  }, []);
+
+  const setViewAs = useCallback(
+    (role: ViewAsRole | null) => {
+      if (role && !state.isRealSuperadmin) return;
+      writeViewAsRole(role);
+      setState((s) => ({ ...s, viewAsRole: role }));
+    },
+    [state.isRealSuperadmin]
+  );
+
+  const clearViewAs = useCallback(() => {
+    writeViewAsRole(null);
+    setState((s) => ({ ...s, viewAsRole: null }));
+  }, []);
+
+  useEffect(() => {
+    const onViewAs = () => {
+      setState((s) => ({ ...s, viewAsRole: readViewAsRole() }));
+    };
+    window.addEventListener(VIEW_AS_EVENT, onViewAs);
+    return () => window.removeEventListener(VIEW_AS_EVENT, onViewAs);
   }, []);
 
   useEffect(() => {
@@ -134,10 +178,28 @@ export function useAuth() {
     };
   }, [refreshMemberships]);
 
+  const isViewingAs = !!state.viewAsRole && state.isRealSuperadmin;
+  /** Effective superadmin for UI — false while shadowing another role. */
+  const isSuperadmin = state.isRealSuperadmin && !isViewingAs;
+
+  const effectiveRole: ViewAsRole | ProjectRole | null = isViewingAs
+    ? state.viewAsRole
+    : state.role;
+
+  const canManage = isViewingAs
+    ? state.viewAsRole === 'student'
+    : state.role === 'owner' || state.role === 'student';
+
   return {
     ...state,
     isSignedIn: !!state.session,
-    canManage: state.role === 'owner' || state.role === 'student',
+    isSuperadmin,
+    isRealSuperadmin: state.isRealSuperadmin,
+    isViewingAs,
+    effectiveRole,
+    canManage,
+    setViewAs,
+    clearViewAs,
     refreshMemberships: () => refreshMemberships(state.user),
   };
 }
