@@ -32,7 +32,11 @@ const base = import.meta.env.BASE_URL;
       <p class="rq-hub-desc">Talk-show metaphor, Toulmin elements, counterarguments, and writing steps.</p>
       <span class="rq-hub-link">Open argument →</span>
     </a>
-    <a href={`${base}writing/humanize/`} class="rq-hub-card">
+    <a
+      href={`${base}writing/humanize/`}
+      class="rq-hub-card"
+      data-requires-permission="writing.humanize"
+    >
       <span class="rq-hub-icon" aria-hidden="true">📝</span>
       <h2 class="rq-hub-title">Humanize</h2>
       <p class="rq-hub-desc">Citation rhythm, short sentences, authorial voice, and other anti-AI-prose checks.</p>
@@ -44,7 +48,11 @@ const base = import.meta.env.BASE_URL;
       <p class="rq-hub-desc">Systematic literature review — scope, process, and guidance.</p>
       <span class="rq-hub-link">Open SLR →</span>
     </a>
-    <a href={`${base}writing/lr-process/`} class="rq-hub-card">
+    <a
+      href={`${base}writing/lr-process/`}
+      class="rq-hub-card"
+      data-requires-permission="writing.lr_process"
+    >
       <span class="rq-hub-icon" aria-hidden="true">🔄</span>
       <h2 class="rq-hub-title">LR process</h2>
       <p class="rq-hub-desc">End-to-end literature workflow — discover, read, snippets, claims, synthesize, and writing.</p>

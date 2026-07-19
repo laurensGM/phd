@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
+import RequirePermission from '../../../components/RequirePermission';
 
 const base = import.meta.env.BASE_URL;
 ---
@@ -8,6 +9,12 @@ const base = import.meta.env.BASE_URL;
   title="Humanize"
   description="Practical tips to make academic writing read less like AI-generated prose: citations, rhythm, voice, and structure."
 >
+  <RequirePermission
+    client:load
+    permission="writing.humanize"
+    message="This page is only available to the superadmin."
+  />
+  <div data-requires-permission-content="writing.humanize" hidden>
   <p class="back-link"><a href={`${base}writing/`}>← Writing</a></p>
   <h1>Humanize</h1>
   <p class="page-desc">
@@ -86,6 +93,7 @@ const base = import.meta.env.BASE_URL;
       </li>
     </ol>
   </article>
+  </div>
 </BaseLayout>
 
 <style>

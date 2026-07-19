@@ -18,7 +18,9 @@ export type PermissionKey =
   | 'meeting_notes.view'
   | 'meeting_notes.edit'
   | 'documents.view'
-  | 'documents.edit';
+  | 'documents.edit'
+  | 'writing.humanize'
+  | 'writing.lr_process';
 
 export const PERMISSION_KEYS: PermissionKey[] = [
   'admin.access',
@@ -37,13 +39,21 @@ export const PERMISSION_KEYS: PermissionKey[] = [
   'meeting_notes.edit',
   'documents.view',
   'documents.edit',
+  'writing.humanize',
+  'writing.lr_process',
 ];
+
+const STUDENT_DENIED = new Set<PermissionKey>([
+  'admin.access',
+  'writing.humanize',
+  'writing.lr_process',
+]);
 
 /** Defaults matching the seeded admin matrix (screenshot). */
 export const DEFAULT_ROLE_PERMISSIONS: Record<AppPermissionRole, Record<PermissionKey, boolean>> = {
   superadmin: Object.fromEntries(PERMISSION_KEYS.map((k) => [k, true])) as Record<PermissionKey, boolean>,
   student: Object.fromEntries(
-    PERMISSION_KEYS.map((k) => [k, k !== 'admin.access'])
+    PERMISSION_KEYS.map((k) => [k, !STUDENT_DENIED.has(k)])
   ) as Record<PermissionKey, boolean>,
   supervisor: {
     'admin.access': false,
@@ -62,6 +72,8 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<AppPermissionRole, Record<Permissi
     'meeting_notes.edit': true,
     'documents.view': true,
     'documents.edit': false,
+    'writing.humanize': false,
+    'writing.lr_process': false,
   },
 };
 
