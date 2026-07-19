@@ -1,0 +1,19 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProfilePage from '../components/ProfilePage';
+---
+
+<BaseLayout title="Profile" description="Your PhD Manager profile">
+  <h1>Profile</h1>
+  <p class="page-desc">Your account details for this PhD project.</p>
+  <ProfilePage client:load />
+</BaseLayout>
+
+<style>
+  .page-desc {
+    color: var(--color-ink-muted);
+    margin-bottom: 1.5rem;
+    max-width: 40rem;
+    line-height: 1.55;
+  }
+</style>
