@@ -24,6 +24,88 @@ const ROLES: { id: AppRole; label: string; hint: string }[] = [
   { id: 'supervisor', label: 'Supervisor', hint: 'Reviews and comments' },
 ];
 
+/** Navbar sections — one permissions table each. */
+const NAV_SECTIONS: { id: string; label: string; hint?: string }[] = [
+  { id: 'Literature', label: 'Literature', hint: 'Papers, snippets, claims' },
+  { id: 'Writing', label: 'Writing', hint: 'Writing guides and LR workflow' },
+  { id: 'Methods', label: 'Methods' },
+  { id: 'Research', label: 'Research' },
+  { id: 'Tools', label: 'Tools' },
+  { id: 'Manager', label: 'Manager', hint: 'Diary, tasks, meeting notes, documents, admin' },
+];
+
+function PermissionMatrixTable({
+  sectionLabel,
+  permissions,
+  matrix,
+  savingKey,
+  onToggle,
+}: {
+  sectionLabel: string;
+  permissions: PermissionDef[];
+  matrix: Record<string, MatrixCell>;
+  savingKey: string | null;
+  onToggle: (permissionKey: string, role: AppRole) => void;
+}) {
+  if (permissions.length === 0) {
+    return (
+      <section className="admin-perm-section">
+        <h2 className="admin-perm-section-title">{sectionLabel}</h2>
+        <p className="admin-muted admin-perm-section-empty">No permissions in this section yet.</p>
+      </section>
+    );
+  }
+
+  return (
+    <section className="admin-perm-section">
+      <h2 className="admin-perm-section-title">{sectionLabel}</h2>
+      <div className="admin-table-wrap">
+        <table className="admin-perm-table">
+          <thead>
+            <tr>
+              <th scope="col" className="admin-perm-sticky">
+                Role
+              </th>
+              {permissions.map((p) => (
+                <th key={p.key} scope="col" title={p.description ?? p.label}>
+                  <span className="admin-perm-col-label">{p.label}</span>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {ROLES.map((role) => (
+              <tr key={role.id}>
+                <th scope="row" className="admin-perm-sticky admin-role-cell">
+                  <div className="admin-role-name">{role.label}</div>
+                  <div className="admin-role-hint">{role.hint}</div>
+                </th>
+                {permissions.map((p) => {
+                  const checked = matrix[p.key]?.[role.id] ?? false;
+                  const busy = savingKey === `${role.id}:${p.key}`;
+                  return (
+                    <td key={`${role.id}-${p.key}`}>
+                      <label className="admin-check">
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          disabled={busy}
+                          onChange={() => onToggle(p.key, role.id)}
+                          aria-label={`${sectionLabel} · ${role.label}: ${p.label}`}
+                        />
+                      </label>
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+
 export default function AdminPermissionsPanel() {
   const { loading: authLoading, isSignedIn, isRealSuperadmin, isViewingAs, clearViewAs } =
     useAuth();
@@ -71,14 +153,26 @@ export default function AdminPermissionsPanel() {
     if (isSignedIn && isRealSuperadmin && !isViewingAs) void load();
   }, [isSignedIn, isRealSuperadmin, isViewingAs, load]);
 
-  const categories = useMemo(() => {
+  const permissionsBySection = useMemo(() => {
     const map = new Map<string, PermissionDef[]>();
-    for (const p of permissions) {
-      const list = map.get(p.category) ?? [];
-      list.push(p);
-      map.set(p.category, list);
+    for (const section of NAV_SECTIONS) {
+      map.set(section.id, []);
     }
-    return [...map.entries()];
+    for (const p of permissions) {
+      const bucket = map.get(p.category);
+      if (bucket) {
+        bucket.push(p);
+      } else {
+        // Legacy categories (Admin, Project, etc.) fall under Manager
+        const manager = map.get('Manager') ?? [];
+        manager.push(p);
+        map.set('Manager', manager);
+      }
+    }
+    for (const [, list] of map) {
+      list.sort((a, b) => a.sort_order - b.sort_order);
+    }
+    return map;
   }, [permissions]);
 
   const toggle = async (permissionKey: string, role: AppRole) => {
@@ -153,69 +247,40 @@ export default function AdminPermissionsPanel() {
       <ViewAsControls />
 
       <p className="admin-lead">
-        Rows are roles. Columns are permissions (placeholders for now — toggle freely; enforcement can be
-        wired later).
+        One table per navbar section. Rows are roles; columns are permissions for that area of the
+        app.
       </p>
 
-      <div className="admin-table-wrap">
-        <table className="admin-perm-table">
-          <thead>
-            <tr>
-              <th scope="col" className="admin-perm-sticky">
-                Role
-              </th>
-              {permissions.map((p) => (
-                <th key={p.key} scope="col" title={p.description ?? p.label}>
-                  <span className="admin-perm-col-label">{p.label}</span>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {ROLES.map((role) => (
-              <tr key={role.id}>
-                <th scope="row" className="admin-perm-sticky admin-role-cell">
-                  <div className="admin-role-name">{role.label}</div>
-                  <div className="admin-role-hint">{role.hint}</div>
-                </th>
-                {permissions.map((p) => {
-                  const checked = matrix[p.key]?.[role.id] ?? false;
-                  const busy = savingKey === `${role.id}:${p.key}`;
-                  return (
-                    <td key={`${role.id}-${p.key}`}>
-                      <label className="admin-check">
-                        <input
-                          type="checkbox"
-                          checked={checked}
-                          disabled={busy}
-                          onChange={() => void toggle(p.key, role.id)}
-                          aria-label={`${role.label}: ${p.label}`}
-                        />
-                      </label>
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {NAV_SECTIONS.map((section) => (
+        <PermissionMatrixTable
+          key={section.id}
+          sectionLabel={section.label}
+          permissions={permissionsBySection.get(section.id) ?? []}
+          matrix={matrix}
+          savingKey={savingKey}
+          onToggle={(key, role) => void toggle(key, role)}
+        />
+      ))}
 
       <section className="admin-perm-legend">
-        <h2>Permission catalog</h2>
-        {categories.map(([category, items]) => (
-          <div key={category} className="admin-perm-cat">
-            <h3>{category}</h3>
-            <ul>
-              {items.map((p) => (
-                <li key={p.key}>
-                  <code>{p.key}</code> — {p.label}
-                  {p.description ? <span className="admin-muted"> · {p.description}</span> : null}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+        <h2>Permission keys</h2>
+        {NAV_SECTIONS.map((section) => {
+          const items = permissionsBySection.get(section.id) ?? [];
+          if (items.length === 0) return null;
+          return (
+            <div key={section.id} className="admin-perm-cat">
+              <h3>{section.label}</h3>
+              <ul>
+                {items.map((p) => (
+                  <li key={p.key}>
+                    <code>{p.key}</code> — {p.label}
+                    {p.description ? <span className="admin-muted"> · {p.description}</span> : null}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })}
       </section>
 
       {msg && <p className="admin-banner admin-banner-ok">{msg}</p>}

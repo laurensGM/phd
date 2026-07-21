@@ -205,7 +205,6 @@ const isAdminNav = navTheme === 'admin';
               <li><a href={`${base}meeting-notes/`} data-requires-permission="meeting_notes.view">Meeting notes</a></li>
               <li><a href={`${base}documents/`} data-requires-permission="documents.view">Documents</a></li>
               <li><a href={`${base}supervisor/`}>Supervisors</a></li>
-              <li><a href={`${base}members/`} data-requires-permission="members.manage">Members</a></li>
             </ul>
           </li>
         </ul>
@@ -747,14 +746,29 @@ const isAdminNav = navTheme === 'admin';
     border: 1px solid var(--color-border);
     border-radius: 12px;
     background: #fff;
-    margin-bottom: 1.75rem;
+  }
+  .admin-perm-section {
+    margin-bottom: 2rem;
+  }
+  .admin-perm-section-title {
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    color: #1e3a5f;
+    margin: 0 0 0.65rem;
+  }
+  .admin-perm-section-empty {
+    margin: 0;
+    padding: 0.75rem 1rem;
+    background: var(--color-bg-alt);
+    border: 1px dashed var(--color-border);
+    border-radius: 8px;
   }
   .admin-perm-table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
     font-size: 0.82rem;
-    min-width: 720px;
+    min-width: 0;
   }
   .admin-perm-table th,
   .admin-perm-table td {
@@ -822,7 +836,7 @@ const isAdminNav = navTheme === 'admin';
     font-family: var(--font-serif);
     font-size: 1.15rem;
     color: #1e3a5f;
-    margin: 0 0 0.75rem;
+    margin: 2rem 0 0.75rem;
   }
   .admin-perm-cat {
     margin-bottom: 1rem;
