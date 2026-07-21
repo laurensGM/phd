@@ -412,7 +412,7 @@ export default function KanbanBoard() {
 
   if (!canViewTasks) {
     return (
-      <AccessDenied message="Your role cannot view tasks." permission="tasks.view" />
+      <AccessDenied message="Your role cannot view tasks." permission="nav.manager.tasks" />
     );
   }
 

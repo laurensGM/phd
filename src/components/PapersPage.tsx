@@ -706,7 +706,7 @@ export default function PapersPage() {
   }
 
   if (!canViewPapers) {
-    return <AccessDenied message="Your role cannot view papers." permission="papers.view" />;
+    return <AccessDenied message="Your role cannot view papers." permission="nav.literature.papers" />;
   }
 
   return (

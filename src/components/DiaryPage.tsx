@@ -225,7 +225,7 @@ export default function DiaryPage() {
     return (
       <AccessDenied
         message="Your role cannot view the research diary."
-        permission="diary.view"
+        permission="nav.manager.diary"
       />
     );
   }

@@ -161,7 +161,7 @@ export default function MembersPage() {
     return (
       <AccessDenied
         message="Your role cannot manage project members."
-        permission="members.manage"
+        permission="nav.manager.members"
       />
     );
   }

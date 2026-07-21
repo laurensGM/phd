@@ -880,7 +880,7 @@ export default function PaperDetailPage() {
   }
 
   if (!canViewPapers) {
-    return <AccessDenied message="Your role cannot view papers." permission="papers.view" />;
+    return <AccessDenied message="Your role cannot view papers." permission="nav.literature.papers" />;
   }
 
   if (error || !paper) {

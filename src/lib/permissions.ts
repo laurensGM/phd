@@ -1,81 +1,58 @@
 /** Permission keys matching `app_permissions` / admin matrix. */
 
+import { ALL_NAV_PERMISSION_ITEMS } from './navPermissions';
+
 export type AppPermissionRole = 'superadmin' | 'student' | 'supervisor';
 
-export type PermissionKey =
-  | 'admin.access'
-  | 'members.manage'
-  | 'papers.view'
-  | 'papers.edit'
-  | 'snippets.view'
-  | 'snippets.edit'
-  | 'claims.view'
-  | 'claims.edit'
-  | 'diary.view'
-  | 'diary.edit'
-  | 'tasks.view'
-  | 'tasks.edit'
-  | 'meeting_notes.view'
-  | 'meeting_notes.edit'
-  | 'documents.view'
-  | 'documents.edit'
-  | 'writing.humanize'
-  | 'writing.lr_process';
+export type PermissionKey = (typeof ALL_NAV_PERMISSION_ITEMS)[number]['key'];
 
-export const PERMISSION_KEYS: PermissionKey[] = [
-  'admin.access',
-  'members.manage',
-  'papers.view',
-  'papers.edit',
-  'snippets.view',
-  'snippets.edit',
-  'claims.view',
-  'claims.edit',
-  'diary.view',
-  'diary.edit',
-  'tasks.view',
-  'tasks.edit',
-  'meeting_notes.view',
-  'meeting_notes.edit',
-  'documents.view',
-  'documents.edit',
-  'writing.humanize',
-  'writing.lr_process',
-];
+export const PERMISSION_KEYS: PermissionKey[] = ALL_NAV_PERMISSION_ITEMS.map((i) => i.key);
 
 const STUDENT_DENIED = new Set<PermissionKey>([
-  'admin.access',
-  'writing.humanize',
-  'writing.lr_process',
+  'nav.manager.admin',
+  'nav.writing.humanize',
+  'nav.writing.lr_process',
 ]);
 
-/** Defaults matching the seeded admin matrix (screenshot). */
+const SUPERVISOR_DENIED = new Set<PermissionKey>([
+  'nav.manager.diary',
+  'nav.manager.admin',
+  'nav.manager.members',
+  'nav.writing.humanize',
+  'nav.writing.lr_process',
+]);
+
+function buildRoleDefaults(denied: Set<PermissionKey>): Record<PermissionKey, boolean> {
+  return Object.fromEntries(
+    PERMISSION_KEYS.map((k) => [k, !denied.has(k)])
+  ) as Record<PermissionKey, boolean>;
+}
+
+/** Defaults matching the seeded admin matrix. */
 export const DEFAULT_ROLE_PERMISSIONS: Record<AppPermissionRole, Record<PermissionKey, boolean>> = {
-  superadmin: Object.fromEntries(PERMISSION_KEYS.map((k) => [k, true])) as Record<PermissionKey, boolean>,
-  student: Object.fromEntries(
-    PERMISSION_KEYS.map((k) => [k, !STUDENT_DENIED.has(k)])
-  ) as Record<PermissionKey, boolean>,
-  supervisor: {
-    'admin.access': false,
-    'members.manage': false,
-    'papers.view': true,
-    'papers.edit': false,
-    'snippets.view': true,
-    'snippets.edit': false,
-    'claims.view': true,
-    'claims.edit': false,
-    'diary.view': false,
-    'diary.edit': false,
-    'tasks.view': true,
-    'tasks.edit': false,
-    'meeting_notes.view': true,
-    'meeting_notes.edit': true,
-    'documents.view': true,
-    'documents.edit': false,
-    'writing.humanize': false,
-    'writing.lr_process': false,
-  },
+  superadmin: buildRoleDefaults(new Set()),
+  student: buildRoleDefaults(STUDENT_DENIED),
+  supervisor: buildRoleDefaults(SUPERVISOR_DENIED),
 };
+
+/** Keys denied for view-as flash prevention (inline nav script). */
+export function deniedKeysForViewAs(role: 'student' | 'supervisor'): PermissionKey[] {
+  return PERMISSION_KEYS.filter((k) => !DEFAULT_ROLE_PERMISSIONS[role][k]);
+}
+
+/**
+ * Edit within a nav area: student/superadmin with access can edit;
+ * supervisors are read-only except meeting notes.
+ */
+export function canEditWithNavAccess(
+  hasNavAccess: boolean,
+  permissionRole: AppPermissionRole | null,
+  opts?: { supervisorMayEdit?: boolean }
+): boolean {
+  if (!hasNavAccess || !permissionRole) return false;
+  if (permissionRole === 'supervisor') return !!opts?.supervisorMayEdit;
+  return true;
+}
 
 export type ProjectRole = 'owner' | 'student' | 'supervisor';
 export type ViewAsRole = 'student' | 'supervisor';
@@ -86,8 +63,6 @@ export function resolvePermissionRole(opts: {
   viewAsRole: ViewAsRole | null;
   role: ProjectRole | null;
 }): AppPermissionRole | null {
-  // Prefer stored view-as even before isRealSuperadmin finishes loading.
-  // Otherwise nav briefly (or stuck) treats the user as full superadmin after navigation.
   if (opts.viewAsRole) return opts.viewAsRole;
   if (opts.isRealSuperadmin) return 'superadmin';
   if (opts.role === 'supervisor') return 'supervisor';

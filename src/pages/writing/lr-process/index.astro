@@ -11,10 +11,10 @@ const base = import.meta.env.BASE_URL;
 >
   <RequirePermission
     client:load
-    permission="writing.lr_process"
+    permission="nav.writing.lr_process"
     message="This page is only available to the superadmin."
   />
-  <div data-requires-permission-content="writing.lr_process" hidden>
+  <div data-requires-permission-content="nav.writing.lr_process" hidden>
   <article class="process-page">
     <p class="back-link"><a href={`${base}writing/`}>← Writing</a></p>
     <header class="process-header">

@@ -84,7 +84,7 @@ export default function ClaimsListPage() {
 
   if (!canViewClaims) {
     return (
-      <AccessDenied message="Your role cannot view claims." permission="claims.view" />
+      <AccessDenied message="Your role cannot view claims." permission="nav.literature.claims" />
     );
   }
 

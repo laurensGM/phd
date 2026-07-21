@@ -223,7 +223,7 @@ export default function MeetingNotesPage() {
       {isSupabaseConfigured() && !loading && !permLoading && !canViewMeetingNotes && (
         <AccessDenied
           message="Your role cannot view meeting notes."
-          permission="meeting_notes.view"
+          permission="nav.manager.meeting_notes"
         />
       )}
       {isSupabaseConfigured() && !loading && !permLoading && canViewMeetingNotes && (

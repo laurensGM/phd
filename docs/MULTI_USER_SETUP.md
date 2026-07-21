@@ -108,13 +108,15 @@ The browser extension still uses the anon key without a user session — after R
 
 ## 9. Admin panel (roles & permissions)
 
-After migrations `053` and `054`:
+After migrations `053`–`059`:
 
 - There is **exactly one** superadmin (enforced in the database)
 - Default-project owner is promoted only if no superadmin exists yet
 - Open **Admin** in the navbar (stays visible on every page) or avatar → Admin panel → `/phd/admin/`
 - Navbar turns **dark blue** on admin pages
 - Non-superadmins cannot open or edit the panel
+- **Six permission tables** (Literature, Writing, Methods, Research, Tools, Manager) — one **column per main-menu item**; tick whether each role can access it
+- Run `059_nav_item_permissions.sql` to replace the old view/edit keys with nav-item keys (`nav.literature.papers`, etc.)
 
 ## 10. View as (shadow mode)
 

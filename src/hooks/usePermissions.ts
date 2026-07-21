@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { useAuth } from './useAuth';
 import {
+  canEditWithNavAccess,
   DEFAULT_ROLE_PERMISSIONS,
   PERMISSION_KEYS,
   resolvePermissionRole,
@@ -93,25 +94,35 @@ export function usePermissions() {
     [auth.isSignedIn, permissionRole, matrix]
   );
 
+  const canViewPapers = can('nav.literature.papers');
+  const canViewSnippets = can('nav.literature.snippets');
+  const canViewClaims = can('nav.literature.claims');
+  const canViewDiary = can('nav.manager.diary');
+  const canViewTasks = can('nav.manager.tasks');
+  const canViewMeetingNotes = can('nav.manager.meeting_notes');
+  const canViewDocuments = can('nav.manager.documents');
+
   return {
     loading: auth.loading || loading,
     permissionRole,
     can,
-    canViewPapers: can('papers.view'),
-    canEditPapers: can('papers.edit'),
-    canViewSnippets: can('snippets.view'),
-    canEditSnippets: can('snippets.edit'),
-    canViewClaims: can('claims.view'),
-    canEditClaims: can('claims.edit'),
-    canViewDiary: can('diary.view'),
-    canEditDiary: can('diary.edit'),
-    canViewTasks: can('tasks.view'),
-    canEditTasks: can('tasks.edit'),
-    canViewMeetingNotes: can('meeting_notes.view'),
-    canEditMeetingNotes: can('meeting_notes.edit'),
-    canViewDocuments: can('documents.view'),
-    canEditDocuments: can('documents.edit'),
-    canManageMembers: can('members.manage'),
-    canAccessAdmin: can('admin.access'),
+    canViewPapers,
+    canEditPapers: canEditWithNavAccess(canViewPapers, permissionRole),
+    canViewSnippets,
+    canEditSnippets: canEditWithNavAccess(canViewSnippets, permissionRole),
+    canViewClaims,
+    canEditClaims: canEditWithNavAccess(canViewClaims, permissionRole),
+    canViewDiary,
+    canEditDiary: canEditWithNavAccess(canViewDiary, permissionRole),
+    canViewTasks,
+    canEditTasks: canEditWithNavAccess(canViewTasks, permissionRole),
+    canViewMeetingNotes,
+    canEditMeetingNotes: canEditWithNavAccess(canViewMeetingNotes, permissionRole, {
+      supervisorMayEdit: true,
+    }),
+    canViewDocuments,
+    canEditDocuments: canEditWithNavAccess(canViewDocuments, permissionRole),
+    canManageMembers: can('nav.manager.members'),
+    canAccessAdmin: can('nav.manager.admin'),
   };
 }

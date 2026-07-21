@@ -447,7 +447,7 @@ export default function ClaimDetailPage() {
   }
 
   if (!canViewClaims) {
-    return <AccessDenied message="Your role cannot view claims." permission="claims.view" />;
+    return <AccessDenied message="Your role cannot view claims." permission="nav.literature.claims" />;
   }
 
   if (error && !claim) {

@@ -189,7 +189,7 @@ export default function DocumentsPage() {
     return (
       <AccessDenied
         message="Your role cannot view shared documents."
-        permission="documents.view"
+        permission="nav.manager.documents"
       />
     );
   }

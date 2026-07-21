@@ -3,7 +3,9 @@ import AuthBar from '../components/AuthBar';
 import AdminNavLink from '../components/AdminNavLink';
 import ViewAsBanner from '../components/ViewAsBanner';
 import NavPermissionFilter from '../components/NavPermissionFilter';
+import PagePermissionGuard from '../components/PagePermissionGuard';
 import FeedbackWidget from '../components/FeedbackWidget';
+import { deniedKeysForViewAs } from '../lib/permissions';
 
 interface Props {
   title: string;
@@ -28,6 +30,8 @@ const baseSegments = base.replace(/\/$/, '').split('/').filter(Boolean);
 const baseDepth = baseSegments.length;
 const upLevels = Math.max(0, pathSegments.length - baseDepth);
 const homeHref = upLevels === 0 ? (base || './') : '../'.repeat(upLevels);
+const viewAsDenyStudent = deniedKeysForViewAs('student');
+const viewAsDenySupervisor = deniedKeysForViewAs('supervisor');
 const isAdminNav = navTheme === 'admin';
 ---
 
@@ -114,14 +118,14 @@ const isAdminNav = navTheme === 'admin';
               aria-haspopup="true"
             >Literature</a>
             <ul class="nav-dropdown" aria-labelledby="literature-trigger">
-              <li><a href={`${base}papers/`} data-requires-permission="papers.view">Papers</a></li>
-              <li><a href={`${base}models/`}>Models</a></li>
-              <li><a href={`${base}constructs/`}>Constructs</a></li>
-              <li><a href={`${base}fields/`}>Fields</a></li>
-              <li><a href={`${base}snippets/`} data-requires-permission="snippets.view">Snippets</a></li>
-              <li><a href={`${base}claims/`} data-requires-permission="claims.view">Claims</a></li>
-              <li><a href={`${base}academics/`}>Academics</a></li>
-              <li><a href={`${base}theory-map/`}>Theory Map</a></li>
+              <li><a href={`${base}papers/`} data-requires-permission="nav.literature.papers">Papers</a></li>
+              <li><a href={`${base}models/`} data-requires-permission="nav.literature.models">Models</a></li>
+              <li><a href={`${base}constructs/`} data-requires-permission="nav.literature.constructs">Constructs</a></li>
+              <li><a href={`${base}fields/`} data-requires-permission="nav.literature.fields">Fields</a></li>
+              <li><a href={`${base}snippets/`} data-requires-permission="nav.literature.snippets">Snippets</a></li>
+              <li><a href={`${base}claims/`} data-requires-permission="nav.literature.claims">Claims</a></li>
+              <li><a href={`${base}academics/`} data-requires-permission="nav.literature.academics">Academics</a></li>
+              <li><a href={`${base}theory-map/`} data-requires-permission="nav.literature.theory_map">Theory Map</a></li>
             </ul>
           </li>
           <li class="nav-dropdown-wrap">
@@ -132,12 +136,12 @@ const isAdminNav = navTheme === 'admin';
               aria-haspopup="true"
             >Writing</a>
             <ul class="nav-dropdown" aria-labelledby="writing-trigger">
-              <li><a href={`${base}tools/writing/`}>Words</a></li>
-              <li><a href={`${base}writing/revise-and-edit/`}>Revise and edit</a></li>
-              <li><a href={`${base}writing/argument/`}>Argument</a></li>
-              <li><a href={`${base}writing/humanize/`} data-requires-permission="writing.humanize">Humanize</a></li>
-              <li><a href={`${base}slr/`}>SLR</a></li>
-              <li><a href={`${base}writing/lr-process/`} data-requires-permission="writing.lr_process">LR process</a></li>
+              <li><a href={`${base}tools/writing/`} data-requires-permission="nav.writing.words">Words</a></li>
+              <li><a href={`${base}writing/revise-and-edit/`} data-requires-permission="nav.writing.revise_edit">Revise and edit</a></li>
+              <li><a href={`${base}writing/argument/`} data-requires-permission="nav.writing.argument">Argument</a></li>
+              <li><a href={`${base}writing/humanize/`} data-requires-permission="nav.writing.humanize">Humanize</a></li>
+              <li><a href={`${base}slr/`} data-requires-permission="nav.writing.slr">SLR</a></li>
+              <li><a href={`${base}writing/lr-process/`} data-requires-permission="nav.writing.lr_process">LR process</a></li>
             </ul>
           </li>
           <li class="nav-dropdown-wrap">
@@ -148,14 +152,14 @@ const isAdminNav = navTheme === 'admin';
               aria-haspopup="true"
             >Methods</a>
             <ul class="nav-dropdown" aria-labelledby="methods-trigger">
-              <li><a href={`${base}methods/qual-vs-quant/`}>Qual vs Quant</a></li>
-              <li><a href={`${base}methods/quant/`}>Quant</a></li>
-              <li><a href={`${base}methods/qual/`}>Qual</a></li>
-              <li><a href={`${base}methods/secondary-data/`}>Secondary data</a></li>
-              <li><a href={`${base}methods/sampling/`}>Sampling</a></li>
-              <li><a href={`${base}methods/theory-maturity/`}>Theory maturity</a></li>
-              <li><a href={`${base}methods/uoa/`}>UoA</a></li>
-              <li><a href={`${base}methods/ethics/`}>Ethics</a></li>
+              <li><a href={`${base}methods/qual-vs-quant/`} data-requires-permission="nav.methods.qual_vs_quant">Qual vs Quant</a></li>
+              <li><a href={`${base}methods/quant/`} data-requires-permission="nav.methods.quant">Quant</a></li>
+              <li><a href={`${base}methods/qual/`} data-requires-permission="nav.methods.qual">Qual</a></li>
+              <li><a href={`${base}methods/secondary-data/`} data-requires-permission="nav.methods.secondary_data">Secondary data</a></li>
+              <li><a href={`${base}methods/sampling/`} data-requires-permission="nav.methods.sampling">Sampling</a></li>
+              <li><a href={`${base}methods/theory-maturity/`} data-requires-permission="nav.methods.theory_maturity">Theory maturity</a></li>
+              <li><a href={`${base}methods/uoa/`} data-requires-permission="nav.methods.uoa">UoA</a></li>
+              <li><a href={`${base}methods/ethics/`} data-requires-permission="nav.methods.ethics">Ethics</a></li>
             </ul>
           </li>
           <li class="nav-dropdown-wrap">
@@ -166,13 +170,13 @@ const isAdminNav = navTheme === 'admin';
               aria-haspopup="true"
             >Research</a>
             <ul class="nav-dropdown" aria-labelledby="rq-trigger">
-              <li><a href={`${base}research-questions/process/`}>Process</a></li>
-              <li><a href={`${base}research-questions/proposal/`}>Proposal</a></li>
-              <li><a href={`${base}research-questions/paradigms/`}>Paradigms</a></li>
-              <li><a href={`${base}research-questions/questions/`}>Questions</a></li>
-              <li><a href={`${base}research-questions/objectives/`}>Objectives</a></li>
-              <li><a href={`${base}research-questions/contribution/`}>Contribution</a></li>
-              <li><a href={`${base}research-questions/must-dos/`}>10 must do&rsquo;s</a></li>
+              <li><a href={`${base}research-questions/process/`} data-requires-permission="nav.research.process">Process</a></li>
+              <li><a href={`${base}research-questions/proposal/`} data-requires-permission="nav.research.proposal">Proposal</a></li>
+              <li><a href={`${base}research-questions/paradigms/`} data-requires-permission="nav.research.paradigms">Paradigms</a></li>
+              <li><a href={`${base}research-questions/questions/`} data-requires-permission="nav.research.questions">Questions</a></li>
+              <li><a href={`${base}research-questions/objectives/`} data-requires-permission="nav.research.objectives">Objectives</a></li>
+              <li><a href={`${base}research-questions/contribution/`} data-requires-permission="nav.research.contribution">Contribution</a></li>
+              <li><a href={`${base}research-questions/must-dos/`} data-requires-permission="nav.research.must_dos">10 must do&rsquo;s</a></li>
             </ul>
           </li>
           <li class="nav-dropdown-wrap">
@@ -183,11 +187,11 @@ const isAdminNav = navTheme === 'admin';
               aria-haspopup="true"
             >Tools</a>
             <ul class="nav-dropdown" aria-labelledby="tools-trigger">
-              <li><a href={`${base}tools/ai/`}>AI tools</a></li>
-              <li><a href={`${base}tools/databases/`}>Databases</a></li>
-              <li><a href={`${base}tools/golden-nuggets/`}>Golden nuggets</a></li>
-              <li><a href={`${base}tools/faq/`}>FAQ</a></li>
-              <li><a href={`${base}tools/memes/`}>Memes</a></li>
+              <li><a href={`${base}tools/ai/`} data-requires-permission="nav.tools.ai">AI tools</a></li>
+              <li><a href={`${base}tools/databases/`} data-requires-permission="nav.tools.databases">Databases</a></li>
+              <li><a href={`${base}tools/golden-nuggets/`} data-requires-permission="nav.tools.golden_nuggets">Golden nuggets</a></li>
+              <li><a href={`${base}tools/faq/`} data-requires-permission="nav.tools.faq">FAQ</a></li>
+              <li><a href={`${base}tools/memes/`} data-requires-permission="nav.tools.memes">Memes</a></li>
             </ul>
           </li>
           <li class="nav-dropdown-wrap">
@@ -198,13 +202,13 @@ const isAdminNav = navTheme === 'admin';
               aria-haspopup="true"
             >Manager</a>
             <ul class="nav-dropdown" aria-labelledby="phd-manager-trigger">
-              <li><a href={`${base}outline/`}>PhD milestones</a></li>
-              <li><a href={`${base}phd-outline/`}>PhD outline</a></li>
-              <li><a href={`${base}diary/`} data-requires-permission="diary.view">Diary</a></li>
-              <li><a href={`${base}tasks/`} data-requires-permission="tasks.view">Tasks</a></li>
-              <li><a href={`${base}meeting-notes/`} data-requires-permission="meeting_notes.view">Meeting notes</a></li>
-              <li><a href={`${base}documents/`} data-requires-permission="documents.view">Documents</a></li>
-              <li><a href={`${base}supervisor/`}>Supervisors</a></li>
+              <li><a href={`${base}outline/`} data-requires-permission="nav.manager.milestones">PhD milestones</a></li>
+              <li><a href={`${base}phd-outline/`} data-requires-permission="nav.manager.phd_outline">PhD outline</a></li>
+              <li><a href={`${base}diary/`} data-requires-permission="nav.manager.diary">Diary</a></li>
+              <li><a href={`${base}tasks/`} data-requires-permission="nav.manager.tasks">Tasks</a></li>
+              <li><a href={`${base}meeting-notes/`} data-requires-permission="nav.manager.meeting_notes">Meeting notes</a></li>
+              <li><a href={`${base}documents/`} data-requires-permission="nav.manager.documents">Documents</a></li>
+              <li><a href={`${base}supervisor/`} data-requires-permission="nav.manager.supervisors">Supervisors</a></li>
             </ul>
           </li>
         </ul>
@@ -216,32 +220,16 @@ const isAdminNav = navTheme === 'admin';
     </header>
     <ViewAsBanner client:load />
     <NavPermissionFilter client:load />
+    <PagePermissionGuard client:load />
     <FeedbackWidget client:load />
-    <script is:inline>
+    <script is:inline define:vars={{ viewAsDenyStudent, viewAsDenySupervisor }}>
       (function () {
         try {
           var role = sessionStorage.getItem('phd_view_as_role');
           if (role !== 'student' && role !== 'supervisor') return;
-          var deny =
-            role === 'supervisor'
-              ? {
-                  'admin.access': 1,
-                  'members.manage': 1,
-                  'papers.edit': 1,
-                  'snippets.edit': 1,
-                  'claims.edit': 1,
-                  'diary.view': 1,
-                  'diary.edit': 1,
-                  'tasks.edit': 1,
-                  'documents.edit': 1,
-                  'writing.humanize': 1,
-                  'writing.lr_process': 1,
-                }
-              : {
-                  'admin.access': 1,
-                  'writing.humanize': 1,
-                  'writing.lr_process': 1,
-                };
+          var denyList = role === 'supervisor' ? viewAsDenySupervisor : viewAsDenyStudent;
+          var deny = {};
+          for (var i = 0; i < denyList.length; i++) deny[denyList[i]] = 1;
           document.querySelectorAll('[data-requires-permission]').forEach(function (el) {
             var key = el.getAttribute('data-requires-permission');
             if (!key || !deny[key]) return;

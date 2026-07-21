@@ -3,17 +3,17 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { ViewAsControls } from './ViewAsBanner';
 import { notifyPermissionsChanged } from '../lib/viewAs';
+import { NAV_PERMISSION_SECTIONS } from '../lib/navPermissions';
+import { DEFAULT_ROLE_PERMISSIONS, PERMISSION_KEYS, type PermissionKey } from '../lib/permissions';
 
 const base = (import.meta.env.BASE_URL || '/').replace(/\/?$/, '/');
 
 type AppRole = 'superadmin' | 'student' | 'supervisor';
 
 type PermissionDef = {
-  key: string;
+  key: PermissionKey;
   label: string;
   description: string | null;
-  category: string;
-  sort_order: number;
 };
 
 type MatrixCell = Record<AppRole, boolean>;
@@ -24,41 +24,25 @@ const ROLES: { id: AppRole; label: string; hint: string }[] = [
   { id: 'supervisor', label: 'Supervisor', hint: 'Reviews and comments' },
 ];
 
-/** Navbar sections — one permissions table each. */
-const NAV_SECTIONS: { id: string; label: string; hint?: string }[] = [
-  { id: 'Literature', label: 'Literature', hint: 'Papers, snippets, claims' },
-  { id: 'Writing', label: 'Writing', hint: 'Writing guides and LR workflow' },
-  { id: 'Methods', label: 'Methods' },
-  { id: 'Research', label: 'Research' },
-  { id: 'Tools', label: 'Tools' },
-  { id: 'Manager', label: 'Manager', hint: 'Diary, tasks, meeting notes, documents, admin' },
-];
-
 function PermissionMatrixTable({
   sectionLabel,
+  sectionHint,
   permissions,
   matrix,
   savingKey,
   onToggle,
 }: {
   sectionLabel: string;
+  sectionHint?: string;
   permissions: PermissionDef[];
   matrix: Record<string, MatrixCell>;
   savingKey: string | null;
-  onToggle: (permissionKey: string, role: AppRole) => void;
+  onToggle: (permissionKey: PermissionKey, role: AppRole) => void;
 }) {
-  if (permissions.length === 0) {
-    return (
-      <section className="admin-perm-section">
-        <h2 className="admin-perm-section-title">{sectionLabel}</h2>
-        <p className="admin-muted admin-perm-section-empty">No permissions in this section yet.</p>
-      </section>
-    );
-  }
-
   return (
     <section className="admin-perm-section">
       <h2 className="admin-perm-section-title">{sectionLabel}</h2>
+      {sectionHint ? <p className="admin-muted admin-perm-section-hint">{sectionHint}</p> : null}
       <div className="admin-table-wrap">
         <table className="admin-perm-table">
           <thead>
@@ -109,42 +93,54 @@ function PermissionMatrixTable({
 export default function AdminPermissionsPanel() {
   const { loading: authLoading, isSignedIn, isRealSuperadmin, isViewingAs, clearViewAs } =
     useAuth();
-  const [permissions, setPermissions] = useState<PermissionDef[]>([]);
   const [matrix, setMatrix] = useState<Record<string, MatrixCell>>({});
   const [loading, setLoading] = useState(true);
   const [savingKey, setSavingKey] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
+  const permissionsBySection = useMemo(() => {
+    const map = new Map<string, PermissionDef[]>();
+    for (const section of NAV_PERMISSION_SECTIONS) {
+      map.set(
+        section.id,
+        section.items.map((item) => ({
+          key: item.key as PermissionKey,
+          label: item.label,
+          description: item.description ?? null,
+        }))
+      );
+    }
+    return map;
+  }, []);
+
   const load = useCallback(async () => {
     if (!supabase) return;
     setLoading(true);
     setErr(null);
-    const [{ data: perms, error: pErr }, { data: cells, error: cErr }] = await Promise.all([
-      supabase
-        .from('app_permissions')
-        .select('key, label, description, category, sort_order')
-        .order('sort_order', { ascending: true }),
-      supabase.from('role_permissions').select('role, permission_key, allowed'),
-    ]);
+    const { data: cells, error: cErr } = await supabase
+      .from('role_permissions')
+      .select('role, permission_key, allowed');
     setLoading(false);
-    if (pErr || cErr) {
-      setErr(pErr?.message ?? cErr?.message ?? 'Could not load permissions');
+    if (cErr) {
+      setErr(cErr.message ?? 'Could not load permissions');
       return;
     }
 
-    const permRows = (perms as PermissionDef[] | null) ?? [];
-    setPermissions(permRows);
-
     const next: Record<string, MatrixCell> = {};
-    for (const p of permRows) {
-      next[p.key] = { superadmin: false, student: false, supervisor: false };
+    for (const key of PERMISSION_KEYS) {
+      next[key] = {
+        superadmin: DEFAULT_ROLE_PERMISSIONS.superadmin[key],
+        student: DEFAULT_ROLE_PERMISSIONS.student[key],
+        supervisor: DEFAULT_ROLE_PERMISSIONS.supervisor[key],
+      };
     }
     for (const row of (cells as { role: AppRole; permission_key: string; allowed: boolean }[] | null) ?? []) {
-      if (!next[row.permission_key]) {
-        next[row.permission_key] = { superadmin: false, student: false, supervisor: false };
+      const key = row.permission_key as PermissionKey;
+      if (!next[key]) {
+        next[key] = { superadmin: false, student: false, supervisor: false };
       }
-      next[row.permission_key][row.role] = !!row.allowed;
+      next[key][row.role] = !!row.allowed;
     }
     setMatrix(next);
   }, []);
@@ -153,29 +149,7 @@ export default function AdminPermissionsPanel() {
     if (isSignedIn && isRealSuperadmin && !isViewingAs) void load();
   }, [isSignedIn, isRealSuperadmin, isViewingAs, load]);
 
-  const permissionsBySection = useMemo(() => {
-    const map = new Map<string, PermissionDef[]>();
-    for (const section of NAV_SECTIONS) {
-      map.set(section.id, []);
-    }
-    for (const p of permissions) {
-      const bucket = map.get(p.category);
-      if (bucket) {
-        bucket.push(p);
-      } else {
-        // Legacy categories (Admin, Project, etc.) fall under Manager
-        const manager = map.get('Manager') ?? [];
-        manager.push(p);
-        map.set('Manager', manager);
-      }
-    }
-    for (const [, list] of map) {
-      list.sort((a, b) => a.sort_order - b.sort_order);
-    }
-    return map;
-  }, [permissions]);
-
-  const toggle = async (permissionKey: string, role: AppRole) => {
+  const toggle = async (permissionKey: PermissionKey, role: AppRole) => {
     if (!supabase || !isRealSuperadmin || isViewingAs) return;
     const prev = matrix[permissionKey]?.[role] ?? false;
     const nextVal = !prev;
@@ -247,41 +221,21 @@ export default function AdminPermissionsPanel() {
       <ViewAsControls />
 
       <p className="admin-lead">
-        One table per navbar section. Rows are roles; columns are permissions for that area of the
-        app.
+        One table per navbar section. Rows are roles; columns are menu items — tick access for
+        each.
       </p>
 
-      {NAV_SECTIONS.map((section) => (
+      {NAV_PERMISSION_SECTIONS.map((section) => (
         <PermissionMatrixTable
           key={section.id}
           sectionLabel={section.label}
+          sectionHint={section.hint}
           permissions={permissionsBySection.get(section.id) ?? []}
           matrix={matrix}
           savingKey={savingKey}
           onToggle={(key, role) => void toggle(key, role)}
         />
       ))}
-
-      <section className="admin-perm-legend">
-        <h2>Permission keys</h2>
-        {NAV_SECTIONS.map((section) => {
-          const items = permissionsBySection.get(section.id) ?? [];
-          if (items.length === 0) return null;
-          return (
-            <div key={section.id} className="admin-perm-cat">
-              <h3>{section.label}</h3>
-              <ul>
-                {items.map((p) => (
-                  <li key={p.key}>
-                    <code>{p.key}</code> — {p.label}
-                    {p.description ? <span className="admin-muted"> · {p.description}</span> : null}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          );
-        })}
-      </section>
 
       {msg && <p className="admin-banner admin-banner-ok">{msg}</p>}
       {err && <p className="admin-banner admin-banner-warn">{err}</p>}

@@ -1288,7 +1288,7 @@ export default function SnippetsPage() {
 
   if (!canViewSnippets) {
     return (
-      <AccessDenied message="Your role cannot view snippets." permission="snippets.view" />
+      <AccessDenied message="Your role cannot view snippets." permission="nav.literature.snippets" />
     );
   }
 
