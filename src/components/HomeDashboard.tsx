@@ -316,19 +316,19 @@ export default function HomeDashboard() {
           </a>
         </div>
         <div className="home-tasks-grid">
-          <a href={`${base}tasks/`} className="home-tasks-col">
+          <a href={`${base}tasks/`} className="home-tasks-col home-tasks-col-backlog">
             <span className="home-tasks-count">{taskCounts.backlog}</span>
             <span className="home-tasks-label">Backlog</span>
           </a>
-          <a href={`${base}tasks/`} className="home-tasks-col">
+          <a href={`${base}tasks/`} className="home-tasks-col home-tasks-col-todo">
             <span className="home-tasks-count">{taskCounts.todo}</span>
             <span className="home-tasks-label">To do</span>
           </a>
-          <a href={`${base}tasks/`} className="home-tasks-col">
+          <a href={`${base}tasks/`} className="home-tasks-col home-tasks-col-in_progress">
             <span className="home-tasks-count">{taskCounts.in_progress}</span>
             <span className="home-tasks-label">In progress</span>
           </a>
-          <a href={`${base}tasks/`} className="home-tasks-col">
+          <a href={`${base}tasks/`} className="home-tasks-col home-tasks-col-done">
             <span className="home-tasks-count">{taskCounts.done}</span>
             <span className="home-tasks-label">Done</span>
           </a>

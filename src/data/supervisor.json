@@ -1,6 +1,7 @@
 [
   {
     "name": "Prof Marlize Terblanche-Smit",
+    "initials": "MTS",
     "title": "Professor of Marketing, Stellenbosch Business School",
     "profileUrl": "https://www.stellenboschbusiness.ac.za/profile/prof-marlize-terblanche-smit",
     "orcidId": "0000-0002-4877-9610",
@@ -33,6 +34,7 @@
   },
   {
     "name": "Prof Lee-Ann Steenkamp",
+    "initials": "LAS",
     "title": "Associate Professor, Stellenbosch Business School",
     "profileUrl": "https://www.stellenboschbusiness.ac.za/profile/prof-lee-ann-steenkamp",
     "orcidId": "0000-0001-7975-4259",
