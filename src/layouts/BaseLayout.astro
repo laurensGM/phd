@@ -604,34 +604,6 @@ const isAdminNav = navTheme === 'admin';
     color: var(--color-ink-muted);
   }
 
-  .access-checking {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.85rem;
-    min-height: 10rem;
-    padding: 2rem 1rem;
-    color: var(--color-ink-muted);
-  }
-  .access-checking-label {
-    margin: 0;
-    font-size: 0.95rem;
-  }
-  .access-checking-spinner {
-    width: 2rem;
-    height: 2rem;
-    border: 3px solid var(--color-border);
-    border-top-color: var(--color-maroon);
-    border-radius: 50%;
-    animation: access-spin 0.7s linear infinite;
-  }
-  @keyframes access-spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
   .nav-avatar-view-as {
     box-shadow: 0 0 0 3px #1e3a5f;
   }
