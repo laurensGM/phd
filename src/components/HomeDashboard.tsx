@@ -269,6 +269,62 @@ export default function HomeDashboard() {
   return (
     <div className="home-dashboard">
       {error && <p className="home-dashboard-error">{error}</p>}
+
+      <div className="home-top-row">
+        <section className="home-timeline-section" aria-label="Milestones this year">
+          <div className="home-timeline-header">
+            <h2 className="home-section-title">Milestones this year</h2>
+            <a href={`${base}outline/`} className="home-timeline-link">
+              View all →
+            </a>
+          </div>
+          <ul className="home-timeline">
+            {timelineMilestones.map((m) => (
+              <li
+                key={m.id}
+                className={`home-timeline-item ${m.isPast ? 'home-timeline-past' : ''} ${m.isFuture && !m.isNext ? 'home-timeline-future' : ''} ${m.isNext ? 'home-timeline-next' : ''}`}
+              >
+                <time className="home-timeline-date" dateTime={m.date}>
+                  {m.dateLabel}
+                </time>
+                <span className="home-timeline-dot" aria-hidden />
+                <div className="home-timeline-content">
+                  <span className="home-timeline-title">{m.title}</span>
+                  {m.isNext && <span className="home-timeline-badge">Next</span>}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="home-tasks-section" aria-label="Tasks board summary">
+          <div className="home-tasks-header">
+            <h2 className="home-section-title">Tasks board</h2>
+            <a href={`${base}tasks/`} className="home-timeline-link">
+              Open board →
+            </a>
+          </div>
+          <div className="home-tasks-grid">
+            <a href={`${base}tasks/`} className="home-tasks-col home-tasks-col-backlog">
+              <span className="home-tasks-count">{taskCounts.backlog}</span>
+              <span className="home-tasks-label">Backlog</span>
+            </a>
+            <a href={`${base}tasks/`} className="home-tasks-col home-tasks-col-todo">
+              <span className="home-tasks-count">{taskCounts.todo}</span>
+              <span className="home-tasks-label">To do</span>
+            </a>
+            <a href={`${base}tasks/`} className="home-tasks-col home-tasks-col-in_progress">
+              <span className="home-tasks-count">{taskCounts.in_progress}</span>
+              <span className="home-tasks-label">In progress</span>
+            </a>
+            <a href={`${base}tasks/`} className="home-tasks-col home-tasks-col-done">
+              <span className="home-tasks-count">{taskCounts.done}</span>
+              <span className="home-tasks-label">Done</span>
+            </a>
+          </div>
+        </section>
+      </div>
+
       <div className="home-stats-grid">
         {nextMilestoneCountdown !== null && (
           <a href={`${base}outline/`} className="home-stat-card home-stat-deadline">
@@ -307,33 +363,6 @@ export default function HomeDashboard() {
           <span className="home-stat-label">models explored</span>
         </a>
       </div>
-
-      <section className="home-tasks-section" aria-label="Tasks board summary">
-        <div className="home-tasks-header">
-          <h2 className="home-section-title">Tasks board</h2>
-          <a href={`${base}tasks/`} className="home-timeline-link">
-            Open board →
-          </a>
-        </div>
-        <div className="home-tasks-grid">
-          <a href={`${base}tasks/`} className="home-tasks-col home-tasks-col-backlog">
-            <span className="home-tasks-count">{taskCounts.backlog}</span>
-            <span className="home-tasks-label">Backlog</span>
-          </a>
-          <a href={`${base}tasks/`} className="home-tasks-col home-tasks-col-todo">
-            <span className="home-tasks-count">{taskCounts.todo}</span>
-            <span className="home-tasks-label">To do</span>
-          </a>
-          <a href={`${base}tasks/`} className="home-tasks-col home-tasks-col-in_progress">
-            <span className="home-tasks-count">{taskCounts.in_progress}</span>
-            <span className="home-tasks-label">In progress</span>
-          </a>
-          <a href={`${base}tasks/`} className="home-tasks-col home-tasks-col-done">
-            <span className="home-tasks-count">{taskCounts.done}</span>
-            <span className="home-tasks-label">Done</span>
-          </a>
-        </div>
-      </section>
 
       {papersCount > 0 && (
         <PapersYearHistogram
@@ -398,30 +427,6 @@ export default function HomeDashboard() {
           </div>
         </section>
       )}
-
-      <section className="home-timeline-section">
-        <div className="home-timeline-header">
-          <h2 className="home-section-title">Milestones this year</h2>
-          <a href={`${base}outline/`} className="home-timeline-link">View all →</a>
-        </div>
-        <ul className="home-timeline">
-          {timelineMilestones.map((m) => (
-            <li
-              key={m.id}
-              className={`home-timeline-item ${m.isPast ? 'home-timeline-past' : ''} ${m.isFuture && !m.isNext ? 'home-timeline-future' : ''} ${m.isNext ? 'home-timeline-next' : ''}`}
-            >
-              <time className="home-timeline-date" dateTime={m.date}>
-                {m.dateLabel}
-              </time>
-              <span className="home-timeline-dot" aria-hidden />
-              <div className="home-timeline-content">
-                <span className="home-timeline-title">{m.title}</span>
-                {m.isNext && <span className="home-timeline-badge">Next</span>}
-              </div>
-            </li>
-          ))}
-        </ul>
-      </section>
     </div>
   );
 }

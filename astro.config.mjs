@@ -41,14 +41,48 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,ico,txt,jpg,jpeg,webp,woff,woff2,json}'],
+        // Do not precache HTML — otherwise navigating away and back serves a stale page
+        // until a hard refresh. Assets stay precached; documents use NetworkFirst below.
+        globPatterns: ['**/*.{js,css,svg,png,ico,txt,jpg,jpeg,webp,woff,woff2}'],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         cleanupOutdatedCaches: true,
-        cacheId: 'phd-manager-v4',
+        cacheId: 'phd-manager-v5',
         navigateFallback: null,
         // Query params (e.g. ?id=) must not break precache match for paper detail
         ignoreURLParametersMatching: [/^id$/, /^v$/, /^highlight$/],
         runtimeCaching: [
+          {
+            // Always prefer the network for page navigations so deploys show up without hard refresh.
+            urlPattern: ({ request }) => request.mode === 'navigate',
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'phd-html-pages',
+              networkTimeoutSeconds: 4,
+              expiration: {
+                maxEntries: 64,
+                maxAgeSeconds: 60 * 60 * 24,
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          {
+            urlPattern: ({ request, url }) =>
+              request.destination === 'document' || /\.html?$/i.test(url.pathname),
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'phd-html-pages',
+              networkTimeoutSeconds: 4,
+              expiration: {
+                maxEntries: 64,
+                maxAgeSeconds: 60 * 60 * 24,
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
           {
             urlPattern: /^https:\/\/.*\.supabase\.co\/storage\/v1\/object\/public\/paper-narrations\/.+/i,
             handler: 'CacheFirst',

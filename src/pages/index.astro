@@ -318,12 +318,29 @@ const base = import.meta.env.BASE_URL;
     margin: 0 0 1rem 0;
   }
 
+  :global(.home-top-row) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+    align-items: stretch;
+  }
+
+  @media (max-width: 800px) {
+    :global(.home-top-row) {
+      grid-template-columns: 1fr;
+    }
+  }
+
   :global(.home-tasks-section) {
-    margin: 0 0 1.5rem 0;
-    padding: 1.25rem 1.35rem;
+    margin: 0;
+    padding: 1.15rem 1.25rem;
     background: #fff;
     border: 1px solid var(--color-border);
     border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
   }
 
   :global(.home-tasks-header) {
@@ -331,7 +348,7 @@ const base = import.meta.env.BASE_URL;
     align-items: baseline;
     justify-content: space-between;
     gap: 1rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.85rem;
   }
 
   :global(.home-tasks-header .home-section-title) {
@@ -340,8 +357,10 @@ const base = import.meta.env.BASE_URL;
 
   :global(.home-tasks-grid) {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 0.75rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(4.5rem, 1fr));
+    gap: 0.65rem;
+    flex: 1;
   }
 
   :global(.home-tasks-col) {
@@ -350,7 +369,7 @@ const base = import.meta.env.BASE_URL;
     align-items: center;
     justify-content: center;
     gap: 0.25rem;
-    padding: 1rem 0.5rem;
+    padding: 0.85rem 0.5rem;
     text-decoration: none;
     color: inherit;
     border: 2px solid var(--color-border);
@@ -431,6 +450,27 @@ const base = import.meta.env.BASE_URL;
     :global(.home-tasks-grid) {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+  }
+
+  :global(.home-timeline-section) {
+    margin: 0;
+    padding: 1.15rem 1.25rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    min-width: 0;
+  }
+
+  :global(.home-timeline-header) {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+  }
+
+  :global(.home-timeline-header .home-section-title) {
+    margin: 0;
   }
 
   /* Papers by publication year histogram */
@@ -863,20 +903,9 @@ const base = import.meta.env.BASE_URL;
     text-align: right;
   }
 
-  /* Milestones timeline */
-  :global(.home-timeline-section) {
-    background: white;
-    border: 1px solid var(--color-border);
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-top: 1.5rem;
-  }
-
-  :global(.home-timeline-header) {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1rem;
+  /* Milestones timeline (shared item styles; section chrome is in .home-top-row) */
+  :global(.home-top-row .home-timeline-section) {
+    margin-top: 0;
   }
 
   :global(.home-timeline-link) {

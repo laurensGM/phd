@@ -365,9 +365,24 @@ const isAdminNav = navTheme === 'admin';
           reloaded = true;
           window.location.reload();
         });
-        navigator.serviceWorker.ready.then(function (reg) {
-          reg.update();
+        function kickWaiting(reg) {
           if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+        }
+        navigator.serviceWorker.ready.then(function (reg) {
+          kickWaiting(reg);
+          reg.update();
+          if (reg.installing) {
+            reg.installing.addEventListener('statechange', function () {
+              if (reg.waiting) kickWaiting(reg);
+            });
+          }
+          setInterval(function () {
+            reg.update();
+          }, 60 * 1000);
+        });
+        // When returning via back/forward cache, refetch so we don't keep a frozen old page.
+        window.addEventListener('pageshow', function (e) {
+          if (e.persisted) window.location.reload();
         });
       })();
     </script>
