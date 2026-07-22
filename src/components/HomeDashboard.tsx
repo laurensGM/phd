@@ -5,6 +5,7 @@ import modelsData from '../data/models.json';
 import outlineData from '../data/outline.json';
 import fieldsData from '../data/fields.json';
 import SnippetDistributionChart from './SnippetDistributionChart';
+import HomeTasksBarChart from './HomeTasksBarChart';
 import PapersYearHistogram from './PapersYearHistogram';
 import PaperDistributionPie from './PaperDistributionPie';
 import { usePageLoader } from '../hooks/usePageLoader';
@@ -304,24 +305,7 @@ export default function HomeDashboard() {
               Open board →
             </a>
           </div>
-          <div className="home-tasks-grid">
-            <a href={`${base}tasks/`} className="home-tasks-col home-tasks-col-backlog">
-              <span className="home-tasks-count">{taskCounts.backlog}</span>
-              <span className="home-tasks-label">Backlog</span>
-            </a>
-            <a href={`${base}tasks/`} className="home-tasks-col home-tasks-col-todo">
-              <span className="home-tasks-count">{taskCounts.todo}</span>
-              <span className="home-tasks-label">To do</span>
-            </a>
-            <a href={`${base}tasks/`} className="home-tasks-col home-tasks-col-in_progress">
-              <span className="home-tasks-count">{taskCounts.in_progress}</span>
-              <span className="home-tasks-label">In progress</span>
-            </a>
-            <a href={`${base}tasks/`} className="home-tasks-col home-tasks-col-done">
-              <span className="home-tasks-count">{taskCounts.done}</span>
-              <span className="home-tasks-label">Done</span>
-            </a>
-          </div>
+          <HomeTasksBarChart counts={taskCounts} />
         </section>
       </div>
 

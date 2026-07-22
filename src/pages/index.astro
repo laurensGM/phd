@@ -42,7 +42,10 @@ const base = import.meta.env.BASE_URL;
     <section class="home-context-widget" aria-label="Research objective and supervisors">
       <div class="home-objective-card">
         <div class="home-context-card-head">
-          <h2 class="home-context-title">Primary research objective</h2>
+          <h2 class="home-context-title">
+            <span class="home-context-title-line">Primary research</span>
+            <span class="home-context-title-line">objective</span>
+          </h2>
           <a href={`${base}research-questions/objectives/`} class="home-context-link">Objectives →</a>
         </div>
         {primaryObjectiveText ? (
@@ -120,7 +123,7 @@ const base = import.meta.env.BASE_URL;
 
   .home-context-widget {
     display: grid;
-    grid-template-columns: minmax(0, 1.6fr) minmax(16rem, 0.9fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 1rem;
     margin-bottom: 1.75rem;
   }
@@ -146,6 +149,13 @@ const base = import.meta.env.BASE_URL;
     font-size: 0.95rem;
     font-weight: 600;
     color: var(--color-ink);
+    display: flex;
+    flex-direction: column;
+    line-height: 1.25;
+  }
+
+  .home-context-title-line {
+    display: block;
   }
 
   .home-context-link {
@@ -355,101 +365,59 @@ const base = import.meta.env.BASE_URL;
     margin: 0;
   }
 
-  :global(.home-tasks-grid) {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: repeat(2, minmax(4.5rem, 1fr));
-    gap: 0.65rem;
+  :global(.home-tasks-bars) {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
     flex: 1;
   }
 
-  :global(.home-tasks-col) {
-    display: flex;
-    flex-direction: column;
+  :global(.home-tasks-bar-row) {
+    display: grid;
+    grid-template-columns: minmax(4.5rem, 34%) 1fr auto;
     align-items: center;
-    justify-content: center;
-    gap: 0.25rem;
-    padding: 0.85rem 0.5rem;
-    text-decoration: none;
-    color: inherit;
-    border: 2px solid var(--color-border);
-    border-radius: 10px;
-    background: var(--color-bg-alt, #faf8f6);
-    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    gap: 0.5rem;
+    font-size: 0.82rem;
   }
 
-  :global(.home-tasks-col:hover) {
-    box-shadow: var(--shadow-sm);
-    transform: translateY(-1px);
-    text-decoration: none;
-    color: inherit;
+  :global(.home-tasks-bar-label) {
+    color: var(--color-ink);
+    font-weight: 500;
   }
 
-  :global(.home-tasks-col-backlog) {
-    background: rgba(124, 58, 237, 0.08);
-    border-color: rgba(124, 58, 237, 0.35);
-  }
-  :global(.home-tasks-col-backlog .home-tasks-count),
-  :global(.home-tasks-col-backlog .home-tasks-label) {
-    color: #6d28d9;
-  }
-  :global(.home-tasks-col-backlog:hover) {
-    border-color: rgba(124, 58, 237, 0.55);
+  :global(.home-tasks-bar-track) {
+    height: 0.75rem;
+    background: #e5e7eb;
+    border-radius: 999px;
+    overflow: hidden;
   }
 
-  :global(.home-tasks-col-todo) {
-    background: rgba(202, 138, 4, 0.1);
-    border-color: rgba(202, 138, 4, 0.4);
-  }
-  :global(.home-tasks-col-todo .home-tasks-count),
-  :global(.home-tasks-col-todo .home-tasks-label) {
-    color: #a16207;
-  }
-  :global(.home-tasks-col-todo:hover) {
-    border-color: rgba(202, 138, 4, 0.6);
+  :global(.home-tasks-bar-fill) {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    min-width: 3px;
+    transition: width 0.2s ease;
   }
 
-  :global(.home-tasks-col-in_progress) {
-    background: rgba(37, 99, 235, 0.08);
-    border-color: rgba(37, 99, 235, 0.35);
-  }
-  :global(.home-tasks-col-in_progress .home-tasks-count),
-  :global(.home-tasks-col-in_progress .home-tasks-label) {
-    color: #1d4ed8;
-  }
-  :global(.home-tasks-col-in_progress:hover) {
-    border-color: rgba(37, 99, 235, 0.55);
-  }
-
-  :global(.home-tasks-col-done) {
-    background: rgba(22, 163, 74, 0.1);
-    border-color: rgba(22, 163, 74, 0.4);
-  }
-  :global(.home-tasks-col-done .home-tasks-count),
-  :global(.home-tasks-col-done .home-tasks-label) {
-    color: #15803d;
-  }
-  :global(.home-tasks-col-done:hover) {
-    border-color: rgba(22, 163, 74, 0.6);
-  }
-
-  :global(.home-tasks-count) {
-    font-family: var(--font-serif);
-    font-size: 1.75rem;
+  :global(.home-tasks-bar-count) {
     font-weight: 600;
-    line-height: 1.1;
+    color: var(--color-ink-muted);
+    font-variant-numeric: tabular-nums;
+    min-width: 1.5rem;
+    text-align: right;
   }
 
-  :global(.home-tasks-label) {
+  :global(.home-tasks-bar-total) {
+    margin-top: 0.35rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--color-border);
     font-size: 0.8rem;
-    font-weight: 600;
-    text-align: center;
-  }
-
-  @media (max-width: 560px) {
-    :global(.home-tasks-grid) {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+    color: var(--color-ink-muted);
+    list-style: none;
   }
 
   :global(.home-timeline-section) {
