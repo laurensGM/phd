@@ -3,6 +3,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import ContributionsPage from '../../../components/ContributionsPage';
 
 const base = import.meta.env.BASE_URL;
+const imgContributionMatrix = `${base}research-questions/contribution-types-matrix.png`;
 ---
 
 <BaseLayout
@@ -14,9 +15,93 @@ const base = import.meta.env.BASE_URL;
   <p class="page-desc">
     Capture contribution statements as you refine your thesis. Label each as theoretical, methodological, or practical —
     you can change the label when you edit an entry.
+    <a href="#types-of-contributions" class="page-desc-link">Types of contributions</a> (reference guide).
   </p>
 
+  <details id="types-of-contributions" class="contribution-types-guide">
+    <summary class="contribution-types-guide-summary">Types of contributions</summary>
+    <div class="contribution-types-guide-body">
+      <p>
+        This appendix offers a 4&times;5 matrix showing 20 kinds of research contributions. It is not exhaustive&mdash;it
+        merely aims to give you some idea of how easy it is to find a contribution in the research on a real-world
+        problem.
+      </p>
+      <p>To make a contribution, you have to find where previous research is inadequate. In general, we find four kinds of inadequacies:</p>
+      <ul class="contribution-types-list">
+        <li><strong>New:</strong> something that has never been researched before (theoretically and/or empirically).</li>
+        <li><strong>Gap:</strong> something that has been researched before, but there are some areas that have been neglected.</li>
+        <li><strong>Conflict:</strong> the research about something has competing explanations or inconsistent findings.</li>
+        <li><strong>Wrong:</strong> there are parts of the research (theoretical or empirical) that are incorrect, or making wrong assumptions.</li>
+      </ul>
+      <p>In any real-world problem we may find five areas where a research contribution is possible:</p>
+      <ul class="contribution-types-list">
+        <li>
+          <strong>Theory</strong> is a generalised explanation of things we can observe in the real world and it is not
+          specific to a specific time or place. It could be that there is no theory to explain something or that some
+          theory has not been tested before. Often puzzles call for the creation of a new theory&mdash;like germ theory
+          explained the puzzle of transmission of disease in the 1800s.
+        </li>
+        <li>
+          <strong>Application</strong> is the use of a theory in practice. It could be that a particular theory has not
+          been applied to certain places, not used to explain observations, or that a new application of a theory has not
+          been investigated before.
+        </li>
+        <li>
+          <strong>Method</strong> is the technique by which results are generated. One may develop a new method, adapt or
+          improve old methods or apply methods to theories or data in ways not done before.
+        </li>
+        <li>
+          <strong>Prediction</strong> is when you make an informed guess based on the theory or data about something that
+          is not known. It could be a forecast or positing the existence of unknown phenomena (like Mendeleev who
+          predicted the existence of new chemical elements based on his periodic table). It could be that a theory makes
+          predictions that nobody thought of before, or can enable the construction of a model that can better anticipate
+          future events.
+        </li>
+        <li>
+          <strong>Generalisation</strong> is when you extend a theory or finding to a wider range of groups or phenomena
+          than was originally intended. It might happen that findings in one country could be generalised to all South
+          American countries but that nobody ever tested this, or that a theory about families can be generalised to the
+          whole economy, but that nobody ever considered this.
+        </li>
+      </ul>
+      <p>
+        When we combine the kinds of inadequacy in the research with the possible areas of contribution, we get the
+        4&times;5 matrix of 20 kinds of research contributions, shown in the table below:
+      </p>
+      <figure class="contribution-types-figure">
+        <img
+          src={imgContributionMatrix}
+          alt="4 by 5 matrix: rows Theory, Application, Method, Prediction, Generalise; columns New, Gap, Conflict, Wrong."
+          loading="lazy"
+        />
+        <figcaption>Twenty kinds of research contribution (inadequacy type &times; contribution area).</figcaption>
+      </figure>
+      <p>To take some examples:</p>
+      <ul class="contribution-types-list">
+        <li><strong>Application&ndash;Gap:</strong> applying a theory to a neglected area.</li>
+        <li><strong>Method&ndash;Conflict:</strong> using a new or improved method to try to settle a disagreement amongst researchers.</li>
+        <li><strong>Theory&ndash;Wrong:</strong> showing that old theories are wrong and where they go wrong.</li>
+        <li><strong>Prediction&ndash;New:</strong> using a theory or a model to make predictions that are better or have not been made before.</li>
+      </ul>
+      <p>
+        Some contributions may neatly fit in only one cell, but it is quite common for studies to combine contributions
+        from more than one cell.
+      </p>
+    </div>
+  </details>
+
   <ContributionsPage client:load />
+
+  <script>
+    function openContributionTypesGuide() {
+      const guide = document.getElementById('types-of-contributions');
+      if (guide instanceof HTMLDetailsElement) guide.open = true;
+    }
+    if (window.location.hash === '#types-of-contributions') openContributionTypesGuide();
+    window.addEventListener('hashchange', () => {
+      if (window.location.hash === '#types-of-contributions') openContributionTypesGuide();
+    });
+  </script>
 </BaseLayout>
 
 <style>
@@ -29,9 +114,101 @@ const base = import.meta.env.BASE_URL;
   }
   .page-desc {
     color: var(--color-ink-muted);
-    margin-bottom: 2rem;
+    margin-bottom: 1.25rem;
     line-height: 1.6;
     max-width: 40rem;
+  }
+
+  .page-desc-link {
+    color: var(--color-maroon);
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .page-desc-link:hover {
+    text-decoration: underline;
+  }
+
+  .contribution-types-guide {
+    margin: 0 0 2rem 0;
+    max-width: 42rem;
+    padding: 0.65rem 1rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    border-left: 4px solid var(--color-maroon);
+  }
+
+  .contribution-types-guide-summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--color-maroon);
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .contribution-types-guide-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .contribution-types-guide-summary::before {
+    content: '▸';
+    font-size: 0.85rem;
+    transition: transform 0.15s ease;
+  }
+
+  .contribution-types-guide[open] .contribution-types-guide-summary::before {
+    transform: rotate(90deg);
+  }
+
+  .contribution-types-guide-body {
+    margin-top: 0.85rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--color-border);
+    font-size: 0.92rem;
+    line-height: 1.65;
+    color: var(--color-ink);
+  }
+
+  .contribution-types-guide-body p {
+    margin: 0 0 0.85rem 0;
+  }
+
+  .contribution-types-list {
+    margin: 0 0 0.85rem 0;
+    padding-left: 1.25rem;
+  }
+
+  .contribution-types-list li {
+    margin-bottom: 0.55rem;
+  }
+
+  .contribution-types-list li:last-child {
+    margin-bottom: 0;
+  }
+
+  .contribution-types-figure {
+    margin: 0.5rem 0 1rem 0;
+  }
+
+  .contribution-types-figure img {
+    display: block;
+    width: 100%;
+    max-width: 520px;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+  }
+
+  .contribution-types-figure figcaption {
+    margin-top: 0.45rem;
+    font-size: 0.82rem;
+    color: var(--color-ink-muted);
+    line-height: 1.45;
   }
 
   :global(.contributions-page) {
