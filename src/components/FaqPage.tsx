@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import { FormatDiaryText } from '../lib/formatDiaryText';
+import { FormatDiaryText, handleBoldShortcut } from '../lib/formatDiaryText';
 import {
   DEFAULT_FAQ_LABELS,
   labelsInclude,
@@ -128,7 +128,8 @@ function LabelPicker({
 function FaqAnswerFormatHint() {
   return (
     <p className="faq-format-hint">
-      Wrap text in <code>**double asterisks**</code> to show it in <strong>bold</strong> (line breaks are kept too).
+      Select text and press <kbd>⌘B</kbd> / <kbd>Ctrl+B</kbd>, or wrap in <code>**double asterisks**</code>, for{' '}
+      <strong>bold</strong> (line breaks are kept too).
     </p>
   );
 }
@@ -417,6 +418,7 @@ export default function FaqPage({ staticQuestions }: FaqPageProps) {
               id={`edit-a-${item.id}`}
               value={editAnswer}
               onChange={(e) => setEditAnswer(e.target.value)}
+              onKeyDown={(e) => handleBoldShortcut(e, editAnswer, setEditAnswer)}
               rows={5}
               placeholder="Use **bold** for emphasis, e.g. **Key point:** details here…"
               className="faq-textarea"
@@ -607,6 +609,7 @@ export default function FaqPage({ staticQuestions }: FaqPageProps) {
                 id="faq-answer"
                 value={answerDraft}
                 onChange={(e) => setAnswerDraft(e.target.value)}
+                onKeyDown={(e) => handleBoldShortcut(e, answerDraft, setAnswerDraft)}
                 rows={5}
                 placeholder="Use **bold** for emphasis, e.g. **Key point:** details here…"
                 className="faq-textarea"

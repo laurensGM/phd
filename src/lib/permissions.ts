@@ -63,7 +63,9 @@ export function resolvePermissionRole(opts: {
   viewAsRole: ViewAsRole | null;
   role: ProjectRole | null;
 }): AppPermissionRole | null {
-  if (opts.viewAsRole) return opts.viewAsRole;
+  // Only honor view-as once we know the user is a real superadmin (avoids a deny flash
+  // while memberships / is_superadmin are still loading).
+  if (opts.isRealSuperadmin && opts.viewAsRole) return opts.viewAsRole;
   if (opts.isRealSuperadmin) return 'superadmin';
   if (opts.role === 'supervisor') return 'supervisor';
   if (opts.role === 'owner' || opts.role === 'student') return 'student';

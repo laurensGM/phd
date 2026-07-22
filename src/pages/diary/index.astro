@@ -19,16 +19,11 @@ import DiaryPage from '../../components/DiaryPage';
 
   /* React-rendered diary content: use :global() so styles apply to component output */
   :global(.diary-page .diary-add-section) {
-    margin-bottom: 3rem;
-    padding: 2rem;
-    background: var(--color-bg-alt);
-    border: 1px solid var(--color-border);
-    border-radius: 12px;
-    box-shadow: var(--shadow-sm);
+    margin-bottom: 1.5rem;
   }
   :global(.diary-page .diary-add-btn) {
-    margin-bottom: 2rem;
-    padding: 0.65rem 1.25rem;
+    margin-bottom: 0;
+    padding: 0.55rem 1.1rem;
     background: var(--color-maroon);
     color: #fff;
     border: 2px solid var(--color-gold);
@@ -42,10 +37,14 @@ import DiaryPage from '../../components/DiaryPage';
     background: var(--color-maroon-dark);
     border-color: var(--color-gold-light);
   }
+  :global(.diary-page .diary-add-section:has(.diary-form) .diary-add-btn) {
+    margin-bottom: 1rem;
+  }
 
   :global(.diary-page .diary-form) {
     max-width: 960px;
-    padding: 2.5rem 3rem;
+    margin-top: 0;
+    padding: 1.5rem 1.75rem;
     background: #fff;
     border: 1px solid var(--color-border);
     border-radius: 12px;

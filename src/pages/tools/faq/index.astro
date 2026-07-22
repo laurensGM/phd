@@ -175,6 +175,16 @@ const staticQuestions = faqSeed as { question: string }[];
     border-radius: 4px;
   }
 
+  :global(.faq-format-hint kbd) {
+    display: inline-block;
+    padding: 0.1rem 0.35rem;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background: #f7f5f2;
+    font-size: 0.8rem;
+    font-family: var(--font-sans);
+  }
+
   :global(.faq-submit) {
     align-self: flex-start;
     padding: 0.55rem 1.1rem;

@@ -4,9 +4,11 @@ import { usePermissions } from '../hooks/usePermissions';
 import { permissionKeyForPath } from '../lib/navPermissions';
 import type { PermissionKey } from '../lib/permissions';
 import AccessDenied from './AccessDenied';
+import CheckingAccess from './CheckingAccess';
 
 /**
  * Blocks signed-in users who lack the nav permission for the current page path.
+ * Shows a spinner (never Access Denied) until auth + permissions are ready.
  */
 export default function PagePermissionGuard() {
   const { isSignedIn } = useAuth();
@@ -17,26 +19,33 @@ export default function PagePermissionGuard() {
     setPermissionKey(permissionKeyForPath(window.location.pathname) as PermissionKey | null);
   }, []);
 
-  const needsCheck = isSignedIn && !!permissionRole && !!permissionKey;
-  const allowed = !needsCheck || !permissionKey || can(permissionKey);
+  const gated = !!permissionKey;
+  const checking = gated && isSignedIn && loading;
+  const needsEnforce = gated && isSignedIn && !loading && !!permissionRole;
+  const allowed = !needsEnforce || can(permissionKey!);
 
   useEffect(() => {
     const main = document.querySelector<HTMLElement>('.main-content');
     if (!main) return;
-    if (!needsCheck || loading) {
-      main.hidden = false;
+    if (checking || (needsEnforce && !allowed)) {
+      main.hidden = true;
       return;
     }
-    main.hidden = !allowed;
-  }, [needsCheck, loading, allowed]);
+    main.hidden = false;
+  }, [checking, needsEnforce, allowed]);
 
-  if (!needsCheck || loading || !permissionKey) return null;
-  if (allowed) return null;
+  if (checking) {
+    return <CheckingAccess />;
+  }
 
-  return (
-    <AccessDenied
-      message="Your role cannot view this page."
-      permission={permissionKey}
-    />
-  );
+  if (needsEnforce && !allowed) {
+    return (
+      <AccessDenied
+        message="Your role cannot view this page."
+        permission={permissionKey}
+      />
+    );
+  }
+
+  return null;
 }

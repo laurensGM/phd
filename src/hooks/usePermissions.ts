@@ -24,8 +24,10 @@ function cloneDefaults(): Matrix {
 export function usePermissions() {
   const auth = useAuth();
   const [matrix, setMatrix] = useState<Matrix>(() => cloneDefaults());
-  const [loading, setLoading] = useState(true);
+  const [fetchedForUserId, setFetchedForUserId] = useState<string | null>(null);
   const [tick, setTick] = useState(0);
+
+  const userId = auth.user?.id ?? null;
 
   useEffect(() => {
     const onViewAs = () => setTick((t) => t + 1);
@@ -38,14 +40,15 @@ export function usePermissions() {
   }, []);
 
   useEffect(() => {
-    if (!supabase || !isSupabaseConfigured() || !auth.isSignedIn) {
+    if (!supabase || !isSupabaseConfigured() || !userId) {
       setMatrix(cloneDefaults());
-      setLoading(false);
+      setFetchedForUserId(null);
       return;
     }
 
     let cancelled = false;
-    setLoading(true);
+    // Mark stale until this fetch completes for the current user.
+    setFetchedForUserId(null);
     void (async () => {
       const { data, error } = await supabase
         .from('role_permissions')
@@ -54,7 +57,7 @@ export function usePermissions() {
       if (error) {
         console.warn('Could not load role_permissions; using defaults', error.message);
         setMatrix(cloneDefaults());
-        setLoading(false);
+        setFetchedForUserId(userId);
         return;
       }
 
@@ -67,13 +70,13 @@ export function usePermissions() {
         }
       }
       setMatrix(next);
-      setLoading(false);
+      setFetchedForUserId(userId);
     })();
 
     return () => {
       cancelled = true;
     };
-  }, [auth.isSignedIn, tick]);
+  }, [userId, tick]);
 
   const permissionRole = useMemo(
     () =>
@@ -85,6 +88,8 @@ export function usePermissions() {
       }),
     [auth.isRealSuperadmin, auth.isViewingAs, auth.viewAsRole, auth.role, tick]
   );
+
+  const matrixReady = !userId || fetchedForUserId === userId;
 
   const can = useCallback(
     (key: PermissionKey): boolean => {
@@ -103,7 +108,7 @@ export function usePermissions() {
   const canViewDocuments = can('nav.manager.documents');
 
   return {
-    loading: auth.loading || loading,
+    loading: auth.loading || !matrixReady,
     permissionRole,
     can,
     canViewPapers,

@@ -29,16 +29,11 @@ const base = import.meta.env.BASE_URL;
 
   /* Meeting notes (React) – design aligned with Diary */
   :global(.meeting-notes-page .meeting-notes-add-section) {
-    margin-bottom: 3rem;
-    padding: 2rem;
-    background: var(--color-bg-alt);
-    border: 1px solid var(--color-border);
-    border-radius: 12px;
-    box-shadow: var(--shadow-sm);
+    margin-bottom: 1.5rem;
   }
   :global(.meeting-notes-page .meeting-notes-add-btn) {
-    margin-bottom: 2rem;
-    padding: 0.65rem 1.25rem;
+    margin-bottom: 0;
+    padding: 0.55rem 1.1rem;
     background: var(--color-maroon);
     color: #fff;
     border: 2px solid var(--color-gold);
@@ -52,10 +47,14 @@ const base = import.meta.env.BASE_URL;
     background: var(--color-maroon-dark);
     border-color: var(--color-gold-light);
   }
+  :global(.meeting-notes-page .meeting-notes-add-section:has(.meeting-notes-form) .meeting-notes-add-btn) {
+    margin-bottom: 1rem;
+  }
 
   :global(.meeting-notes-page .meeting-notes-form) {
     max-width: 960px;
-    padding: 2.5rem 3rem;
+    margin-top: 0;
+    padding: 1.5rem 1.75rem;
     background: #fff;
     border: 1px solid var(--color-border);
     border-radius: 12px;

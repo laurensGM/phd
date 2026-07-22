@@ -134,14 +134,25 @@ export function useAuth() {
 
     const applySession = (session: Session | null) => {
       if (cancelled) return;
-      setState((s) => ({
-        ...s,
-        loading: false,
-        session,
-        user: session?.user ?? null,
-        configured: true,
-      }));
-      void refreshMemberships(session?.user ?? null);
+      const userId = session?.user?.id ?? null;
+      setState((s) => {
+        const userChanged = s.user?.id !== userId;
+        // Stay in loading until memberships resolve on first load / user switch.
+        // Token refresh (same user) should not flash the loader or Access Denied.
+        const blockUi = s.loading || userChanged;
+        return {
+          ...s,
+          session,
+          user: session?.user ?? null,
+          configured: true,
+          loading: blockUi ? true : s.loading,
+        };
+      });
+      void refreshMemberships(session?.user ?? null).finally(() => {
+        if (!cancelled) {
+          setState((s) => (s.loading ? { ...s, loading: false } : s));
+        }
+      });
     };
 
     const failSafe = window.setTimeout(() => {

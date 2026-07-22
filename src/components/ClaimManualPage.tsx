@@ -104,7 +104,7 @@ export default function ClaimManualPage() {
 
   if (!canEditClaims) {
     return (
-      <AccessDenied message="Your role cannot create or edit claims." permission="claims.edit" />
+      <AccessDenied message="Your role cannot create or edit claims." permission="nav.literature.claims" />
     );
   }
 
