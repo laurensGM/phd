@@ -83,6 +83,12 @@ export default function HomeDashboard() {
   const [snippetsProcessedCount, setSnippetsProcessedCount] = useState<number>(0);
   const [claimsCount, setClaimsCount] = useState<number>(0);
   const [contributionsCount, setContributionsCount] = useState<number>(0);
+  const [taskCounts, setTaskCounts] = useState({
+    backlog: 0,
+    todo: 0,
+    in_progress: 0,
+    done: 0,
+  });
   const [snippetRows, setSnippetRows] = useState<SnippetTagRow[]>([]);
   const [manualByPaperId, setManualByPaperId] = useState<Map<string, string[]>>(new Map());
   const [loading, setLoading] = useState(true);
@@ -178,6 +184,7 @@ export default function HomeDashboard() {
       setSnippetsProcessedCount(0);
       setClaimsCount(0);
       setContributionsCount(0);
+      setTaskCounts({ backlog: 0, todo: 0, in_progress: 0, done: 0 });
       setSnippetRows([]);
       setManualByPaperId(new Map());
       return;
@@ -187,12 +194,13 @@ export default function HomeDashboard() {
       setLoading(true);
       setError(null);
       try {
-        const [papersRes, snippetsRes, assignRes, claimsRes, contributionsRes] = await Promise.all([
+        const [papersRes, snippetsRes, assignRes, claimsRes, contributionsRes, tasksRes] = await Promise.all([
           supabase.from('saved_papers').select('id, year, journal').limit(2000),
           supabase.from('snippets').select('id, construct_ids, model_ids, construct_id, model_id, used_in_writing'),
           supabase.from('paper_field_assignments').select('paper_id, field_id'),
           supabase.from('claims').select('id', { count: 'exact', head: true }),
           supabase.from('research_contributions').select('id', { count: 'exact', head: true }),
+          supabase.from('tasks').select('status'),
         ]);
         if (cancelled) return;
         if (papersRes.error) {
@@ -228,6 +236,18 @@ export default function HomeDashboard() {
           setContributionsCount(0);
         } else {
           setContributionsCount(contributionsRes.count ?? 0);
+        }
+        if (tasksRes.error) {
+          setTaskCounts({ backlog: 0, todo: 0, in_progress: 0, done: 0 });
+        } else {
+          const next = { backlog: 0, todo: 0, in_progress: 0, done: 0 };
+          for (const row of (tasksRes.data ?? []) as { status: string }[]) {
+            if (row.status === 'backlog') next.backlog += 1;
+            else if (row.status === 'todo') next.todo += 1;
+            else if (row.status === 'in_progress') next.in_progress += 1;
+            else if (row.status === 'done') next.done += 1;
+          }
+          setTaskCounts(next);
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -287,6 +307,33 @@ export default function HomeDashboard() {
           <span className="home-stat-label">models explored</span>
         </a>
       </div>
+
+      <section className="home-tasks-section" aria-label="Tasks board summary">
+        <div className="home-tasks-header">
+          <h2 className="home-section-title">Tasks board</h2>
+          <a href={`${base}tasks/`} className="home-timeline-link">
+            Open board →
+          </a>
+        </div>
+        <div className="home-tasks-grid">
+          <a href={`${base}tasks/`} className="home-tasks-col">
+            <span className="home-tasks-count">{taskCounts.backlog}</span>
+            <span className="home-tasks-label">Backlog</span>
+          </a>
+          <a href={`${base}tasks/`} className="home-tasks-col">
+            <span className="home-tasks-count">{taskCounts.todo}</span>
+            <span className="home-tasks-label">To do</span>
+          </a>
+          <a href={`${base}tasks/`} className="home-tasks-col">
+            <span className="home-tasks-count">{taskCounts.in_progress}</span>
+            <span className="home-tasks-label">In progress</span>
+          </a>
+          <a href={`${base}tasks/`} className="home-tasks-col">
+            <span className="home-tasks-count">{taskCounts.done}</span>
+            <span className="home-tasks-label">Done</span>
+          </a>
+        </div>
+      </section>
 
       {papersCount > 0 && (
         <PapersYearHistogram
