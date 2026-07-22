@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { usePermissions } from '../hooks/usePermissions';
 import AccessDenied from './AccessDenied';
+import { FormatDiaryText, handleRichTextareaKeyDown } from '../lib/formatDiaryText';
 
 interface MeetingNote {
   id: string;
@@ -42,7 +43,7 @@ export default function MeetingNotesPage() {
   const [search, setSearch] = useState('');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
-  const [showForm, setShowForm] = useState(true);
+  const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     date: new Date().toISOString().slice(0, 10),
     title: '',
@@ -54,6 +55,7 @@ export default function MeetingNotesPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState({
     date: '',
     title: '',
@@ -137,10 +139,12 @@ export default function MeetingNotesPage() {
         location: '',
       });
       setShowForm(false);
+      setExpandedId(data.id);
     }
   };
 
   const startEdit = (note: MeetingNote) => {
+    setExpandedId(note.id);
     setEditingId(note.id);
     setEditForm({
       date: note.date,
@@ -150,6 +154,10 @@ export default function MeetingNotesPage() {
       location: note.location ?? '',
     });
     setError(null);
+  };
+
+  const toggleExpanded = (id: string) => {
+    setExpandedId((prev) => (prev === id ? null : id));
   };
 
   const cancelEdit = () => setEditingId(null);
@@ -296,12 +304,22 @@ export default function MeetingNotesPage() {
 
             <div className="meeting-notes-form-field">
               <label htmlFor="meeting-content">Content / Notes</label>
+              <p className="meeting-notes-format-hint">
+                <kbd>⌘B</kbd> / <kbd>Ctrl+B</kbd> for <strong>bold</strong>. Start a line with{' '}
+                <code>- </code> for a bullet; <kbd>Enter</kbd> continues the list; <kbd>Tab</kbd> /{' '}
+                <kbd>Shift+Tab</kbd> indent / outdent.
+              </p>
               <textarea
                 id="meeting-content"
                 value={formData.content}
                 onChange={(e) => setFormData((d) => ({ ...d, content: e.target.value }))}
+                onKeyDown={(e) =>
+                  handleRichTextareaKeyDown(e, formData.content, (next) =>
+                    setFormData((d) => ({ ...d, content: next }))
+                  )
+                }
                 rows={8}
-                placeholder="Key points, decisions, action items..."
+                placeholder={"Key points, decisions, action items…\n- First bullet\n- Second bullet"}
                 className="meeting-notes-textarea"
               />
             </div>
@@ -347,9 +365,15 @@ export default function MeetingNotesPage() {
           />
         </div>
         <div className="meeting-notes-entries">
-          {filteredNotes.map((note) => (
-            <article key={note.id} className="meeting-notes-entry">
-              {editingId === note.id ? (
+          {filteredNotes.map((note) => {
+            const isExpanded = expandedId === note.id;
+            const isEditing = editingId === note.id;
+            return (
+            <article
+              key={note.id}
+              className={`meeting-notes-entry${isExpanded || isEditing ? ' is-open' : ''}`}
+            >
+              {isEditing ? (
                 <form className="meeting-notes-edit-form" onSubmit={handleSaveEdit}>
                   <div className="meeting-notes-form-row">
                     <div className="meeting-notes-form-field">
@@ -395,9 +419,18 @@ export default function MeetingNotesPage() {
                   </div>
                   <div className="meeting-notes-form-field">
                     <label>Content</label>
+                    <p className="meeting-notes-format-hint">
+                      <kbd>⌘B</kbd> / <kbd>Ctrl+B</kbd> for <strong>bold</strong>. Use <code>- </code> for
+                      bullets; <kbd>Tab</kbd> / <kbd>Shift+Tab</kbd> to indent.
+                    </p>
                     <textarea
                       value={editForm.content}
                       onChange={(e) => setEditForm((f) => ({ ...f, content: e.target.value }))}
+                      onKeyDown={(e) =>
+                        handleRichTextareaKeyDown(e, editForm.content, (next) =>
+                          setEditForm((f) => ({ ...f, content: next }))
+                        )
+                      }
                       rows={6}
                       className="meeting-notes-textarea"
                     />
@@ -413,45 +446,68 @@ export default function MeetingNotesPage() {
                 </form>
               ) : (
                 <>
-                  <div className="meeting-notes-entry-header">
-                    <time dateTime={note.date}>{formatDate(note.date)}</time>
-                    <div className="meeting-notes-entry-actions">
-                      {canEditMeetingNotes && (
-                      <button
-                        type="button"
-                        className="meeting-notes-entry-action"
-                        onClick={() => startEdit(note)}
-                      >
-                        Edit
-                      </button>
-                      )}
-                      {canEditMeetingNotes && (
-                      <button
-                        type="button"
-                        className="meeting-notes-entry-action meeting-notes-entry-action-delete"
-                        onClick={() => handleDelete(note.id)}
-                        disabled={deletingId === note.id}
-                      >
-                        {deletingId === note.id ? '…' : 'Delete'}
-                      </button>
+                  <button
+                    type="button"
+                    className="meeting-notes-entry-summary"
+                    onClick={() => toggleExpanded(note.id)}
+                    aria-expanded={isExpanded}
+                  >
+                    <span className="meeting-notes-entry-chevron" aria-hidden="true">
+                      {isExpanded ? '▾' : '▸'}
+                    </span>
+                    <time className="meeting-notes-entry-date" dateTime={note.date}>
+                      {formatDate(note.date)}
+                    </time>
+                    <span className="meeting-notes-entry-title">{note.title}</span>
+                    <span className="meeting-notes-entry-participants">
+                      {note.participants?.trim() || '—'}
+                    </span>
+                  </button>
+
+                  {isExpanded && (
+                    <div className="meeting-notes-entry-detail">
+                      <div className="meeting-notes-entry-detail-bar">
+                        {note.location && (
+                          <p className="meeting-notes-entry-meta">
+                            Location: {note.location}
+                          </p>
+                        )}
+                        <div className="meeting-notes-entry-actions">
+                          {canEditMeetingNotes && (
+                            <button
+                              type="button"
+                              className="meeting-notes-entry-action"
+                              onClick={() => startEdit(note)}
+                            >
+                              Edit
+                            </button>
+                          )}
+                          {canEditMeetingNotes && (
+                            <button
+                              type="button"
+                              className="meeting-notes-entry-action meeting-notes-entry-action-delete"
+                              onClick={() => handleDelete(note.id)}
+                              disabled={deletingId === note.id}
+                            >
+                              {deletingId === note.id ? '…' : 'Delete'}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                      {note.content ? (
+                        <div className="meeting-notes-entry-reflection">
+                          <FormatDiaryText text={note.content} />
+                        </div>
+                      ) : (
+                        <p className="meeting-notes-entry-empty-content">No notes recorded.</p>
                       )}
                     </div>
-                  </div>
-                  <h4 className="meeting-notes-entry-title">{note.title}</h4>
-                  {(note.participants || note.location) && (
-                    <p className="meeting-notes-entry-meta">
-                      {note.participants && <span>Participants: {note.participants}</span>}
-                      {note.participants && note.location && ' · '}
-                      {note.location && <span>Location: {note.location}</span>}
-                    </p>
-                  )}
-                  {note.content && (
-                    <p className="meeting-notes-entry-reflection">{note.content}</p>
                   )}
                 </>
               )}
             </article>
-          ))}
+            );
+          })}
           {filteredNotes.length === 0 && !loading && (
             <p className="meeting-notes-empty">No meeting notes yet. Add one above.</p>
           )}

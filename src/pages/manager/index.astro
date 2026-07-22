@@ -1,0 +1,144 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout
+  title="Manager"
+  description="PhD milestones, outline, diary, tasks, meeting notes, documents, and supervisors."
+>
+  <h1>Manager</h1>
+  <p class="page-desc">
+    Run the PhD day to day — milestones and outline, diary and tasks, meeting notes, shared documents, and your supervisors.
+  </p>
+
+  <div class="rq-hub-grid">
+    <a
+      href={`${base}outline/`}
+      class="rq-hub-card"
+      data-requires-permission="nav.manager.milestones"
+    >
+      <span class="rq-hub-icon" aria-hidden="true">🏁</span>
+      <h2 class="rq-hub-title">PhD milestones</h2>
+      <p class="rq-hub-desc">Program stages and timeline — concept note, literature review, proposal, defence.</p>
+      <span class="rq-hub-link">Open milestones →</span>
+    </a>
+    <a
+      href={`${base}phd-outline/`}
+      class="rq-hub-card"
+      data-requires-permission="nav.manager.phd_outline"
+    >
+      <span class="rq-hub-icon" aria-hidden="true">📑</span>
+      <h2 class="rq-hub-title">PhD outline</h2>
+      <p class="rq-hub-desc">Chapter and section structure for the thesis document.</p>
+      <span class="rq-hub-link">Open outline →</span>
+    </a>
+    <a
+      href={`${base}diary/`}
+      class="rq-hub-card"
+      data-requires-permission="nav.manager.diary"
+    >
+      <span class="rq-hub-icon" aria-hidden="true">📓</span>
+      <h2 class="rq-hub-title">Diary</h2>
+      <p class="rq-hub-desc">Daily research reflections, tags, and linked constructs.</p>
+      <span class="rq-hub-link">Open diary →</span>
+    </a>
+    <a
+      href={`${base}tasks/`}
+      class="rq-hub-card"
+      data-requires-permission="nav.manager.tasks"
+    >
+      <span class="rq-hub-icon" aria-hidden="true">✅</span>
+      <h2 class="rq-hub-title">Tasks</h2>
+      <p class="rq-hub-desc">Kanban board — backlog, to do, in progress, done, and archived.</p>
+      <span class="rq-hub-link">Open tasks →</span>
+    </a>
+    <a
+      href={`${base}meeting-notes/`}
+      class="rq-hub-card"
+      data-requires-permission="nav.manager.meeting_notes"
+    >
+      <span class="rq-hub-icon" aria-hidden="true">📝</span>
+      <h2 class="rq-hub-title">Meeting notes</h2>
+      <p class="rq-hub-desc">Notes from supervisor meetings and other research conversations.</p>
+      <span class="rq-hub-link">Open meeting notes →</span>
+    </a>
+    <a
+      href={`${base}documents/`}
+      class="rq-hub-card"
+      data-requires-permission="nav.manager.documents"
+    >
+      <span class="rq-hub-icon" aria-hidden="true">📄</span>
+      <h2 class="rq-hub-title">Documents</h2>
+      <p class="rq-hub-desc">Shared Google Docs and other links for the project.</p>
+      <span class="rq-hub-link">Open documents →</span>
+    </a>
+    <a
+      href={`${base}supervisor/`}
+      class="rq-hub-card"
+      data-requires-permission="nav.manager.supervisors"
+    >
+      <span class="rq-hub-icon" aria-hidden="true">👥</span>
+      <h2 class="rq-hub-title">Supervisors</h2>
+      <p class="rq-hub-desc">Supervisor profiles and contact details.</p>
+      <span class="rq-hub-link">Open supervisors →</span>
+    </a>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-desc {
+    color: var(--color-ink-muted);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+    max-width: 40rem;
+  }
+  .rq-hub-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+  .rq-hub-card {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    border-left: 4px solid var(--color-maroon);
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  }
+  .rq-hub-card:hover {
+    border-color: var(--color-maroon-muted);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    text-decoration: none;
+    color: inherit;
+  }
+  .rq-hub-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+  }
+  .rq-hub-title {
+    font-family: var(--font-serif);
+    font-size: 1.35rem;
+    margin: 0 0 0.5rem 0;
+    color: var(--color-maroon);
+  }
+  .rq-hub-desc {
+    flex: 1;
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--color-ink);
+  }
+  .rq-hub-link {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-maroon);
+  }
+</style>

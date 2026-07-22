@@ -19,10 +19,12 @@ type Supervisor = {
 
 const list = supervisors as Supervisor[];
 const names = list.map((s) => s.name).join(' & ');
+const base = import.meta.env.BASE_URL;
 ---
 
 <BaseLayout title="Supervisors" description={`PhD supervisors — ${names}, Stellenbosch Business School`}>
   <article class="supervisor-page">
+    <p class="back-link"><a href={`${base}manager/`}>← Manager</a></p>
     <header class="supervisor-header">
       <h1>PhD Supervisors</h1>
       <p class="supervisor-intro">
@@ -133,6 +135,13 @@ const names = list.map((s) => s.name).join(' & ');
 </BaseLayout>
 
 <style>
+  .back-link {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  .back-link a {
+    color: var(--color-maroon);
+  }
   .supervisor-page {
     max-width: 720px;
   }

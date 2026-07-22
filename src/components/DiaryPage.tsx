@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { FormatDiaryText } from '../lib/formatDiaryText';
+import { FormatDiaryText, handleRichTextareaKeyDown } from '../lib/formatDiaryText';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { usePermissions } from '../hooks/usePermissions';
 import AccessDenied from './AccessDenied';
@@ -40,7 +40,7 @@ export default function DiaryPage() {
   const [tagFilter, setTagFilter] = useState<string>('');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
-  const [showForm, setShowForm] = useState(true);
+  const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     summary: '',
     detailedReflection: '',
@@ -50,6 +50,7 @@ export default function DiaryPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editFormData, setEditFormData] = useState({
     date: '',
     summary: '',
@@ -118,6 +119,7 @@ export default function DiaryPage() {
   };
 
   const startEdit = (entry: DiaryEntry) => {
+    setExpandedId(entry.id);
     setEditingId(entry.id);
     setEditFormData({
       date: entry.date,
@@ -126,6 +128,18 @@ export default function DiaryPage() {
       tags: [...entry.tags],
       linkedConstructs: entry.linkedConstructs.join(', '),
     });
+  };
+
+  const toggleExpanded = (id: string) => {
+    setExpandedId((prev) => (prev === id ? null : id));
+  };
+
+  const formatDate = (iso: string) => {
+    try {
+      return new Date(iso + 'T12:00:00').toLocaleDateString(undefined, { dateStyle: 'medium' });
+    } catch {
+      return iso;
+    }
   };
 
   const cancelEdit = () => {
@@ -198,7 +212,8 @@ export default function DiaryPage() {
     } else if (insertData) {
       setEntries((prev) => [mapRow({ ...insertData, id: insertData.id }), ...prev]);
       setFormData({ summary: '', detailedReflection: '', tags: [], linkedConstructs: '' });
-      setShowForm(false); // Hide form after save; user can click "+ New Entry" to add another
+      setShowForm(false);
+      setExpandedId(insertData.id);
     }
     setSaving(false);
   };
@@ -264,8 +279,9 @@ export default function DiaryPage() {
             <div className="diary-form-field diary-form-field-details">
               <label htmlFor="diary-details">Details</label>
               <p className="diary-format-hint">
-                Line breaks are kept as you type them. Wrap text in <code>**double asterisks**</code> to make it{' '}
-                <strong>bold</strong> when displayed.
+                <kbd>⌘B</kbd> / <kbd>Ctrl+B</kbd> for <strong>bold</strong>. Start a line with{' '}
+                <code>- </code> for a bullet; <kbd>Enter</kbd> continues the list; <kbd>Tab</kbd> /{' '}
+                <kbd>Shift+Tab</kbd> indent / outdent.
               </p>
               <textarea
                 id="diary-details"
@@ -273,8 +289,13 @@ export default function DiaryPage() {
                 onChange={(e) =>
                   setFormData((d) => ({ ...d, detailedReflection: e.target.value }))
                 }
+                onKeyDown={(e) =>
+                  handleRichTextareaKeyDown(e, formData.detailedReflection, (next) =>
+                    setFormData((d) => ({ ...d, detailedReflection: next }))
+                  )
+                }
                 rows={10}
-                placeholder="Describe what you did, key decisions, reflections..."
+                placeholder={"Describe what you did, key decisions, reflections…\n- First point\n- Second point"}
                 className="diary-textarea"
               />
             </div>
@@ -358,9 +379,15 @@ export default function DiaryPage() {
         </div>
 
         <div className="diary-entries">
-        {filteredEntries.map((entry) => (
-          <article key={entry.id} className="diary-entry">
-            {editingId === entry.id && canEditDiary ? (
+        {filteredEntries.map((entry) => {
+          const isExpanded = expandedId === entry.id;
+          const isEditing = editingId === entry.id && canEditDiary;
+          return (
+          <article
+            key={entry.id}
+            className={`diary-entry${isExpanded || isEditing ? ' is-open' : ''}`}
+          >
+            {isEditing ? (
               <div className="diary-edit-form">
                 <h4 className="diary-edit-title">Edit entry</h4>
                 <div className="diary-form-field">
@@ -387,11 +414,20 @@ export default function DiaryPage() {
                 </div>
                 <div className="diary-form-field diary-form-field-details">
                   <label htmlFor={`edit-details-${entry.id}`}>Details</label>
+                  <p className="diary-format-hint">
+                    <kbd>⌘B</kbd> / <kbd>Ctrl+B</kbd> for <strong>bold</strong>. Use <code>- </code> for
+                    bullets; <kbd>Tab</kbd> / <kbd>Shift+Tab</kbd> to indent.
+                  </p>
                   <textarea
                     id={`edit-details-${entry.id}`}
                     value={editFormData.detailedReflection}
                     onChange={(e) =>
                       setEditFormData((d) => ({ ...d, detailedReflection: e.target.value }))
+                    }
+                    onKeyDown={(e) =>
+                      handleRichTextareaKeyDown(e, editFormData.detailedReflection, (next) =>
+                        setEditFormData((d) => ({ ...d, detailedReflection: next }))
+                      )
                     }
                     rows={8}
                     className="diary-textarea"
@@ -440,44 +476,62 @@ export default function DiaryPage() {
               </div>
             ) : (
               <>
-                <div className="entry-header">
-                  <time dateTime={entry.date}>{entry.date}</time>
-                  <div className="entry-header-actions">
-                    <div className="entry-tags">
-                      {entry.tags.map((t) => (
-                        <span key={t} className="tag-badge">
-                          {t}
-                        </span>
-                      ))}
+                <button
+                  type="button"
+                  className="diary-entry-summary"
+                  onClick={() => toggleExpanded(entry.id)}
+                  aria-expanded={isExpanded}
+                >
+                  <span className="diary-entry-chevron" aria-hidden="true">
+                    {isExpanded ? '▾' : '▸'}
+                  </span>
+                  <time className="diary-entry-date" dateTime={entry.date}>
+                    {formatDate(entry.date)}
+                  </time>
+                  <span className="diary-entry-title">
+                    <FormatDiaryText text={entry.summary} />
+                  </span>
+                </button>
+
+                {isExpanded && (
+                  <div className="diary-entry-detail">
+                    <div className="diary-entry-detail-bar">
+                      <div className="entry-tags">
+                        {entry.tags.map((t) => (
+                          <span key={t} className="tag-badge">
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+                      {canEditDiary && (
+                        <button
+                          type="button"
+                          className="diary-btn-secondary"
+                          onClick={() => startEdit(entry)}
+                        >
+                          Edit
+                        </button>
+                      )}
                     </div>
-                    {canEditDiary && (
-                    <button
-                      type="button"
-                      className="diary-btn-secondary"
-                      onClick={() => startEdit(entry)}
-                    >
-                      Edit
-                    </button>
+                    {entry.detailedReflection ? (
+                      <div className="entry-reflection">
+                        <FormatDiaryText text={entry.detailedReflection} />
+                      </div>
+                    ) : (
+                      <p className="diary-entry-empty-content">No details recorded.</p>
+                    )}
+                    {entry.linkedConstructs?.length > 0 && (
+                      <p className="entry-constructs">
+                        Linked: {entry.linkedConstructs.join(', ')}
+                      </p>
                     )}
                   </div>
-                </div>
-                <h4 className="entry-summary">
-                  <FormatDiaryText text={entry.summary} />
-                </h4>
-                {entry.detailedReflection && (
-                  <div className="entry-reflection">
-                    <FormatDiaryText text={entry.detailedReflection} />
-                  </div>
-                )}
-                {entry.linkedConstructs?.length > 0 && (
-                  <p className="entry-constructs">
-                    Linked: {entry.linkedConstructs.join(', ')}
-                  </p>
                 )}
               </>
             )}
           </article>
-        ))}
+          );
+        })}
         {filteredEntries.length === 0 && !loading && (
           <p className="diary-empty">No entries yet. Add your first diary entry above.</p>
         )}

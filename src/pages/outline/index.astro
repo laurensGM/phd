@@ -17,6 +17,7 @@ const years = Object.keys(byYear).sort();
 
 <BaseLayout title="PhD milestones" description="PhD program stages and timeline – concept note, literature review, proposal, defence">
   <article class="outline-page">
+    <p class="back-link"><a href={`${base}manager/`}>← Manager</a></p>
     <header class="outline-header">
       <h1>PhD milestones</h1>
       <p class="outline-intro">Stages and milestones of the PhD program. Mark items complete as you go; progress is saved in your browser.</p>
@@ -131,6 +132,14 @@ const years = Object.keys(byYear).sort();
 </BaseLayout>
 
 <style>
+  .back-link {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  .back-link a {
+    color: var(--color-maroon);
+  }
+
   .outline-page {
     max-width: 720px;
   }
