@@ -20,25 +20,27 @@ export default function HomeTasksBarChart({ counts }: { counts: TaskCounts }) {
   const total = rows.reduce((sum, r) => sum + r.count, 0);
 
   return (
-    <ul className="home-tasks-bars" role="list" aria-label="Tasks by status">
-      {rows.map((row) => (
-        <li key={row.key} className="home-tasks-bar-row">
-          <span className="home-tasks-bar-label">{row.label}</span>
-          <span className="home-tasks-bar-track">
-            <span
-              className="home-tasks-bar-fill"
-              style={{
-                width: `${(row.count / maxCount) * 100}%`,
-                backgroundColor: row.color,
-              }}
-            />
-          </span>
-          <span className="home-tasks-bar-count">{row.count}</span>
-        </li>
-      ))}
-      <li className="home-tasks-bar-total" aria-hidden="true">
+    <div className="home-tasks-chart">
+      <ul className="home-tasks-bars" role="list" aria-label="Tasks by status">
+        {rows.map((row) => (
+          <li key={row.key} className="home-tasks-bar-col">
+            <div className="home-tasks-bar-stack">
+              {row.count > 0 && <span className="home-tasks-bar-count">{row.count}</span>}
+              <span
+                className={`home-tasks-bar-fill${row.count === 0 ? ' home-tasks-bar-fill-empty' : ''}`}
+                style={{
+                  height: `${(row.count / maxCount) * 100}%`,
+                  backgroundColor: row.color,
+                }}
+              />
+            </div>
+            <span className="home-tasks-bar-label">{row.label}</span>
+          </li>
+        ))}
+      </ul>
+      <p className="home-tasks-bar-total">
         {total} task{total !== 1 ? 's' : ''} on board
-      </li>
-    </ul>
+      </p>
+    </div>
   );
 }

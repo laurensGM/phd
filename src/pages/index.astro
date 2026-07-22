@@ -42,10 +42,7 @@ const base = import.meta.env.BASE_URL;
     <section class="home-context-widget" aria-label="Research objective and supervisors">
       <div class="home-objective-card">
         <div class="home-context-card-head">
-          <h2 class="home-context-title">
-            <span class="home-context-title-line">Primary research</span>
-            <span class="home-context-title-line">objective</span>
-          </h2>
+          <h2 class="home-context-title">Primary research objective</h2>
           <a href={`${base}research-questions/objectives/`} class="home-context-link">Objectives →</a>
         </div>
         {primaryObjectiveText ? (
@@ -149,13 +146,8 @@ const base = import.meta.env.BASE_URL;
     font-size: 0.95rem;
     font-weight: 600;
     color: var(--color-ink);
-    display: flex;
-    flex-direction: column;
-    line-height: 1.25;
-  }
-
-  .home-context-title-line {
-    display: block;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
   .home-context-link {
@@ -365,59 +357,81 @@ const base = import.meta.env.BASE_URL;
     margin: 0;
   }
 
+  :global(.home-tasks-chart) {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+
   :global(.home-tasks-bars) {
     list-style: none;
     margin: 0;
     padding: 0;
     display: flex;
-    flex-direction: column;
-    gap: 0.55rem;
+    align-items: flex-end;
+    gap: 0.5rem;
     flex: 1;
+    min-height: 9rem;
   }
 
-  :global(.home-tasks-bar-row) {
-    display: grid;
-    grid-template-columns: minmax(4.5rem, 34%) 1fr auto;
+  :global(.home-tasks-bar-col) {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.82rem;
+    height: 100%;
+  }
+
+  :global(.home-tasks-bar-stack) {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.25rem;
+    min-height: 0;
   }
 
   :global(.home-tasks-bar-label) {
+    margin-top: 0.45rem;
     color: var(--color-ink);
+    font-size: 0.72rem;
     font-weight: 500;
-  }
-
-  :global(.home-tasks-bar-track) {
-    height: 0.75rem;
-    background: #e5e7eb;
-    border-radius: 999px;
-    overflow: hidden;
+    text-align: center;
+    line-height: 1.2;
   }
 
   :global(.home-tasks-bar-fill) {
     display: block;
-    height: 100%;
-    border-radius: 999px;
-    min-width: 3px;
-    transition: width 0.2s ease;
+    width: 72%;
+    max-width: 2.75rem;
+    border-radius: 6px 6px 0 0;
+    min-height: 4px;
+    transition: height 0.2s ease;
+  }
+
+  :global(.home-tasks-bar-fill-empty) {
+    min-height: 3px;
+    opacity: 0.2;
   }
 
   :global(.home-tasks-bar-count) {
     font-weight: 600;
     color: var(--color-ink-muted);
     font-variant-numeric: tabular-nums;
-    min-width: 1.5rem;
-    text-align: right;
+    font-size: 0.78rem;
+    line-height: 1;
   }
 
   :global(.home-tasks-bar-total) {
-    margin-top: 0.35rem;
+    margin: 0.5rem 0 0;
     padding-top: 0.5rem;
     border-top: 1px solid var(--color-border);
     font-size: 0.8rem;
     color: var(--color-ink-muted);
-    list-style: none;
   }
 
   :global(.home-timeline-section) {
