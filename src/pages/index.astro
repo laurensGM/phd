@@ -1,17 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import researchQuestions from '../data/research-questions.json';
 import researchObjectives from '../data/research-objectives.json';
 import supervisors from '../data/supervisor.json';
 import HomeDashboard from '../components/HomeDashboard';
 import { abbreviateObjectiveText } from '../lib/abbreviateObjectiveText';
 
-type RQ = { date?: string; question: string };
 type Objective = { type: string; status: string; objective: string };
 type Supervisor = { name: string; initials?: string; title: string; profileUrl: string };
-
-const latestRq = ([...researchQuestions] as RQ[]).sort((a, b) => (b.date || '').localeCompare(a.date || ''))[0];
-const researchTopic = latestRq?.question ?? 'Your research question';
 
 const primaryObjective = (researchObjectives as Objective[]).find(
   (o) => o.type === 'primary' && o.status === 'current'
@@ -28,16 +23,6 @@ const base = import.meta.env.BASE_URL;
   <div class="homepage">
     <h1>PhD Manager</h1>
     <p class="tagline">Organizing theory, constructs, and literature for doctoral research</p>
-
-    <section class="positioning">
-      <h2>Research Focus</h2>
-      <p class="research-topic">
-        <em>{researchTopic}</em>
-      </p>
-      <p class="positioning-statement">
-        This site tracks theoretical models (TAM, ECM, ECT), their constructs and relationships, literature findings, and the evolution of research questions through the doctoral journey.
-      </p>
-    </section>
 
     <section class="home-context-widget" aria-label="Research objective and supervisors">
       <div class="home-objective-card">
@@ -101,21 +86,6 @@ const base = import.meta.env.BASE_URL;
     font-size: 1.1rem;
     color: var(--color-ink-muted);
     margin-bottom: 2rem;
-  }
-
-  .positioning {
-    margin-bottom: 1.75rem;
-  }
-
-  .research-topic {
-    font-family: var(--font-serif);
-    font-size: 1.15rem;
-    font-style: italic;
-    margin-bottom: 1rem;
-  }
-
-  .positioning-statement {
-    color: var(--color-ink-muted);
   }
 
   .home-context-widget {
@@ -406,6 +376,170 @@ const base = import.meta.env.BASE_URL;
     :global(.home-pipeline-link) {
       grid-template-columns: minmax(5.5rem, 8rem) minmax(0, 1fr) 2.25rem;
       gap: 0.5rem;
+    }
+  }
+
+  /* Recent activity */
+  :global(.home-activity-section) {
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  :global(.home-activity-header) {
+    margin-bottom: 1rem;
+  }
+
+  :global(.home-activity-header .home-section-title) {
+    margin-bottom: 0.35rem;
+  }
+
+  :global(.home-activity-note) {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--color-ink-muted);
+    line-height: 1.45;
+  }
+
+  :global(.home-activity-empty) {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--color-ink-muted);
+  }
+
+  :global(.home-activity-list) {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  :global(.home-activity-item) {
+    border-top: 1px solid var(--color-border);
+  }
+
+  :global(.home-activity-item:first-child) {
+    border-top: none;
+  }
+
+  :global(.home-activity-link) {
+    display: grid;
+    grid-template-columns: 7.5rem minmax(0, 1fr) auto;
+    gap: 0.75rem;
+    align-items: start;
+    padding: 0.7rem 0.25rem;
+    text-decoration: none;
+    color: inherit;
+    border-radius: 6px;
+    transition: background 0.15s;
+  }
+
+  :global(.home-activity-link:hover) {
+    background: var(--color-bg-alt);
+    text-decoration: none;
+    color: inherit;
+  }
+
+  :global(.home-activity-type) {
+    display: inline-block;
+    margin-top: 0.15rem;
+    padding: 0.15rem 0.5rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    border-radius: 999px;
+    background: var(--color-bg-alt);
+    color: var(--color-ink-muted);
+    border: 1px solid var(--color-border);
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  :global(.home-activity-type--paper) {
+    color: #4a2860;
+    background: #ede4f4;
+    border-color: #d4c0e4;
+  }
+  :global(.home-activity-type--snippets) {
+    color: #2a4a60;
+    background: #e4edf4;
+    border-color: #c0d4e4;
+  }
+  :global(.home-activity-type--task) {
+    color: #6d28d9;
+    background: #f5f3ff;
+    border-color: #ddd6fe;
+  }
+  :global(.home-activity-type--contribution) {
+    color: #7a5400;
+    background: #fdf3dc;
+    border-color: #f0dca0;
+  }
+  :global(.home-activity-type--diary) {
+    color: #15803d;
+    background: #ecfdf3;
+    border-color: #bbf7d0;
+  }
+  :global(.home-activity-type--meeting) {
+    color: #1d4ed8;
+    background: #eff6ff;
+    border-color: #bfdbfe;
+  }
+  :global(.home-activity-type--faq) {
+    color: #9a3412;
+    background: #fff7ed;
+    border-color: #fed7aa;
+  }
+  :global(.home-activity-type--research_question),
+  :global(.home-activity-type--objective) {
+    color: var(--color-maroon);
+    background: rgba(113, 32, 56, 0.08);
+    border-color: rgba(113, 32, 56, 0.2);
+  }
+
+  :global(.home-activity-body) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+  }
+
+  :global(.home-activity-title) {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-ink);
+    line-height: 1.35;
+  }
+
+  :global(.home-activity-detail) {
+    font-size: 0.82rem;
+    color: var(--color-ink-muted);
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  :global(.home-activity-time) {
+    font-size: 0.75rem;
+    color: var(--color-ink-muted);
+    white-space: nowrap;
+    margin-top: 0.2rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 640px) {
+    :global(.home-activity-link) {
+      grid-template-columns: 6.25rem minmax(0, 1fr);
+      gap: 0.5rem 0.65rem;
+    }
+    :global(.home-activity-time) {
+      grid-column: 2;
+      margin-top: 0;
     }
   }
 
