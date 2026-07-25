@@ -1,12 +1,21 @@
 [
   {
+    "id": "rq-v5",
+    "version": "v5",
+    "question": "Task-technology fit and continuance intention to use digital agricultural information systems in Sub-Saharan Africa.",
+    "comments": "Active wording: dropped the 'relationship between' framing for a tighter title-style research question.",
+    "date": "2026-07-25",
+    "dateLabel": "25 July 2026",
+    "status": "current"
+  },
+  {
     "id": "rq-v4",
     "version": "v4",
     "question": "The relationship between task-technology fit and continuance intention to use digital agricultural information systems in Sub-Saharan Africa.",
     "comments": "Refined wording: hyphenated task-technology fit, continuance intention phrasing, and digital agricultural information systems (replacing Agritech).",
     "date": "2026-06-03",
     "dateLabel": "3 June 2026",
-    "status": "current"
+    "status": "superseded"
   },
   {
     "id": "rq-v3",
