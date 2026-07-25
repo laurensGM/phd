@@ -44,6 +44,51 @@ function formatDate(iso: string): string {
   }
 }
 
+function typeLabel(type: ContributionType | null): string {
+  return type ? CONTRIBUTION_TYPE_LABELS[type] : 'No type set';
+}
+
+/** Build a plain-text export of all contributions. */
+function buildContributionsTxt(items: Contribution[]): string {
+  const exportedAt = new Date().toLocaleString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+  const lines: string[] = [
+    'PhD Manager — Research contributions',
+    `Exported: ${exportedAt}`,
+    `Total: ${items.length}`,
+    '',
+  ];
+
+  items.forEach((item, index) => {
+    lines.push('='.repeat(72));
+    lines.push(`${index + 1}. ${typeLabel(item.contribution_type)}`);
+    lines.push(`Updated: ${formatDate(item.updated_at)}`);
+    lines.push('');
+    lines.push(item.content.trim());
+    lines.push('');
+  });
+
+  return `${lines.join('\n').trimEnd()}\n`;
+}
+
+function downloadTextFile(filename: string, text: string) {
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.rel = 'noopener';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
 interface TypePickerProps {
   idPrefix: string;
   value: ContributionType | null;
@@ -362,6 +407,12 @@ export default function ContributionsPage() {
     });
   };
 
+  const handleExportTxt = () => {
+    if (items.length === 0) return;
+    const stamp = new Date().toISOString().slice(0, 10);
+    downloadTextFile(`phd-contributions-${stamp}.txt`, buildContributionsTxt(items));
+  };
+
   return (
     <div className="contributions-page">
       {error && <p className="contributions-error">{error}</p>}
@@ -408,15 +459,26 @@ export default function ContributionsPage() {
       </div>
 
       <section className="contributions-list-section">
-        <h2 className="contributions-list-title">
-          Your contributions
+        <div className="contributions-list-header">
+          <h2 className="contributions-list-title">
+            Your contributions
+            {items.length > 0 && (
+              <span className="contributions-count">
+                {' '}
+                ({typeFilter === 'all' ? items.length : `${filteredItems.length} of ${items.length}`})
+              </span>
+            )}
+          </h2>
           {items.length > 0 && (
-            <span className="contributions-count">
-              {' '}
-              ({typeFilter === 'all' ? items.length : `${filteredItems.length} of ${items.length}`})
-            </span>
+            <button
+              type="button"
+              className="contributions-btn contributions-btn-secondary contributions-export-btn"
+              onClick={handleExportTxt}
+            >
+              Export .txt
+            </button>
           )}
-        </h2>
+        </div>
 
         {items.length > 0 && (
           <TypeFilterBar value={typeFilter} onChange={setTypeFilter} counts={filterCounts} />
