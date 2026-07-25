@@ -6,6 +6,7 @@ import outlineData from '../data/outline.json';
 import fieldsData from '../data/fields.json';
 import SnippetDistributionChart from './SnippetDistributionChart';
 import HomeTasksBarChart from './HomeTasksBarChart';
+import HomeResearchPipeline from './HomeResearchPipeline';
 import PapersYearHistogram from './PapersYearHistogram';
 import PaperDistributionPie from './PaperDistributionPie';
 import { usePageLoader } from '../hooks/usePageLoader';
@@ -150,15 +151,16 @@ export default function HomeDashboard() {
   const timelineMilestones = useMemo(() => {
     const all = (outlineData as OutlineItem[]).slice().sort((a, b) => a.date.localeCompare(b.date));
     const year = String(new Date().getFullYear());
-    const list = all.filter((m) => m.date.startsWith(`${year}-`));
-    const effective = list.length > 0 ? list : all;
-
     const today = localTodayStr();
-    const focus = nextFocusMilestone(effective, today);
+    // This year's milestones that are today or still ahead — hide past ones
+    const upcomingThisYear = all.filter(
+      (m) => m.date.startsWith(`${year}-`) && m.date >= today
+    );
+    const focus = nextFocusMilestone(upcomingThisYear, today);
     const nextId = focus?.id ?? null;
-    return effective.map((item) => ({
+    return upcomingThisYear.map((item) => ({
       ...item,
-      isPast: item.date < today,
+      isPast: false,
       isFuture: item.date >= today,
       isNext: item.id === nextId,
     }));
@@ -279,23 +281,35 @@ export default function HomeDashboard() {
               View all →
             </a>
           </div>
-          <ul className="home-timeline">
-            {timelineMilestones.map((m) => (
-              <li
-                key={m.id}
-                className={`home-timeline-item ${m.isPast ? 'home-timeline-past' : ''} ${m.isFuture && !m.isNext ? 'home-timeline-future' : ''} ${m.isNext ? 'home-timeline-next' : ''}`}
-              >
-                <time className="home-timeline-date" dateTime={m.date}>
-                  {m.dateLabel}
-                </time>
-                <span className="home-timeline-dot" aria-hidden />
-                <div className="home-timeline-content">
-                  <span className="home-timeline-title">{m.title}</span>
-                  {m.isNext && <span className="home-timeline-badge">Next</span>}
-                </div>
-              </li>
-            ))}
-          </ul>
+          {nextMilestoneCountdown !== null && (
+            <a href={`${base}outline/`} className="home-timeline-countdown">
+              <span className="home-timeline-countdown-value">{nextMilestoneCountdown.days}</span>
+              <span className="home-timeline-countdown-label">
+                days until {nextMilestoneCountdown.title.toLowerCase()}
+              </span>
+            </a>
+          )}
+          {timelineMilestones.length === 0 ? (
+            <p className="home-timeline-empty">No upcoming milestones this year.</p>
+          ) : (
+            <ul className="home-timeline">
+              {timelineMilestones.map((m) => (
+                <li
+                  key={m.id}
+                  className={`home-timeline-item ${m.isFuture && !m.isNext ? 'home-timeline-future' : ''} ${m.isNext ? 'home-timeline-next' : ''}`}
+                >
+                  <time className="home-timeline-date" dateTime={m.date}>
+                    {m.dateLabel}
+                  </time>
+                  <span className="home-timeline-dot" aria-hidden />
+                  <div className="home-timeline-content">
+                    <span className="home-timeline-title">{m.title}</span>
+                    {m.isNext && <span className="home-timeline-badge">Next</span>}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
 
         <section className="home-tasks-section" aria-label="Tasks board summary">
@@ -309,50 +323,45 @@ export default function HomeDashboard() {
         </section>
       </div>
 
-      <div className="home-stats-grid">
-        {nextMilestoneCountdown !== null && (
-          <a href={`${base}outline/`} className="home-stat-card home-stat-deadline">
-            <span className="home-stat-value">{nextMilestoneCountdown.days}</span>
-            <span className="home-stat-label">
-              days until {nextMilestoneCountdown.title.toLowerCase()}
-            </span>
-          </a>
-        )}
-        <a href={`${base}papers/`} className="home-stat-card home-stat-papers">
-          <span className="home-stat-value">{papersCount}</span>
-          <span className="home-stat-label">papers saved</span>
-        </a>
-        <a href={`${base}snippets/`} className="home-stat-card home-stat-snippets">
-          <span className="home-stat-value">{snippetsCount}</span>
-          <span className="home-stat-label">snippets extracted</span>
-        </a>
-        <a href={`${base}snippets/`} className="home-stat-card home-stat-snippets-processed">
-          <span className="home-stat-value">{snippetsProcessedCount}</span>
-          <span className="home-stat-label">snippets processed</span>
-        </a>
-        <a href={`${base}claims/`} className="home-stat-card home-stat-claims">
-          <span className="home-stat-value">{claimsCount}</span>
-          <span className="home-stat-label">claims made</span>
-        </a>
-        <a href={`${base}research-questions/contribution/`} className="home-stat-card home-stat-contributions">
-          <span className="home-stat-value">{contributionsCount}</span>
-          <span className="home-stat-label">contributions</span>
-        </a>
-        <a href={`${base}constructs/`} className="home-stat-card home-stat-constructs">
-          <span className="home-stat-value">{constructsCount}</span>
-          <span className="home-stat-label">constructs explored</span>
-        </a>
-        <a href={`${base}models/`} className="home-stat-card home-stat-models">
-          <span className="home-stat-value">{modelsCount}</span>
-          <span className="home-stat-label">models explored</span>
-        </a>
-      </div>
+      <HomeResearchPipeline
+        stages={[
+          {
+            key: 'snippets',
+            label: 'Snippets extracted',
+            count: snippetsCount,
+            href: `${base}snippets/`,
+            color: '#9C416B',
+          },
+          {
+            key: 'snippets-processed',
+            label: 'Snippets processed',
+            count: snippetsProcessedCount,
+            href: `${base}snippets/`,
+            color: '#712038',
+          },
+          {
+            key: 'claims',
+            label: 'Claims made',
+            count: claimsCount,
+            href: `${base}claims/`,
+            color: '#8B704C',
+          },
+          {
+            key: 'contributions',
+            label: 'Contributions',
+            count: contributionsCount,
+            href: `${base}research-questions/contribution/`,
+            color: '#D4AF37',
+          },
+        ]}
+      />
 
       {papersCount > 0 && (
         <PapersYearHistogram
           bins={yearHistogram.bins}
           withoutYear={yearHistogram.withoutYear}
           totalPapers={papersCount}
+          papersHref={`${base}papers/`}
         />
       )}
 
@@ -401,12 +410,18 @@ export default function HomeDashboard() {
               totalSnippets={snippetsCount}
               slices={constructSlices}
               emptyMessage="No snippets tagged with a construct yet."
+              exploredCount={constructsCount}
+              exploredLabel="constructs explored"
+              exploredHref={`${base}constructs/`}
             />
             <SnippetDistributionChart
               title="By model"
               totalSnippets={snippetsCount}
               slices={modelSlices}
               emptyMessage="No snippets tagged with a model yet."
+              exploredCount={modelsCount}
+              exploredLabel="models explored"
+              exploredHref={`${base}models/`}
             />
           </div>
         </section>

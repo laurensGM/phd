@@ -5,12 +5,14 @@ interface PapersYearHistogramProps {
   bins: YearBin[];
   withoutYear: number;
   totalPapers: number;
+  papersHref?: string;
 }
 
 export default function PapersYearHistogram({
   bins,
   withoutYear,
   totalPapers,
+  papersHref,
 }: PapersYearHistogramProps) {
   const maxCount = useMemo(() => Math.max(0, ...bins.map((b) => b.count)), [bins]);
   const ticks = useMemo(() => yAxisTicks(maxCount), [maxCount]);
@@ -44,13 +46,25 @@ export default function PapersYearHistogram({
   return (
     <section className="home-papers-histogram-section">
       <div className="home-papers-histogram-header">
-        <h2 className="home-section-title">Papers by publication year</h2>
-        <p className="home-papers-histogram-subtitle">
-          {totalPapers} paper{totalPapers !== 1 ? 's' : ''} saved
-          {withoutYear > 0
-            ? ` · ${withoutYear} without year not shown`
-            : ''}
-        </p>
+        <div className="home-papers-histogram-heading">
+          <h2 className="home-section-title">Papers by publication year</h2>
+          <p className="home-papers-histogram-subtitle">
+            {withoutYear > 0
+              ? `${withoutYear} without year not shown`
+              : `Spanning ${bins[0]?.year}–${bins[bins.length - 1]?.year}`}
+          </p>
+        </div>
+        {papersHref ? (
+          <a href={papersHref} className="home-widget-total">
+            <span className="home-widget-total-value">{totalPapers}</span>
+            <span className="home-widget-total-label">papers saved</span>
+          </a>
+        ) : (
+          <span className="home-widget-total">
+            <span className="home-widget-total-value">{totalPapers}</span>
+            <span className="home-widget-total-label">papers saved</span>
+          </span>
+        )}
       </div>
       <div className="home-papers-histogram-wrap">
         <div className="home-papers-histogram-y-label" aria-hidden>
