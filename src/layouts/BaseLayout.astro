@@ -14,6 +14,8 @@ interface Props {
   deferLoader?: boolean;
   /** Navbar colour theme — admin uses dark blue. */
   navTheme?: 'default' | 'admin';
+  /** Wider main column (homepage dashboard). Other pages stay at the default centered width. */
+  wide?: boolean;
 }
 
 const {
@@ -21,6 +23,7 @@ const {
   description = "PhD Manager - Organizing research, models, constructs, and literature",
   deferLoader = false,
   navTheme = 'default',
+  wide = false,
 } = Astro.props;
 const base = import.meta.env.BASE_URL;
 // Home link: use path-relative URL so it always resolves to this app's root (avoids going to portfolio when base is wrong)
@@ -244,7 +247,7 @@ const isAdminNav = navTheme === 'admin';
         } catch (e) {}
       })();
     </script>
-    <main class="main-content">
+    <main class:list={['main-content', { 'main-content--wide': wide }]}>
       <slot />
     </main>
     <footer class={`site-footer${isAdminNav ? ' site-footer-admin' : ''}`}>
@@ -1277,7 +1280,7 @@ const isAdminNav = navTheme === 'admin';
   }
 
   .nav-container {
-    max-width: 1440px;
+    max-width: 1200px;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
@@ -1427,10 +1430,14 @@ const isAdminNav = navTheme === 'admin';
 
   .main-content {
     flex: 1;
-    max-width: 1440px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 2rem 1.5rem;
     width: 100%;
+  }
+
+  .main-content--wide {
+    max-width: 1440px;
   }
 
   .site-footer {
