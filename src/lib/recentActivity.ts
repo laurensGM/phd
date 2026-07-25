@@ -72,10 +72,25 @@ function dayKey(iso: string): string {
   return `${y}-${m}-${day}`;
 }
 
+/** Parse activity timestamps; invalid values sort to the bottom. */
+export function activityTimestampMs(iso: string): number {
+  const t = new Date(iso).getTime();
+  return Number.isNaN(t) ? 0 : t;
+}
+
+function isVersionedFraming(type: ActivityType): boolean {
+  return type === 'research_question' || type === 'objective';
+}
+
 export function mergeRecentActivity(items: ActivityItem[], limit = 12): ActivityItem[] {
   return items
     .slice()
-    .sort((a, b) => b.at.localeCompare(a.at))
+    .sort((a, b) => {
+      const diff = activityTimestampMs(b.at) - activityTimestampMs(a.at);
+      if (diff !== 0) return diff;
+      // Prefer live DB events over static RQ/objective framing when times tie.
+      return Number(isVersionedFraming(a.type)) - Number(isVersionedFraming(b.type));
+    })
     .slice(0, limit);
 }
 
@@ -127,7 +142,8 @@ export function activitiesFromVersionedJson(
       return {
         id: `${kind}-${r.id}`,
         type: kind,
-        at: `${r.date}T12:00:00`,
+        // Start of day UTC so same-day live adds (papers, etc.) rank above framing updates.
+        at: `${r.date}T00:00:00.000Z`,
         title: label,
         detail: truncateText(text, 110) || undefined,
         href,

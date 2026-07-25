@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { loadRecentActivity } from '../lib/fetchRecentActivity';
 import {
   activityTypeLabel,
@@ -26,17 +27,50 @@ export default function RecentActivityFeed({
 
   useEffect(() => {
     let cancelled = false;
-    (async () => {
-      setLoading(true);
+    let hasLoaded = false;
+
+    const run = async (quiet?: boolean) => {
+      if (cancelled) return;
+      if (!quiet) setLoading(true);
       try {
         const next = await loadRecentActivity(base, limit);
         if (!cancelled) setItems(next);
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+          hasLoaded = true;
+        }
       }
-    })();
+    };
+
+    void run();
+
+    const onVisible = () => {
+      if (document.visibilityState === 'visible' && hasLoaded) void run(true);
+    };
+    const onFocus = () => {
+      if (hasLoaded) void run(true);
+    };
+
+    document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener('focus', onFocus);
+
+    let unsub: (() => void) | undefined;
+    if (isSupabaseConfigured() && supabase) {
+      const { data } = supabase.auth.onAuthStateChange((event) => {
+        // Re-fetch once session is ready if the first pass ran before JWT was available.
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          void run(hasLoaded);
+        }
+      });
+      unsub = () => data.subscription.unsubscribe();
+    }
+
     return () => {
       cancelled = true;
+      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('focus', onFocus);
+      unsub?.();
     };
   }, [base, limit]);
 

@@ -198,6 +198,8 @@ export default function HomeDashboard() {
       setLoading(true);
       setError(null);
       try {
+        // Align with activity feed: wait for JWT before RLS-scoped queries.
+        await supabase.auth.getSession();
         const [papersRes, snippetsRes, assignRes, claimsRes, contributionsRes, tasksRes] = await Promise.all([
           supabase.from('saved_papers').select('id, year, journal').limit(2000),
           supabase.from('snippets').select('id, construct_ids, model_ids, construct_id, model_id, used_in_writing'),
@@ -262,16 +264,12 @@ export default function HomeDashboard() {
     };
   }, []);
 
-  if (loading) {
-    return (
-      <div className="home-dashboard">
-        <p className="home-dashboard-loading">Loading stats…</p>
-      </div>
-    );
-  }
-
   return (
     <div className="home-dashboard">
+      {loading ? (
+        <p className="home-dashboard-loading">Loading stats…</p>
+      ) : (
+        <>
       {error && <p className="home-dashboard-error">{error}</p>}
 
       <div className="home-top-row">
@@ -426,6 +424,8 @@ export default function HomeDashboard() {
             />
           </div>
         </section>
+      )}
+        </>
       )}
       <RecentActivityFeed limit={7} seeMoreHref={`${base}activity/`} />
 

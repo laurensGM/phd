@@ -913,7 +913,8 @@ import PapersPage from '../../components/PapersPage';
   }
   :global(.papers-page .papers-reading-table) {
     width: 100%;
-    min-width: 960px;
+    min-width: 1040px;
+    table-layout: fixed;
     border-collapse: separate;
     border-spacing: 0;
     font-size: 0.88rem;
@@ -921,7 +922,6 @@ import PapersPage from '../../components/PapersPage';
     border: 1px solid var(--color-border);
     border-radius: 10px;
     overflow: hidden;
-    box-shadow: var(--shadow-sm);
   }
   :global(.papers-page .papers-reading-table thead) {
     background: var(--color-bg-alt);
@@ -938,7 +938,7 @@ import PapersPage from '../../components/PapersPage';
   }
   :global(.papers-page .papers-reading-th-section) {
     text-align: center;
-    max-width: 5.5rem;
+    width: 5.25rem;
     white-space: normal;
     line-height: 1.25;
   }
@@ -951,15 +951,15 @@ import PapersPage from '../../components/PapersPage';
     width: 4.5rem;
   }
   :global(.papers-page .papers-reading-th-title) {
-    min-width: 220px;
+    width: 19rem;
     position: sticky;
     left: 0;
     z-index: 2;
     background: var(--color-bg-alt);
-    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.04);
+    border-right: 1px solid var(--color-border);
   }
   :global(.papers-page .papers-reading-th-journal) {
-    min-width: 120px;
+    width: 9rem;
   }
   :global(.papers-page .papers-reading-row) {
     cursor: pointer;
@@ -994,13 +994,8 @@ import PapersPage from '../../components/PapersPage';
     left: 0;
     z-index: 1;
     background: #fff;
-    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.04);
-    min-width: 220px;
-    max-width: 320px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 0.2rem;
+    border-right: 1px solid var(--color-border);
+    width: 19rem;
   }
   :global(.papers-page .papers-reading-row-golden .papers-reading-cell-title) {
     background: rgba(212, 175, 55, 0.08);
@@ -1019,9 +1014,9 @@ import PapersPage from '../../components/PapersPage';
     font-weight: 600;
     line-height: 1.35;
     color: var(--color-maroon);
-    flex-shrink: 0;
   }
   :global(.papers-page .papers-reading-meta) {
+    margin-top: 0.2rem;
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
@@ -1029,11 +1024,10 @@ import PapersPage from '../../components/PapersPage';
     font-size: 0.8rem;
     color: var(--color-ink-muted);
     line-height: 1.35;
-    flex-shrink: 0;
   }
   :global(.papers-page .papers-reading-cell-check) {
     text-align: center;
-    width: 4.5rem;
+    width: 5.25rem;
     cursor: default;
   }
   :global(.papers-page .papers-reading-checkbox) {

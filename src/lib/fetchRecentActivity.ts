@@ -13,9 +13,10 @@ function versionedActivity(base: string): ActivityItem[] {
   const cutoff = new Date();
   cutoff.setMonth(cutoff.getMonth() - 4);
   const cutoffStr = cutoff.toISOString().slice(0, 10);
+  // Only current framing — superseded versions were flooding the top of the feed.
   const recentRq = (
     researchQuestions as { id: string; date: string; question?: string; version?: string; status?: string }[]
-  ).filter((r) => r.date >= cutoffStr);
+  ).filter((r) => r.status === 'current' && r.date >= cutoffStr);
   const recentObjectives = (
     researchObjectives as {
       id: string;
@@ -25,7 +26,7 @@ function versionedActivity(base: string): ActivityItem[] {
       type?: string;
       status?: string;
     }[]
-  ).filter((r) => r.date >= cutoffStr);
+  ).filter((r) => r.status === 'current' && r.date >= cutoffStr);
   return [
     ...activitiesFromVersionedJson(recentRq, 'research_question', `${base}research-questions/questions/`),
     ...activitiesFromVersionedJson(recentObjectives, 'objective', `${base}research-questions/objectives/`),
@@ -136,11 +137,17 @@ function buildLiveFromRows(
 export async function loadRecentActivity(
   base: string,
   resultLimit: number,
-  perSourceLimit = 30
+  perSourceLimit = 40
 ): Promise<ActivityItem[]> {
   const versioned = versionedActivity(base);
 
   if (!isSupabaseConfigured() || !supabase) {
+    return mergeRecentActivity(versioned, resultLimit);
+  }
+
+  // Wait for session so RLS member policies see the JWT (avoids empty live feed).
+  const { data: sessionData } = await supabase.auth.getSession();
+  if (!sessionData.session) {
     return mergeRecentActivity(versioned, resultLimit);
   }
 
@@ -182,6 +189,19 @@ export async function loadRecentActivity(
         .order('created_at', { ascending: false })
         .limit(perSourceLimit),
     ]);
+
+  const sourceErrors = [
+    ['papers', papersRes.error],
+    ['snippets', snippetsRes.error],
+    ['tasks', tasksRes.error],
+    ['contributions', contributionsRes.error],
+    ['diary', diaryRes.error],
+    ['meetings', meetingsRes.error],
+    ['faqs', faqsRes.error],
+  ] as const;
+  for (const [name, err] of sourceErrors) {
+    if (err) console.warn(`Recent activity: ${name} query failed`, err.message);
+  }
 
   const live = buildLiveFromRows(base, {
     papers: !papersRes.error ? ((papersRes.data ?? []) as any) : [],
