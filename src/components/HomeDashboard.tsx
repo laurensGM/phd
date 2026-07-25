@@ -138,12 +138,12 @@ export default function HomeDashboard() {
 
   const constructSlices = useMemo((): ChartSlice[] => {
     const counts = countTagAssignments(snippetRows, getSnippetConstructIds);
-    return buildChartSlices(counts, constructLabelById);
+    return buildChartSlices(counts, constructLabelById, { topN: 5 });
   }, [snippetRows, constructLabelById]);
 
   const modelSlices = useMemo((): ChartSlice[] => {
     const counts = countTagAssignments(snippetRows, getSnippetModelIds);
-    return buildChartSlices(counts, modelLabelById);
+    return buildChartSlices(counts, modelLabelById, { topN: 5 });
   }, [snippetRows, modelLabelById]);
 
   const constructsCount = Array.isArray(constructsData) ? constructsData.length : 0;
@@ -355,6 +355,37 @@ export default function HomeDashboard() {
         ]}
       />
 
+      {snippetsCount > 0 && (
+        <section className="home-snippet-charts-section">
+          <div className="home-snippet-charts-header">
+            <h2 className="home-section-title">Snippet tags</h2>
+            <p className="home-snippet-charts-note">
+              Top 5 constructs and models by tag count. Everything else is grouped as Other.
+            </p>
+          </div>
+          <div className="home-snippet-charts-grid">
+            <SnippetDistributionChart
+              title="By construct"
+              totalSnippets={snippetsCount}
+              slices={constructSlices}
+              emptyMessage="No snippets tagged with a construct yet."
+              exploredCount={constructsCount}
+              exploredLabel="constructs explored"
+              exploredHref={`${base}constructs/`}
+            />
+            <SnippetDistributionChart
+              title="By model"
+              totalSnippets={snippetsCount}
+              slices={modelSlices}
+              emptyMessage="No snippets tagged with a model yet."
+              exploredCount={modelsCount}
+              exploredLabel="models explored"
+              exploredHref={`${base}models/`}
+            />
+          </div>
+        </section>
+      )}
+
       {papersCount > 0 && (
         <PapersYearHistogram
           bins={yearHistogram.bins}
@@ -390,37 +421,6 @@ export default function HomeDashboard() {
                   ? `${journalDistribution.withoutJournal} paper${journalDistribution.withoutJournal !== 1 ? 's' : ''} without journal not shown`
                   : undefined
               }
-            />
-          </div>
-        </section>
-      )}
-
-      {snippetsCount > 0 && (
-        <section className="home-snippet-charts-section">
-          <div className="home-snippet-charts-header">
-            <h2 className="home-section-title">Snippet tags</h2>
-            <p className="home-snippet-charts-note">
-              Snippets can have multiple tags; each tag is counted once. Single-use tags are grouped as Other.
-            </p>
-          </div>
-          <div className="home-snippet-charts-grid">
-            <SnippetDistributionChart
-              title="By construct"
-              totalSnippets={snippetsCount}
-              slices={constructSlices}
-              emptyMessage="No snippets tagged with a construct yet."
-              exploredCount={constructsCount}
-              exploredLabel="constructs explored"
-              exploredHref={`${base}constructs/`}
-            />
-            <SnippetDistributionChart
-              title="By model"
-              totalSnippets={snippetsCount}
-              slices={modelSlices}
-              emptyMessage="No snippets tagged with a model yet."
-              exploredCount={modelsCount}
-              exploredLabel="models explored"
-              exploredHref={`${base}models/`}
             />
           </div>
         </section>

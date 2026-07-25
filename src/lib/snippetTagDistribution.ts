@@ -60,16 +60,42 @@ export function countTagAssignments(
   return counts;
 }
 
-/** Constructs/models with exactly one tag go into "Other"; zero-count ids are omitted. */
+/**
+ * Build bar/pie slices from tag counts.
+ * - With `topN`: keep the N highest tags; everything else rolls into Other.
+ * - Without `topN`: tags with count ≥ 2 are listed; singles go into Other.
+ */
 export function buildChartSlices(
   rawCounts: Map<string, number>,
-  labelById: Map<string, string>
+  labelById: Map<string, string>,
+  options?: { topN?: number }
 ): ChartSlice[] {
   const entries = [...rawCounts.entries()].filter(([, count]) => count > 0);
   if (entries.length === 0) return [];
 
-  const singles = entries.filter(([, count]) => count === 1);
-  const multiples = entries.filter(([, count]) => count >= 2).sort((a, b) => b[1] - a[1]);
+  const sorted = entries.sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  const topN = options?.topN;
+
+  if (topN != null && topN > 0) {
+    const top = sorted.slice(0, topN);
+    const rest = sorted.slice(topN);
+    const slices: ChartSlice[] = top.map(([id, count], index) => ({
+      label: labelById.get(id) ?? id,
+      count,
+      color: CHART_SLICE_COLORS[index % CHART_SLICE_COLORS.length],
+    }));
+    if (rest.length > 0) {
+      slices.push({
+        label: 'Other',
+        count: rest.reduce((sum, [, c]) => sum + c, 0),
+        color: OTHER_COLOR,
+      });
+    }
+    return slices;
+  }
+
+  const singles = sorted.filter(([, count]) => count === 1);
+  const multiples = sorted.filter(([, count]) => count >= 2);
 
   const slices: ChartSlice[] = multiples.map(([id, count], index) => ({
     label: labelById.get(id) ?? id,
