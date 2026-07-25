@@ -1,0 +1,42 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import RecentActivityFeed from '../../components/RecentActivityFeed';
+import '../../styles/recent-activity.css';
+
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout title="Recent activity" description="Full list of recent activity across PhD Manager">
+  <p class="back-link"><a href={base}>← Home</a></p>
+  <h1>Recent activity</h1>
+  <p class="page-desc">All recent adds and updates across papers, snippets, tasks, contributions, diary, meeting notes, FAQ, and research framing.</p>
+
+  <RecentActivityFeed
+    client:load
+    limit={100}
+    note=""
+    embedded
+  />
+</BaseLayout>
+
+<style>
+  .back-link {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  .back-link a {
+    color: var(--color-maroon);
+  }
+  h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(1.45rem, 3vw, 1.85rem);
+    color: var(--color-maroon);
+    margin: 0 0 0.5rem 0;
+  }
+  .page-desc {
+    color: var(--color-ink-muted);
+    margin: 0 0 1.5rem 0;
+    line-height: 1.6;
+    max-width: 42rem;
+  }
+</style>

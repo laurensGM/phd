@@ -14,7 +14,7 @@ export type { FieldDef };
 
 export function conicGradientFromSlices(slices: ChartSlice[]): string {
   const total = slices.reduce((sum, s) => sum + s.count, 0);
-  if (total <= 0) return 'conic-gradient(#e5e7eb 0% 100%)';
+  if (total <= 0) return 'conic-gradient(#E0D6CC 0% 100%)';
 
   const parts: string[] = [];
   let acc = 0;

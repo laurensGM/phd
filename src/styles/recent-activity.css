@@ -1,0 +1,189 @@
+.home-activity-section {
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.home-activity-header {
+  margin-bottom: 1rem;
+}
+
+.home-activity-header .home-section-title {
+  margin-bottom: 0.35rem;
+}
+
+.home-activity-note {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-ink-muted);
+  line-height: 1.45;
+}
+
+.home-activity-empty {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-ink-muted);
+}
+
+.home-activity-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.home-activity-item {
+  border-top: 1px solid var(--color-border);
+}
+
+.home-activity-item:first-child {
+  border-top: none;
+}
+
+.home-activity-link {
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: start;
+  padding: 0.7rem 0.25rem;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.home-activity-link:hover {
+  background: var(--color-bg-alt);
+  text-decoration: none;
+  color: inherit;
+}
+
+.home-activity-type {
+  display: inline-block;
+  margin-top: 0.15rem;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-radius: 999px;
+  background: var(--color-bg-alt);
+  color: var(--color-ink-muted);
+  border: 1px solid var(--color-border);
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Brand-tinted type chips — maroon / gold / neutrals only */
+.home-activity-type--paper {
+  color: var(--color-maroon);
+  background: rgba(113, 32, 56, 0.08);
+  border-color: rgba(113, 32, 56, 0.2);
+}
+.home-activity-type--snippets {
+  color: var(--color-gold-dark);
+  background: rgba(139, 112, 76, 0.12);
+  border-color: rgba(139, 112, 76, 0.28);
+}
+.home-activity-type--task {
+  color: var(--color-maroon-muted);
+  background: rgba(156, 65, 107, 0.1);
+  border-color: rgba(156, 65, 107, 0.25);
+}
+.home-activity-type--contribution {
+  color: var(--color-gold-dark);
+  background: rgba(212, 175, 55, 0.16);
+  border-color: rgba(212, 175, 55, 0.4);
+}
+.home-activity-type--diary {
+  color: var(--color-ink-muted);
+  background: var(--color-bg-alt);
+  border-color: var(--color-border);
+}
+.home-activity-type--meeting {
+  color: var(--color-maroon-dark);
+  background: rgba(74, 25, 37, 0.08);
+  border-color: rgba(74, 25, 37, 0.2);
+}
+.home-activity-type--faq {
+  color: var(--color-gold-dark);
+  background: rgba(139, 112, 76, 0.1);
+  border-color: rgba(139, 112, 76, 0.25);
+}
+.home-activity-type--research_question,
+.home-activity-type--objective {
+  color: var(--color-maroon);
+  background: rgba(113, 32, 56, 0.08);
+  border-color: rgba(113, 32, 56, 0.2);
+}
+
+.home-activity-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.home-activity-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  line-height: 1.35;
+}
+
+.home-activity-detail {
+  font-size: 0.82rem;
+  color: var(--color-ink-muted);
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-activity-time {
+  font-size: 0.75rem;
+  color: var(--color-ink-muted);
+  white-space: nowrap;
+  margin-top: 0.2rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.home-activity-footer {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border);
+  text-align: right;
+}
+
+.home-activity-see-more {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-maroon);
+  text-decoration: none;
+}
+
+.home-activity-see-more:hover {
+  text-decoration: underline;
+  color: var(--color-maroon-dark);
+}
+
+.home-activity-embedded .home-activity-list {
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 0.35rem 1.15rem;
+}
+
+@media (max-width: 640px) {
+  .home-activity-link {
+    grid-template-columns: 6.25rem minmax(0, 1fr);
+    gap: 0.5rem 0.65rem;
+  }
+  .home-activity-time {
+    grid-column: 2;
+    margin-top: 0;
+  }
+}

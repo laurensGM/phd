@@ -4,12 +4,10 @@ import constructsData from '../data/constructs.json';
 import modelsData from '../data/models.json';
 import outlineData from '../data/outline.json';
 import fieldsData from '../data/fields.json';
-import researchQuestions from '../data/research-questions.json';
-import researchObjectives from '../data/research-objectives.json';
 import SnippetDistributionChart from './SnippetDistributionChart';
 import HomeTasksBarChart from './HomeTasksBarChart';
 import HomeResearchPipeline from './HomeResearchPipeline';
-import HomeRecentActivity from './HomeRecentActivity';
+import RecentActivityFeed from './RecentActivityFeed';
 import PapersYearHistogram from './PapersYearHistogram';
 import PaperDistributionPie from './PaperDistributionPie';
 import { usePageLoader } from '../hooks/usePageLoader';
@@ -27,13 +25,6 @@ import {
   type PaperJournalRow,
 } from '../lib/paperDistribution';
 import { manualAssignmentsByPaperId, type FieldDef } from '../lib/fieldPaperMatch';
-import {
-  activitiesFromVersionedJson,
-  groupSnippetActivities,
-  mergeRecentActivity,
-  truncateText,
-  type ActivityItem,
-} from '../lib/recentActivity';
 
 interface PaperRow extends PaperJournalRow {
   year: string | null;
@@ -103,33 +94,9 @@ export default function HomeDashboard() {
   });
   const [snippetRows, setSnippetRows] = useState<SnippetTagRow[]>([]);
   const [manualByPaperId, setManualByPaperId] = useState<Map<string, string[]>>(new Map());
-  const [activityItems, setActivityItems] = useState<ActivityItem[]>([]);
   const [loading, setLoading] = useState(true);
   usePageLoader(loading);
   const [error, setError] = useState<string | null>(null);
-
-  const versionedActivity = useMemo(() => {
-    const cutoff = new Date();
-    cutoff.setMonth(cutoff.getMonth() - 4);
-    const cutoffStr = cutoff.toISOString().slice(0, 10);
-    const recentRq = (researchQuestions as { id: string; date: string; question?: string; version?: string; status?: string }[]).filter(
-      (r) => r.date >= cutoffStr
-    );
-    const recentObjectives = (
-      researchObjectives as {
-        id: string;
-        date: string;
-        objective?: string;
-        version?: string;
-        type?: string;
-        status?: string;
-      }[]
-    ).filter((r) => r.date >= cutoffStr);
-    return [
-      ...activitiesFromVersionedJson(recentRq, 'research_question', `${base}research-questions/questions/`),
-      ...activitiesFromVersionedJson(recentObjectives, 'objective', `${base}research-questions/objectives/`),
-    ];
-  }, [base]);
 
   const constructLabelById = useMemo(() => {
     const map = new Map<string, string>();
@@ -224,7 +191,6 @@ export default function HomeDashboard() {
       setTaskCounts({ backlog: 0, todo: 0, in_progress: 0, done: 0 });
       setSnippetRows([]);
       setManualByPaperId(new Map());
-      setActivityItems(mergeRecentActivity(versionedActivity, 12));
       return;
     }
     let cancelled = false;
@@ -232,62 +198,13 @@ export default function HomeDashboard() {
       setLoading(true);
       setError(null);
       try {
-        const [
-          papersRes,
-          snippetsRes,
-          assignRes,
-          claimsRes,
-          contributionsRes,
-          tasksRes,
-          recentPapersRes,
-          recentSnippetsRes,
-          recentTasksRes,
-          recentContributionsRes,
-          recentDiaryRes,
-          recentMeetingsRes,
-          recentFaqsRes,
-        ] = await Promise.all([
+        const [papersRes, snippetsRes, assignRes, claimsRes, contributionsRes, tasksRes] = await Promise.all([
           supabase.from('saved_papers').select('id, year, journal').limit(2000),
           supabase.from('snippets').select('id, construct_ids, model_ids, construct_id, model_id, used_in_writing'),
           supabase.from('paper_field_assignments').select('paper_id, field_id'),
           supabase.from('claims').select('id', { count: 'exact', head: true }),
           supabase.from('research_contributions').select('id', { count: 'exact', head: true }),
           supabase.from('tasks').select('status'),
-          supabase
-            .from('saved_papers')
-            .select('id, title, authors, year, created_at')
-            .order('created_at', { ascending: false })
-            .limit(8),
-          supabase
-            .from('snippets')
-            .select('id, content, created_at')
-            .order('created_at', { ascending: false })
-            .limit(40),
-          supabase
-            .from('tasks')
-            .select('id, title, created_at')
-            .order('created_at', { ascending: false })
-            .limit(8),
-          supabase
-            .from('research_contributions')
-            .select('id, content, contribution_type, created_at')
-            .order('created_at', { ascending: false })
-            .limit(8),
-          supabase
-            .from('diary_entries')
-            .select('id, date, summary, created_at')
-            .order('created_at', { ascending: false })
-            .limit(8),
-          supabase
-            .from('meeting_notes')
-            .select('id, date, title, created_at')
-            .order('created_at', { ascending: false })
-            .limit(8),
-          supabase
-            .from('tool_faqs')
-            .select('id, question, created_at')
-            .order('created_at', { ascending: false })
-            .limit(8),
         ]);
         if (cancelled) return;
         if (papersRes.error) {
@@ -336,140 +253,6 @@ export default function HomeDashboard() {
           }
           setTaskCounts(next);
         }
-
-        const live: ActivityItem[] = [];
-
-        if (!recentPapersRes.error) {
-          for (const row of (recentPapersRes.data ?? []) as {
-            id: string;
-            title?: string | null;
-            authors?: string | null;
-            year?: string | null;
-            created_at: string;
-          }[]) {
-            if (!row.created_at) continue;
-            live.push({
-              id: `paper-${row.id}`,
-              type: 'paper',
-              at: row.created_at,
-              title: 'Added a paper',
-              detail:
-                truncateText(row.title, 110) ||
-                truncateText(row.authors, 90) ||
-                (row.year ? `Year ${row.year}` : undefined),
-              href: `${base}papers/`,
-            });
-          }
-        }
-
-        if (!recentSnippetsRes.error) {
-          live.push(
-            ...groupSnippetActivities(
-              (recentSnippetsRes.data ?? []) as { id: string; content?: string | null; created_at: string }[],
-              `${base}snippets/`
-            )
-          );
-        }
-
-        if (!recentTasksRes.error) {
-          for (const row of (recentTasksRes.data ?? []) as {
-            id: string;
-            title?: string | null;
-            created_at: string;
-          }[]) {
-            if (!row.created_at) continue;
-            live.push({
-              id: `task-${row.id}`,
-              type: 'task',
-              at: row.created_at,
-              title: 'Added a task',
-              detail: truncateText(row.title, 110) || undefined,
-              href: `${base}tasks/`,
-            });
-          }
-        }
-
-        if (!recentContributionsRes.error) {
-          for (const row of (recentContributionsRes.data ?? []) as {
-            id: string;
-            content?: string | null;
-            contribution_type?: string | null;
-            created_at: string;
-          }[]) {
-            if (!row.created_at) continue;
-            const typeLabel = row.contribution_type
-              ? ` (${row.contribution_type})`
-              : '';
-            live.push({
-              id: `contribution-${row.id}`,
-              type: 'contribution',
-              at: row.created_at,
-              title: `Added a contribution${typeLabel}`,
-              detail: truncateText(row.content, 110) || undefined,
-              href: `${base}research-questions/contribution/`,
-            });
-          }
-        }
-
-        if (!recentDiaryRes.error) {
-          for (const row of (recentDiaryRes.data ?? []) as {
-            id: string;
-            date?: string | null;
-            summary?: string | null;
-            created_at: string;
-          }[]) {
-            if (!row.created_at) continue;
-            live.push({
-              id: `diary-${row.id}`,
-              type: 'diary',
-              at: row.created_at,
-              title: row.date ? `Added a diary entry (${row.date})` : 'Added a diary entry',
-              detail: truncateText(row.summary, 110) || undefined,
-              href: `${base}diary/`,
-            });
-          }
-        }
-
-        if (!recentMeetingsRes.error) {
-          for (const row of (recentMeetingsRes.data ?? []) as {
-            id: string;
-            date?: string | null;
-            title?: string | null;
-            created_at: string;
-          }[]) {
-            if (!row.created_at) continue;
-            live.push({
-              id: `meeting-${row.id}`,
-              type: 'meeting',
-              at: row.created_at,
-              title: 'Added a meeting note',
-              detail:
-                truncateText(row.title, 110) ||
-                (row.date ? `Meeting on ${row.date}` : undefined),
-              href: `${base}meeting-notes/`,
-            });
-          }
-        }
-
-        if (!recentFaqsRes.error) {
-          for (const row of (recentFaqsRes.data ?? []) as {
-            id: string;
-            question?: string | null;
-            created_at: string;
-          }[]) {
-            if (!row.created_at) continue;
-            live.push({
-              id: `faq-${row.id}`,
-              type: 'faq',
-              at: row.created_at,
-              title: 'Added an FAQ',
-              detail: truncateText(row.question, 110) || undefined,
-              href: `${base}tools/faq/`,
-            });
-          }
-        }
-
-        setActivityItems(mergeRecentActivity([...live, ...versionedActivity], 12));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -477,7 +260,7 @@ export default function HomeDashboard() {
     return () => {
       cancelled = true;
     };
-  }, [base, versionedActivity]);
+  }, []);
 
   if (loading) {
     return (
@@ -541,8 +324,6 @@ export default function HomeDashboard() {
         </section>
       </div>
 
-      <HomeRecentActivity items={activityItems} />
-
       <HomeResearchPipeline
         stages={[
           {
@@ -571,7 +352,7 @@ export default function HomeDashboard() {
             label: 'Contributions',
             count: contributionsCount,
             href: `${base}research-questions/contribution/`,
-            color: '#D4AF37',
+            color: '#4A1925',
           },
         ]}
       />
@@ -646,6 +427,8 @@ export default function HomeDashboard() {
           </div>
         </section>
       )}
+      <RecentActivityFeed limit={7} seeMoreHref={`${base}activity/`} />
+
     </div>
   );
 }

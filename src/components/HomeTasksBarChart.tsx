@@ -8,10 +8,10 @@ export type TaskCounts = {
 };
 
 const COLUMNS: { key: keyof TaskCounts; label: string; color: string }[] = [
-  { key: 'backlog', label: 'Backlog', color: '#7c3aed' },
-  { key: 'todo', label: 'To do', color: '#ca8a04' },
-  { key: 'in_progress', label: 'In progress', color: '#2563eb' },
-  { key: 'done', label: 'Done', color: '#16a34a' },
+  { key: 'backlog', label: 'Backlog', color: '#9C416B' },
+  { key: 'todo', label: 'To do', color: '#8B704C' },
+  { key: 'in_progress', label: 'In progress', color: '#712038' },
+  { key: 'done', label: 'Done', color: '#4A1925' },
 ];
 
 export default function HomeTasksBarChart({ counts }: { counts: TaskCounts }) {

@@ -5,21 +5,17 @@ export interface ChartSlice {
 }
 
 export const CHART_SLICE_COLORS = [
-  '#712038',
-  '#2563eb',
-  '#0d9488',
-  '#ca8a04',
-  '#9333ea',
-  '#dc2626',
-  '#0891b2',
-  '#65a30d',
-  '#ea580c',
-  '#4f46e5',
-  '#be185d',
-  '#0284c7',
+  '#712038', // maroon
+  '#8B704C', // gold dark
+  '#9C416B', // maroon muted
+  '#5C4A4F', // ink muted
+  '#E5C65C', // gold light (fills)
+  '#4A1925', // maroon dark
+  '#D4AF37', // gold (fills)
+  '#E0D6CC', // border / neutral
 ] as const;
 
-const OTHER_COLOR = '#9ca3af';
+const OTHER_COLOR = '#E0D6CC';
 
 function flattenIds(ids: string[]): string[] {
   return ids.flatMap((id) =>
