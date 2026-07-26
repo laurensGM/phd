@@ -23,6 +23,16 @@ function flattenIds(ids: string[]): string[] {
   );
 }
 
+/** Canonicalize legacy model ids still stored on some snippet rows. */
+const LEGACY_MODEL_ID_MAP: Record<string, string> = {
+  ttf: 'tpc',
+  ecm: 'ecm-is',
+};
+
+function canonicalModelId(id: string): string {
+  return LEGACY_MODEL_ID_MAP[id] ?? id;
+}
+
 export function getSnippetConstructIds(row: {
   construct_ids?: string[] | null;
   construct_id?: string | null;
@@ -40,11 +50,11 @@ export function getSnippetModelIds(row: {
   model_id?: string | null;
 }): string[] {
   const raw = row.model_ids ?? row.model_id;
-  if (Array.isArray(raw) && raw.length > 0) return flattenIds(raw);
+  if (Array.isArray(raw) && raw.length > 0) return flattenIds(raw).map(canonicalModelId);
   if (typeof raw === 'string' && raw) {
-    return flattenIds(raw.split(',').map((x) => x.trim()).filter(Boolean));
+    return flattenIds(raw.split(',').map((x) => x.trim()).filter(Boolean)).map(canonicalModelId);
   }
-  return row.model_id ? flattenIds([row.model_id]) : [];
+  return row.model_id ? flattenIds([row.model_id]).map(canonicalModelId) : [];
 }
 
 export function countTagAssignments(
@@ -62,7 +72,7 @@ export function countTagAssignments(
 
 /**
  * Build bar/pie slices from tag counts.
- * - With `topN`: keep the N highest tags; everything else rolls into Other.
+ * - With `topN`: keep only the N highest tags (no Other bucket).
  * - Without `topN`: tags with count ≥ 2 are listed; singles go into Other.
  */
 export function buildChartSlices(
@@ -77,21 +87,11 @@ export function buildChartSlices(
   const topN = options?.topN;
 
   if (topN != null && topN > 0) {
-    const top = sorted.slice(0, topN);
-    const rest = sorted.slice(topN);
-    const slices: ChartSlice[] = top.map(([id, count], index) => ({
+    return sorted.slice(0, topN).map(([id, count], index) => ({
       label: labelById.get(id) ?? id,
       count,
       color: CHART_SLICE_COLORS[index % CHART_SLICE_COLORS.length],
     }));
-    if (rest.length > 0) {
-      slices.push({
-        label: 'Other',
-        count: rest.reduce((sum, [, c]) => sum + c, 0),
-        color: OTHER_COLOR,
-      });
-    }
-    return slices;
   }
 
   const singles = sorted.filter(([, count]) => count === 1);

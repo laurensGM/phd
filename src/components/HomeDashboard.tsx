@@ -360,7 +360,7 @@ export default function HomeDashboard() {
           <div className="home-snippet-charts-header">
             <h2 className="home-section-title">Snippet tags</h2>
             <p className="home-snippet-charts-note">
-              Top 5 constructs and models by tag count. Everything else is grouped as Other.
+              Top 5 constructs and models by tag count.
             </p>
           </div>
           <div className="home-snippet-charts-grid">
