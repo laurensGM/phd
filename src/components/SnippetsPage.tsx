@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useCallback } from 'react';
+import React, { useEffect, useMemo, useState, useCallback, useRef } from 'react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { usePageLoader } from '../hooks/usePageLoader';
 import { usePermissions } from '../hooks/usePermissions';
@@ -383,6 +383,8 @@ export default function SnippetsPage() {
   const [editSnippetType, setEditSnippetType] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [expandedSnippetIds, setExpandedSnippetIds] = useState<string[]>([]);
+  const [highlightSnippetId, setHighlightSnippetId] = useState<string | null>(null);
+  const focusedSnippetHashRef = useRef<string | null>(null);
   const [togglingProcessedId, setTogglingProcessedId] = useState<string | null>(null);
 
   const [promptMode, setPromptMode] = useState(false);
@@ -761,6 +763,64 @@ export default function SnippetsPage() {
       .filter((s) => order.has(s.id))
       .sort((a, b) => (order.get(a.id) ?? Number.MAX_SAFE_INTEGER) - (order.get(b.id) ?? Number.MAX_SAFE_INTEGER));
   }, [filteredSnippetsBase, searchMode, search, semanticIdsOrdered]);
+
+  /** Deep-link from contribution (etc.): #snippet-<id> after async list render. */
+  useEffect(() => {
+    if (loading || permLoading) return;
+
+    const parseSnippetHash = (): string | null => {
+      const match = /^#snippet-(.+)$/.exec(window.location.hash);
+      return match?.[1]?.trim() || null;
+    };
+
+    const scrollToSnippet = (id: string) => {
+      const el = document.getElementById(`snippet-${id}`);
+      if (!el) return false;
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setHighlightSnippetId(id);
+      setExpandedSnippetIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
+      window.setTimeout(() => {
+        setHighlightSnippetId((cur) => (cur === id ? null : cur));
+      }, 2800);
+      return true;
+    };
+
+    const run = () => {
+      const hash = window.location.hash;
+      const id = parseSnippetHash();
+      if (!id) {
+        focusedSnippetHashRef.current = null;
+        return;
+      }
+      if (!snippets.some((s) => s.id === id)) return;
+
+      if (!filteredSnippets.some((s) => s.id === id)) {
+        // Filters may hide the target — clear once so the card can mount.
+        if (focusedSnippetHashRef.current !== `pending:${hash}`) {
+          focusedSnippetHashRef.current = `pending:${hash}`;
+          clearAllFilters();
+        }
+        return;
+      }
+
+      if (activeTab !== 'snippets') {
+        setActiveTab('snippets');
+        return;
+      }
+
+      if (focusedSnippetHashRef.current === hash) return;
+      focusedSnippetHashRef.current = hash;
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          scrollToSnippet(id);
+        });
+      });
+    };
+
+    run();
+    window.addEventListener('hashchange', run);
+    return () => window.removeEventListener('hashchange', run);
+  }, [loading, permLoading, snippets, filteredSnippets, clearAllFilters, activeTab]);
 
   const truncatableSnippets = useMemo(
     () => filteredSnippets.filter((s) => s.content.length > SNIPPET_PREVIEW_LENGTH),
@@ -1903,7 +1963,7 @@ export default function SnippetsPage() {
                 key={s.id}
                 className={`snippets-card${promptMode ? ' snippets-card-selectable' : ''}${
                   used ? ' snippets-card--used' : ''
-                }`}
+                }${highlightSnippetId === s.id ? ' snippets-card--highlight' : ''}`}
               >
                 <header className="snippets-card-header">
                   {promptMode && (

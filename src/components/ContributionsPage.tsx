@@ -175,11 +175,6 @@ interface PaperTitle {
   url: string;
 }
 
-function snippetPreview(content: string, max = 120): string {
-  const text = content.trim().replace(/\s+/g, ' ');
-  return text.length > max ? `${text.slice(0, max)}…` : text;
-}
-
 export default function ContributionsPage() {
   const base = (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) || '';
   const [items, setItems] = useState<Contribution[]>([]);
@@ -555,7 +550,7 @@ export default function ContributionsPage() {
                                     href={`${base}snippets/#snippet-${snippet.id}`}
                                     className="contribution-linked-snippet-link"
                                   >
-                                    {snippetPreview(snippet.content)}
+                                    {snippet.content.trim()}
                                   </a>
                                   {paper && (
                                     <span className="contribution-linked-snippet-paper">
