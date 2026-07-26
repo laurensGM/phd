@@ -322,38 +322,55 @@ export default function HomeDashboard() {
         </section>
       </div>
 
-      <HomeResearchPipeline
-        stages={[
-          {
-            key: 'snippets',
-            label: 'Snippets extracted',
-            count: snippetsCount,
-            href: `${base}snippets/`,
-            color: '#9C416B',
-          },
-          {
-            key: 'snippets-processed',
-            label: 'Snippets processed',
-            count: snippetsProcessedCount,
-            href: `${base}snippets/`,
-            color: '#712038',
-          },
-          {
-            key: 'claims',
-            label: 'Claims made',
-            count: claimsCount,
-            href: `${base}claims/`,
-            color: '#8B704C',
-          },
-          {
-            key: 'contributions',
-            label: 'Contributions',
-            count: contributionsCount,
-            href: `${base}research-questions/contribution/`,
-            color: '#4A1925',
-          },
-        ]}
-      />
+      <div className="home-pipeline-model-row">
+        <HomeResearchPipeline
+          stages={[
+            {
+              key: 'snippets',
+              label: 'Snippets extracted',
+              count: snippetsCount,
+              href: `${base}snippets/`,
+              color: '#9C416B',
+            },
+            {
+              key: 'snippets-processed',
+              label: 'Snippets processed',
+              count: snippetsProcessedCount,
+              href: `${base}snippets/`,
+              color: '#712038',
+            },
+            {
+              key: 'claims',
+              label: 'Claims made',
+              count: claimsCount,
+              href: `${base}claims/`,
+              color: '#8B704C',
+            },
+            {
+              key: 'contributions',
+              label: 'Contributions',
+              count: contributionsCount,
+              href: `${base}research-questions/contribution/`,
+              color: '#4A1925',
+            },
+          ]}
+        />
+        <section className="home-current-model-section" aria-label="Current research model">
+          <div className="home-current-model-header">
+            <h2 className="home-section-title">Current model</h2>
+            <a href={`${base}models/my-thesis-2/`} className="home-timeline-link">
+              Open model →
+            </a>
+          </div>
+          <a href={`${base}models/my-thesis-2/`} className="home-current-model-figure">
+            <img
+              src={`${base}models/current-model.png`}
+              alt="Current thesis model: Task Technology Fit feeding Perceived usefulness, Confirmation, Satisfaction, Facilitating conditions, and Continuance Intention"
+              loading="lazy"
+            />
+          </a>
+        </section>
+      </div>
 
       {snippetsCount > 0 && (
         <section className="home-snippet-charts-section">
