@@ -389,6 +389,7 @@ export default function HomeDashboard() {
               exploredCount={constructsCount}
               exploredLabel="constructs explored"
               exploredHref={`${base}constructs/`}
+              itemHrefBase={`${base}constructs/`}
             />
             <SnippetDistributionChart
               title="By model"
@@ -398,6 +399,7 @@ export default function HomeDashboard() {
               exploredCount={modelsCount}
               exploredLabel="models explored"
               exploredHref={`${base}models/`}
+              itemHrefBase={`${base}models/`}
             />
           </div>
         </section>

@@ -1014,6 +1014,17 @@ const base = import.meta.env.BASE_URL;
     white-space: nowrap;
   }
 
+  :global(a.home-snippet-chart-bar-label--link) {
+    color: var(--color-maroon);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  :global(a.home-snippet-chart-bar-label--link:hover) {
+    text-decoration: underline;
+    color: var(--color-maroon-dark);
+  }
+
   :global(.home-snippet-chart-bar-track) {
     height: 0.65rem;
     background: var(--color-bg-alt);

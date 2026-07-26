@@ -2,6 +2,8 @@ export interface ChartSlice {
   label: string;
   count: number;
   color: string;
+  /** Source construct/model/journal id when the slice maps to a detail page. */
+  id?: string;
 }
 
 export const CHART_SLICE_COLORS = [
@@ -88,6 +90,7 @@ export function buildChartSlices(
 
   if (topN != null && topN > 0) {
     return sorted.slice(0, topN).map(([id, count], index) => ({
+      id,
       label: labelById.get(id) ?? id,
       count,
       color: CHART_SLICE_COLORS[index % CHART_SLICE_COLORS.length],
@@ -98,6 +101,7 @@ export function buildChartSlices(
   const multiples = sorted.filter(([, count]) => count >= 2);
 
   const slices: ChartSlice[] = multiples.map(([id, count], index) => ({
+    id,
     label: labelById.get(id) ?? id,
     count,
     color: CHART_SLICE_COLORS[index % CHART_SLICE_COLORS.length],

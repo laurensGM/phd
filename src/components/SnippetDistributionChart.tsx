@@ -9,6 +9,8 @@ interface SnippetDistributionChartProps {
   exploredCount?: number;
   exploredLabel?: string;
   exploredHref?: string;
+  /** When set, slices with an `id` link to `${itemHrefBase}${id}/`. */
+  itemHrefBase?: string;
 }
 
 function ExploredBadge({
@@ -43,6 +45,7 @@ export default function SnippetDistributionChart({
   exploredCount,
   exploredLabel,
   exploredHref,
+  itemHrefBase,
 }: SnippetDistributionChartProps) {
   const tagTotal = tagAssignmentTotal(slices);
   const maxCount = slices.length > 0 ? Math.max(...slices.map((s) => s.count)) : 0;
@@ -76,23 +79,34 @@ export default function SnippetDistributionChart({
         {badge}
       </div>
       <ul className="home-snippet-chart-bars" role="list">
-        {slices.map((slice) => (
-          <li key={slice.label} className="home-snippet-chart-bar-row">
+        {slices.map((slice) => {
+          const href =
+            itemHrefBase && slice.id ? `${itemHrefBase}${encodeURIComponent(slice.id)}/` : undefined;
+          const label = href ? (
+            <a href={href} className="home-snippet-chart-bar-label home-snippet-chart-bar-label--link" title={slice.label}>
+              {slice.label}
+            </a>
+          ) : (
             <span className="home-snippet-chart-bar-label" title={slice.label}>
               {slice.label}
             </span>
-            <span className="home-snippet-chart-bar-track">
-              <span
-                className="home-snippet-chart-bar-fill"
-                style={{
-                  width: `${maxCount > 0 ? (slice.count / maxCount) * 100 : 0}%`,
-                  backgroundColor: slice.color,
-                }}
-              />
-            </span>
-            <span className="home-snippet-chart-bar-count">{slice.count}</span>
-          </li>
-        ))}
+          );
+          return (
+            <li key={slice.id ?? slice.label} className="home-snippet-chart-bar-row">
+              {label}
+              <span className="home-snippet-chart-bar-track">
+                <span
+                  className="home-snippet-chart-bar-fill"
+                  style={{
+                    width: `${maxCount > 0 ? (slice.count / maxCount) * 100 : 0}%`,
+                    backgroundColor: slice.color,
+                  }}
+                />
+              </span>
+              <span className="home-snippet-chart-bar-count">{slice.count}</span>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
