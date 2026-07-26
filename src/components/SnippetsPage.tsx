@@ -616,9 +616,11 @@ export default function SnippetsPage() {
   }, [snippets]);
 
   const modelOptionsAlphabetical = useMemo(() => {
-    return [...modelOptions].sort((a, b) =>
-      a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
-    );
+    return [...modelOptions].sort((a, b) => {
+      const labelA = (a.abbreviation || a.name).trim();
+      const labelB = (b.abbreviation || b.name).trim();
+      return labelA.localeCompare(labelB, undefined, { sensitivity: 'base' });
+    });
   }, []);
 
   const snippetTypeCounts = useMemo(() => {
@@ -1837,7 +1839,7 @@ export default function SnippetsPage() {
                       )
                     }
                   >
-                    {modelOptions.map((m) => (
+                    {modelOptionsAlphabetical.map((m) => (
                       <option key={m.id} value={m.id}>
                         {m.abbreviation || m.name}
                       </option>
@@ -2105,7 +2107,7 @@ export default function SnippetsPage() {
                           )
                         }
                       >
-                        {modelOptions.map((m) => (
+                        {modelOptionsAlphabetical.map((m) => (
                           <option key={m.id} value={m.id}>
                             {m.abbreviation || m.name}
                           </option>
