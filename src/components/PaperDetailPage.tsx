@@ -12,7 +12,7 @@ import SummaryNarrationPlayer from './SummaryNarrationPlayer';
 import constructsData from '../data/constructs.json';
 import modelsData from '../data/models.json';
 import { usePermissions } from '../hooks/usePermissions';
-import AccessDenied from './AccessDenied';
+import PaperDetailEditForm, { type PaperEditForm } from './PaperDetailEditForm';
 
 interface SavedPaper {
   id: string;
@@ -174,6 +174,21 @@ function canonicalModelId(id: string): string {
   return id;
 }
 
+function paperToEditForm(paper: SavedPaper): PaperEditForm {
+  return {
+    url: paper.url,
+    secondary_url: paper.secondary_url ?? '',
+    title: paper.title ?? '',
+    authors: paper.authors ?? '',
+    year: paper.year ?? '',
+    journal: paper.journal ?? '',
+    motivation: paper.motivation ?? '',
+    tags: paper.tags ?? [],
+    citations: paper.citations != null ? String(paper.citations) : '',
+    golden: paper.golden ?? false,
+  };
+}
+
 export default function PaperDetailPage() {
   const base = (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) || '';
   const { loading: permLoading, canViewPapers, canEditPapers, canEditSnippets } = usePermissions();
@@ -216,6 +231,61 @@ export default function PaperDetailPage() {
   const [commentImagePreviewUrl, setCommentImagePreviewUrl] = useState<string | null>(null);
   const [commentFileInputKey, setCommentFileInputKey] = useState(0);
   const [commentSaving, setCommentSaving] = useState(false);
+  const [editingDetails, setEditingDetails] = useState(false);
+  const [editForm, setEditForm] = useState<PaperEditForm | null>(null);
+  const [detailsSaving, setDetailsSaving] = useState(false);
+  const [detailsError, setDetailsError] = useState<string | null>(null);
+
+  const openEditDetails = useCallback(() => {
+    if (!paper) return;
+    setEditForm(paperToEditForm(paper));
+    setDetailsError(null);
+    setEditingDetails(true);
+  }, [paper]);
+
+  const closeEditDetails = useCallback(() => {
+    setEditingDetails(false);
+    setEditForm(null);
+    setDetailsError(null);
+  }, []);
+
+  const handleSaveDetails = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!canEditPapers || !paper || !editForm || !supabase || !isSupabaseConfigured()) return;
+      setDetailsSaving(true);
+      setDetailsError(null);
+      const citationsNum = editForm.citations.trim() ? parseInt(editForm.citations.trim(), 10) : null;
+      const { data, error: updateError } = await supabase
+        .from('saved_papers')
+        .update({
+          url: editForm.url.trim(),
+          secondary_url: editForm.secondary_url.trim() || null,
+          title: editForm.title.trim() || null,
+          authors: editForm.authors.trim() || null,
+          year: editForm.year.trim() || null,
+          journal: editForm.journal.trim() || null,
+          motivation: editForm.motivation.trim() || null,
+          tags: editForm.tags,
+          citations: Number.isNaN(citationsNum) ? null : citationsNum,
+          golden: editForm.golden,
+        })
+        .eq('id', paper.id)
+        .select('id, url, secondary_url, motivation, tags, title, authors, year, journal, citations, golden, created_at')
+        .single();
+      setDetailsSaving(false);
+      if (updateError) {
+        setDetailsError(updateError.message);
+        return;
+      }
+      if (data) {
+        setPaper(mapRow({ ...data, id: data.id }));
+        setEditingDetails(false);
+        setEditForm(null);
+      }
+    },
+    [canEditPapers, paper, editForm]
+  );
 
   useEffect(() => {
     if (!commentImageFile) {
@@ -903,14 +973,41 @@ export default function PaperDetailPage() {
       )}
 
       <header className="paper-detail-header">
-        <h1 className="paper-detail-title">{paper.title || 'Untitled'}</h1>
+        <div className="paper-detail-header-top">
+          <h1 className="paper-detail-title">{paper.title || 'Untitled'}</h1>
+          {canEditPapers && !isOfflineView && (
+            <button
+              type="button"
+              className="paper-detail-details-btn"
+              onClick={() => (editingDetails ? closeEditDetails() : openEditDetails())}
+            >
+              {editingDetails ? 'Cancel' : 'Edit details'}
+            </button>
+          )}
+        </div>
         {paper.authors && <p className="paper-detail-authors">{paper.authors}</p>}
         <div className="paper-detail-meta-row">
           {paper.year && <span className="paper-detail-year">{paper.year}</span>}
           {paper.journal && <span className="paper-detail-journal">{paper.journal}</span>}
+          {paper.citations != null && (
+            <span className="paper-detail-citation-count">
+              {paper.citations} citation{paper.citations !== 1 ? 's' : ''}
+            </span>
+          )}
           {paper.golden && <span className="paper-detail-golden">Golden</span>}
         </div>
       </header>
+
+      {editingDetails && editForm && canEditPapers && !isOfflineView && (
+        <PaperDetailEditForm
+          form={editForm}
+          saving={detailsSaving}
+          error={detailsError}
+          onChange={setEditForm}
+          onSubmit={handleSaveDetails}
+          onCancel={closeEditDetails}
+        />
+      )}
 
       <section className="paper-detail-section">
         <h2 className="paper-detail-section-title">Links</h2>
@@ -960,13 +1057,6 @@ export default function PaperDetailPage() {
               <span key={t} className="paper-detail-tag">{t}</span>
             ))}
           </div>
-        </section>
-      )}
-
-      {(paper.citations != null && paper.citations !== undefined) && (
-        <section className="paper-detail-section">
-          <h2 className="paper-detail-section-title">Citations</h2>
-          <p className="paper-detail-citations">{paper.citations}</p>
         </section>
       )}
 
@@ -1443,7 +1533,7 @@ export default function PaperDetailPage() {
         </p>
         <div className="paper-detail-apa-box">
           <output className="paper-detail-apa-output" aria-live="polite">
-            {citation || 'Add title, authors, and year in the paper edit form to generate a citation.'}
+            {citation || 'Add title, authors, and year under Edit details to generate a citation.'}
           </output>
           {citation && (
             <button type="button" className="paper-detail-apa-copy" onClick={handleCopyCitation}>

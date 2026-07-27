@@ -52,6 +52,162 @@ import PaperDetailPage from '../../components/PaperDetailPage';
   :global(.paper-detail-header) {
     margin-bottom: 2rem;
   }
+  :global(.paper-detail-header-top) {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  :global(.paper-detail-header-top .paper-detail-title) {
+    margin-bottom: 0;
+    flex: 1;
+    min-width: 0;
+  }
+  :global(.paper-detail-details-btn) {
+    flex-shrink: 0;
+    padding: 0.4rem 0.85rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: var(--font-sans);
+    color: var(--color-maroon);
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  :global(.paper-detail-details-btn:hover) {
+    border-color: var(--color-maroon-muted);
+    background: rgba(113, 32, 56, 0.04);
+  }
+  :global(.paper-detail-citation-count) {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    background: var(--color-bg-alt);
+    border-radius: 6px;
+    font-size: 0.9rem;
+  }
+  :global(.paper-detail-details-form-section) {
+    margin-top: -1rem;
+    margin-bottom: 1.5rem;
+    padding: 1.25rem;
+    background: var(--color-bg-alt);
+    border-radius: 10px;
+    border: 1px solid var(--color-border);
+  }
+  :global(.paper-detail-details-error) {
+    color: #b91c1c;
+    font-size: 0.9rem;
+    margin: 0 0 0.75rem 0;
+  }
+  :global(.paper-detail-details-form) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+  :global(.paper-detail-details-field) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  :global(.paper-detail-details-field label),
+  :global(.paper-detail-details-tags legend) {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+  :global(.paper-detail-details-tags) {
+    border: none;
+    margin: 0;
+    padding: 0;
+  }
+  :global(.paper-detail-details-input) {
+    width: 100%;
+    padding: 0.5rem 0.65rem;
+    font-size: 0.95rem;
+    font-family: var(--font-sans);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background: #fff;
+  }
+  :global(.paper-detail-details-input:focus) {
+    outline: none;
+    border-color: var(--color-maroon-muted);
+    box-shadow: 0 0 0 2px rgba(113, 32, 56, 0.12);
+  }
+  :global(.paper-detail-details-textarea) {
+    resize: vertical;
+    min-height: 4.5rem;
+  }
+  :global(.paper-detail-details-row) {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(5rem, 1fr) minmax(6rem, 1fr);
+    gap: 0.75rem;
+  }
+  :global(.paper-detail-details-tag-chips) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  :global(.paper-detail-details-tag-chip) {
+    padding: 0.3rem 0.65rem;
+    font-size: 0.8rem;
+    font-family: var(--font-sans);
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: #fff;
+    cursor: pointer;
+    color: var(--color-ink);
+  }
+  :global(.paper-detail-details-tag-chip--selected) {
+    background: var(--color-maroon);
+    border-color: var(--color-gold);
+    color: #fff;
+  }
+  :global(.paper-detail-details-golden) {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+  :global(.paper-detail-details-actions) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+  }
+  :global(.paper-detail-details-save) {
+    padding: 0.45rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: var(--font-sans);
+    color: #fff;
+    background: var(--color-maroon);
+    border: 1px solid var(--color-gold);
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  :global(.paper-detail-details-save:disabled) {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  :global(.paper-detail-details-cancel) {
+    padding: 0.45rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  @media (max-width: 640px) {
+    :global(.paper-detail-details-row) {
+      grid-template-columns: 1fr;
+    }
+  }
   :global(.paper-detail-title) {
     font-family: var(--font-serif);
     font-size: 1.75rem;
