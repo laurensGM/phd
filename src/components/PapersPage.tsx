@@ -269,10 +269,39 @@ export default function PapersPage() {
   const [showSort, setShowSort] = useState(true);
   const [goldenOnly, setGoldenOnly] = useState(false);
   const [tablePage, setTablePage] = useState(1);
+  const [motivationTip, setMotivationTip] = useState<{
+    text: string;
+    left: number;
+    top: number;
+    flipped: boolean;
+  } | null>(null);
   const [offlinePapers, setOfflinePapers] = useState<OfflinePaperBundle[]>([]);
   const [isOffline, setIsOffline] = useState(
     typeof navigator !== 'undefined' ? !navigator.onLine : false
   );
+
+  const showMotivationTip = useCallback((cell: HTMLElement, text: string) => {
+    const rect = cell.getBoundingClientRect();
+    const estimatedHeight = 140;
+    const flipped = rect.bottom + estimatedHeight > window.innerHeight;
+    setMotivationTip({
+      text,
+      left: Math.max(12, Math.min(rect.left, window.innerWidth - 12)),
+      top: flipped ? rect.top - 6 : rect.bottom + 6,
+      flipped,
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!motivationTip) return;
+    const hide = () => setMotivationTip(null);
+    window.addEventListener('scroll', hide, true);
+    window.addEventListener('resize', hide);
+    return () => {
+      window.removeEventListener('scroll', hide, true);
+      window.removeEventListener('resize', hide);
+    };
+  }, [motivationTip]);
 
   const refreshOfflinePapers = useCallback(async () => {
     const list = await listOfflinePapers();
@@ -1329,7 +1358,11 @@ export default function PapersPage() {
                     >
                       <td
                         className={`papers-reading-cell papers-reading-cell-title${paper.motivation?.trim() ? ' papers-reading-cell-title--has-motivation' : ''}`}
-                        data-motivation={paper.motivation?.trim() || undefined}
+                        onMouseEnter={(e) => {
+                          const text = paper.motivation?.trim();
+                          if (text) showMotivationTip(e.currentTarget, text);
+                        }}
+                        onMouseLeave={() => setMotivationTip(null)}
                       >
                         <span className="papers-reading-title">{paper.title || paper.url}</span>
                         {(paper.authors || paper.year) && (
@@ -1378,6 +1411,16 @@ export default function PapersPage() {
         )}
       </section>
         </>
+      )}
+      {motivationTip && (
+        <div
+          className={`papers-motivation-tip${motivationTip.flipped ? ' papers-motivation-tip--above' : ''}`}
+          style={{ left: `${motivationTip.left}px`, top: `${motivationTip.top}px` }}
+          role="tooltip"
+        >
+          <span className="papers-motivation-tip-label">Why I saved this</span>
+          {motivationTip.text}
+        </div>
       )}
     </div>
   );
