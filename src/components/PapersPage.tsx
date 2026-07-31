@@ -264,7 +264,7 @@ export default function PapersPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'reading'>('reading');
   const [readingToggleBusy, setReadingToggleBusy] = useState<string | null>(null);
-  const [sortField, setSortField] = useState<PaperSortField>('year');
+  const [sortField, setSortField] = useState<PaperSortField>('created_at');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [showSort, setShowSort] = useState(true);
   const [goldenOnly, setGoldenOnly] = useState(false);
@@ -1327,7 +1327,10 @@ export default function PapersPage() {
                         }
                       }}
                     >
-                      <td className="papers-reading-cell papers-reading-cell-title">
+                      <td
+                        className={`papers-reading-cell papers-reading-cell-title${paper.motivation?.trim() ? ' papers-reading-cell-title--has-motivation' : ''}`}
+                        data-motivation={paper.motivation?.trim() || undefined}
+                      >
                         <span className="papers-reading-title">{paper.title || paper.url}</span>
                         {(paper.authors || paper.year) && (
                           <span className="papers-reading-meta">
